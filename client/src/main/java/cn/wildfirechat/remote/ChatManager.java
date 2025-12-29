@@ -1231,7 +1231,7 @@ public class ChatManager {
     }
 
     public Platform getPlatform() {
-        if(isPad) {
+        if (isPad) {
             return Platform.PlatformType_APad;
         } else {
             return Platform.PlatformType_Android;
@@ -1396,7 +1396,7 @@ public class ChatManager {
             imei = fw.readLine();
             if (TextUtils.isEmpty(imei)) {
                 imei = sp.getString(spKey, null);
-                if(TextUtils.isEmpty(imei)) {
+                if (TextUtils.isEmpty(imei)) {
                     imei = UUID.randomUUID().toString();
                     imei += System.currentTimeMillis();
                     sp.edit().putString(spKey, imei).apply();
@@ -1406,7 +1406,7 @@ public class ChatManager {
                 fw.writeBytes(imei);
             } else {
                 String spimei = sp.getString(spKey, null);
-                if(!imei.equals(spimei)) {
+                if (!imei.equals(spimei)) {
                     sp.edit().putString(spKey, imei).apply();
                 }
             }
@@ -1416,7 +1416,7 @@ public class ChatManager {
         } finally {
             if (TextUtils.isEmpty(imei)) {
                 imei = sp.getString(spKey, null);
-                if(TextUtils.isEmpty(imei)) {
+                if (TextUtils.isEmpty(imei)) {
                     imei = UUID.randomUUID().toString();
                     imei += System.currentTimeMillis();
                     sp.edit().putString(spKey, imei).apply();
@@ -3905,12 +3905,12 @@ public class ChatManager {
     /**
      * 获取服务器消息，可以获取对应messageUid之前或者之后的消息。**如果消息是不连续的，saveToDb要为false，避免存储在本地，需要特别注意这一点。**
      *
-     * @param conversation     会话
      * @param conversation 会话
-     * @param messageUid 起始消息的ID
-     * @param count 总数
-     * @param before 是获取对应messageUid之前或者时候的消息
-     * @param saveToDb 是否保存到本地DB中，如果是不连续的消息，千万要为false。
+     * @param conversation 会话
+     * @param messageUid   起始消息的ID
+     * @param count        总数
+     * @param before       是获取对应messageUid之前或者时候的消息
+     * @param saveToDb     是否保存到本地DB中，如果是不连续的消息，千万要为false。
      * @param contentTypes 指定获取的类型。
      * @discussion 获取得到的消息数目有可能少于指定的count数，如果count不为0就意味着还有更多的消息可以获取，只有获取到的消息数为0才表示没有更多的消息了。
      */
@@ -5249,7 +5249,7 @@ public class ChatManager {
     /**
      * 获取好友请求列表
      *
-     * @param status 请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
+     * @param status   请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
      * @param incoming true，只包含收到的好友请求；false，所有好友请求
      * @return
      */
@@ -5307,7 +5307,7 @@ public class ChatManager {
     /**
      * 获取好友请求数量
      *
-     * @param status 请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
+     * @param status   请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
      * @param incoming true，只包含收到的好友请求；false，所有好友请求
      * @return
      */
@@ -7732,13 +7732,13 @@ public class ChatManager {
     }
 
     /**
-     分批获取群成员信息
-
-     @param groupId 群ID
-     @param types 群成员类型，nil为所有
-     @param offset offset
-     @param count 群成员类型个数
-     @return 群成员信息列表
+     * 分批获取群成员信息
+     *
+     * @param groupId 群ID
+     * @param types   群成员类型，nil为所有
+     * @param offset  offset
+     * @param count   群成员类型个数
+     * @return 群成员信息列表
      */
     public List<GroupMember> getGroupMembers(String groupId, List<GroupMember.GroupMemberType> types, int offset, int count) {
         if (!checkRemoteService()) {
@@ -7749,7 +7749,7 @@ public class ChatManager {
             return new ArrayList<>();
         }
 
-        if(types == null) types = new ArrayList<>();
+        if (types == null) types = new ArrayList<>();
         int[] intypes = new int[types.size()];
         for (int i = 0; i < types.size(); i++) {
             intypes[i] = types.get(i).ordinal();
@@ -7764,11 +7764,11 @@ public class ChatManager {
     }
 
     /**
-     获取群成员数量
-
-     @param groupId 群ID
-     @param types 群成员类型，nil为所有
-     @return 群成员的数量
+     * 获取群成员数量
+     *
+     * @param groupId 群ID
+     * @param types   群成员类型，nil为所有
+     * @return 群成员的数量
      */
     public int getGroupMembersCount(String groupId, List<GroupMember.GroupMemberType> types) {
         if (!checkRemoteService()) {
@@ -7778,7 +7778,7 @@ public class ChatManager {
             Log.e(TAG, "group id is null");
             return 0;
         }
-        if(types == null) types = new ArrayList<>();
+        if (types == null) types = new ArrayList<>();
         int[] intypes = new int[types.size()];
         for (int i = 0; i < types.size(); i++) {
             intypes[i] = types.get(i).ordinal();
@@ -7794,11 +7794,11 @@ public class ChatManager {
 
 
     /**
-     获取群成员ID
-
-     @param groupId 群ID
-     @param types 群成员类型，nil为所有
-     @return 群成员ID列表
+     * 获取群成员ID
+     *
+     * @param groupId 群ID
+     * @param types   群成员类型，nil为所有
+     * @return 群成员ID列表
      */
     public List<String> getGroupMemberIds(String groupId, List<GroupMember.GroupMemberType> types) {
         if (!checkRemoteService()) {
@@ -7808,7 +7808,7 @@ public class ChatManager {
             Log.e(TAG, "group id is null");
             return new ArrayList<>();
         }
-        if(types == null) types = new ArrayList<>();
+        if (types == null) types = new ArrayList<>();
         int[] intypes = new int[types.size()];
         for (int i = 0; i < types.size(); i++) {
             intypes[i] = types.get(i).ordinal();
@@ -7823,9 +7823,9 @@ public class ChatManager {
     }
 
     /**
-     从远程服务同步群组成员
-
-     @param groupId 群ID
+     * 从远程服务同步群组成员
+     *
+     * @param groupId 群ID
      */
     public void loadGroupMemberFromRemote(String groupId) {
         if (!checkRemoteService()) {
@@ -10267,7 +10267,7 @@ public class ChatManager {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             internalWorkHandler.post(() -> {
                 try {
-                    if(isPad) {
+                    if (isPad) {
                         mClient.setPlatform(isPad);
                     }
                     if (useSM4) {
