@@ -770,7 +770,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                 groupIds.add(((ModifyGroupSettingsNotificationContent) msg.content).groupId);
             }
         }
-        if (groupIds.size() > 0) {
+        if (!groupIds.isEmpty()) {
             ChatManager.Instance().getGroupInfos(new ArrayList<>(groupIds), true);
         }
     }
