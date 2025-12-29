@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class GroupManageFragment extends Fragment {
     OptionItemView joinOptionItemView;
     OptionItemView searchOptionItemView;
     OptionItemView historyOptionItemView;
+    LinearLayout joinGroupRequestLinearLayout;
     OptionItemView joinRequestOptionItemView;
 
     private GroupViewModel groupViewModel;
@@ -88,6 +90,7 @@ public class GroupManageFragment extends Fragment {
         joinOptionItemView = view.findViewById(R.id.joinOptionItemView);
         searchOptionItemView = view.findViewById(R.id.searchOptionItemView);
         historyOptionItemView = view.findViewById(R.id.historyMessageOptionItemView);
+        joinGroupRequestLinearLayout = view.findViewById(R.id.joinGroupRequestLinearLayout);
         joinRequestOptionItemView = view.findViewById(R.id.joinRequestOptionItemView);
     }
 
@@ -102,13 +105,11 @@ public class GroupManageFragment extends Fragment {
         historyOptionItemView.setDesc(types[groupInfo.historyMessage]);
 
         if (groupInfo.joinType == 3) {
-            joinRequestOptionItemView.setVisibility(View.VISIBLE);
-            if (groupViewModel != null) {
-                int unread = groupViewModel.getJoinGroupRequestUnread(groupInfo.target);
-                joinRequestOptionItemView.setBadgeCount(unread);
-            }
+            joinGroupRequestLinearLayout.setVisibility(View.VISIBLE);
+            int unread = groupViewModel.getJoinGroupRequestUnread(groupInfo.target);
+            joinRequestOptionItemView.setBadgeCount(unread);
         } else {
-            joinRequestOptionItemView.setVisibility(View.GONE);
+            joinGroupRequestLinearLayout.setVisibility(View.GONE);
         }
     }
 
@@ -204,6 +205,7 @@ public class GroupManageFragment extends Fragment {
             })
             .show();
     }
+
     void showJoinGroupRequests() {
         Intent intent = new Intent(getActivity(), JoinGroupRequestListActivity.class);
         intent.putExtra("groupId", groupInfo.target);

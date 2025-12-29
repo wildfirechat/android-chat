@@ -663,6 +663,7 @@
     <string name="group_member_permission">Member Permissions</string>
     <string name="group_member_list">Group Member List</string>
     <string name="join_group_request_list">Join Group Request List</string>
+    <string name="join_group_request_list_empty">No Join Group Request</string>
     <string name="contact_selection">Select Contact</string>
     <string name="file_record">File Records</string>
     <string name="select_a_chat">Select a Chat</string>

@@ -670,12 +670,13 @@
     <string name="group_mute">群禁言</string>
     <string name="join_group_request">加群请求</string>
     <string name="join_group_reason_hint">请输入加群理由</string>
+    <string name="join_group_request_list">加群申请列表</string>
+    <string name="join_group_request_list_empty">没有加群申请</string>
     <string name="send_request">发送请求</string>
     <string name="request_sent">请求已发送</string>
     <string name="request_failed">请求失败 %d</string>
     <string name="group_member_permission">群成员权限</string>
     <string name="group_member_list">群成员列表</string>
-    <string name="join_group_request_list">加群申请列表</string>
     <string name="contact_selection">联系人选择</string>
     <string name="file_record">文件记录</string>
     <string name="select_a_chat">选择一个聊天</string>

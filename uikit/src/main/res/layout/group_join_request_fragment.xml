@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
-            android:text="@string/search_no_result"
+            android:text="@string/join_group_request_list_empty"
             android:textColor="@color/gray3"
             android:textSize="21sp" />
 
