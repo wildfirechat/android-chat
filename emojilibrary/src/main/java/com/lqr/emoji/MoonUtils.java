@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
  * CSDN_LQR
  * 图文混排工具
  */
+@Deprecated
 public class MoonUtils {
     private static final float DEF_SCALE = 0.6f;
     private static final float SMALL_SCALE = 0.6F;

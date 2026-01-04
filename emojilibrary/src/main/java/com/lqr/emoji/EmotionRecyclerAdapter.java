@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.emoji2.widget.EmojiTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -110,15 +111,18 @@ public class EmotionRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_EMOJI) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.item_emoji, parent, false);
-            RecyclerView.ViewHolder viewHolder = new EmojiViewHolder(view);
+            EmojiViewHolder viewHolder = new EmojiViewHolder(view);
 
             // 整个项目视图处理点击事件
             view.setOnClickListener(v -> {
                 if (listener != null) {
-                    String text = EmojiManager.getDisplayText(viewHolder.getBindingAdapterPosition());
-                    if (!TextUtils.isEmpty(text)) {
-                        listener.onEmojiSelected(text);
-                        Log.d(TAG, "Emoji selected: " + text);
+                    int position = viewHolder.getBindingAdapterPosition();
+                    String hexCode = EmojiManager.getDisplayText(position);
+                    if (!TextUtils.isEmpty(hexCode)) {
+                        // 传入十六进制字符串以保持兼容性
+                        // ConversationInputPanel 会将其转换为 Unicode 字符
+                        listener.onEmojiSelected(hexCode);
+                        Log.d(TAG, "Emoji selected: " + hexCode);
                     }
                 }
             });
@@ -154,8 +158,13 @@ public class EmotionRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (holder instanceof EmojiViewHolder) {
             EmojiViewHolder emojiHolder = (EmojiViewHolder) holder;
 
-            // 设置emoji表情
-            emojiHolder.imageView.setBackground(EmojiManager.getDisplayDrawable(mContext, item.index));
+            // 获取 emoji 的 Unicode 码点字符串（如 "0x1f603"）
+            String hexCode = EmojiManager.getDisplayText(item.index);
+            if (!TextUtils.isEmpty(hexCode)) {
+                // 将十六进制字符串转换为 Unicode 字符
+                String emojiChar = hexToEmoji(hexCode);
+                emojiHolder.textView.setText(emojiChar);
+            }
 
         } else if (holder instanceof StickerViewHolder) {
             StickerViewHolder stickerHolder = (StickerViewHolder) holder;
@@ -164,6 +173,24 @@ public class EmotionRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             String stickerBitmapUri = StickerManager.getInstance().getStickerBitmapUri(item.category, item.name);
             LQREmotionKit.getImageLoader().displayImage(mContext, stickerBitmapUri, stickerHolder.imageView);
 
+        }
+    }
+
+    /**
+     * 将十六进制码点字符串转换为 Unicode emoji 字符
+     * @param hexCode 十六进制字符串，如 "0x1f603"
+     * @return Unicode emoji 字符
+     */
+    private String hexToEmoji(String hexCode) {
+        try {
+            // 移除 "0x" 前缀（如果存在）
+            String hex = hexCode.replace("0x", "");
+            // 解析为整数，然后转换为 Unicode 字符
+            int codePoint = Integer.parseInt(hex, 16);
+            return new String(Character.toChars(codePoint));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to convert hex to emoji: " + hexCode, e);
+            return "";
         }
     }
 
@@ -182,11 +209,11 @@ public class EmotionRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Emoji表情的ViewHolder
      */
     static class EmojiViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+        EmojiTextView textView;
 
         public EmojiViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.iv_emoji);
+            textView = itemView.findViewById(R.id.iv_emoji);
         }
     }
 

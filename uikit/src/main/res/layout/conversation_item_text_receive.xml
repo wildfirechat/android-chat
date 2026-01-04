@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <androidx.emoji2.widget.EmojiTextView
         android:id="@+id/contentTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,8 +20,9 @@
         android:paddingRight="16dp"
         android:paddingBottom="12dp"
         android:text="text message content"
+        android:textColor="#000000"
         android:textColorLink="#3655bf"
-        android:textSize="16sp" />
+        android:textSize="17sp" />
 
     <TextView
         android:id="@+id/refTextView"

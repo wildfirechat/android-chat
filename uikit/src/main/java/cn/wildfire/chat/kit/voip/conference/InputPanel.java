@@ -25,8 +25,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionSelectedListener;
-import com.lqr.emoji.LQREmotionKit;
-import com.lqr.emoji.MoonUtils;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
@@ -199,7 +197,6 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
             editable.replace(start, end, value);
 
             int editEnd = editText.getSelectionEnd();
-            MoonUtils.replaceEmoticons(LQREmotionKit.getContext(), editable, 0, editable.toString().length());
             editText.setSelection(editEnd);
         }
     }

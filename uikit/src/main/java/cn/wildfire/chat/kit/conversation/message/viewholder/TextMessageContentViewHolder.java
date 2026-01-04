@@ -9,15 +9,13 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.emoji2.widget.EmojiTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lqr.emoji.MoonUtils;
-
-import cn.wildfire.chat.kit.*;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -45,7 +43,7 @@ import cn.wildfirechat.remote.ChatManager;
 })
 @EnableContextMenu
 public class TextMessageContentViewHolder extends NormalMessageContentViewHolder {
-    TextView contentTextView;
+    EmojiTextView contentTextView;
     TextView refTextView;
 
     private QuoteInfo quoteInfo;
@@ -80,10 +78,10 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
             if (spanned != null && spanned.length() > 0) {
                 contentTextView.setText(spanned);
             } else {
-                MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+                contentTextView.setText(content);
             }
         } else {
-            MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+            contentTextView.setText(content);
         }
         contentTextView.setMovementMethod(new LinkTextViewMovementMethod(new LinkClickListener() {
             @Override

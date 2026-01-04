@@ -39,6 +39,7 @@ public class LQREmotionKit {
 
         //将asset/sticker目录下默认的贴图复制到STICKER_PATH下
         copyStickerToStickerPath(STICKER_NAME_IN_ASSETS);
+        EmojiCompatManager.init(context);
     }
 
     public static void init(Context context) {

@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <EditText
+                    <androidx.emoji2.widget.EmojiEditText
                         android:id="@+id/editText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

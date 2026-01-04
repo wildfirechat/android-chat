@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lqr.emoji.MoonUtils;
+import com.lqr.emoji.EmojiCompatUtils;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -75,10 +75,10 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
             if (spanned != null && spanned.length() > 0) {
                 contentTextView.setText(spanned);
             } else {
-                MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                EmojiCompatUtils.identifyFaceExpression(fragment.getContext(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
             }
         } else {
-            MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+            EmojiCompatUtils.identifyFaceExpression(fragment.getContext(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
         }
         contentTextView.setMovementMethod(new LinkTextViewMovementMethod(new LinkClickListener() {
             @Override

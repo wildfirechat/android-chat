@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.emoji2.widget.EmojiTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -19,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.lqr.emoji.MoonUtils;
+import com.lqr.emoji.EmojiCompatUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +60,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ImageView silentImageView;
     protected TextView unreadCountTextView;
     protected View redDotView;
-    protected TextView contentTextView;
+    protected EmojiTextView contentTextView;
     protected TextView promptTextView;
 
     protected ImageView statusImageView;
@@ -144,7 +145,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         if (draft != null) {
             String draftString = draft.getContent() != null ? draft.getContent() : fragment.getString(R.string.draft);
-            MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, draft.getContent(), ImageSpan.ALIGN_BOTTOM);
+            EmojiCompatUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, draft.getContent(), ImageSpan.ALIGN_BOTTOM);
             setViewVisibility(R.id.promptTextView, View.VISIBLE);
             setViewVisibility(R.id.contentTextView, View.VISIBLE);
         } else {
@@ -169,13 +170,13 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                         groupMemberDisplayNameObserver = senderDisplayName -> {
                             String content = senderDisplayName + ":" + lastMessage.digest();
                             content = WfcTextUtils.htmlToText(content);
-                            MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                            EmojiCompatUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
                         };
                         groupMemberDisplayNameLiveData.observe(fragment, groupMemberDisplayNameObserver);
                     } else {
                         String content = lastMessage.digest();
                         content = WfcTextUtils.htmlToText(content);
-                        MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                        EmojiCompatUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

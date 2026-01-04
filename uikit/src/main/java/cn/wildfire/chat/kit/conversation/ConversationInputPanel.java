@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.emoji2.widget.EmojiEditText;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -46,8 +47,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionExtClickListener;
 import com.lqr.emoji.IEmotionSelectedListener;
-import com.lqr.emoji.LQREmotionKit;
-import com.lqr.emoji.MoonUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     ImageView audioImageView;
     ImageView pttImageView;
     Button audioButton;
-    EditText editText;
+    EmojiEditText editText;
     ImageView emotionImageView;
     ImageView extImageView;
     Button sendButton;
@@ -766,7 +765,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             editable.replace(start, end, value);
 
             int editEnd = editText.getSelectionEnd();
-            MoonUtils.replaceEmoticons(LQREmotionKit.getContext(), editable, 0, editable.toString().length());
             editText.setSelection(editEnd);
         }
     }
