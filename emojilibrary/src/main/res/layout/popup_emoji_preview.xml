@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:background="@drawable/bg_emoji_preview"
+    android:layout_gravity="center"
+    android:padding="16dp">
+
+    <androidx.emoji2.widget.EmojiTextView
+        android:id="@+id/tv_emoji_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:text="😂"
+        android:includeFontPadding="false"
+        />
+
+    <ImageView
+        android:id="@+id/iv_sticker_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
+</FrameLayout>

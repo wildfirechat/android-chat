@@ -32,4 +32,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
     implementation 'io.github.everythingme:overscroll-decor-android:1.1.1'
+
+    // EmojiCompat for Twemoji support
+    implementation 'androidx.emoji2:emoji2:1.6.0'
+    implementation 'androidx.emoji2:emoji2-bundled:1.6.0'
+    implementation 'androidx.emoji2:emoji2-views:1.6.0'
+    implementation "androidx.emoji2:emoji2-views-helper:1.6.0"
 }

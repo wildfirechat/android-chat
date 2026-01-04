@@ -84,6 +84,8 @@ dependencies {
 
     api 'com.squareup.okhttp3:okhttp-sse:5.1.0'
 
+    implementation 'androidx.emoji2:emoji2-views:1.6.0'
+
 //    api 'com.king.zxing:zxing-lite:1.1.1'
 //    api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'

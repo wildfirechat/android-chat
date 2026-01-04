@@ -70,6 +70,7 @@ public class EmotionViewPager2Adapter extends RecyclerView.Adapter<EmotionViewPa
 
         // 创建并设置表情适配器
         EmotionRecyclerAdapter adapter = new EmotionRecyclerAdapter(mContext, mStickerVisible, mListener);
+        adapter.setRecyclerView(holder.recyclerView); // 设置 RecyclerView 引用
         holder.recyclerView.setAdapter(adapter);
 
         // 加载内容
