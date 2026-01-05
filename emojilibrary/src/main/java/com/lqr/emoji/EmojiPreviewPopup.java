@@ -163,7 +163,7 @@ public class EmojiPreviewPopup {
         } else {
             mEmojiTextView.setVisibility(View.GONE);
             mStickerView.setVisibility(View.VISIBLE);
-            LQREmotionKit.getImageLoader().displayImage(mContext, content, mStickerView);
+            LQREmotionKit.getImageLoader().displayImage(mContext, content, mStickerView, false);
         }
     }
 

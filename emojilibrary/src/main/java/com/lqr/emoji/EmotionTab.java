@@ -38,7 +38,7 @@ public class EmotionTab extends RelativeLayout {
         if (TextUtils.isEmpty(mStickerCoverImgPath)) {
             mIvIcon.setImageResource(mIconSrc);
         } else {
-            LQREmotionKit.getImageLoader().displayImage(context, mStickerCoverImgPath, mIvIcon);
+            LQREmotionKit.getImageLoader().displayImage(context, mStickerCoverImgPath, mIvIcon, true);
         }
     }
 

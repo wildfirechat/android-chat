@@ -109,7 +109,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         initPttClient(application);
         setupWFCDirs(application);
         //初始化表情控件
-        LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
+        LQREmotionKit.init(application, (context, path, imageView, dontAnimate) -> {
+            RequestOptions options = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+            if (dontAnimate) {
+                options = options.centerCrop().dontAnimate();
+            }
+            Glide.with(context).load(path).apply(options).into(imageView);
+        });
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -356,6 +362,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         singleCall(context, conversation, targetId, isAudioOnly);
 
     }
+
     public static void singleCall(Context context, Conversation conversation, String targetId, boolean isAudioOnly) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
         if (session != null) {

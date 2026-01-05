@@ -9,5 +9,5 @@ import android.widget.ImageView;
  */
 public interface IImageLoader {
 
-    void displayImage(Context context, String path, ImageView imageView);
+    void displayImage(Context context, String path, ImageView imageView, boolean dontAnimate);
 }

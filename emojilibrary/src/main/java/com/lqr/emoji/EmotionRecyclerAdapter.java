@@ -225,7 +225,7 @@ public class EmotionRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             // 设置贴图
             String stickerBitmapUri = StickerManager.getInstance().getStickerBitmapUri(item.category, item.name);
-            LQREmotionKit.getImageLoader().displayImage(mContext, stickerBitmapUri, stickerHolder.imageView);
+            LQREmotionKit.getImageLoader().displayImage(mContext, stickerBitmapUri, stickerHolder.imageView, true);
 
         }
     }
