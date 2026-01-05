@@ -6,7 +6,7 @@
     android:layout_gravity="right"
     android:orientation="vertical">
 
-    <androidx.emoji2.widget.EmojiTextView
+    <com.lqr.emoji.WfEmojiTextView
         android:id="@+id/contentTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
