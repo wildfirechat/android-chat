@@ -1002,8 +1002,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public Map<String, Integer> getMessageCountByDay(Conversation conversation, int[] messageStatus, long fromTime, long endTime) throws RemoteException {
-            ProtoDayCounts protoDayCounts = ProtoLogic.getMessageCountByDay(conversation.type.getValue(), conversation.target, conversation.line, messageStatus, fromTime, endTime);
+        public Map<String, Integer> getMessageCountByDay(Conversation conversation, int[] contentTypes, long fromTime, long endTime) throws RemoteException {
+            ProtoDayCounts protoDayCounts = ProtoLogic.getMessageCountByDay(conversation.type.getValue(), conversation.target, conversation.line, contentTypes, fromTime, endTime);
             Map<String, Integer> map = new HashMap<>();
             for (ProtoDayCounts.ProtoDayCount protoDC : protoDayCounts.dayCounts) {
                 map.put(protoDC.day, protoDC.count);

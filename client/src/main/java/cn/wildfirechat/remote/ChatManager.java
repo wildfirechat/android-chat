@@ -3765,11 +3765,11 @@ public class ChatManager {
      * <p>
      * 如果获取某天的消息，可以用 getMessages 方法，其中from可以用当天时间的毫秒数（也可用消息ID）。如果获取这天的消息，以降序排列，from就是这天的最后一秒毫秒数，然后count为正值。如果以升序排列，from为这一天的第一秒，count值为负值。
      *
-     * @param conversation 会话
-     * @param contentTypes 消息类型
-     * @param startTime    开始时间，单位秒
-     * @param endTime      结束时间，单位秒
-     * @return 每天的消息数量。
+     * @param conversation       会话
+     * @param contentTypes       消息类型
+     * @param startTime          开始时间，单位秒
+     * @param endTime            结束时间，单位秒
+     * @return 每天的消息数量 yyyy-MM-dd -> count
      */
     public Map<String, Integer> getMessageCountByDay(Conversation conversation, List<Integer> contentTypes, long startTime, long endTime) {
         if (!checkRemoteService()) {
