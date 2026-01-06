@@ -60,7 +60,6 @@
                 android:visibility="gone"
                 app:tint="@color/black" />
 
-
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -115,6 +114,17 @@
 
                     </RelativeLayout>
                 </LinearLayout>
+
+                <!-- ASR 麦克风图标，覆盖在输入框右侧 -->
+                <ImageView
+                    android:id="@+id/asrImageView"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="end|bottom"
+                    android:layout_marginEnd="4dp"
+                    android:padding="8dp"
+                    android:src="@drawable/av_mic_0"
+                    android:visibility="visible" />
 
                 <Button
                     android:id="@+id/audioButton"

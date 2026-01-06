@@ -21,6 +21,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -91,6 +92,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     ImageView menuImageView;
     ImageView audioImageView;
     ImageView pttImageView;
+    ImageView asrImageView;
     Button audioButton;
     EmojiEditText editText;
     ImageView emotionImageView;
@@ -118,6 +120,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private FragmentActivity activity;
     private AudioRecorderPanel audioRecorderPanel;
     private PttPanel pttPanel;
+    private cn.wildfire.chat.kit.asr.FunAsrManager asrManager;
+    private boolean isAsrRecording = false;
 
     private long lastTypingTime;
     private String draftString;
@@ -176,6 +180,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             pttImageView.setVisibility(View.VISIBLE);
             pttPanel = new PttPanel(getContext());
         }
+
+        // 显示 ASR 语音输入按钮（默认启用）
+        boolean asrEnabled = sp.getBoolean("asrEnabled", true);
+        if (asrEnabled) {
+            asrImageView.setVisibility(View.VISIBLE);
+        }
     }
 
     private QuoteInfo quoteInfo;
@@ -221,6 +231,15 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
         if (pttPanel != null) {
             pttPanel.deattch();
+        }
+        // 清理 ASR 资源
+        if (asrManager != null) {
+            asrManager.cancelRecognition();
+            asrManager.release();
+            asrManager = null;
+        }
+        if (asrImageView != null) {
+            asrImageView.clearAnimation();
         }
     }
 
@@ -299,6 +318,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         menuImageView = findViewById(R.id.menuImageView);
         audioImageView = findViewById(R.id.audioImageView);
         pttImageView = findViewById(R.id.pttImageView);
+        asrImageView = findViewById(R.id.asrImageView);
         audioButton = findViewById(R.id.audioButton);
         editText = findViewById(R.id.editText);
         emotionImageView = findViewById(R.id.emotionImageView);
@@ -318,6 +338,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         menuImageView.setOnClickListener(v -> showChannelMenu());
         audioImageView.setOnClickListener(this::showRecordPanel);
         pttImageView.setOnClickListener(this::showRecordPanel);
+        asrImageView.setOnClickListener(v -> onAsrImageViewClick());
         sendButton.setOnClickListener(v -> sendMessage());
 
         editText.addTextChangedListener(new SimpleTextWatcher() {
@@ -524,6 +545,182 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
+    /**
+     * ASR 麦克风按钮点击事件
+     * 点击开始/停止语音识别
+     */
+    private void onAsrImageViewClick() {
+        if (isAsrRecording) {
+            // 正在录音，停止识别
+            stopAsrRecognition();
+        } else {
+            // 没有录音，开始识别
+            // 检查录音权限
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(
+                        activity,
+                        new String[]{Manifest.permission.RECORD_AUDIO}
+                    );
+                    PermissionKit.checkThenRequestPermission(
+                        activity,
+                        activity.getSupportFragmentManager(),
+                        tuples,
+                        granted -> {
+                            if (granted) {
+                                startAsrRecognition();
+                            }
+                        }
+                    );
+                    return;
+                }
+            }
+            startAsrRecognition();
+        }
+    }
+
+    /**
+     * 开始 ASR 语音识别
+     */
+    private void startAsrRecognition() {
+        if (asrManager == null) {
+            asrManager = new cn.wildfire.chat.kit.asr.FunAsrManager(getContext());
+        }
+
+        isAsrRecording = true;
+
+        // 输入框获取焦点并弹出软键盘
+        editText.requestFocus();
+        if (rootLinearLayout != null) {
+            rootLinearLayout.showSoftkey(editText);
+        }
+
+        // 启动麦克风图标闪烁动画
+        if (asrImageView != null) {
+            android.view.animation.Animation animation = android.view.animation.AnimationUtils.loadAnimation(
+                getContext(),
+                R.anim.asr_blink_animation
+            );
+            asrImageView.startAnimation(animation);
+        }
+
+        // 保存当前输入框的内容
+        String currentText = editText.getText() != null ? editText.getText().toString() : "";
+
+        // 开始识别
+        asrManager.startRecognition(new cn.wildfire.chat.kit.asr.FunAsrManager.RecognitionCallback() {
+            @Override
+            public void onStartRecording() {
+                // 录音已开始
+            }
+
+            @Override
+            public void onPartialResult(String text) {
+                // 中间结果，追加到输入框
+                if (text != null && !text.isEmpty()) {
+                    // 保留原有内容，追加新的识别结果
+                    editText.setText(currentText + text);
+                    // 移动光标到末尾
+                    editText.setSelection(editText.getText().length());
+                }
+            }
+
+            @Override
+            public void onFinalResult(String text) {
+                // 最终结果
+                if (text != null && !text.isEmpty()) {
+                    editText.setText(currentText + text);
+                    editText.setSelection(editText.getText().length());
+                }
+                // 识别完成，停止录音状态
+                stopAsrRecognition();
+            }
+
+            @Override
+            public void onStopRecording() {
+                // 录音已停止
+            }
+
+            @Override
+            public void onError(String message) {
+                // 错误
+                android.widget.Toast.makeText(getContext(), "语音识别错误: " + message, android.widget.Toast.LENGTH_SHORT).show();
+                stopAsrRecognition();
+            }
+
+            @Override
+            public void onHotwordDetected(String hotword, String text) {
+                // 检测到热词（如 "Over"）
+                Log.d("ConversationInputPanel", "检测到热词: " + hotword + ", 文本: " + text);
+
+                // 停止录音和动画
+                isAsrRecording = false;
+                if (asrImageView != null) {
+                    asrImageView.clearAnimation();
+                }
+
+                // 填充文本到输入框（不包含热词）
+                if (text != null && !text.isEmpty()) {
+                    editText.setText(currentText + text);
+                    editText.setSelection(editText.getText().length());
+                }
+
+                // 自动发送消息
+                sendMessage();
+
+                // 停止识别
+                if (asrManager != null) {
+                    asrManager.cancelRecognition();
+                }
+            }
+        });
+    }
+
+    /**
+     * 停止 ASR 语音识别
+     */
+    private void stopAsrRecognition() {
+        isAsrRecording = false;
+
+        // 停止麦克风图标闪烁动画
+        if (asrImageView != null) {
+            asrImageView.clearAnimation();
+        }
+
+        // 停止识别
+        if (asrManager != null) {
+            asrManager.stopRecognition(new cn.wildfire.chat.kit.asr.FunAsrManager.RecognitionCallback() {
+                @Override
+                public void onStartRecording() {}
+
+                @Override
+                public void onPartialResult(String text) {}
+
+                @Override
+                public void onFinalResult(String text) {
+                    // 最终结果
+                    if (text != null && !text.isEmpty()) {
+                        int start = editText.getSelectionStart();
+                        String current = editText.getText() != null ? editText.getText().toString() : "";
+                        editText.setText(current + text);
+                        editText.setSelection(editText.getText().length());
+                    }
+                }
+
+                @Override
+                public void onStopRecording() {}
+
+                @Override
+                public void onError(String message) {}
+
+                @Override
+                public void onHotwordDetected(String hotword, String text) {
+                    // 不处理，因为已经在 stopAsrRecognition 之前处理了
+                }
+            });
+        }
+    }
+
     private void openChannelMenu(ChannelMenu menu) {
         ChannelMenuEventMessageContent content = new ChannelMenuEventMessageContent();
         content.setMenu(menu);
@@ -543,6 +740,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     void sendMessage() {
+        // 如果正在录音，先停止录音
+        if (isAsrRecording) {
+            stopAsrRecognition();
+        }
+
         messageEmojiCount = 0;
         Editable content = editText.getText();
         if (TextUtils.isEmpty(content)) {
