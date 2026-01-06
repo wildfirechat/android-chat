@@ -263,6 +263,22 @@
             android:name=".conversation.file.FileRecordListActivity"
             android:label="@string/file_record" />
 
+        <!-- 按日期查找Activity -->
+        <activity
+            android:name=".search.bydate.ConversationSearchByDateActivity"
+            android:label="按日期查找"
+            android:screenOrientation="portrait" />
+        <!-- 图片与视频Activity -->
+        <activity
+            android:name=".search.media.ConversationMediaActivity"
+            android:label="图片与视频"
+            android:screenOrientation="portrait" />
+        <!-- 链接记录Activity -->
+        <activity
+            android:name=".search.link.ConversationLinkRecordActivity"
+            android:label="链接记录"
+            android:screenOrientation="portrait" />
+
 
         <!--moment start-->
         <!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->

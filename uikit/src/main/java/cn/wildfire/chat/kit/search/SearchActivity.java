@@ -19,7 +19,7 @@ import cn.wildfirechat.remote.ChatManager;
  * 如果启动{@link android.content.Intent}里面包含keyword，直接开始搜索
  */
 public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
-    private SearchFragment searchFragment;
+    protected SearchFragment searchFragment;
     private List<SearchableModule> modules = new ArrayList<>();
 
     SearchView searchView;

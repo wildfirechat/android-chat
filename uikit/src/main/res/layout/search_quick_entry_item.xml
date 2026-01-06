@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="12dp"
+        android:text="查找方式"
+        android:textColor="@color/gray1"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- 第一行：按日期查找、图片与视频 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="12dp">
+
+        <!-- 按日期查找 -->
+        <LinearLayout
+            android:id="@+id/searchByDateEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_quick_entry_item"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/searchByDateIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_calendar_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="按日期查找"
+                android:textColor="@color/gray1"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- 图片与视频 -->
+        <LinearLayout
+            android:id="@+id/searchMediaEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="12dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_quick_entry_item"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/searchMediaIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_media_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="图片与视频"
+                android:textColor="@color/gray1"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 第二行：文件记录、链接记录 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <!-- 文件记录 -->
+        <LinearLayout
+            android:id="@+id/searchFileEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_quick_entry_item"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/searchFileIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_file_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="文件记录"
+                android:textColor="@color/gray1"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- 链接记录 -->
+        <LinearLayout
+            android:id="@+id/searchLinkEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="12dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_quick_entry_item"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/searchLinkIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_link_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="链接记录"
+                android:textColor="@color/gray1"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

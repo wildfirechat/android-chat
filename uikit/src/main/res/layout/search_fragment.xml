@@ -24,7 +24,10 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:gravity="center"
-            android:text="@string/search_tip" />
+            android:text="@string/search_tip"
+            android:visibility="gone" />
+
+        <include layout="@layout/search_quick_entry_item" />
 
     </LinearLayout>
 

@@ -57,7 +57,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public static int MODE_NORMAL = 0;
     public static int MODE_CHECKABLE = 1;
 
-    // check or normal
     private int mode;
     private List<UiMessage> messages = new ArrayList<>();
     private Map<String, Long> readEntries;
@@ -65,6 +64,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
     private OnMessageReceiptClickListener onMessageReceiptClickListener;
+
+    // 消息高亮
+    private long highlightMessageId = 0;
 
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
@@ -155,6 +157,16 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setOnMessageReceiptClickListener(OnMessageReceiptClickListener onMessageReceiptClickListener) {
         this.onMessageReceiptClickListener = onMessageReceiptClickListener;
+    }
+
+    public void setHighlightMessage(long messageId) {
+        this.highlightMessageId = messageId;
+        notifyDataSetChanged();
+    }
+
+    public void clearHighlight() {
+        this.highlightMessageId = 0;
+        notifyDataSetChanged();
     }
 
     public void addNewMessage(UiMessage message) {
@@ -545,8 +557,17 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MessageContentViewHolder) {
             MessageContentViewHolder viewHolder = (MessageContentViewHolder) holder;
-            ((MessageContentViewHolder) holder).onBind(getItem(position), position);
+            UiMessage uiMessage = getItem(position);
+            ((MessageContentViewHolder) holder).onBind(uiMessage, position);
             MessageItemView itemView = (MessageItemView) holder.itemView;
+
+            // 设置高亮
+            if (highlightMessageId != 0 && uiMessage.message.messageId == highlightMessageId) {
+                itemView.setBackgroundResource(R.drawable.bg_message_highlight);
+            } else {
+                itemView.setBackground(null);
+            }
+
             CheckBox checkBox = itemView.findViewById(R.id.checkbox);
             if (checkBox != null) {
                 if (holder instanceof NotificationMessageContentViewHolder && !(holder instanceof ContextableNotificationMessageContentViewHolder)) {

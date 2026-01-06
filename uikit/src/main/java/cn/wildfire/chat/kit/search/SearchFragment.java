@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.search;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
+import cn.wildfirechat.model.Conversation;
 
 public class SearchFragment extends Fragment {
     RecyclerView recyclerView;
@@ -38,6 +41,9 @@ public class SearchFragment extends Fragment {
 
     private boolean hideSearchDescView = false;
     private String searchTip;
+
+    // 会话对象，用于跳转到各个查找页面
+    private Conversation conversation;
 
     public static final String HIDE_SEARCH_DESC_VIEW = "hideSearchDescView";
     public static final String SEARCH_TIP = "searchTip";
@@ -79,6 +85,122 @@ public class SearchFragment extends Fragment {
         emptyLinearLayout = view.findViewById(R.id.emptyLinearLayout);
         descLinearLayout = view.findViewById(R.id.descLinearLayout);
         searchTipTextView = view.findViewById(R.id.searchTipTextView);
+
+        // 设置快捷入口点击事件
+        setupQuickEntryClicks(view);
+    }
+
+    /**
+     * 设置快捷入口点击事件
+     */
+    private void setupQuickEntryClicks(View view) {
+        android.util.Log.d("SearchFragment", "setupQuickEntryClicks() called");
+
+        // 按日期查找
+        view.findViewById(R.id.searchByDateEntry).setOnClickListener(v -> {
+            android.util.Log.d("SearchFragment", "searchByDateEntry clicked");
+            openConversationSearchByDate();
+        });
+
+        // 图片与视频
+        view.findViewById(R.id.searchMediaEntry).setOnClickListener(v -> {
+            android.util.Log.d("SearchFragment", "searchMediaEntry clicked");
+            openConversationMedia();
+        });
+
+        // 文件记录
+        view.findViewById(R.id.searchFileEntry).setOnClickListener(v -> {
+            android.util.Log.d("SearchFragment", "searchFileEntry clicked");
+            openFileRecord();
+        });
+
+        // 链接记录
+        view.findViewById(R.id.searchLinkEntry).setOnClickListener(v -> {
+            android.util.Log.d("SearchFragment", "searchLinkEntry clicked");
+            openConversationLinkRecord();
+        });
+
+        android.util.Log.d("SearchFragment", "All quick entry clicks set up successfully");
+    }
+
+    /**
+     * 打开按日期查找页面
+     */
+    private void openConversationSearchByDate() {
+        if (conversation == null) {
+            // 如果没有设置会话，显示提示
+            return;
+        }
+        try {
+            Intent intent = new Intent();
+            intent.setClassName(getContext(), "cn.wildfire.chat.kit.search.bydate.ConversationSearchByDateActivity");
+            intent.putExtra("conversation", conversation);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Activity还未实现，暂时显示Toast提示
+            android.widget.Toast.makeText(getContext(), "按日期查找功能开发中...", android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 打开图片与视频页面
+     */
+    private void openConversationMedia() {
+        if (conversation == null) {
+            return;
+        }
+        try {
+            Intent intent = new Intent();
+            intent.setClassName(getContext(), "cn.wildfire.chat.kit.search.media.ConversationMediaActivity");
+            intent.putExtra("conversation", conversation);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.widget.Toast.makeText(getContext(), "图片与视频功能开发中...", android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 打开文件记录页面
+     */
+    private void openFileRecord() {
+        if (conversation == null) {
+            return;
+        }
+        try {
+            Intent intent = new Intent(getActivity(), FileRecordActivity.class);
+            intent.putExtra("conversation", conversation);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 打开链接记录页面
+     */
+    private void openConversationLinkRecord() {
+        if (conversation == null) {
+            return;
+        }
+        try {
+            Intent intent = new Intent();
+            intent.setClassName(getContext(), "cn.wildfire.chat.kit.search.link.ConversationLinkRecordActivity");
+            intent.putExtra("conversation", conversation);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.widget.Toast.makeText(getContext(), "链接记录功能开发中...", android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 设置会话对象
+     * @param conversation 会话对象
+     */
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
     }
 
 

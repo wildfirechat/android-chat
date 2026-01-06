@@ -525,6 +525,26 @@ public class ConversationFragment extends Fragment implements
         if (conversationViewModel != null && conversation != null) {
             conversationViewModel.clearUnreadStatus(conversation);
         }
+
+        checkAndHighlightMessage();
+    }
+
+    private void checkAndHighlightMessage() {
+        long highlightMessageId = getActivity().getIntent().getLongExtra("highlightMessageId", 0);
+        if (highlightMessageId != 0 && adapter != null) {
+            handler.postDelayed(() -> {
+                int position = adapter.getMessagePosition(highlightMessageId);
+                if (position >= 0) {
+                    layoutManager.scrollToPositionWithOffset(position, 0);
+                    handler.postDelayed(() -> {
+                        adapter.setHighlightMessage(highlightMessageId);
+                        handler.postDelayed(() -> {
+                            adapter.clearHighlight();
+                        }, 3000);
+                    }, 300);
+                }
+            }, 500);
+        }
     }
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
