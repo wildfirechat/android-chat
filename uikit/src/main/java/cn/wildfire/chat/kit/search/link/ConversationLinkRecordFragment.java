@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,8 @@ import cn.wildfirechat.model.Conversation;
 
 public class ConversationLinkRecordFragment extends Fragment {
     private RecyclerView recyclerView;
+    private View emptyView;
+    private TextView emptyTextView;
     private LinkRecordAdapter adapter;
     private ConversationLinkRecordViewModel viewModel;
     private Conversation conversation;
@@ -53,6 +56,8 @@ public class ConversationLinkRecordFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
+        emptyView = view.findViewById(R.id.emptyView);
+        emptyTextView = view.findViewById(R.id.emptyTextView);
 
         viewModel = new ViewModelProvider(this).get(ConversationLinkRecordViewModel.class);
         viewModel.setConversation(conversation);
@@ -61,7 +66,13 @@ public class ConversationLinkRecordFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         viewModel.loadLinkMessages().observe(getViewLifecycleOwner(), linkItems -> {
-            if (linkItems != null) {
+            if (linkItems == null || linkItems.isEmpty()) {
+                recyclerView.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+                emptyTextView.setText("暂无链接记录");
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
                 adapter = new LinkRecordAdapter(linkItems, this::onLinkClick);
                 recyclerView.setAdapter(adapter);
             }
@@ -100,3 +111,4 @@ public class ConversationLinkRecordFragment extends Fragment {
         startActivity(intent);
     }
 }
+

@@ -25,11 +25,14 @@
             android:layout_height="200dp"
             android:gravity="center"
             android:text="@string/search_tip"
-            android:visibility="gone" />
-
-        <include layout="@layout/search_quick_entry_item" />
+            android:visibility="visible" />
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/quickEntryLinearLayout"
+        layout="@layout/search_quick_entry_item"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/emptyLinearLayout"

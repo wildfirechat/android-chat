@@ -27,12 +27,17 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
+import cn.wildfire.chat.kit.search.bydate.ConversationMessageByDateActivity;
+import cn.wildfire.chat.kit.search.link.ConversationLinkRecordActivity;
+import cn.wildfire.chat.kit.search.media.ConversationMediaActivity;
 import cn.wildfirechat.model.Conversation;
 
 public class SearchFragment extends Fragment {
     RecyclerView recyclerView;
     LinearLayout emptyLinearLayout;
     LinearLayout descLinearLayout;
+    LinearLayout quickEntryLinearLayout;
+
     TextView searchTipTextView;
     private SearchResultAdapter adapter;
     private SearchViewModel searchViewModel;
@@ -77,6 +82,13 @@ public class SearchFragment extends Fragment {
         if (!TextUtils.isEmpty(searchTip)) {
             searchTipTextView.setText(searchTip);
         }
+        // 设置快捷入口点击事件
+        if(conversation != null){
+            quickEntryLinearLayout.setVisibility(View.VISIBLE);
+            setupQuickEntryClicks(view);
+        }else {
+            quickEntryLinearLayout.setVisibility(View.GONE);
+        }
         return view;
     }
 
@@ -84,10 +96,9 @@ public class SearchFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         emptyLinearLayout = view.findViewById(R.id.emptyLinearLayout);
         descLinearLayout = view.findViewById(R.id.descLinearLayout);
+        quickEntryLinearLayout = view.findViewById(R.id.quickEntryLinearLayout);
         searchTipTextView = view.findViewById(R.id.searchTipTextView);
 
-        // 设置快捷入口点击事件
-        setupQuickEntryClicks(view);
     }
 
     /**
@@ -133,7 +144,7 @@ public class SearchFragment extends Fragment {
         }
         try {
             Intent intent = new Intent();
-            intent.setClassName(getContext(), "cn.wildfire.chat.kit.search.bydate.ConversationSearchByDateActivity");
+            intent.setClass(getContext(), ConversationMessageByDateActivity.class);
             intent.putExtra("conversation", conversation);
             startActivity(intent);
         } catch (Exception e) {
@@ -152,7 +163,7 @@ public class SearchFragment extends Fragment {
         }
         try {
             Intent intent = new Intent();
-            intent.setClassName(getContext(), "cn.wildfire.chat.kit.search.media.ConversationMediaActivity");
+            intent.setClass(getContext(), ConversationMediaActivity.class);
             intent.putExtra("conversation", conversation);
             startActivity(intent);
         } catch (Exception e) {
@@ -186,7 +197,7 @@ public class SearchFragment extends Fragment {
         }
         try {
             Intent intent = new Intent();
-            intent.setClassName(getContext(), "cn.wildfire.chat.kit.search.link.ConversationLinkRecordActivity");
+            intent.setClass(getContext(), ConversationLinkRecordActivity.class);
             intent.putExtra("conversation", conversation);
             startActivity(intent);
         } catch (Exception e) {

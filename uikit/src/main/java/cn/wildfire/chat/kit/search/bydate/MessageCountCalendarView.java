@@ -10,6 +10,7 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Calendar;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
 
-public class CalendarView extends LinearLayout {
+public class MessageCountCalendarView extends LinearLayout {
     private int year;
     private int month;
     private Map<Integer, Integer> dayMessageCount;
@@ -27,17 +28,17 @@ public class CalendarView extends LinearLayout {
         void onDateClick(int year, int month, int day);
     }
 
-    public CalendarView(Context context) {
+    public MessageCountCalendarView(Context context) {
         super(context);
         init();
     }
 
-    public CalendarView(Context context, @Nullable AttributeSet attrs) {
+    public MessageCountCalendarView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public CalendarView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public MessageCountCalendarView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -76,20 +77,7 @@ public class CalendarView extends LinearLayout {
         addView(titleView);
 
         // 星期标题
-        GridLayout weekHeader = new GridLayout(getContext());
-        weekHeader.setColumnCount(7);
-        weekHeader.setPadding(0, 0, 0, 8);
-        String[] weeks = {"日", "一", "二", "三", "四", "五", "六"};
-        for (String week : weeks) {
-            TextView weekView = new TextView(getContext());
-            weekView.setText(week);
-            weekView.setTextSize(12);
-            weekView.setGravity(Gravity.CENTER);
-            weekView.setTextColor(Color.GRAY);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
-            weekView.setLayoutParams(params);
-            weekHeader.addView(weekView);
-        }
+        GridLayout weekHeader = getGridLayout();
         addView(weekHeader);
 
         // 日期网格
@@ -119,10 +107,12 @@ public class CalendarView extends LinearLayout {
             dayView.setTextSize(14);
             dayView.setGravity(Gravity.CENTER);
 
+            int size = (int) (40 * getResources().getDisplayMetrics().density);
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.width = 0;
-            params.height = (int) (40 * getResources().getDisplayMetrics().density);
+            params.width = size;
+            params.height = size;
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            params.setGravity(Gravity.CENTER);
             params.setMargins(4, 4, 4, 4);
             dayView.setLayoutParams(params);
 
@@ -141,12 +131,13 @@ public class CalendarView extends LinearLayout {
             drawable.setColor(Color.TRANSPARENT);
 
             if (isToday) {
-                drawable.setStroke(2, Color.parseColor("#2196F3"));
-                dayView.setTextColor(Color.parseColor("#2196F3"));
+                int primaryColor = getResources().getColor(R.color.colorPrimary);
+                drawable.setStroke(2, primaryColor);
+                dayView.setTextColor(Color.BLACK);
             } else if (hasMessage) {
                 dayView.setTextColor(Color.BLACK);
             } else {
-                dayView.setTextColor(Color.GRAY);
+                dayView.setTextColor(Color.LTGRAY);
             }
 
             dayView.setBackground(drawable);
@@ -167,5 +158,24 @@ public class CalendarView extends LinearLayout {
         }
 
         addView(dateGrid);
+    }
+
+    @NonNull
+    private GridLayout getGridLayout() {
+        GridLayout weekHeader = new GridLayout(getContext());
+        weekHeader.setColumnCount(7);
+        weekHeader.setPadding(0, 0, 0, 8);
+        String[] weeks = {"日", "一", "二", "三", "四", "五", "六"};
+        for (String week : weeks) {
+            TextView weekView = new TextView(getContext());
+            weekView.setText(week);
+            weekView.setTextSize(12);
+            weekView.setGravity(Gravity.CENTER);
+            weekView.setTextColor(Color.GRAY);
+            LayoutParams params = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
+            weekView.setLayoutParams(params);
+            weekHeader.addView(weekView);
+        }
+        return weekHeader;
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,8 @@ import cn.wildfirechat.model.Conversation;
 
 public class ConversationMediaFragment extends Fragment {
     private RecyclerView recyclerView;
+    private View emptyView;
+    private TextView emptyTextView;
     private ConversationMediaAdapter adapter;
     private ConversationMediaViewModel viewModel;
     private Conversation conversation;
@@ -53,6 +56,8 @@ public class ConversationMediaFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
+        emptyView = view.findViewById(R.id.emptyView);
+        emptyTextView = view.findViewById(R.id.emptyTextView);
 
         viewModel = new ViewModelProvider(this).get(ConversationMediaViewModel.class);
         viewModel.setConversation(conversation);
@@ -61,16 +66,31 @@ public class ConversationMediaFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         viewModel.loadMediaMessages().observe(getViewLifecycleOwner(), mediaGroups -> {
-            if (mediaGroups != null) {
-                allMediaItems.clear();
-                for (ConversationMediaViewModel.MediaMonthGroup group : mediaGroups) {
-                    allMediaItems.addAll(group.items);
-                }
+            if (mediaGroups == null || mediaGroups.isEmpty()) {
+                showEmptyView("暂无图片和视频");
+                return;
+            }
 
+            allMediaItems.clear();
+            for (ConversationMediaViewModel.MediaMonthGroup group : mediaGroups) {
+                allMediaItems.addAll(group.items);
+            }
+
+            if (allMediaItems.isEmpty()) {
+                showEmptyView("暂无图片和视频");
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
                 adapter = new ConversationMediaAdapter(mediaGroups, this::onMediaItemClick);
                 recyclerView.setAdapter(adapter);
             }
         });
+    }
+
+    private void showEmptyView(String message) {
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+        emptyTextView.setText(message);
     }
 
     private void onMediaItemClick(ConversationMediaViewModel.MediaItem mediaItem) {

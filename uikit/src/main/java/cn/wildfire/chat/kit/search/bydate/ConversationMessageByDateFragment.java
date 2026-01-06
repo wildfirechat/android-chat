@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,14 +20,16 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.message.Message;
 
-public class ConversationSearchByDateFragment extends Fragment {
+public class ConversationMessageByDateFragment extends Fragment {
     private RecyclerView monthRecyclerView;
+    private View emptyView;
+    private TextView emptyTextView;
     private MonthListAdapter monthAdapter;
-    private ConversationSearchByDateViewModel viewModel;
+    private ConversationMessageByDateViewModel viewModel;
     private Conversation conversation;
 
-    public static ConversationSearchByDateFragment newInstance(Conversation conversation) {
-        ConversationSearchByDateFragment fragment = new ConversationSearchByDateFragment();
+    public static ConversationMessageByDateFragment newInstance(Conversation conversation) {
+        ConversationMessageByDateFragment fragment = new ConversationMessageByDateFragment();
         Bundle args = new Bundle();
         args.putParcelable("conversation", conversation);
         fragment.setArguments(args);
@@ -51,16 +54,16 @@ public class ConversationSearchByDateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         monthRecyclerView = view.findViewById(R.id.monthRecyclerView);
+        emptyView = view.findViewById(R.id.emptyView);
+        emptyTextView = view.findViewById(R.id.emptyTextView);
 
-        viewModel = new ViewModelProvider(this).get(ConversationSearchByDateViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ConversationMessageByDateViewModel.class);
         viewModel.setConversation(conversation);
 
-        // 设置RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         monthRecyclerView.setLayoutManager(layoutManager);
 
-        // 设置日期点击监听
-        CalendarView.OnDateClickListener dateClickListener = (year, month, day) -> {
+        MessageCountCalendarView.OnDateClickListener dateClickListener = (year, month, day) -> {
             viewModel.getFirstMessageOfDay(year, month, day).observe(getViewLifecycleOwner(), message -> {
                 if (message != null) {
                     jumpToConversationAndHighlight(message);
@@ -70,26 +73,17 @@ public class ConversationSearchByDateFragment extends Fragment {
             });
         };
 
-        // 加载月份列表
         viewModel.loadMonths().observe(getViewLifecycleOwner(), months -> {
-            monthAdapter = new MonthListAdapter(months, dateClickListener);
-            monthRecyclerView.setAdapter(monthAdapter);
-
-            android.util.Log.d("CalendarDebug", "Fragment: Received " + (months != null ? months.size() : 0) + " months");
-
-            // 滚动到当前月份（第一个位置）
-            if (months != null && !months.isEmpty()) {
-                monthRecyclerView.post(() -> {
-                    monthRecyclerView.scrollToPosition(0);
-                    android.util.Log.d("CalendarDebug", "Fragment: Scrolled to position 0");
-                });
-            }
-        });
-
-        // 观察每个月的消息数据更新
-        viewModel.getMonthMessageCountLiveData().observe(getViewLifecycleOwner(), monthData -> {
-            if (monthAdapter != null) {
-                monthAdapter.updateMonthData(monthData.index, monthData.dayMessageCount);
+            if (months == null || months.isEmpty()) {
+                monthRecyclerView.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+                emptyTextView.setText("暂无消息记录");
+            } else {
+                monthRecyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+                monthAdapter = new MonthListAdapter(months, dateClickListener);
+                monthRecyclerView.setAdapter(monthAdapter);
+                monthRecyclerView.post(() -> monthRecyclerView.scrollToPosition(0));
             }
         });
     }

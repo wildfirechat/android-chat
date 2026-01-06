@@ -55,7 +55,6 @@
 
         <activity
             android:name="cn.wildfire.chat.kit.conversation.ConversationActivity"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.user.SetAliasActivity"
@@ -265,7 +264,7 @@
 
         <!-- 按日期查找Activity -->
         <activity
-            android:name=".search.bydate.ConversationSearchByDateActivity"
+            android:name=".search.bydate.ConversationMessageByDateActivity"
             android:label="按日期查找"
             android:screenOrientation="portrait" />
         <!-- 图片与视频Activity -->

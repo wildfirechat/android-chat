@@ -1,14 +1,12 @@
 package cn.wildfire.chat.kit.search.bydate;
 
-import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.model.Conversation;
 
-public class ConversationSearchByDateActivity extends WfcBaseActivity {
+public class ConversationMessageByDateActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
@@ -24,7 +22,7 @@ public class ConversationSearchByDateActivity extends WfcBaseActivity {
 
         Conversation conversation = getIntent().getParcelableExtra("conversation");
 
-        Fragment fragment = ConversationSearchByDateFragment.newInstance(conversation);
+        Fragment fragment = ConversationMessageByDateFragment.newInstance(conversation);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.containerFrameLayout, fragment)
                 .commit();

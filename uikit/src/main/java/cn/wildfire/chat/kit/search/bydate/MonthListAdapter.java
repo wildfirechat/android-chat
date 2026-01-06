@@ -1,7 +1,5 @@
 package cn.wildfire.chat.kit.search.bydate;
 
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -9,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Map;
-
-import cn.wildfire.chat.kit.R;
 
 public class MonthListAdapter extends RecyclerView.Adapter<MonthListAdapter.ViewHolder> {
 
@@ -27,9 +23,9 @@ public class MonthListAdapter extends RecyclerView.Adapter<MonthListAdapter.View
     }
 
     private List<MonthItem> months;
-    private CalendarView.OnDateClickListener onDateClickListener;
+    private MessageCountCalendarView.OnDateClickListener onDateClickListener;
 
-    public MonthListAdapter(List<MonthItem> months, CalendarView.OnDateClickListener listener) {
+    public MonthListAdapter(List<MonthItem> months, MessageCountCalendarView.OnDateClickListener listener) {
         this.months = months;
         this.onDateClickListener = listener;
     }
@@ -44,21 +40,21 @@ public class MonthListAdapter extends RecyclerView.Adapter<MonthListAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        CalendarView calendarView = new CalendarView(parent.getContext());
+        MessageCountCalendarView messageCountCalendarView = new MessageCountCalendarView(parent.getContext());
         RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
         params.bottomMargin = (int) (16 * parent.getContext().getResources().getDisplayMetrics().density);
-        calendarView.setLayoutParams(params);
-        return new ViewHolder(calendarView);
+        messageCountCalendarView.setLayoutParams(params);
+        return new ViewHolder(messageCountCalendarView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MonthItem item = months.get(position);
-        holder.calendarView.setOnDateClickListener(onDateClickListener);
-        holder.calendarView.setMonthData(item.year, item.month, item.dayMessageCount);
+        holder.messageCountCalendarView.setOnDateClickListener(onDateClickListener);
+        holder.messageCountCalendarView.setMonthData(item.year, item.month, item.dayMessageCount);
     }
 
     @Override
@@ -67,11 +63,11 @@ public class MonthListAdapter extends RecyclerView.Adapter<MonthListAdapter.View
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        CalendarView calendarView;
+        MessageCountCalendarView messageCountCalendarView;
 
-        public ViewHolder(@NonNull CalendarView itemView) {
+        public ViewHolder(@NonNull MessageCountCalendarView itemView) {
             super(itemView);
-            calendarView = itemView;
+            messageCountCalendarView = itemView;
         }
     }
 }
