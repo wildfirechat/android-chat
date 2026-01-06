@@ -201,6 +201,7 @@
     <string name="set_new_password">设置新密码</string>
     <string name="account_and_security">账号与密码</string>
     <string name="language">语言</string>
+    <string name="language_follow_system">跟随系统</string>
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
     <string name="language_change_tip">语言设置将在重启应用后生效</string>

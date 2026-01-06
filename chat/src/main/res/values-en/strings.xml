@@ -203,6 +203,7 @@
 
     <!-- Language Settings -->
     <string name="language">Language</string>
+    <string name="language_follow_system">Follow System</string>
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
     <string name="language_change_tip">Language settings will take effect after restarting the app</string>

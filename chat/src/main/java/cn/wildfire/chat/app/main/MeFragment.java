@@ -209,20 +209,31 @@ public class MeFragment extends Fragment {
     }
 
     void selectLanguage() {
-        String currentLanguage = LocaleUtils.getLanguage(getContext());
-        boolean isChinese = LocaleUtils.LANGUAGE_CHINESE.equals(currentLanguage);
+        String savedLanguage = LocaleUtils.getSavedLanguage(getContext());
 
         new MaterialDialog.Builder(getContext()).items(R.array.languages).itemsCallback(new MaterialDialog.ListCallback() {
             @Override
             public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
-                if (position == 0 && !isChinese) {
-                    // 选择中文
-                    changeLanguage(LocaleUtils.LANGUAGE_CHINESE);
-                    return;
+                String selectedLanguage = null;
+
+                switch (position) {
+                    case 0:
+                        // 跟随系统
+                        selectedLanguage = LocaleUtils.LANGUAGE_FOLLOW_SYSTEM;
+                        break;
+                    case 1:
+                        // 中文
+                        selectedLanguage = LocaleUtils.LANGUAGE_CHINESE;
+                        break;
+                    case 2:
+                        // 英文
+                        selectedLanguage = LocaleUtils.LANGUAGE_ENGLISH;
+                        break;
                 }
-                if (position == 1 && isChinese) {
-                    // 选择英文
-                    changeLanguage(LocaleUtils.LANGUAGE_ENGLISH);
+
+                // 只有当选择的语言与当前不同时才需要切换
+                if (selectedLanguage != null && !selectedLanguage.equals(savedLanguage)) {
+                    changeLanguage(selectedLanguage);
                 }
             }
         }).show();

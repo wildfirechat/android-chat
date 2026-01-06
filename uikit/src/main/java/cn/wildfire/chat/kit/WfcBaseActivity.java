@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import java.lang.reflect.Method;
+
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
@@ -44,6 +46,10 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         bindViews();
         bindEvents();
         setSupportActionBar(toolbar);
+
+        // 确保使用正确语言的标题
+        updateActivityTitle();
+
         SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
         if (sp.getBoolean("darkTheme", true)) {
             // dark
@@ -216,6 +222,24 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             }
         }
         return granted;
+    }
+
+    /**
+     * 更新 Activity 的标题，确保使用正确语言的资源
+     */
+    private void updateActivityTitle() {
+        try {
+            // 获取 Activity 的 label 资源 ID
+            PackageManager pm = getPackageManager();
+            android.content.pm.ActivityInfo info = pm.getActivityInfo(getComponentName(), 0);
+
+            if (info.labelRes != 0) {
+                // 使用当前语言的资源设置标题
+                setTitle(info.labelRes);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
