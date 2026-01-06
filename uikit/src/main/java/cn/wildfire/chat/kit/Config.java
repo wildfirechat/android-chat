@@ -11,6 +11,14 @@ package cn.wildfire.chat.kit;
 public class Config {
 
     /**
+     * 仓库里面的默认协议栈，直接修改这个地方是无效的！！！
+     * <p>
+     * <strong> 因反诈合规要求，本协议栈默认仅支持连接野火官方服务。如需获取不受限版本，请联系官方微信（abc）免费申请。</strong>
+     * <p>
+     * <strong> 给您带来不便敬请谅解。严禁将本技术用于非法诈骗。</strong>
+     *
+     * <p>
+     * <p>
      * IM服务HOST
      * <p>
      * 仅仅是host，没有http开头，也不用配置端口，可以是IP，可以是域名，
@@ -21,7 +29,7 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出*/ = "wildfirechat.net";
+    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/ = "wildfirechat.net";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
