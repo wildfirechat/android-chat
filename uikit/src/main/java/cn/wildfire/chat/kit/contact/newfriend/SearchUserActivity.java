@@ -17,6 +17,7 @@ public class SearchUserActivity extends SearchActivity {
 
     @Override
     protected void beforeViews() {
+        super.beforeViews();
         domainInfo = getIntent().getParcelableExtra("domainInfo");
     }
 

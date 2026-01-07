@@ -54,10 +54,13 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
     }
 
     protected void beforeViews() {
+        setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray5);
     }
 
     protected void afterViews() {
+        super.afterViews();
+
         bindViews();
         bindEvents();
         initSearchView();

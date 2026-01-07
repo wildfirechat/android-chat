@@ -13,7 +13,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="12dp"
-        android:text="查找方式"
+        android:text="@string/quik_search"
         android:textColor="@color/gray1"
         android:textSize="14sp"
         android:textStyle="bold" />

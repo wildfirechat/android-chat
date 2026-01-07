@@ -15,6 +15,7 @@ public class SearchMessageActivity extends SearchActivity {
 
     @Override
     protected void beforeViews() {
+        super.beforeViews();
         conversation = getIntent().getParcelableExtra("conversation");
     }
 
