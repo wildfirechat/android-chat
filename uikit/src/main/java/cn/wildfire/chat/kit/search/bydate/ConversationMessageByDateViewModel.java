@@ -19,7 +19,6 @@ import cn.wildfirechat.remote.GetMessageCallback;
 public class ConversationMessageByDateViewModel extends ViewModel {
     private Conversation conversation;
     private final MutableLiveData<List<MonthListAdapter.MonthItem>> monthsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Message> firstMessageOfDayLiveData = new MutableLiveData<>();
 
     public void setConversation(Conversation conversation) {
         this.conversation = conversation;
@@ -114,6 +113,7 @@ public class ConversationMessageByDateViewModel extends ViewModel {
     }
 
     LiveData<Message> getFirstMessageOfDay(int year, int month, int day) {
+        MutableLiveData<Message> firstMessageOfDayLiveData = new MutableLiveData<>();
         new Thread(() -> {
             try {
                 Calendar start = Calendar.getInstance();
