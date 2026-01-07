@@ -121,46 +121,33 @@
         android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:layout_weight="1"
-        android:gravity="bottom|center_horizontal"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:paddingBottom="20dp">
 
-        <CheckBox
-            android:id="@+id/agreementCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_agreement_tip"
-            android:textSize="13sp" />
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/privacyAgreementTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:text="@string/privacy_agreement"
-            android:textColor="@color/colorPrimary"
-            android:textSize="13sp" />
+            <CheckBox
+                android:id="@+id/agreementCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:linksClickable="true"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:text="@string/and"
-            android:textSize="13sp" />
+            <TextView
+                android:id="@+id/agreementTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/privacy_agreement_tip_and_links"
+                android:textColorLink="@color/colorPrimary"
+                android:textSize="12sp" />
 
-        <TextView
-            android:id="@+id/userAgreementTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/user_agreement"
-            android:textColor="@color/colorPrimary"
-            android:textSize="13sp" />
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>

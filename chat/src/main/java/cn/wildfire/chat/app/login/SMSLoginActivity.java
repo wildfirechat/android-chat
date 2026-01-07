@@ -7,12 +7,21 @@ package cn.wildfire.chat.app.login;
 import android.content.Intent;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -64,21 +73,21 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             }
         });
 
-        findViewById(R.id.privacyAgreementTextView).setOnClickListener(v -> {
-            if (TextUtils.isEmpty(Config.PRIVACY_AGREEMENT_URL) || Config.PRIVACY_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
-                Toast.makeText(this, R.string.no_privacy_agreement_url_tip, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
-
-        });
-        findViewById(R.id.userAgreementTextView).setOnClickListener(v -> {
-            if (TextUtils.isEmpty(Config.USER_AGREEMENT_URL) || Config.USER_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
-                Toast.makeText(this, R.string.no_user_agreement_url_tip, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
-        });
+//        findViewById(R.id.privacyAgreementTextView).setOnClickListener(v -> {
+//            if (TextUtils.isEmpty(Config.PRIVACY_AGREEMENT_URL) || Config.PRIVACY_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+//                Toast.makeText(this, R.string.no_privacy_agreement_url_tip, Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
+//
+//        });
+//        findViewById(R.id.userAgreementTextView).setOnClickListener(v -> {
+//            if (TextUtils.isEmpty(Config.USER_AGREEMENT_URL) || Config.USER_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+//                Toast.makeText(this, R.string.no_user_agreement_url_tip, Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
+//        });
     }
 
     private void bindViews() {
@@ -87,6 +96,49 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         authCodeEditText = findViewById(R.id.authCodeEditText);
         requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
         checkBox = findViewById(R.id.agreementCheckBox);
+
+        TextView agreementTextView = findViewById(R.id.agreementTextView);
+        CharSequence text = Html.fromHtml(getString(R.string.privacy_agreement_tip_and_links));
+        SpannableString spannableString = new SpannableString(text);
+
+        // 获取所有的 URLSpan
+        URLSpan[] urlSpans = spannableString.getSpans(0, spannableString.length(), URLSpan.class);
+
+        // 替换每个 URLSpan 为我们自定义的 ClickableSpan
+        for (URLSpan urlSpan : urlSpans) {
+            int start = spannableString.getSpanStart(urlSpan);
+            int end = spannableString.getSpanEnd(urlSpan);
+            final String url = urlSpan.getURL();
+
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    handleAgreementClick(url);
+                }
+            };
+
+            spannableString.removeSpan(urlSpan);
+            spannableString.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        agreementTextView.setText(spannableString);
+        agreementTextView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void handleAgreementClick(String url) {
+        if (url.contains("privacy://")) {
+            if (TextUtils.isEmpty(Config.PRIVACY_AGREEMENT_URL) || Config.PRIVACY_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+                Toast.makeText(this, R.string.no_privacy_agreement_url_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
+        } else if (url.contains("user://")) {
+            if (TextUtils.isEmpty(Config.USER_AGREEMENT_URL) || Config.USER_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+                Toast.makeText(this, R.string.no_user_agreement_url_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
+        }
     }
 
     @Override
