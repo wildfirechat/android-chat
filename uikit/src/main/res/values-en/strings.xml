@@ -367,6 +367,8 @@
 
     <!-- Streaming Message -->
     <string name="message_copy">Copy</string>
+    <string name="message_select_all">Select All</string>
+    <string name="message_copied">Copied</string>
     <string name="message_detail_title">Message Content</string>
 
     <!-- Text Message -->

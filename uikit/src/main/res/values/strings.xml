@@ -354,6 +354,8 @@
 
     <!-- Streaming Message -->
     <string name="message_copy">复制</string>
+    <string name="message_select_all">全选</string>
+    <string name="message_copied">已复制</string>
     <string name="message_detail_title">消息内容</string>
 
     <!-- Text Message -->

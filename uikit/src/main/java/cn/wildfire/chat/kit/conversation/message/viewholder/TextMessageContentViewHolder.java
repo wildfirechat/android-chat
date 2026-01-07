@@ -9,9 +9,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.emoji2.widget.EmojiTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,10 +23,12 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
+import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
+import cn.wildfire.chat.kit.widget.selecttext.SelectTextHelper;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -34,6 +38,7 @@ import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.QuoteInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.uikit.menu.PopupMenu;
 
 
 @MessageContentType(value = {
@@ -45,6 +50,8 @@ import cn.wildfirechat.remote.ChatManager;
 public class TextMessageContentViewHolder extends NormalMessageContentViewHolder {
     EmojiTextView contentTextView;
     TextView refTextView;
+    SelectTextHelper selectTextHelper;
+    long lastSelectedUpdateTimestamp = 0;
 
     private QuoteInfo quoteInfo;
 
@@ -66,6 +73,11 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
 
     @Override
     public void onBind(UiMessage message) {
+        // Destroy old SelectTextHelper to clean up listeners
+        if (selectTextHelper != null) {
+            selectTextHelper.destroy();
+        }
+
         TextMessageContent textMessageContent = (TextMessageContent) message.message.content;
         String content = textMessageContent.getContent();
         if (content.startsWith("<") && content.endsWith(">")) {
@@ -98,6 +110,36 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         } else {
             refTextView.setVisibility(View.GONE);
         }
+        Context context = contentTextView.getContext();
+        selectTextHelper = new SelectTextHelper.Builder(contentTextView)
+            .setCursorHandleColor(ContextCompat.getColor(context, R.color.colorAccent)) // 游标颜色
+            .setCursorHandleSizeInDp(22f) // 游标大小 单位dp
+            .setSelectedColor(ContextCompat.getColor(context, R.color.blue1)) // 选中文本的颜色
+            .setSelectAll(true) // 初次选中是否全选 default true
+            .setScrollShow(false) // 滚动时是否继续显示 default true
+            .setSelectedAllNoPop(true) // 已经全选无弹窗，设置了监听会回调 onSelectAllShowCustomPop 方法
+            .setMagnifierShow(true) // 放大镜 default true
+            .setSelectTextLength(2)// 首次选中文本的长度 default 2
+            .setPopDelay(100)// 弹窗延迟时间 default 100毫秒
+            .build();
+        selectTextHelper.setSelectListener(new SelectTextHelper.OnSelectListenerImpl() {
+
+            @Override
+            public void onTextSelected(CharSequence content) {
+                Log.d("TODO", "onTextSelected: " + content);
+            }
+
+            @Override
+            public void onClickUrl(String url) {
+                Log.d("TODO", "onClickUrl: " + url);
+            }
+
+            @Override
+            public PopupMenu newPopupMenu() {
+                return ((ConversationMessageAdapter) adapter).popupMenuForMessageViewHolder(TextMessageContentViewHolder.class, TextMessageContentViewHolder.this, itemView);
+            }
+        });
+        lastSelectedUpdateTimestamp = 0;
     }
 
     private String quoteMessageDigest(QuoteInfo quoteInfo) {
@@ -159,5 +201,11 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
             return context.getString(R.string.message_copy);
         }
         return super.contextMenuTitle(context, tag);
+    }
+
+    @Override
+    public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
+        return super.contextMenuItemFilter(uiMessage, tag);
+        // TODO 根据是否是部分选中进行过滤
     }
 }

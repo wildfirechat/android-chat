@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import java.util.List;
 
 public class PopupMenu {
@@ -37,6 +36,7 @@ public class PopupMenu {
     private int popArrowImg;
     private int popAnimationStyle;
     private final OnMenuItemClickListener mMenuItemClickListener;
+    private PopupWindow.OnDismissListener mOnDismissListener;
 
     @SuppressLint("InflateParams")
     public PopupMenu(Context context, List<Pair<Integer, String>> menuItems,
@@ -214,11 +214,17 @@ public class PopupMenu {
     }
 
     public void dismiss() {
-        mWindow.dismiss();
+        if(mWindow != null){
+            mWindow.dismiss();
+        }
     }
 
     public boolean isShowing() {
         return mWindow.isShowing();
+    }
+
+    public void setOnDismissListener(PopupWindow.OnDismissListener listener) {
+        mOnDismissListener = listener;
     }
 
     private void initContentView(Context context, boolean gridMenu) {
@@ -238,7 +244,15 @@ public class PopupMenu {
             ViewGroup.LayoutParams.WRAP_CONTENT, false);
         mWindow.setClippingEnabled(false);
         mWindow.setOutsideTouchable(true);
-        mWindow.setFocusable(true);
+        // 设置为 false，避免拦截触摸事件，让手柄拖动和点击事件能直接传递
+        mWindow.setFocusable(false);
+
+        // Set dismiss listener
+        mWindow.setOnDismissListener(() -> {
+            if (mOnDismissListener != null) {
+                mOnDismissListener.onDismiss();
+            }
+        });
 
         if (popAnimationStyle != 0) {
             mWindow.setAnimationStyle(popAnimationStyle);

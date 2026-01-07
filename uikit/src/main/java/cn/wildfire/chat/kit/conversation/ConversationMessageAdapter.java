@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -403,8 +404,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 setOnLongClickListenerForAllClickableChildView(((ViewGroup) view).getChildAt(i), listener);
             }
         }
+        // Don't skip text selectable TextViews anymore - we want both text selection AND context menu
         if (view.isClickable()) {
-            view.setOnLongClickListener(listener);
+            if (!view.hasOnLongClickListeners()) {
+                view.setOnLongClickListener(listener);
+            }
         }
     }
 
@@ -472,6 +476,73 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         return methods;
     }
 
+    public PopupMenu popupMenuForMessageViewHolder(Class<? extends MessageContentViewHolder> viewHolderClazz, MessageContentViewHolder viewHolder, View itemView) {
+
+        List<Method> allMethods = getDeclaredMethodsEx(viewHolderClazz);
+        List<ContextMenuItemWrapper> contextMenus = new ArrayList<>();
+        for (final Method method : allMethods) {
+            if (method.isAnnotationPresent(MessageContextMenuItem.class)) {
+                contextMenus.add(new ContextMenuItemWrapper(method.getAnnotation(MessageContextMenuItem.class), method));
+            }
+        }
+
+        if (contextMenus.isEmpty()) {
+            return null;
+        }
+
+        int position = viewHolder.getAdapterPosition();
+        UiMessage message = getItem(position);
+        Iterator<ContextMenuItemWrapper> iterator = contextMenus.iterator();
+        MessageContextMenuItem item;
+        while (iterator.hasNext()) {
+            item = iterator.next().contextMenuItem;
+            if (viewHolder.contextMenuItemFilter(message, item.tag())) {
+                iterator.remove();
+            }
+        }
+
+        if (contextMenus.isEmpty()) {
+            return null;
+        }
+
+        List<Pair<Integer, String>> items = new ArrayList<>(contextMenus.size());
+        Collections.sort(contextMenus, Comparator.comparingInt(o -> o.contextMenuItem.priority()));
+        for (ContextMenuItemWrapper itemWrapper : contextMenus) {
+            items.add(new Pair<>(viewHolder.contextMenuIcon(fragment.getContext(), itemWrapper.contextMenuItem.tag()), viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag())));
+        }
+        return new PopupMenu(fragment.getContext(), items, position1 -> {
+            try {
+                ContextMenuItemWrapper menuItem = contextMenus.get(position1);
+                if (menuItem.contextMenuItem.confirm()) {
+                    String content;
+                    content = viewHolder.contextConfirmPrompt(fragment.getContext(), menuItem.contextMenuItem.tag());
+                    new MaterialDialog.Builder(fragment.getContext())
+                        .content(content)
+                        .negativeText(R.string.delete_message_dialog_cancel)
+                        .positiveText(R.string.delete_message_dialog_confirm)
+                        .onPositive((dialog, which) -> {
+                            try {
+                                menuItem.method.invoke(viewHolder, itemView, message);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        })
+                        .build()
+                        .show();
+
+                } else {
+                    contextMenus.get(position1).method.invoke(viewHolder, itemView, message);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     // refer to https://stackoverflow.com/questions/21217397/android-issue-with-onclicklistener-and-onlongclicklistener?noredirect=1&lq=1
     private void processContentLongClick(Class<? extends MessageContentViewHolder> viewHolderClazz, MessageContentViewHolder viewHolder, View itemView) {
         if (!viewHolderClazz.isAnnotationPresent(EnableContextMenu.class)) {
@@ -480,71 +551,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         View.OnLongClickListener listener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                List<Method> allMethods = getDeclaredMethodsEx(viewHolderClazz);
-                List<ContextMenuItemWrapper> contextMenus = new ArrayList<>();
-                for (final Method method : allMethods) {
-                    if (method.isAnnotationPresent(MessageContextMenuItem.class)) {
-                        contextMenus.add(new ContextMenuItemWrapper(method.getAnnotation(MessageContextMenuItem.class), method));
-                    }
-                }
-
-                if (contextMenus.isEmpty()) {
+                PopupMenu popupMenu = popupMenuForMessageViewHolder(viewHolderClazz, viewHolder, itemView);
+                if (popupMenu == null) {
                     return false;
                 }
-
-                int position = viewHolder.getAdapterPosition();
-                UiMessage message = getItem(position);
-                Iterator<ContextMenuItemWrapper> iterator = contextMenus.iterator();
-                MessageContextMenuItem item;
-                while (iterator.hasNext()) {
-                    item = iterator.next().contextMenuItem;
-                    if (viewHolder.contextMenuItemFilter(message, item.tag())) {
-                        iterator.remove();
-                    }
-                }
-
-                if (contextMenus.isEmpty()) {
-                    return false;
-                }
-
-                List<Pair<Integer, String>> items = new ArrayList<>(contextMenus.size());
-                Collections.sort(contextMenus, Comparator.comparingInt(o -> o.contextMenuItem.priority()));
-                for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    items.add(new Pair<>(viewHolder.contextMenuIcon(fragment.getContext(), itemWrapper.contextMenuItem.tag()), viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag())));
-                }
-
-                new PopupMenu(fragment.getContext(), items, position1 -> {
-                    try {
-                        ContextMenuItemWrapper menuItem = contextMenus.get(position1);
-                        if (menuItem.contextMenuItem.confirm()) {
-                            String content;
-                            content = viewHolder.contextConfirmPrompt(fragment.getContext(), menuItem.contextMenuItem.tag());
-                            new MaterialDialog.Builder(fragment.getContext())
-                                .content(content)
-                                .negativeText(R.string.delete_message_dialog_cancel)
-                                .positiveText(R.string.delete_message_dialog_confirm)
-                                .onPositive((dialog, which) -> {
-                                    try {
-                                        menuItem.method.invoke(viewHolder, itemView, message);
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
-                                })
-                                .build()
-                                .show();
-
-                        } else {
-                            contextMenus.get(position1).method.invoke(viewHolder, itemView, message);
-                        }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                })
-                    .showAsGridMenu(itemView.findViewWithTag("messageContentView"), 5);
+                popupMenu.showAsGridMenu(itemView.findViewWithTag("messageContentView"), 5);
                 return true;
             }
         };
@@ -612,7 +623,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         Message msg = getItem(position).message;
         int contentType = msg.content.getMessageContentType();
         // 正在生成的流式文本消息和已经生成完毕的流式文本消息使用同一个ViewHolder
-        if(contentType == MessageContentType.ContentType_Streaming_Text_Generated){
+        if (contentType == MessageContentType.ContentType_Streaming_Text_Generated) {
             contentType = MessageContentType.ContentType_Streaming_Text_Generating;
         }
         return msg.direction.value() << 24 | contentType;
