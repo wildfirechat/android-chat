@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -42,6 +43,7 @@ import cn.wildfirechat.message.notification.ModifyGroupSettingsNotificationConte
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
+import cn.wildfirechat.model.JoinGroupRequest;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -52,19 +54,22 @@ import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.GetUserInfoListCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
+import cn.wildfirechat.remote.OnJoinGroupRequestUpdateListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.utils.WfcUtils;
 
-public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener, OnReceiveMessageListener {
+public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener, OnReceiveMessageListener, OnJoinGroupRequestUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
     private MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData;
+    private MutableLiveData<Object> joinGroupRequestUpdateLiveData;
 
     public GroupViewModel() {
         super();
         ChatManager.Instance().addGroupInfoUpdateListener(this);
         ChatManager.Instance().addGroupMembersUpdateListener(this);
         ChatManager.Instance().addOnReceiveMessageListener(this);
+        ChatManager.Instance().addJoinGroupRequestUpdateListener(this);
     }
 
     @Override
@@ -72,6 +77,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManager.Instance().removeGroupInfoUpdateListener(this);
         ChatManager.Instance().removeGroupMembersUpdateListener(this);
         ChatManager.Instance().removeOnReceiveMessageListener(this);
+        ChatManager.Instance().removeJoinGroupRequestUpdateListener(this);
     }
 
     public MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData() {
@@ -86,6 +92,28 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
             groupMembersUpdateLiveData = new MutableLiveData<>();
         }
         return groupMembersUpdateLiveData;
+    }
+
+    public MutableLiveData<Object> joinGroupRequestUpdateLiveData() {
+        if (joinGroupRequestUpdateLiveData == null) {
+            joinGroupRequestUpdateLiveData = new MutableLiveData<>();
+        }
+        return joinGroupRequestUpdateLiveData;
+    }
+
+    @Override
+    public void onJoinGroupRequestUpdate() {
+        if (joinGroupRequestUpdateLiveData != null) {
+            joinGroupRequestUpdateLiveData.postValue(new Object());
+        }
+    }
+
+    public int getJoinGroupRequestUnread(String groupId) {
+        return ChatManager.Instance().getJoinGroupRequestUnread(groupId);
+    }
+
+    public void clearJoinGroupRequestUnread(String groupId) {
+        ChatManager.Instance().clearJoinGroupRequestUnread(groupId);
     }
 
     public MutableLiveData<List<UIUserInfo>> getGroupMemberUIUserInfosLiveData(String groupId, boolean refresh) {
@@ -189,6 +217,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         return addGroupMember(groupInfo, memberIds, notifyMsg, notifyLines, null);
     }
 
+    @Deprecated
     public MutableLiveData<Boolean> addGroupMember(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines, String memberExtra) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         // TODO need update group portrait or not?
@@ -201,6 +230,24 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
             @Override
             public void onFail(int errorCode) {
                 result.setValue(false);
+            }
+        });
+
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> addGroupMemberEx(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines, String memberExtra) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        // TODO need update group portrait or not?
+        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, memberExtra, notifyLines, notifyMsg, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
             }
         });
 
@@ -361,6 +408,16 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManager.Instance().getWorkHandler().post(() -> {
             GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(groupId, refresh);
             data.postValue(groupInfo);
+        });
+        return data;
+    }
+
+    public LiveData<Pair<GroupInfo, Integer>> getConversationGroupInfoAsync(String groupId, boolean refresh) {
+        MutableLiveData<Pair<GroupInfo, Integer>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(groupId, refresh);
+            int unreadJoinGroupRequest = ChatManager.Instance().getJoinGroupRequestUnread(groupId);
+            data.postValue(new Pair<>(groupInfo, unreadJoinGroupRequest));
         });
         return data;
     }
@@ -773,5 +830,46 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         if (!groupIds.isEmpty()) {
             ChatManager.Instance().getGroupInfos(new ArrayList<>(groupIds), true);
         }
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> sendJoinGroupRequest(String groupId, List<String> memberIds, String reason, String extra) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().sendJoinGroupRequest(groupId, memberIds, reason, extra, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(true, 0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(false, errorCode));
+            }
+        });
+        return result;
+    }
+
+    public MutableLiveData<List<JoinGroupRequest>> getJoinGroupRequests(String groupId, String memberId, int status) {
+        MutableLiveData<List<JoinGroupRequest>> result = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<JoinGroupRequest> requests = ChatManager.Instance().getJoinGroupRequests(groupId, memberId, status);
+            result.postValue(requests);
+        });
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> handleJoinGroupRequest(String groupId, String memberId, String inviter, int status, String memberExtra, List<Integer> notifyLines) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().handleJoinGroupRequest(groupId, memberId, inviter, status, memberExtra, notifyLines, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(true, 0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(false, errorCode));
+            }
+        });
+        return result;
     }
 }

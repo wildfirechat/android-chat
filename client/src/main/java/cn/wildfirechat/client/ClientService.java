@@ -56,6 +56,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -96,6 +97,7 @@ import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupSearchResult;
+import cn.wildfirechat.model.JoinGroupRequest;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.NullGroupMember;
 import cn.wildfirechat.model.NullUserInfo;
@@ -115,6 +117,7 @@ import cn.wildfirechat.model.ProtoFriendRequest;
 import cn.wildfirechat.model.ProtoGroupInfo;
 import cn.wildfirechat.model.ProtoGroupMember;
 import cn.wildfirechat.model.ProtoGroupSearchResult;
+import cn.wildfirechat.model.ProtoJoinGroupRequest;
 import cn.wildfirechat.model.ProtoMessage;
 import cn.wildfirechat.model.ProtoMomentsComment;
 import cn.wildfirechat.model.ProtoMomentsFeed;
@@ -168,6 +171,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.IChannelInfoUpdateCallback,
     ProtoLogic.IDomainInfoUpdateCallback,
     ProtoLogic.IGroupMembersUpdateCallback,
+    ProtoLogic.IJoinGroupRequestUpdatedCallback,
     ProtoLogic.ISortAddressCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
@@ -195,6 +199,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnSecretChatStateListener> onSecretChatStateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnSecretMessageBurnStateListener> onSecretMessageBurnStateCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnDomainInfoUpdateListener> onDomainInfoUpdatedCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnJoinGroupRequestUpdateListener> onJoinGroupRequestUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -233,6 +238,24 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private DefaultPortraitProvider defaultPortraitProvider;
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
     private String protoUserAgent;
+
+    @Override
+    public void onJoinGroupRequestUpdated() {
+        handler.post(() -> {
+            int i = onJoinGroupRequestUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnJoinGroupRequestUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onJoinGroupRequestUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onJoinGroupRequestUpdated();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onJoinGroupRequestUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private class ClientServiceStub extends IRemoteClient.Stub {
@@ -339,6 +362,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setOnTrafficDataListener(IOnTrafficDataListener listener) throws RemoteException {
             onTrafficDataListenerRemoteCallbackList.register(listener);
+        }
+
+        @Override
+        public void setOnJoinGroupRequestUpdateListener(IOnJoinGroupRequestUpdateListener listener) throws RemoteException {
+            onJoinGroupRequestUpdateListenerRemoteCallbackList.register(listener);
         }
 
         @Override
@@ -794,6 +822,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             if (entry.entries.size() != protoMessages.length) {
                 Log.e(TAG, "getMessages, drop messages " + (protoMessages.length - entry.entries.size()));
             }
+
+            if(conversation.type == Conversation.ConversationType.Group) {
+                ProtoJoinGroupRequest[] requests = ProtoLogic.getJoinGroupRequests(conversation.target, null, -1);
+                Log.d(TAG, "requestd");
+            }
             return entry.entries;
         }
 
@@ -885,6 +918,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+
+            if(conversation.type == Conversation.ConversationType.Group) {
+                ProtoJoinGroupRequest[] requests = ProtoLogic.getJoinGroupRequests(conversation.target, null, -1);
+                Log.d(TAG, "requestd");
+            }
         }
 
         @Override
@@ -1895,6 +1933,121 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 public void onFailure(int errorCode) {
                     try {
                         callback.onFailure(errorCode);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void sendJoinGroupRequest(String groupId, List<String> memberIds, String reason, String extra, IGeneralCallback callback) throws RemoteException {
+            String[] memberArray = new String[memberIds.size()];
+            for (int i = 0; i < memberIds.size(); i++) {
+                memberArray[i] = memberIds.get(i);
+            }
+            ProtoLogic.sendJoinGroupRequest(groupId, memberArray, reason, extra, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void handleJoinGroupRequest(String groupId, String memberId, String inviter, int status, String memberExtra, int[] notifyLines, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.handleJoinGroupRequest(groupId, memberId, inviter, status, memberExtra, notifyLines, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<JoinGroupRequest> getJoinGroupRequests(String groupId, String memberId, int status) throws RemoteException {
+            ProtoJoinGroupRequest[] requests = ProtoLogic.getJoinGroupRequests(groupId, memberId, status);
+            List<JoinGroupRequest> ret = new ArrayList<>();
+            if(requests != null) {
+                for (ProtoJoinGroupRequest request : requests) {
+                    JoinGroupRequest jo = new JoinGroupRequest();
+                    jo.groupId = request.getGroupId();
+                    jo.memberId = request.getMemberId();
+                    jo.requestUserId = request.getRequestUserId();
+                    jo.acceptUserId = request.getAcceptUserId();
+                    jo.reason = request.getReason();
+                    jo.extra = request.getExtra();
+                    jo.status = request.getStatus();
+                    jo.readStatus = request.getReadStatus();
+                    jo.timestamp = request.getTimestamp();
+                    ret.add(jo);
+                }
+            }
+            return ret;
+        }
+
+        @Override
+        public boolean clearJoinGroupRequest(String groupId, String memberId, String inviter) throws RemoteException {
+            return ProtoLogic.clearJoinGroupRequest(groupId, memberId, inviter);
+        }
+
+        @Override
+        public int getAllJoinGroupRequestUnread() throws RemoteException {
+            return ProtoLogic.getAllJoinGroupRequestUnread();
+        }
+
+        @Override
+        public int getJoinGroupRequestUnread(String groupId) throws RemoteException {
+            return ProtoLogic.getJoinGroupRequestUnread(groupId);
+        }
+
+        @Override
+        public void clearJoinGroupRequestUnread(String groupId) throws RemoteException {
+            ProtoLogic.clearJoinGroupRequestUnread(groupId);
+        }
+
+        @Override
+        public void clearRemoteJoinGroupRequest(IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.clearRemoteJoinGroupRequest(new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -4447,6 +4600,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setSecretMessageBurnStateCallback(ClientService.this);
         ProtoLogic.setDomainInfoUpdateCallback(ClientService.this);
         ProtoLogic.setSortAddressCallback(ClientService.this);
+        ProtoLogic.setJoinGroupRequestUpdateCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);

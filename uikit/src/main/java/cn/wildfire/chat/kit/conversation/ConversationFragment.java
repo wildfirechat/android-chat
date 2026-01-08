@@ -62,6 +62,7 @@ import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageActionManager;
 import cn.wildfire.chat.kit.conversation.receipt.GroupMessageReceiptActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
+import cn.wildfire.chat.kit.group.manage.JoinGroupRequestListActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -134,6 +135,8 @@ public class ConversationFragment extends Fragment implements
     LinearLayout unreadCountLinearLayout;
     TextView unreadCountTextView;
     TextView unreadMentionCountTextView;
+    private LinearLayout conversationStickyHeaderContainerLinearLayout;
+    private TextView joinGroupRequestHeaderTextView;
 
     private ConversationMessageAdapter adapter;
     private OngoingCallAdapter ongoingCallAdapter;
@@ -161,6 +164,7 @@ public class ConversationFragment extends Fragment implements
     private boolean showGroupMemberName = false;
     private Observer<List<GroupMember>> groupMembersUpdateLiveDataObserver;
     private Observer<List<GroupInfo>> groupInfosUpdateLiveDataObserver;
+    private Observer<Object> joinGroupRequestUpdateLiveDataObserver;
     private Observer<Object> settingUpdateLiveDataObserver;
     private Map<String, Message> ongoingCalls;
 
@@ -459,9 +463,13 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         };
+        joinGroupRequestUpdateLiveDataObserver = obj -> {
+            updateJoinGroupRequestHeader();
+        };
 
 
         groupViewModel.groupInfoUpdateLiveData().observeForever(groupInfosUpdateLiveDataObserver);
+        groupViewModel.joinGroupRequestUpdateLiveData().observeForever(joinGroupRequestUpdateLiveDataObserver);
         groupViewModel.groupMembersUpdateLiveData().observeForever(groupMembersUpdateLiveDataObserver);
     }
 
@@ -470,6 +478,7 @@ public class ConversationFragment extends Fragment implements
             return;
         }
         groupViewModel.groupInfoUpdateLiveData().removeObserver(groupInfosUpdateLiveDataObserver);
+        groupViewModel.joinGroupRequestUpdateLiveData().removeObserver(joinGroupRequestUpdateLiveDataObserver);
         groupViewModel.groupMembersUpdateLiveData().removeObserver(groupMembersUpdateLiveDataObserver);
     }
 
@@ -513,6 +522,9 @@ public class ConversationFragment extends Fragment implements
         unreadCountLinearLayout = view.findViewById(R.id.unreadCountLinearLayout);
         unreadCountTextView = view.findViewById(R.id.unreadCountTextView);
         unreadMentionCountTextView = view.findViewById(R.id.unreadMentionCountTextView);
+
+        conversationStickyHeaderContainerLinearLayout = view.findViewById(R.id.conversationStickyHeaderContainerLinearLayout);
+        joinGroupRequestHeaderTextView = view.findViewById(R.id.joinGroupRequestHeaderTextView);
 
         view.findViewById(R.id.contentLayout).setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
         recyclerView.setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
@@ -697,6 +709,7 @@ public class ConversationFragment extends Fragment implements
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
             updateGroupConversationInputStatus();
+            updateJoinGroupRequestHeader();
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
             updateSecretChatConversationInputStatus();
             conversationViewModel.secretConversationStateLiveData().observeForever(secretChatStateObserver);
@@ -804,6 +817,27 @@ public class ConversationFragment extends Fragment implements
             inputPanel.disableInput(getString(R.string.group_dismissed));
         } else {
             inputPanel.enableInput();
+        }
+    }
+
+    private void updateJoinGroupRequestHeader() {
+        if (groupInfo == null || groupMember == null) {
+            return;
+        }
+        if (groupInfo.joinType == 3
+            && (groupMember.type == GroupMember.GroupMemberType.Owner
+            || groupMember.type == GroupMember.GroupMemberType.Manager)) {
+            int unreadGroupRequestCount = groupViewModel.getJoinGroupRequestUnread(conversation.target);
+            conversationStickyHeaderContainerLinearLayout.setVisibility(unreadGroupRequestCount > 0 ? View.VISIBLE : View.GONE);
+            joinGroupRequestHeaderTextView.setVisibility(unreadGroupRequestCount > 0 ? View.VISIBLE : View.GONE);
+            if (unreadGroupRequestCount > 0) {
+                joinGroupRequestHeaderTextView.setText("有" + unreadGroupRequestCount + "条新加群申请");
+                joinGroupRequestHeaderTextView.setOnClickListener(v -> {
+                    Intent intent = new Intent(getActivity(), JoinGroupRequestListActivity.class);
+                    intent.putExtra("groupId", groupInfo.target);
+                    startActivity(intent);
+                });
+            }
         }
     }
 

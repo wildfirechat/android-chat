@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,8 @@ public class GroupManageFragment extends Fragment {
     OptionItemView joinOptionItemView;
     OptionItemView searchOptionItemView;
     OptionItemView historyOptionItemView;
+    LinearLayout joinGroupRequestLinearLayout;
+    OptionItemView joinRequestOptionItemView;
 
     private GroupViewModel groupViewModel;
 
@@ -50,6 +53,14 @@ public class GroupManageFragment extends Fragment {
         groupInfo = getArguments().getParcelable("groupInfo");
         if (groupInfo == null) {
             getActivity().finish();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (groupInfo != null && groupInfo.joinType == 3) {
+            setupGroupOptionsView(groupInfo);
         }
     }
 
@@ -72,12 +83,15 @@ public class GroupManageFragment extends Fragment {
         view.findViewById(R.id.joinOptionItemView).setOnClickListener(_v -> showJoinTypeSetting());
         view.findViewById(R.id.searchOptionItemView).setOnClickListener(_v -> showSearchSetting());
         view.findViewById(R.id.historyMessageOptionItemView).setOnClickListener(_v -> showHistoryMessageSetting());
+        view.findViewById(R.id.joinRequestOptionItemView).setOnClickListener(_v -> showJoinGroupRequests());
     }
 
     private void bindViews(View view) {
         joinOptionItemView = view.findViewById(R.id.joinOptionItemView);
         searchOptionItemView = view.findViewById(R.id.searchOptionItemView);
         historyOptionItemView = view.findViewById(R.id.historyMessageOptionItemView);
+        joinGroupRequestLinearLayout = view.findViewById(R.id.joinGroupRequestLinearLayout);
+        joinRequestOptionItemView = view.findViewById(R.id.joinRequestOptionItemView);
     }
 
     private void setupGroupOptionsView(GroupInfo groupInfo) {
@@ -90,11 +104,19 @@ public class GroupManageFragment extends Fragment {
         types = getResources().getStringArray(R.array.group_history_message);
         historyOptionItemView.setDesc(types[groupInfo.historyMessage]);
 
+        if (groupInfo.joinType == 3) {
+            joinGroupRequestLinearLayout.setVisibility(View.VISIBLE);
+            int unread = groupViewModel.getJoinGroupRequestUnread(groupInfo.target);
+            joinRequestOptionItemView.setBadgeCount(unread);
+        } else {
+            joinGroupRequestLinearLayout.setVisibility(View.GONE);
+        }
     }
 
     private void init() {
-        setupGroupOptionsView(groupInfo);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+        setupGroupOptionsView(groupInfo);
+
         groupViewModel.groupInfoUpdateLiveData().observe(getActivity(), new Observer<List<GroupInfo>>() {
             @Override
             public void onChanged(List<GroupInfo> groupInfos) {
@@ -107,6 +129,10 @@ public class GroupManageFragment extends Fragment {
                 }
 
             }
+        });
+
+        groupViewModel.joinGroupRequestUpdateLiveData().observe(getActivity(), o -> {
+            setupGroupOptionsView(groupInfo);
         });
     }
 
@@ -178,5 +204,11 @@ public class GroupManageFragment extends Fragment {
                     });
             })
             .show();
+    }
+
+    void showJoinGroupRequests() {
+        Intent intent = new Intent(getActivity(), JoinGroupRequestListActivity.class);
+        intent.putExtra("groupId", groupInfo.target);
+        startActivity(intent);
     }
 }

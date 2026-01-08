@@ -38,7 +38,9 @@
             android:id="@+id/permissionOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
+            app:divider_align_to_title="true"
             app:title="@string/group_member_permission" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -78,4 +80,28 @@
             app:desc="@string/group_history_message_not_allowed"
             app:title="@string/group_history_message" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/joinGroupRequestLinearLayout"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray5"
+            android:paddingLeft="@dimen/option_item_margin_left"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="@string/join_group_request" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/joinRequestOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:title="@string/join_group_request" />
+    </LinearLayout>
+
 </LinearLayout>

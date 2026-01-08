@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversationlist.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.ImageView;
@@ -61,6 +62,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected TextView unreadCountTextView;
     protected View redDotView;
     protected EmojiTextView contentTextView;
+    protected String conversationPromptText;
     protected TextView promptTextView;
 
     protected ImageView statusImageView;
@@ -117,6 +119,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
         statusImageView.setVisibility(View.GONE);
+        conversationPromptText = "";
 
         if (roundedCornerTransformation == null) {
             roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4));
@@ -139,6 +142,10 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             } else {
                 unreadCountTextView.setVisibility(View.GONE);
             }
+        }
+
+        if (conversationInfo.unreadCount.unreadMentionAll > 0 || conversationInfo.unreadCount.unreadMention > 0) {
+            conversationPromptText += fragment.getString(R.string.mention_you);
         }
 
 
@@ -200,6 +207,17 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             } else {
                 contentTextView.setText("");
             }
+            updatePromptText(conversationPromptText);
+        }
+    }
+
+
+    protected void updatePromptText(String text) {
+        if (!TextUtils.isEmpty(text)) {
+            promptTextView.setVisibility(View.VISIBLE);
+            promptTextView.setText(text);
+        } else {
+            promptTextView.setVisibility(View.GONE);
         }
     }
 

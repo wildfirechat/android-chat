@@ -204,11 +204,16 @@
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity"
             android:label="@string/group_member_permission" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.manage.JoinGroupRequestListActivity"
+            android:label="@string/join_group_request_list"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"
             android:label="@string/group_member_list"
             android:screenOrientation="portrait" />
+
         <activity
             android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
             android:label="@string/contact_selection" />

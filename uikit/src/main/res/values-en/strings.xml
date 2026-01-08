@@ -661,8 +661,11 @@
     <string name="manager_list">Manager List</string>
     <string name="add_manager">Add Manager</string>
     <string name="group_mute">Group Mute</string>
+    <string name="join_group_request">Join Group Request</string>
     <string name="group_member_permission">Member Permissions</string>
     <string name="group_member_list">Group Member List</string>
+    <string name="join_group_request_list">Join Group Request List</string>
+    <string name="join_group_request_list_empty">No Join Group Request</string>
     <string name="contact_selection">Select Contact</string>
     <string name="file_record">File Records</string>
     <string name="select_a_chat">Select a Chat</string>
@@ -784,4 +787,6 @@
     <string name="recognize_qrcode">Recognize QR Code</string>
     <string name="recognizing_qrcode">Recognizing QR code...</string>
     <string name="image_file_not_exist">Image file not exist</string>
+
+    <string name="join_group_request_tip">[%s join group requests]</string>
 </resources>

@@ -12,6 +12,7 @@
     <string name="new_friend">新的朋友</string>
     <string name="group_chat">群聊</string>
     <string name="join_group_chat">加入群聊</string>
+    <string name="join_group_need_verify">已开启入群验证，请输入理由，等待群主或管理员审批</string>
     <string name="enter_group_chat">进入群聊</string>
     <string name="contact_category">联系人</string>
     <string name="group_category">群组</string>
@@ -669,6 +670,13 @@
     <string name="manager_list">管理员列表</string>
     <string name="add_manager">添加管理员</string>
     <string name="group_mute">群禁言</string>
+    <string name="join_group_request">加群请求</string>
+    <string name="join_group_reason_hint">请输入加群理由</string>
+    <string name="join_group_request_list">加群申请列表</string>
+    <string name="join_group_request_list_empty">没有加群申请</string>
+    <string name="send_request">发送请求</string>
+    <string name="request_sent">请求已发送</string>
+    <string name="request_failed">请求失败 %d</string>
     <string name="group_member_permission">群成员权限</string>
     <string name="group_member_list">群成员列表</string>
     <string name="contact_selection">联系人选择</string>
@@ -793,4 +801,6 @@
     <string name="recognize_qrcode">识别二维码</string>
     <string name="recognizing_qrcode">正在识别二维码...</string>
     <string name="image_file_not_exist">图片文件不存在</string>
+
+    <string name="join_group_request_tip">[%s条加群申请]</string>
 </resources>
