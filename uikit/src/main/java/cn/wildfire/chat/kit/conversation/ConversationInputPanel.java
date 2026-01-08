@@ -21,6 +21,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -1002,7 +1003,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
         popupWindow.setOutsideTouchable(true);
         popupWindow.setClippingEnabled(true);
-        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.sticker_recommend_bg));
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.image_recommend_bg));
 
         // 设置为可见（在 PopupWindow 显示之前）
         mImageRecommendView.setVisibility(VISIBLE);
@@ -1010,15 +1011,16 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         // 使用 showAtLocation 精确定位，处理键盘弹出情况
         if (extImageView != null) {
             int[] location = new int[2];
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             extImageView.getLocationOnScreen(location);
 
             // 默认位置：按钮上方
-            int x = location[0];
-            int y = location[1] - popupHeight;
+            int x = displayMetrics.widthPixels - popupWidth - dpToPx(8);
+            int y = location[1] - popupHeight - dpToPx(8);
 
             // 如果有键盘高度，限制 popup 的最大 Y 坐标，避免显示在右下角
             if (keyboardHeight > 0) {
-                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                int screenHeight = displayMetrics.heightPixels;
                 int maxY = screenHeight - keyboardHeight - popupHeight - dpToPx(20);
                 y = Math.min(y, maxY);
             }

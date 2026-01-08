@@ -13,11 +13,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.bumptech.glide.Glide;
 
 import java.io.File;
-
-import cn.wildfire.chat.kit.R;
 
 /**
  * 图片推荐视图
@@ -37,7 +37,6 @@ public class ImageRecommendView extends FrameLayout {
     }
 
     private void initView(Context context) {
-        setBackgroundResource(R.drawable.sticker_recommend_bg);
         setPadding(dpToPx(context, 12), dpToPx(context, 12), dpToPx(context, 12), dpToPx(context, 12));
 
         LinearLayout layout = new LinearLayout(context);
@@ -45,7 +44,7 @@ public class ImageRecommendView extends FrameLayout {
         layout.setGravity(Gravity.END);
 
         // 提示文字
-        mHintTextView = new androidx.appcompat.widget.AppCompatTextView(context);
+        mHintTextView = new AppCompatTextView(context);
         mHintTextView.setText("你可能想发送");
         mHintTextView.setTextSize(14);
         mHintTextView.setTextColor(Color.BLACK);
@@ -53,7 +52,7 @@ public class ImageRecommendView extends FrameLayout {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        hintParams.gravity = Gravity.END;
+        hintParams.gravity = Gravity.CENTER_HORIZONTAL;
         mHintTextView.setLayoutParams(hintParams);
 
         // 缩略图

@@ -366,7 +366,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     public void sendImgMsg(Conversation conversation, List<String> toUsers, File imageFileThumb, File imageFileSource) {
         // Uri.fromFile()遇到中文檔名會轉 ASCII，這個 ASCII 的 path 將導致後面 ChatManager.sendMessage()
         // 在 new File()時找不到 File 而 return
-        Uri imageFileThumbUri = Uri.parse(Uri.decode(imageFileThumb.getAbsolutePath()));
+        Uri imageFileThumbUri = imageFileThumb == null ? null:  Uri.parse(Uri.decode(imageFileThumb.getAbsolutePath()));
 //        Uri imageFileThumbUri = Uri.fromFile(imageFileThumb);
         Uri imageFileSourceUri = Uri.parse(Uri.decode(imageFileSource.getAbsolutePath()));
 //        Uri imageFileSourceUri = Uri.fromFile(imageFileSource);
