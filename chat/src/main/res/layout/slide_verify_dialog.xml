@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 容器视图 -->
+    <LinearLayout
+        android:id="@+id/containerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@android:color/white">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="安全验证"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <FrameLayout
+            android:id="@+id/backgroundContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/backgroundImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"/>
+
+            <ImageView
+                android:id="@+id/sliderImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/sliderTrackContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/slide_verify_track_bg">
+
+            <TextView
+                android:id="@+id/sliderHintText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="向右滑动完成验证"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:gravity="center"/>
+
+            <View
+                android:id="@+id/sliderButton"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/slide_verify_button_bg"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

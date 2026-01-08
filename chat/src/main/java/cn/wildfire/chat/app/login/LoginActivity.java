@@ -32,6 +32,7 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.app.setting.ResetPasswordActivity;
+import cn.wildfire.chat.app.widget.SlideVerifyDialog;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
@@ -201,6 +202,29 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         String account = accountEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
+        // Show slide verify dialog before login
+        SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
+            @Override
+            public void onVerifySuccess(String token) {
+                performLogin(account, password, token);
+            }
+
+            @Override
+            public void onVerifyFailed() {
+                // 验证失败（滑动位置不对），不关闭窗口
+                // 这个方法现在不需要做任何事，因为 SlideVerifyDialog 已经处理了提示和重置
+            }
+
+            @Override
+            public void onLoadFailed() {
+                // 加载验证码失败，对话框已经关闭
+                // 不需要做任何事，用户可以重新点击登录按钮
+            }
+        });
+        verifyDialog.show();
+    }
+
+    private void performLogin(String account, String password, String slideVerifyToken) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .content(R.string.login_progress)
             .progress(true, 10)
@@ -208,7 +232,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
             .build();
         dialog.show();
 
-        AppService.Instance().passwordLogin(account, password, new AppService.LoginCallback() {
+        AppService.Instance().passwordLogin(account, password, slideVerifyToken, new AppService.LoginCallback() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
                 if (isFinishing()) {
@@ -248,6 +272,5 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                 Toast.makeText(LoginActivity.this, getString(R.string.login_error_hint, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

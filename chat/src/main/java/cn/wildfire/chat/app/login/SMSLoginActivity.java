@@ -30,6 +30,7 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.app.setting.ResetPasswordActivity;
+import cn.wildfire.chat.app.widget.SlideVerifyDialog;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
@@ -47,6 +48,10 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     EditText authCodeEditText;
     TextView requestAuthCodeButton;
     CheckBox checkBox;
+
+    // 标记是否已通过滑动验证（用于验证码登录）
+    private boolean hasSlideVerifiedForCode = false;
+    private String cachedSlideVerifyToken = null;
 
     private void bindEvents() {
         findViewById(R.id.passwordLoginTextView).setOnClickListener(v -> authCodeLogin());
@@ -182,6 +187,36 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         String authCode = authCodeEditText.getText().toString().trim();
 
         loginButton.setEnabled(false);
+
+        // 如果已经通过滑动验证（发送验证码时已验证），直接登录
+        if (hasSlideVerifiedForCode && cachedSlideVerifyToken != null) {
+            performSMSLogin(phoneNumber, authCode, null); // 不传递 slideVerifyToken
+            return;
+        }
+
+        // 显示滑动验证对话框
+        SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
+            @Override
+            public void onVerifySuccess(String token) {
+                performSMSLogin(phoneNumber, authCode, token);
+            }
+
+            @Override
+            public void onVerifyFailed() {
+                // 验证失败（滑动位置不对），不关闭窗口
+                // 这个方法现在不需要做任何事，因为 SlideVerifyDialog 已经处理了提示和重置
+            }
+
+            @Override
+            public void onLoadFailed() {
+                // 加载验证码失败，对话框已经关闭，只需要启用按钮
+                loginButton.setEnabled(true);
+            }
+        });
+        verifyDialog.show();
+    }
+
+    private void performSMSLogin(String phoneNumber, String authCode, String slideVerifyToken) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .content(R.string.login_progress)
             .progress(true, 100)
@@ -189,7 +224,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             .build();
         dialog.show();
 
-        AppService.Instance().smsLogin(phoneNumber, authCode, new AppService.LoginCallback() {
+        AppService.Instance().smsLogin(phoneNumber, authCode, slideVerifyToken, new AppService.LoginCallback() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
                 if (isFinishing()) {
@@ -223,6 +258,9 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 Toast.makeText(SMSLoginActivity.this, getString(R.string.sms_login_failure, code, msg), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 loginButton.setEnabled(true);
+                // 登录失败，重置验证标志
+                hasSlideVerifiedForCode = false;
+                cachedSlideVerifyToken = null;
             }
         });
     }
@@ -234,6 +272,29 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     void requestAuthCode() {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
 
+        // Show slide verify dialog before sending auth code
+        SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
+            @Override
+            public void onVerifySuccess(String token) {
+                performRequestAuthCode(phoneNumber, token);
+            }
+
+            @Override
+            public void onVerifyFailed() {
+                // 验证失败（滑动位置不对），不关闭窗口
+                // 这个方法现在不需要做任何事，因为 SlideVerifyDialog 已经处理了提示和重置
+            }
+
+            @Override
+            public void onLoadFailed() {
+                // 加载验证码失败，对话框已经关闭，只需要启用按钮
+                requestAuthCodeButton.setEnabled(true);
+            }
+        });
+        verifyDialog.show();
+    }
+
+    private void performRequestAuthCode(String phoneNumber, String slideVerifyToken) {
         // Disable button immediately
         requestAuthCodeButton.setEnabled(false);
 
@@ -269,15 +330,21 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         // Request the auth code
         Toast.makeText(this, getString(R.string.requesting_auth_code), Toast.LENGTH_SHORT).show();
 
-        AppService.Instance().requestAuthCode(phoneNumber, new AppService.SendCodeCallback() {
+        AppService.Instance().requestAuthCode(phoneNumber, slideVerifyToken, new AppService.SendCodeCallback() {
             @Override
             public void onUiSuccess() {
                 Toast.makeText(SMSLoginActivity.this, R.string.auth_code_request_success, Toast.LENGTH_SHORT).show();
+                // 标记已通过滑动验证
+                hasSlideVerifiedForCode = true;
+                cachedSlideVerifyToken = slideVerifyToken;
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
                 Toast.makeText(SMSLoginActivity.this, getString(R.string.auth_code_request_failure, code, msg), Toast.LENGTH_SHORT).show();
+                // 发送失败，重置验证标志
+                hasSlideVerifiedForCode = false;
+                cachedSlideVerifyToken = null;
                 // Reset countdown on failure
                 resetCountdown();
             }
