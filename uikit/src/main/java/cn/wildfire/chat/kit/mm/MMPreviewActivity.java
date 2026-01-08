@@ -86,12 +86,13 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
     @Override
     public void onDragToFinish() {
+        if (currentPhotoView == null) {
+            finish();
+            overridePendingTransition(0, 0);
+            return;
+        }
         finish();
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            super.finishAfterTransition();
-//        } else {
-//            finish();
-//        }
+        overridePendingTransition(0, R.anim.fade_out);
     }
 
     @Override

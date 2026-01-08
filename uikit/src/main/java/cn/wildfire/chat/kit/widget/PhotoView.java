@@ -7,8 +7,7 @@ package cn.wildfire.chat.kit.widget;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -63,13 +62,14 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     private float mLastTouchY;
     private boolean mIsDragging = false;
     private boolean mIsDraggingDown = false;
+    private float mCurrentDragScale = 1.0f;
 
     private VelocityTracker mVelocityTracker;
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
 
     private FlingRunnable mCurrentFlingRunnable;
-    private TranslateUpAnimator mTranslateUpAnimator;
+    private ResetAnimator mResetAnimator;
 
     private OnDragListener mDragListener;
     private OnLongClickListener mLongClickListener;
@@ -166,8 +166,8 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
             public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
                 if (mIsDraggingDown) {
                     mIsDraggingDown = false;
-                    mTranslateUpAnimator = new TranslateUpAnimator(PhotoView.this,
-                        getMatrixValue(mDragDownMatrix, Matrix.MTRANS_Y), 0);
+                    mResetAnimator = new ResetAnimator(PhotoView.this,
+                        getMatrixValue(mDragDownMatrix, Matrix.MTRANS_Y), 0, mCurrentDragScale, 1.0f);
                 }
                 recycleVelocityTracker();
                 return true;
@@ -210,13 +210,14 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                 mLastTouchX = mActionDownX = getActiveX(event);
                 mLastTouchY = mActionDownY = getActiveY(event);
 
-                if (mTranslateUpAnimator != null) {
-                    mTranslateUpAnimator.cancel();
+                if (mResetAnimator != null) {
+                    mResetAnimator.cancel();
                 }
 
                 mDragDownMatrix.reset();
                 mIsDraggingDown = false;
                 mIsDragging = false;
+                mCurrentDragScale = 1.0f;
 
                 mVelocityTracker = VelocityTracker.obtain();
                 if (mVelocityTracker != null) {
@@ -259,7 +260,18 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                     if (mIsDraggingDown) {
                         mDragDownMatrix.reset();
                         float deltaY = getActiveY(event) - mActionDownY;
+
+                        // Scale calculation
+                        float scale = 1 - Math.abs(deltaY) / getViewHeight();
+                        scale = Math.max(scale, 0.4f);
+                        mCurrentDragScale = scale;
+
+                        // Apply transformations
+                        // 1. Scale around the touch down point
+                        mDragDownMatrix.postScale(scale, scale, mActionDownX, mActionDownY);
+                        // 2. Translate
                         mDragDownMatrix.postTranslate(0, deltaY);
+
                         updateMatrix();
                         if (mDragListener != null) {
                             mDragListener.onDragOffset(Math.abs(deltaY), getViewHeight() / 6);
@@ -317,39 +329,33 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                         startZoomAnimation(this, getMatrixScale(), mMinScale, 0, 0);
                     }
 
-                    // Fling
                     float finalDeltaY = getMatrixValue(mDragDownMatrix, Matrix.MTRANS_Y);
+
+                    // Check for dismiss condition
+                    boolean shouldDismiss = false;
                     if (mVelocityTracker != null) {
                         mVelocityTracker.addMovement(event);
                         mVelocityTracker.computeCurrentVelocity(1000);
-                        float vX = mVelocityTracker.getXVelocity();
                         float vY = mVelocityTracker.getYVelocity();
+                        float vX = mVelocityTracker.getXVelocity();
                         if (Math.abs(vY) > mMinimumVelocity && Math.abs(vY) > Math.abs(vX) && mIsDraggingDown) {
-                            if (mDragListener != null) {
-                                mTranslateUpAnimator = new TranslateUpAnimator(this, finalDeltaY, vY > 0 ? getViewHeight() : -getViewHeight());
-                                mTranslateUpAnimator.addListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        mDragListener.onDragToFinish();
-                                    }
-                                });
-                                break;
-                            }
+                            shouldDismiss = true;
                         }
                     }
 
-                    if (Math.abs(finalDeltaY) < getViewHeight() / 6) {
-                        mTranslateUpAnimator = new TranslateUpAnimator(this, finalDeltaY, 0);
-                    } else if (mIsDraggingDown) {
-                        mDragDownMatrix.reset();
+                    if (!shouldDismiss && mIsDraggingDown && Math.abs(finalDeltaY) > getViewHeight() / 6) {
+                        shouldDismiss = true;
+                    }
+
+                    if (shouldDismiss) {
                         if (mDragListener != null) {
-                            mTranslateUpAnimator = new TranslateUpAnimator(this, finalDeltaY, finalDeltaY > 0 ? getViewHeight() : -getViewHeight());
-                            mTranslateUpAnimator.addListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    mDragListener.onDragToFinish();
-                                }
-                            });
+                            mDragListener.onDragToFinish();
+                        }
+                    } else if (mIsDraggingDown) {
+                        // Restore animation
+                        if (mDragListener != null) {
+                            mResetAnimator = new ResetAnimator(this, finalDeltaY, 0, mCurrentDragScale, 1.0f);
+                            mResetAnimator.start();
                         }
                     }
                 }
@@ -428,8 +434,9 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
         updateMatrix();
     }
 
-    public void setMatrixTranslateY(float translateY) {
+    public void setDragMatrix(float translateY, float scale) {
         mDragDownMatrix.reset();
+        mDragDownMatrix.postScale(scale, scale, mActionDownX, mActionDownY);
         mDragDownMatrix.postTranslate(0, translateY);
         updateMatrix();
         if (mDragListener != null) {
@@ -539,22 +546,27 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
         valueAnimator.start();
     }
 
-    private static class TranslateUpAnimator extends ValueAnimator {
+    private static class ResetAnimator extends ValueAnimator {
 
         private WeakReference<PhotoView> mPhotoViewWeakReference;
 
-        TranslateUpAnimator(PhotoView imageView, float from, float to) {
+        ResetAnimator(PhotoView imageView, float startY, float endY, float startScale, float endScale) {
             mPhotoViewWeakReference = new WeakReference<>(imageView);
-            setFloatValues(from, to);
+            setValues(PropertyValuesHolder.ofFloat("translateY", startY, endY),
+                    PropertyValuesHolder.ofFloat("scale", startScale, endScale));
             addUpdateListener(new AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     if (mPhotoViewWeakReference.get() != null) {
-                        mPhotoViewWeakReference.get().setMatrixTranslateY((Float) animation.getAnimatedValue());
+                        float translateY = (float) animation.getAnimatedValue("translateY");
+                        float scale = (float) animation.getAnimatedValue("scale");
+                        mPhotoViewWeakReference.get().setDragMatrix(translateY, scale);
                     }
                 }
             });
-            start();
+            setDuration(200);
+            // Add decelerate interpolator for more natural feel
+            setInterpolator(new android.view.animation.DecelerateInterpolator());
         }
     }
 
