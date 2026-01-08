@@ -82,7 +82,7 @@ public class WeChatImageUtils {
             }
         }
 
-        return new int[]{imageWidth, imageHeight};
+        return new int[]{Math.min(imageWidth, maxWidth), Math.min(imageHeight, maxHeight)};
     }
 
     /**
