@@ -33,6 +33,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +48,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionExtClickListener;
 import com.lqr.emoji.IEmotionSelectedListener;
+import com.lqr.emoji.StickerItem;
+import com.lqr.emoji.StickerManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,6 +71,7 @@ import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
+import cn.wildfire.chat.kit.widget.StickerRecommendView;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.message.ChannelMenuEventMessageContent;
 import cn.wildfirechat.message.Message;
@@ -96,6 +100,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     ImageView emotionImageView;
     ImageView extImageView;
     Button sendButton;
+    StickerRecommendView mStickerRecommendView;
+    private static final int STICKER_RECOMMEND_MIN_LENGTH = 2;  // 触发推荐的最小输入长度
 
     LinearLayout channelMenuContainerLinearLayout;
 
@@ -320,6 +326,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         pttImageView.setOnClickListener(this::showRecordPanel);
         sendButton.setOnClickListener(v -> sendMessage());
 
+        // 初始化表情推荐视图
+        initStickerRecommendView();
+
         editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -430,6 +439,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             sendButton.setVisibility(View.GONE);
             extImageView.setVisibility(View.VISIBLE);
         }
+
+        // 检查动态表情推荐
+        checkStickerRecommend(editable.toString());
     }
 
     public void showChannelMenu() {
@@ -786,6 +798,220 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             return null;
         }
         return Collections.singletonList(this.targetUser);
+    }
+
+    // ==================== 动态表情推荐功能 ====================
+
+    /**
+     * 初始化表情推荐视图
+     */
+    private void initStickerRecommendView() {
+        // 创建推荐视图
+        mStickerRecommendView = new StickerRecommendView(getContext());
+
+        // 设置回调
+        mStickerRecommendView.setOnStickerRecommendListener(stickerItem -> {
+            sendRecommendedSticker(stickerItem);
+            editText.setText("");
+            hideSoftKeyboard();
+            hideStickerRecommendPopup();
+        });
+    }
+
+    /**
+     * 显示表情推荐 PopupWindow
+     */
+    private void showStickerRecommendPopup() {
+        if (mStickerRecommendView == null || fragment.getActivity() == null || !fragment.isResumed()) {
+            return;
+        }
+
+        // 如果已经有 PopupWindow 在显示，先隐藏
+        hideStickerRecommendPopup();
+
+        // 计算宽度：每个表情约116dp (100dp + 8dp padding)
+        // 最多显示2.5个表情，约248dp
+        int stickerCount = mStickerRecommendView.getStickerCount();
+        int widthPerSticker = dpToPx(116);  // 每个表情占用的宽度
+        int calculatedWidth = stickerCount * widthPerSticker;
+        int maxPopupWidth = dpToPx(248);  // 最大宽度
+        int popupWidth = Math.min(calculatedWidth, maxPopupWidth);
+
+        // 创建 PopupWindow
+        PopupWindow popupWindow = new PopupWindow(
+            mStickerRecommendView,  // 内容视图
+            popupWidth,  // 动态宽度
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            false  // 不获取焦点
+        );
+
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setClippingEnabled(true);
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.sticker_recommend_bg));
+
+        // 先测量视图尺寸
+        mStickerRecommendView.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        );
+        mStickerRecommendView.layout(0, 0, mStickerRecommendView.getMeasuredWidth(), mStickerRecommendView.getMeasuredHeight());
+
+        // 设置为可见（在 PopupWindow 显示之前）
+        mStickerRecommendView.setVisibility(VISIBLE);
+
+        // 定位到发送按钮上方显示
+        if (sendButton != null && sendButton.getVisibility() == View.VISIBLE) {
+            // 发送按钮可见时，显示在发送按钮上方
+            // yOffset 负值表示向上偏移，计算为：表情高度(136dp) + 按钮高度 + 间距
+            //int yOffset = -(dpToPx(136) + sendButton.getHeight() + dpToPx(8));
+            int yOffset = -(dpToPx(116) + sendButton.getHeight());
+            popupWindow.showAsDropDown(sendButton, 0, yOffset);
+        } else if (extImageView != null) {
+            // 否则显示在扩展按钮（+号）上方
+            int yOffset = -(dpToPx(116) + extImageView.getHeight());
+            popupWindow.showAsDropDown(extImageView, 0, yOffset);
+        } else {
+            return;
+        }
+
+        mStickerRecommendPopup = popupWindow;
+
+    }
+
+    /**
+     * 隐藏表情推荐 PopupWindow
+     */
+    private void hideStickerRecommendPopup() {
+        if (mStickerRecommendPopup != null && mStickerRecommendPopup.isShowing()) {
+            mStickerRecommendPopup.dismiss();
+            mStickerRecommendPopup = null;
+        }
+    }
+
+    private android.widget.PopupWindow mStickerRecommendPopup;
+
+    /**
+     * 发送推荐的动态表情
+     */
+    private void sendRecommendedSticker(StickerItem stickerItem) {
+        String stickerPath = StickerManager.getInstance()
+            .getStickerBitmapPath(stickerItem.getCategory(), stickerItem.getName());
+
+        String key;
+        if (conversation.type == Conversation.ConversationType.SecretChat) {
+            key = conversation.target + "_" + stickerPath;
+        } else {
+            key = stickerPath;
+        }
+
+        String remoteUrl = sharedPreferences.getString(key, null);
+        messageViewModel.sendStickerMsg(conversation, toUsers(), stickerPath, remoteUrl);
+    }
+
+    /**
+     * 隐藏键盘
+     */
+    private void hideSoftKeyboard() {
+        if (activity != null && editText != null) {
+            android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            }
+        }
+    }
+
+    /**
+     * dp 转 px
+     */
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return (int) (dp * density + 0.5f);
+    }
+
+    /**
+     * 检查并显示动态表情推荐
+     *
+     * @param inputText 用户输入的文本
+     */
+    private void checkStickerRecommend(String inputText) {
+        if (mStickerRecommendView == null) {
+            return;
+        }
+
+        if (inputText == null || inputText.length() < STICKER_RECOMMEND_MIN_LENGTH) {
+            hideStickerRecommendPopup();
+            return;
+        }
+
+        // 匹配表情
+        List<StickerItem> matchedStickers = matchStickers(inputText);
+
+        if (matchedStickers != null && !matchedStickers.isEmpty()) {
+            // 先加载表情数据（不启动定时器）
+            mStickerRecommendView.loadStickersOnly(matchedStickers);
+            // 显示 PopupWindow
+            showStickerRecommendPopup();
+        } else {
+            hideStickerRecommendPopup();
+        }
+    }
+
+    /**
+     * 匹配动态表情
+     *
+     * @param keyword 输入的关键词
+     * @return 匹配到的表情列表
+     */
+    private List<StickerItem> matchStickers(String keyword) {
+        List<StickerItem> result = new ArrayList<>();
+
+        if (keyword == null || keyword.isEmpty()) {
+            android.util.Log.d("StickerRecommend", "matchStickers: keyword is empty");
+            return result;
+        }
+
+        try {
+            // 获取所有表情分类
+            List<com.lqr.emoji.StickerCategory> categories = StickerManager.getInstance().getStickerCategories();
+
+            if (categories == null || categories.isEmpty()) {
+                android.util.Log.d("StickerRecommend", "matchStickers: no categories found");
+                return result;
+            }
+
+            android.util.Log.d("StickerRecommend", "matchStickers: checking " + categories.size() + " categories for keyword: " + keyword);
+
+            for (com.lqr.emoji.StickerCategory category : categories) {
+                if (category.getStickers() == null) {
+                    continue;
+                }
+
+                for (StickerItem item : category.getStickers()) {
+                    // 匹配文件名（不含扩展名）
+                    String fileName = item.getName();
+                    if (fileName != null) {
+                        // 移除文件扩展名
+                        String nameWithoutExt = fileName.contains(".")
+                            ? fileName.substring(0, fileName.lastIndexOf('.'))
+                            : fileName;
+
+                        // 精确匹配或包含匹配
+                        if (nameWithoutExt.equalsIgnoreCase(keyword)
+                            || nameWithoutExt.contains(keyword)
+//                            || keyword.contains(nameWithoutExt)
+                        ) {
+                            android.util.Log.d("StickerRecommend", "Matched: " + nameWithoutExt);
+                            result.add(item);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            android.util.Log.e("StickerRecommend", "Error matching stickers", e);
+        }
+
+        return result;
     }
 
 
