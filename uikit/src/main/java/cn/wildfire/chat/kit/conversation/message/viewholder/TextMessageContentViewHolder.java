@@ -7,13 +7,13 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.emoji2.widget.EmojiTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -110,11 +110,10 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         } else {
             refTextView.setVisibility(View.GONE);
         }
-        Context context = contentTextView.getContext();
         selectTextHelper = new SelectTextHelper.Builder(contentTextView)
-            .setCursorHandleColor(ContextCompat.getColor(context, R.color.colorAccent)) // 游标颜色
+            .setCursorHandleColor(Color.parseColor("#3B63E3")) // 游标颜色
             .setCursorHandleSizeInDp(22f) // 游标大小 单位dp
-            .setSelectedColor(ContextCompat.getColor(context, R.color.blue1)) // 选中文本的颜色
+            .setSelectedColor(Color.parseColor("#ADE1F6")) // 选中文本的颜色
             .setSelectAll(true) // 初次选中是否全选 default true
             .setScrollShow(false) // 滚动时是否继续显示 default true
             .setSelectedAllNoPop(true) // 已经全选无弹窗，设置了监听会回调 onSelectAllShowCustomPop 方法
