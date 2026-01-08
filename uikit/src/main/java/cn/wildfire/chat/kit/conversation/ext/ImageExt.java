@@ -82,7 +82,7 @@ public class ImageExt extends ConversationExt {
                             continue;
                         }
                         // 视频
-                        if (imageItem.mimeType.startsWith("video")) {
+                        if (imageItem.mimeType != null && imageItem.mimeType.startsWith("video")) {
                             File videoFile = new File(imageItem.path);
                             UIUtils.postTaskSafely(() -> messageViewModel.sendVideoMsg(conversation, toUsers(), videoFile));
                             continue;
