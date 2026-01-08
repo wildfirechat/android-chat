@@ -703,7 +703,7 @@ public class ConversationFragment extends Fragment implements
         }
         userViewModel.getUserInfo(userViewModel.getUserId(), true);
 
-        inputPanel.setupConversation(conversation, this.targetUser);
+        inputPanel.setupConversation(conversation, this.targetUser, Math.abs(rootLinearLayout.getKeyboardHeight()));
 
         if (conversation.type != Conversation.ConversationType.ChatRoom) {
             loadMessage(initialFocusedMessageId);

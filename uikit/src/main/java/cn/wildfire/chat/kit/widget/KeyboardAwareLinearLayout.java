@@ -239,6 +239,9 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
 
         int keyboardHeight = PreferenceManager.getDefaultSharedPreferences(getContext())
             .getInt("keyboard_height_portrait", defaultCustomKeyboardSize);
+        if (keyboardHeight != defaultCustomKeyboardSize) {
+            return keyboardHeight;
+        }
         return Util.clamp(keyboardHeight, minCustomKeyboardSize, getRootView().getHeight() - minCustomKeyboardTopMarginPortrait);
     }
 

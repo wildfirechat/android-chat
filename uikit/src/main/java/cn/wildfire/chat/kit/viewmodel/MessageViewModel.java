@@ -42,9 +42,7 @@ import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.remote.ChatManager;
@@ -356,6 +354,11 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         sendMessage(conversation, toUsers, imgContent);
     }
 
+    public void sendImgMsg(Conversation conversation, File imageFile) {
+//        File imageFileThumb = ImageUtils.genThumbImgFile(imageFile.getAbsolutePath());
+        this.sendImgMsg(conversation, null, null, imageFile);
+    }
+
     public void sendImgMsg(Conversation conversation, File imageFileThumb, File imageFileSource) {
         this.sendImgMsg(conversation, null, imageFileSource, imageFileSource);
     }
@@ -527,7 +530,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     }
 
     private void postNewMessage(List<UiMessage> messages) {
-        if(messageLiveData != null){
+        if (messageLiveData != null) {
             messageLiveData.setValue(messages);
         }
     }

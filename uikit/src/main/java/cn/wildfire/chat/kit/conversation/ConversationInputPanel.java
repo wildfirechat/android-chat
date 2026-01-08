@@ -67,7 +67,9 @@ import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.imagerecommend.ImageRecommendManager;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
+import cn.wildfire.chat.kit.widget.ImageRecommendView;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
@@ -102,6 +104,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     Button sendButton;
     StickerRecommendView mStickerRecommendView;
     private static final int STICKER_RECOMMEND_MIN_LENGTH = 2;  // 触发推荐的最小输入长度
+    ImageRecommendView mImageRecommendView;
+    private android.widget.PopupWindow mImageRecommendPopup;
 
     LinearLayout channelMenuContainerLinearLayout;
 
@@ -124,6 +128,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private FragmentActivity activity;
     private AudioRecorderPanel audioRecorderPanel;
     private PttPanel pttPanel;
+    private int keyboardHeight;
 
     private long lastTypingTime;
     private String draftString;
@@ -164,10 +169,17 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     }
 
+    @Deprecated
     public void setupConversation(Conversation conversation, String targetUser) {
+        setupConversation(conversation, targetUser, 0);
+    }
+
+    public void setupConversation(Conversation conversation, String targetUser, int keyboardHeight) {
+
         this.conversation = conversation;
         this.targetUser = targetUser;
         this.extension.bind(this.messageViewModel, conversation, targetUser);
+        this.keyboardHeight = keyboardHeight;
 
         setDraft();
         if (conversation.type == Conversation.ConversationType.Channel) {
@@ -329,6 +341,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         // 初始化表情推荐视图
         initStickerRecommendView();
 
+        // 初始化图片推荐视图
+        initImageRecommendView();
+
         editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -344,15 +359,27 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     void onExtImageViewClick() {
+        android.util.Log.d("ConversationInputPanel", "onExtImageViewClick: querying recent images");
         if (audioButton.getTag() != null) {
             return;
         }
+
         if (rootLinearLayout.getCurrentInput() == extContainerFrameLayout) {
             hideConversationExtension();
             rootLinearLayout.showSoftkey(editText);
         } else {
             emotionImageView.setImageResource(R.mipmap.ic_chat_emo);
             showConversationExtension();
+
+            // 只在显示扩展面板时才查询图片
+            ImageRecommendManager.getInstance().queryRecentImages(getContext(), (imagePath, uri) -> {
+                android.util.Log.d("ConversationInputPanel", "ImageRecommend callback: path=" + imagePath);
+                if (fragment.getActivity() != null && fragment.isResumed()) {
+                    fragment.getActivity().runOnUiThread(() -> {
+                        showImageRecommendPopup(imagePath);
+                    });
+                }
+            });
         }
     }
 
@@ -908,6 +935,145 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         messageViewModel.sendStickerMsg(conversation, toUsers(), stickerPath, remoteUrl);
     }
 
+    // ==================== 图片推荐功能 ====================
+
+    /**
+     * 初始化图片推荐视图
+     */
+    private void initImageRecommendView() {
+        android.util.Log.d("ConversationInputPanel", "initImageRecommendView: called");
+        // 创建推荐视图
+        mImageRecommendView = new ImageRecommendView(getContext());
+
+        // 设置回调
+        mImageRecommendView.setOnImageRecommendListener(new ImageRecommendView.OnImageRecommendListener() {
+            @Override
+            public void onImageRecommendSelected(String imagePath) {
+                android.util.Log.d("ConversationInputPanel", "ImageRecommend clicked: " + imagePath);
+                sendRecommendedImage(imagePath);
+                hideImageRecommendPopup();
+            }
+
+            @Override
+            public void onDismiss() {
+                android.util.Log.d("ConversationInputPanel", "ImageRecommend auto-hide triggered");
+                hideImageRecommendPopup();
+            }
+        });
+    }
+
+    /**
+     * 显示图片推荐 PopupWindow
+     *
+     * @param imagePath 图片路径
+     */
+    private void showImageRecommendPopup(String imagePath) {
+        android.util.Log.d("ConversationInputPanel", "showImageRecommendPopup: path=" + imagePath + ", view=" + mImageRecommendView + ", activity=" + fragment.getActivity());
+        if (mImageRecommendView == null || fragment.getActivity() == null || !fragment.isResumed()) {
+            android.util.Log.w("ConversationInputPanel", "showImageRecommendPopup: cannot show, view=" + mImageRecommendView + ", activity=" + fragment.getActivity() + ", resumed=" + fragment.isResumed());
+            return;
+        }
+
+        // 如果已经有 PopupWindow 在显示，先隐藏
+        hideImageRecommendPopup();
+
+        // 设置图片
+        mImageRecommendView.showImage(imagePath);
+
+        // 先测量视图尺寸
+        mImageRecommendView.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        );
+        mImageRecommendView.layout(0, 0, mImageRecommendView.getMeasuredWidth(), mImageRecommendView.getMeasuredHeight());
+
+        int popupWidth = mImageRecommendView.getMeasuredWidth();
+        int popupHeight = mImageRecommendView.getMeasuredHeight();
+
+        android.util.Log.d("ConversationInputPanel", "popup size: width=" + popupWidth + ", height=" + popupHeight);
+
+        // 创建 PopupWindow
+        PopupWindow popupWindow = new PopupWindow(
+            mImageRecommendView,
+            popupWidth,
+            popupHeight,
+            false
+        );
+
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setClippingEnabled(true);
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.sticker_recommend_bg));
+
+        // 设置为可见（在 PopupWindow 显示之前）
+        mImageRecommendView.setVisibility(VISIBLE);
+
+        // 使用 showAtLocation 精确定位，处理键盘弹出情况
+        if (extImageView != null) {
+            int[] location = new int[2];
+            extImageView.getLocationOnScreen(location);
+
+            // 默认位置：按钮上方
+            int x = location[0];
+            int y = location[1] - popupHeight;
+
+            // 如果有键盘高度，限制 popup 的最大 Y 坐标，避免显示在右下角
+            if (keyboardHeight > 0) {
+                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                int maxY = screenHeight - keyboardHeight - popupHeight - dpToPx(20);
+                y = Math.min(y, maxY);
+            }
+
+            // 确保 y 不会超出屏幕顶部
+            y = Math.max(y, dpToPx(16));
+
+            android.util.Log.d("ConversationInputPanel", "show image recommend popup at: x=" + x + ", y=" + y + ", keyboardHeight=" + keyboardHeight);
+            popupWindow.showAtLocation(extImageView, Gravity.NO_GRAVITY, x, y);
+        } else {
+            android.util.Log.w("ConversationInputPanel", "extImageView is null, cannot show popup");
+            return;
+        }
+
+        mImageRecommendPopup = popupWindow;
+    }
+
+    /**
+     * 获取状态栏高度
+     */
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /**
+     * 隐藏图片推荐 PopupWindow
+     */
+    private void hideImageRecommendPopup() {
+        if (mImageRecommendPopup != null && mImageRecommendPopup.isShowing()) {
+            mImageRecommendPopup.dismiss();
+            mImageRecommendPopup = null;
+        }
+    }
+
+    /**
+     * 发送推荐的图片
+     *
+     * @param imagePath 图片路径
+     */
+    private void sendRecommendedImage(String imagePath) {
+        java.io.File imageFile = new java.io.File(imagePath);
+        if (!imageFile.exists()) {
+            return;
+        }
+
+        messageViewModel.sendImgMsg(conversation, imageFile);
+        hideImageRecommendPopup();
+        hideSoftKeyboard();
+    }
+
     /**
      * 隐藏键盘
      */
@@ -948,9 +1114,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         List<StickerItem> matchedStickers = matchStickers(inputText);
 
         if (matchedStickers != null && !matchedStickers.isEmpty()) {
-            // 先加载表情数据（不启动定时器）
             mStickerRecommendView.loadStickersOnly(matchedStickers);
-            // 显示 PopupWindow
             showStickerRecommendPopup();
         } else {
             hideStickerRecommendPopup();
@@ -1014,6 +1178,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         return result;
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        hideImageRecommendPopup();
+        ImageRecommendManager.getInstance().clearRecommendedImages();
+    }
 
     public interface OnConversationInputPanelStateChangeListener {
         /**
