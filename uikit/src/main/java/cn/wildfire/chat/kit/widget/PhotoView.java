@@ -72,6 +72,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     private TranslateUpAnimator mTranslateUpAnimator;
 
     private OnDragListener mDragListener;
+    private OnLongClickListener mLongClickListener;
 
     public PhotoView(Context context) {
         this(context, null);
@@ -137,6 +138,13 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                 }
                 return true;
             }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                if (mLongClickListener != null) {
+                    mLongClickListener.onLongClick(PhotoView.this);
+                }
+            }
         });
     }
 
@@ -175,6 +183,11 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     @SuppressWarnings("unused")
     public void setOnDragListener(OnDragListener listener) {
         mDragListener = listener;
+    }
+
+    @Override
+    public void setOnLongClickListener(OnLongClickListener l) {
+        mLongClickListener = l;
     }
 
     @SuppressLint("ClickableViewAccessibility")

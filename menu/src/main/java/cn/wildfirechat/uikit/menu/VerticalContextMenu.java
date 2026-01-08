@@ -273,7 +273,6 @@ public class VerticalContextMenu extends PopupWindow {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             setBackgroundDrawable(new BitmapDrawable());
         }
-        menuLayout.setBackgroundResource(R.layout.popup_grid_menu);
         showAsDropDown(anchorView, -20, 20, Gravity.RIGHT | Gravity.TOP);
     }
 

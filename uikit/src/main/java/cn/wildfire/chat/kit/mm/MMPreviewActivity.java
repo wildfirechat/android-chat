@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.mm;
 
+import static cn.wildfire.chat.kit.mm.MediaEntry.TYPE_VIDEO;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -26,26 +28,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.zxing.Result;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
+import cn.wildfire.chat.kit.qrcode.QRCodeHelper;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
 import cn.wildfire.chat.kit.widget.PhotoView;
-import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
@@ -71,6 +79,9 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     protected WaterMarkView mWmv;
 
     public static final String TAG = "MMPreviewActivity";
+
+    // 长按菜单和二维码识别
+    private volatile int recognitionPosition = -1; // 标记当前识别的图片位置
 
 
     @Override
@@ -152,6 +163,9 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
         @Override
         public void onPageSelected(int position) {
+            // 取消之前的二维码识别任务
+            recognitionPosition = -1;
+
             View view = views.get(position % 3);
             if (view == null) {
                 // pending layout
@@ -336,33 +350,14 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
                     Toast.makeText(this, getString(R.string.saving_image), Toast.LENGTH_SHORT).show();
-                    File file = null;
-                    if (entry.getMessage() != null) {
-                        file = DownloadManager.mediaMessageContentFile(entry.getMessage());
-                    } else {
-                        String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
-                        name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
-                        file = new File(Config.FILE_SAVE_DIR, name);
-                    }
-                    if (file == null) {
-                        Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_failed_null_file), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    if (file.exists()) {
-                        saveMedia2Album(file, true);
-                    } else {
-                        File finalFile = file;
-                        DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
-                            @Override
-                            public void onUiSuccess(File file1) {
-                                if (isFinishing()) {
-                                    return;
-                                }
-                                saveMedia2Album(finalFile, true);
-                            }
-                        });
-                    }
+                    downloadMediaFile(entry, file -> {
+                        if (file != null) {
+                            saveMedia2Album(file, true);
+                        } else {
+                            Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_failed_null_file), Toast.LENGTH_LONG).show();
+                        }
+                        return null;
+                    });
                 });
             }
         } else {
@@ -378,6 +373,12 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
                 .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
                 .into(photoView);
         }
+
+        // 添加长按监听器
+        photoView.setOnLongClickListener(v -> {
+            showPopupMenu();
+            return true;
+        });
     }
 
     @Override
@@ -425,7 +426,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         }
         if (secret) {
             for (MediaEntry entry : entries) {
-                if (entry.getType() == MediaEntry.TYPE_VIDEO) {
+                if (entry.getType() == TYPE_VIDEO) {
                     File secretVideoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
                     if (secretVideoFile.exists()) {
                         secretVideoFile.delete();
@@ -449,6 +450,130 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             ImageUtils.saveMedia2Album(this, file, isImage);
             Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_success), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void showPopupMenu() {
+        List<String> menuItems = new ArrayList<>();
+        menuItems.add(getString(R.string.message_forward));
+
+        MediaEntry currentEntry = adapter.getEntry(viewPager.getCurrentItem());
+        if (currentEntry.getType() == MediaEntry.TYPE_IMAGE) {
+            menuItems.add(getString(R.string.recognize_qrcode));
+        }
+
+        if (menuItems.isEmpty()) {
+            return;
+        }
+
+        new MaterialDialog.Builder(this)
+            .items(menuItems)
+            .itemsCallback((dialog, view, which, text) -> {
+                if (which == 0) {
+                    handleForward();
+                } else if (which == 1) {
+                    handleQRCodeRecognition();
+                }
+            })
+            .show();
+    }
+
+    /**
+     * 处理转发功能
+     */
+    private void handleForward() {
+        MediaEntry entry = adapter.getEntry(viewPager.getCurrentItem());
+        Toast.makeText(this, "下载中", Toast.LENGTH_SHORT).show();
+        downloadMediaFile(entry, file -> {
+            if (file == null) {
+                return null;
+            }
+            // 启动转发界面
+            Intent intent = new Intent(MMPreviewActivity.this, ForwardActivity.class);
+            Message message = new Message();
+            message.content = new ImageMessageContent(file.getAbsolutePath());
+            ((ImageMessageContent) message.content).remoteUrl = entry.getMediaUrl();
+            intent.putExtra("message", message);
+            startActivity(intent);
+            return null;
+        });
+
+    }
+
+    private void downloadMediaFile(MediaEntry entry, Function<File, Void> function) {
+        File file;
+        if (entry.getMessage() != null) {
+            file = DownloadManager.mediaMessageContentFile(entry.getMessage());
+        } else {
+            String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
+            name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
+            file = new File(Config.FILE_SAVE_DIR, name);
+        }
+        if (file == null) {
+            Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_failed_null_file), Toast.LENGTH_LONG).show();
+            function.apply(null);
+            return;
+        }
+
+        if (file.exists()) {
+            function.apply(file);
+        } else {
+            DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
+                @Override
+                public void onUiSuccess(File file1) {
+                    if (isFinishing()) {
+                        function.apply(file1);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 处理二维码识别
+     */
+    private void handleQRCodeRecognition() {
+        MediaEntry entry = adapter.getEntry(viewPager.getCurrentItem());
+
+        if (entry.getType() != MediaEntry.TYPE_IMAGE) {
+            return;
+        }
+
+        downloadMediaFile(entry, file -> {
+            if (file == null) {
+                Toast.makeText(MMPreviewActivity.this, R.string.image_file_not_exist, Toast.LENGTH_SHORT).show();
+            } else {
+                recognitionPosition = viewPager.getCurrentItem();
+
+                // 显示加载对话框
+                MaterialDialog loadingDialog = new MaterialDialog.Builder(MMPreviewActivity.this)
+                    .content(R.string.recognizing_qrcode)
+                    .progress(true, 0)
+                    .cancelable(true)
+                    .build();
+                loadingDialog.show();
+
+                // 后台线程识别二维码
+                new Thread(() -> {
+                    Result result = QRCodeHelper.decodeQR(file.getAbsolutePath());
+
+                    runOnUiThread(() -> {
+                        loadingDialog.dismiss();
+
+                        // 检查用户是否已滑动到其他图片
+                        if (recognitionPosition != viewPager.getCurrentItem()) {
+                            return; // 用户已切换，忽略结果
+                        }
+
+                        if (result != null && !TextUtils.isEmpty(result.getText())) {
+                            WfcScheme.handleQRCodeResult(MMPreviewActivity.this,result.getText());
+                        } else {
+                            Toast.makeText(MMPreviewActivity.this, R.string.qr_code_recognition_failed, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }).start();
+            }
+            return null;
+        });
     }
 
     public static void previewMedia(Context context, List<MediaEntry> entries, int current) {

@@ -25,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -35,16 +34,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.king.zxing.Intents;
 
-import cn.wildfirechat.uikit.permission.PermissionKit;
-import cn.wildfirechat.uikit.menu.PopupMenu;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
@@ -52,7 +45,6 @@ import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.contact.ContactListActivity;
 import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -65,16 +57,13 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
-import cn.wildfire.chat.kit.group.GroupInfoActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
-import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
@@ -90,6 +79,8 @@ import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.uikit.menu.PopupMenu;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity {
@@ -568,72 +559,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void onScanPcQrCode(String qrcode) {
-        String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
-        String value = qrcode.substring(qrcode.lastIndexOf('/') + 1, qrcode.indexOf('?') > 0 ? qrcode.indexOf('?') : qrcode.length());
-        Uri uri = Uri.parse(qrcode);
-        Set<String> queryNames = uri.getQueryParameterNames();
-        Map<String, Object> params = new HashMap<>();
-        for (String query : queryNames) {
-            params.put(query, uri.getQueryParameter(query));
-        }
-        switch (prefix) {
-            case WfcScheme.QR_CODE_PREFIX_PC_SESSION:
-                pcLogin(value);
-                break;
-            case WfcScheme.QR_CODE_PREFIX_USER:
-                showUser(value);
-                break;
-            case WfcScheme.QR_CODE_PREFIX_GROUP:
-                joinGroup(value, params);
-                break;
-            case WfcScheme.QR_CODE_PREFIX_CHANNEL:
-                subscribeChannel(value);
-                break;
-            case WfcScheme.QR_CODE_PREFIX_CONFERENCE:
-                joinConference(value, params);
-                break;
-            default:
-                Toast.makeText(this, "qrcode: " + qrcode, Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
-
-    private void pcLogin(String token) {
-        Intent intent = new Intent(this, PCLoginActivity.class);
-        intent.putExtra("token", token);
-        startActivity(intent);
-    }
-
-    private void showUser(String uid) {
-
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        UserInfo userInfo = userViewModel.getUserInfo(uid, true);
-        if (userInfo == null) {
-            return;
-        }
-        Intent intent = new Intent(this, UserInfoActivity.class);
-        intent.putExtra("userInfo", userInfo);
-        startActivity(intent);
-    }
-
-    private void joinGroup(String groupId, Map<String, Object> params) {
-        Intent intent = new Intent(this, GroupInfoActivity.class);
-        intent.putExtra("groupId", groupId);
-        intent.putExtra("from", (String) params.get("from"));
-        startActivity(intent);
-    }
-
-    private void subscribeChannel(String channelId) {
-        Intent intent = new Intent(this, ChannelInfoActivity.class);
-        intent.putExtra("channelId", channelId);
-        startActivity(intent);
-    }
-
-    private void joinConference(String conferenceId, Map<String, Object> params) {
-        Intent intent = new Intent(this, ConferenceInfoActivity.class);
-        intent.putExtra("conferenceId", conferenceId);
-        intent.putExtra("password", (String) params.get("pwd"));
-        startActivity(intent);
+        WfcScheme.handleQRCodeResult(this, qrcode);
     }
 
     private boolean checkDisplayName() {
