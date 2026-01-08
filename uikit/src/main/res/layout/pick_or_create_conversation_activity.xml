@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,7 +9,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <FrameLayout
             android:id="@+id/containerFrameLayout"
@@ -16,16 +18,61 @@
             android:layout_height="match_parent"
             android:paddingTop="50dp" />
 
-        <EditText
-            android:id="@+id/searchEditText"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="#80ffffff"
-            android:drawableLeft="@mipmap/ic_search1"
-            android:drawablePadding="10dp"
-            android:hint="@string/search"
-            android:paddingLeft="10dp"
-            android:textColorHint="@color/gray2"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:background="#ffffff"
+            android:elevation="8dp"
+            android:gravity="center">
+
+            <cn.wildfire.chat.kit.widget.MaxSizeRecyclerView
+                android:id="@+id/selectedAvatarsRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="16dp"
+                app:maxWidth="300dp" />
+
+            <EditText
+                android:id="@+id/searchEditText"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:drawableLeft="@mipmap/ic_search1"
+                android:drawablePadding="10dp"
+                android:hint="@string/search"
+                android:paddingLeft="10dp"
+                android:background="@null"
+                android:textColorHint="@color/gray2"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/multiSelectActionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:background="@color/white"
+            android:elevation="8dp"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/selectedCountTextView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="已选择0项" />
+
+            <Button
+                android:id="@+id/sendButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="8dp"
+                android:text="发送(0)"
+                android:enabled="false" />
+        </LinearLayout>
     </FrameLayout>
 </LinearLayout>

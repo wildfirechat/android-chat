@@ -35,11 +35,37 @@ import cn.wildfirechat.remote.GetConversationListCallback;
 public class PickOrCreateConversationFragment extends Fragment implements PickOrCreateConversationAdapter.OnConversationItemClickListener, PickOrCreateConversationAdapter.OnNewConversationItemClickListener {
     private static final int REQUEST_CODE_PICK_CONVERSATION_TARGET = 100;
     RecyclerView recyclerView;
-
+    private PickOrCreateConversationAdapter adapter;
     private OnPickOrCreateConversationListener listener;
+    private OnSelectionChangedListener selectionChangedListener;
 
     public void setListener(OnPickOrCreateConversationListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnSelectionChangedListener(OnSelectionChangedListener listener) {
+        this.selectionChangedListener = listener;
+    }
+
+    public void setMultiSelectMode(boolean isMultiSelect) {
+        if (adapter != null) {
+            adapter.setMode(isMultiSelect ?
+                PickOrCreateConversationAdapter.MODE_MULTI :
+                PickOrCreateConversationAdapter.MODE_SINGLE);
+            if (!isMultiSelect) {
+                adapter.clearSelections();
+            }
+        }
+    }
+
+    public void toggleConversationSelection(ConversationInfo conversation) {
+        if (adapter != null) {
+            adapter.toggleSelection(conversation);
+        }
+    }
+
+    public List<ConversationInfo> getSelectedConversations() {
+        return adapter != null ? adapter.getSelectedConversations() : null;
     }
 
     @Nullable
@@ -59,7 +85,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     private void init() {
         ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        PickOrCreateConversationAdapter adapter = new PickOrCreateConversationAdapter(this);
+        adapter = new PickOrCreateConversationAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -80,6 +106,11 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
         });
         adapter.setOnConversationItemClickListener(this);
         adapter.setNewConversationItemClickListener(this);
+        adapter.setOnSelectionChangedListener(count -> {
+            if (selectionChangedListener != null) {
+                selectionChangedListener.onSelectionChanged(count);
+            }
+        });
     }
 
     @Override
@@ -119,5 +150,9 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
 
     public interface OnPickOrCreateConversationListener {
         void onPickOrCreateConversation(Conversation conversation);
+    }
+
+    public interface OnSelectionChangedListener {
+        void onSelectionChanged(int count);
     }
 }

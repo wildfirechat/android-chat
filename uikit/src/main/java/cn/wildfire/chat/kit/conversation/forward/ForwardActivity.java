@@ -4,41 +4,37 @@
 
 package cn.wildfire.chat.kit.conversation.forward;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
-import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.utils.WfcTextUtils;
-import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationFragment;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.model.ConversationInfo;
 
 public class ForwardActivity extends PickOrCreateConversationActivity {
     private List<Message> messages;
     private ForwardViewModel forwardViewModel;
-    private UserViewModel userViewModel;
-    private GroupViewModel groupViewModel;
+
+    private LinearLayout multiSelectActionLayout;
+    private TextView selectedCountTextView;
+    private Button sendButton;
 
     @Override
     protected void afterViews() {
@@ -55,79 +51,182 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
             finish();
         }
         forwardViewModel =new ViewModelProvider(this).get(ForwardViewModel.class);
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+
+        multiSelectActionLayout = findViewById(R.id.multiSelectActionLayout);
+        selectedCountTextView = findViewById(R.id.selectedCountTextView);
+        sendButton = findViewById(R.id.sendButton);
+
+        sendButton.setOnClickListener(v -> handleMultiSelectForward());
+
+        setOnConversationRemovedListener(conversation -> {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+            if (fragment instanceof PickOrCreateConversationFragment) {
+                PickOrCreateConversationFragment pickFragment = (PickOrCreateConversationFragment) fragment;
+                pickFragment.toggleConversationSelection(conversation);
+            }
+        });
+
+        new Handler(Looper.getMainLooper()).post(() -> setupFragmentListener());
+    }
+
+    private void setupFragmentListener() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (fragment instanceof PickOrCreateConversationFragment) {
+            PickOrCreateConversationFragment pickFragment = (PickOrCreateConversationFragment) fragment;
+            pickFragment.setOnSelectionChangedListener(count -> {
+                runOnUiThread(() -> {
+                    selectedCountTextView.setText("已选择" + count + "项");
+                    sendButton.setText("发送(" + count + ")");
+                    sendButton.setEnabled(count > 0);
+
+                    List<ConversationInfo> selected = pickFragment.getSelectedConversations();
+                    updateSelectedAvatars(selected);
+                });
+            });
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.forward, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menuMultiSelect) {
+            toggleMultiSelectMode();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem multiSelectItem = menu.findItem(R.id.menuMultiSelect);
+        if (multiSelectItem != null) {
+            multiSelectItem.setTitle(isMultiSelectMode ? "取消多选" : "多选");
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void toggleMultiSelectMode() {
+        isMultiSelectMode = !isMultiSelectMode;
+        setMultiSelectMode(isMultiSelectMode);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (fragment instanceof PickOrCreateConversationFragment) {
+            PickOrCreateConversationFragment pickFragment = (PickOrCreateConversationFragment) fragment;
+            pickFragment.setMultiSelectMode(isMultiSelectMode);
+        }
+
+        multiSelectActionLayout.setVisibility(isMultiSelectMode ? LinearLayout.VISIBLE : LinearLayout.GONE);
+
+        if (!isMultiSelectMode) {
+            updateSelectedAvatars(null);
+        }
+
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    protected void onSearchResultClicked(Conversation conversation, String name, String portrait) {
+        if (!isMultiSelectMode) {
+            super.onSearchResultClicked(conversation, name, portrait);
+            return;
+        }
+
+        // 退出搜索
+        clearSearch();
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (fragment instanceof PickOrCreateConversationFragment) {
+            PickOrCreateConversationFragment pickFragment = (PickOrCreateConversationFragment) fragment;
+            ConversationInfo info = new ConversationInfo();
+            info.conversation = conversation;
+
+            // 如果是搜索结果，暂时把头像存起来，以便在已选列表中显示
+            String key = conversation.type + "_" + conversation.target;
+            tempPortraitMap.put(key, portrait);
+
+            pickFragment.toggleConversationSelection(info);
+        }
     }
 
     @Override
     protected void onPickOrCreateConversation(Conversation conversation) {
+        if (isMultiSelectMode) {
+            return;
+        }
         forward(conversation);
     }
 
-    public void forward(Conversation conversation) {
-        switch (conversation.type) {
-            case Single:
-                UserInfo userInfo = userViewModel.getUserInfo(conversation.target, false);
-                forward(userInfo.displayName, userInfo.portrait, conversation);
-                break;
-            case Group:
-                GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                forward(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name, groupInfo.portrait, conversation);
-                break;
-            default:
-                break;
+    private void handleMultiSelectForward() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (!(fragment instanceof PickOrCreateConversationFragment)) {
+            return;
         }
 
+        PickOrCreateConversationFragment pickFragment = (PickOrCreateConversationFragment) fragment;
+        List<ConversationInfo> selectedConversations = pickFragment.getSelectedConversations();
+
+        if (selectedConversations == null || selectedConversations.isEmpty()) {
+            Toast.makeText(this, "请选择转发目标", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        List<Conversation> targetConversations = new ArrayList<>();
+        for (ConversationInfo info : selectedConversations) {
+            targetConversations.add(info.conversation);
+        }
+
+
+        ForwardBottomSheetDialogFragment fragmentDialog = ForwardBottomSheetDialogFragment.newInstance(targetConversations, messages);
+        fragmentDialog.setOnSendListener(extraMessage -> {
+            List<Message> msgList = new ArrayList<>(messages);
+            if (!TextUtils.isEmpty(extraMessage)) {
+                TextMessageContent content = new TextMessageContent(extraMessage);
+                Message extraMsg = new Message();
+                extraMsg.content = content;
+                msgList.add(extraMsg);
+            }
+
+            forwardViewModel.forwardToMultipleTargets(targetConversations, msgList.toArray(new Message[0]))
+                .observe(ForwardActivity.this, result -> {
+                    if (result.isSuccess()) {
+                        Toast.makeText(ForwardActivity.this, "转发成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(ForwardActivity.this, "转发失败: " + result.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        });
+        fragmentDialog.show(getSupportFragmentManager(), "forward_dialog");
     }
 
-    private void forward(String targetName, String targetPortrait, Conversation targetConversation) {
-        ForwardPromptView view = new ForwardPromptView(this);
-        if (messages.size() == 1) {
-            Message message = messages.get(0);
-            if (message.content instanceof ImageMessageContent) {
-                view.bind(targetName, targetPortrait, ((ImageMessageContent) message.content).getThumbnail());
-            } else if (message.content instanceof VideoMessageContent) {
-                view.bind(targetName, targetPortrait, ((VideoMessageContent) message.content).getThumbnail());
-            } else if (message.content instanceof CompositeMessageContent) {
-                view.bind(targetName, targetPortrait, getString(R.string.forward_chat_record, ((CompositeMessageContent) message.content).getTitle()));
-            } else {
-                view.bind(targetName, targetPortrait, WfcTextUtils.htmlToText(message.digest()));
-            }
-        } else {
-            view.bind(targetName, targetPortrait, getString(R.string.forward_batch_messages, messages.size()));
-        }
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .customView(view, false)
-            .negativeText(R.string.forward_cancel)
-            .positiveText(R.string.forward_send)
-            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    Message extraMsg = null;
-                    if (!TextUtils.isEmpty(view.getEditText())) {
-                        TextMessageContent content = new TextMessageContent(view.getEditText());
-                        extraMsg = new Message();
-                        extraMsg.content = content;
-                    }
-                    if (extraMsg != null) {
-                        messages.add(extraMsg);
-                    }
-                    forwardViewModel.forward(targetConversation, messages.toArray(new Message[0]))
-                        .observe(ForwardActivity.this, new Observer<OperateResult<Integer>>() {
-                            @Override
-                            public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {
-                                if (integerOperateResult.isSuccess()) {
-                                    Toast.makeText(ForwardActivity.this, R.string.forward_success, Toast.LENGTH_SHORT).show();
-                                    finish();
-                                } else {
-                                    Toast.makeText(ForwardActivity.this, getString(R.string.forward_failed, integerOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+    public void forward(Conversation targetConversation) {
+        List<Conversation> targetConversations = new ArrayList<>();
+        targetConversations.add(targetConversation);
 
-                }
-            })
-            .build();
-        dialog.show();
+        ForwardBottomSheetDialogFragment fragmentDialog = ForwardBottomSheetDialogFragment.newInstance(targetConversations, messages);
+        fragmentDialog.setOnSendListener(extraMessage -> {
+            List<Message> msgList = new ArrayList<>(messages);
+            if (!TextUtils.isEmpty(extraMessage)) {
+                TextMessageContent content = new TextMessageContent(extraMessage);
+                Message extraMsg = new Message();
+                extraMsg.content = content;
+                msgList.add(extraMsg);
+            }
+            forwardViewModel.forward(targetConversation, msgList.toArray(new Message[0]))
+                .observe(ForwardActivity.this, integerOperateResult -> {
+                    if (integerOperateResult.isSuccess()) {
+                        Toast.makeText(ForwardActivity.this, R.string.forward_success, Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(ForwardActivity.this, getString(R.string.forward_failed, integerOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        });
+        fragmentDialog.show(getSupportFragmentManager(), "forward_dialog");
     }
 }
