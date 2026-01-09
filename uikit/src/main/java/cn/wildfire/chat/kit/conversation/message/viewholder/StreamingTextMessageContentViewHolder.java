@@ -9,14 +9,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.lqr.emoji.EmojiCompatUtils;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -25,8 +22,6 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfire.chat.kit.widget.LinkClickListener;
-import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
@@ -37,7 +32,7 @@ import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
     StreamingTextGeneratedMessageContent.class
 })
 @EnableContextMenu
-public class StreamingTextMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class StreamingTextMessageContentViewHolder extends SelectableTextViewHolder {
     TextView contentTextView;
     ProgressBar progressBar;
 
@@ -58,6 +53,7 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
 
     @Override
     public void onBind(UiMessage message) {
+        super.onBind(message);
         MessageContent messageContent = message.message.content;
         String content = this.streamingTextContent();
         if (messageContent instanceof StreamingTextGeneratingMessageContent) {
@@ -75,18 +71,16 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
             if (spanned != null && spanned.length() > 0) {
                 contentTextView.setText(spanned);
             } else {
-                EmojiCompatUtils.identifyFaceExpression(fragment.getContext(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                contentTextView.setText(content);
             }
         } else {
-            EmojiCompatUtils.identifyFaceExpression(fragment.getContext(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+            contentTextView.setText(content);
         }
-        contentTextView.setMovementMethod(new LinkTextViewMovementMethod(new LinkClickListener() {
-            @Override
-            public boolean onLinkClick(String link) {
-                WfcWebViewActivity.loadUrl(fragment.getContext(), "", link);
-                return true;
-            }
-        }));
+    }
+
+    @Override
+    protected TextView selectableTextView() {
+        return contentTextView;
     }
 
     public void onClick(View view) {
@@ -95,7 +89,7 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_COPY, confirm = false, priority = 12)
-    public void clip(View itemView, UiMessage message) {
+    public void copy(View itemView, UiMessage message) {
         ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager == null) {
             return;
