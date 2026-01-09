@@ -36,7 +36,8 @@ public class TimeUtils {
                 return getTime(msgTime);
             } else if (msgCalendar.get(Calendar.DAY_OF_YEAR) + 1 == nowCalendar.get(Calendar.DAY_OF_YEAR)) {
                 //昨天
-                return "昨天 " + getTime(msgTime);
+                //return "昨天 " + getTime(msgTime);
+                return "昨天";
             } else if (nowCalendar.get(Calendar.WEEK_OF_YEAR) == msgCalendar.get(Calendar.WEEK_OF_YEAR)) {
                 //星期
                 switch (msgTime.getDayOfWeek()) {
@@ -60,10 +61,12 @@ public class TimeUtils {
                 return "";
             } else {
                 //12月22日
-                return msgTime.toString("MM月dd日 HH:mm");
+                //return msgTime.toString("MM月dd日 HH:mm");
+                return msgTime.toString("MM月dd日");
             }
         } else {
-            return msgTime.toString("yyyy年MM月dd日 HH:mm");
+            //return msgTime.toString("yyyy年MM月dd日 HH:mm");
+            return msgTime.toString("yyyy年MM月dd日");
         }
     }
 

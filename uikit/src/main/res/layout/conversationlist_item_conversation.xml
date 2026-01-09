@@ -18,6 +18,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
             android:src="@mipmap/ic_launcher" />
         <!--未读消息数-->
         <TextView

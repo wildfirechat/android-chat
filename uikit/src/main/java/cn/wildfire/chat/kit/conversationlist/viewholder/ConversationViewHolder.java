@@ -122,7 +122,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         conversationPromptText = "";
 
         if (roundedCornerTransformation == null) {
-            roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4));
+            roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 6));
         }
 
         itemView.setBackgroundResource(conversationInfo.top > 0 ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
