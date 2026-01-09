@@ -7,9 +7,12 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -52,6 +55,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     TextView refTextView;
     SelectTextHelper selectTextHelper;
     long lastSelectedUpdateTimestamp = 0;
+    CharSequence selectedText;
 
     private QuoteInfo quoteInfo;
 
@@ -126,11 +130,19 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
             @Override
             public void onTextSelected(CharSequence content) {
                 Log.d("TODO", "onTextSelected: " + content);
+                selectedText = content;
             }
 
             @Override
             public void onClickUrl(String url) {
-                Log.d("TODO", "onClickUrl: " + url);
+                if (url.startsWith("http")) {
+                    WfcWebViewActivity.loadUrl(fragment.getContext(), "", url);
+                } else {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    fragment.startActivity(intent);
+                }
             }
 
             @Override
@@ -182,21 +194,28 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         }
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
-    public void clip(View itemView, UiMessage message) {
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_COPY, confirm = false, priority = 12)
+    public void copy(View itemView, UiMessage message) {
         ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager == null) {
             return;
         }
-        TextMessageContent content = (TextMessageContent) message.message.content;
-        ClipData clipData = ClipData.newPlainText("messageContent", content.getContent());
+
+        CharSequence text;
+        if (!TextUtils.isEmpty(selectedText)) {
+            text = selectedText;
+        } else {
+            TextMessageContent content = (TextMessageContent) message.message.content;
+            text = content.getContent();
+        }
+        ClipData clipData = ClipData.newPlainText("messageContent", text);
         clipboardManager.setPrimaryClip(clipData);
     }
 
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
-        if (MessageContextMenuItemTags.TAG_CLIP.equals(tag)) {
+        if (MessageContextMenuItemTags.TAG_COPY.equals(tag)) {
             return context.getString(R.string.message_copy);
         }
         return super.contextMenuTitle(context, tag);

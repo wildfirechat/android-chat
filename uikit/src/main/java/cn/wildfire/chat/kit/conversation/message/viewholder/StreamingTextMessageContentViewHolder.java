@@ -94,7 +94,7 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
         WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), content);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_COPY, confirm = false, priority = 12)
     public void clip(View itemView, UiMessage message) {
         ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager == null) {
@@ -106,7 +106,7 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
-        if (MessageContextMenuItemTags.TAG_CLIP.equals(tag)) {
+        if (MessageContextMenuItemTags.TAG_COPY.equals(tag)) {
             return context.getString(R.string.message_copy);
         }
         return super.contextMenuTitle(context, tag);

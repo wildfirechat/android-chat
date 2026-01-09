@@ -320,7 +320,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             case MessageContextMenuItemTags.TAG_FAV:
                 resId = R.mipmap.ic_msg_collect;
                 break;
-            case MessageContextMenuItemTags.TAG_CLIP:
+            case MessageContextMenuItemTags.TAG_COPY:
                 resId = R.mipmap.ic_msg_copy;
                 break;
             case MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT:
