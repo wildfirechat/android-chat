@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -280,7 +279,10 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         }
         stateTextView.setVisibility(View.VISIBLE);
         stateTextView.setText(R.string.voice_rec);
-        stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
+        //stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
+
+        // 重置当前音量级别
+        currentVolumeLevel = 0;
     }
 
     private void hideRecording() {
@@ -333,12 +335,12 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         stateTextView.setText(R.string.voice_cancel);
         stateTextView.setBackgroundResource(R.drawable.bg_voice_cancel);
 
-        // 给整个容器添加缩放动画
+        // 给整个容器添加更柔和的缩放动画
         if (recordingContentView != null) {
             recordingContentView.animate()
-                .scaleX(1.05f)
-                .scaleY(1.05f)
-                .setDuration(150)
+                .scaleX(1.03f)
+                .scaleY(1.03f)
+                .setDuration(180)
                 .start();
         }
     }
@@ -353,11 +355,24 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             recordingContentView.animate()
                 .scaleX(1.0f)
                 .scaleY(1.0f)
-                .setDuration(150)
+                .setDuration(180)
                 .start();
         }
 
-        showRecording();
+        // 直接切换UI元素，避免重新显示
+        if (stateImageView != null) {
+            stateImageView.setVisibility(View.VISIBLE);
+            stateImageView.setImageResource(R.mipmap.ic_volume_1);
+        }
+        if (stateTextView != null) {
+            stateTextView.setVisibility(View.VISIBLE);
+            stateTextView.setText(R.string.voice_rec);
+            stateTextView.setBackground(null);
+//            stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
+        }
+        if (countDownTextView != null) {
+            countDownTextView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -370,12 +385,10 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         stateImageView.setVisibility(View.GONE);
         stateTextView.setVisibility(View.VISIBLE);
         stateTextView.setText(R.string.voice_rec);
-        stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
+//        stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
         countDownTextView.setText(String.format("%s", seconds));
         countDownTextView.setVisibility(View.VISIBLE);
 
-        // 添加倒计时脉冲动画
-        animateCountDown(countDownTextView);
     }
 
     private void timeout() {
@@ -429,7 +442,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         }
 
         volumeAnimator = ValueAnimator.ofInt(currentVolumeLevel, targetLevel);
-        volumeAnimator.setDuration(150);
+        volumeAnimator.setDuration(200);
         volumeAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         volumeAnimator.addUpdateListener(animation -> {
             int level = (int) animation.getAnimatedValue();
@@ -469,18 +482,19 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         }
 
         if (stateImageView != null) {
+            // 先设置图标
             stateImageView.setImageResource(iconRes);
-            // 添加轻微的缩放动画
+            // 添加更微妙的缩放动画
             stateImageView.animate()
-                .scaleX(1.1f)
-                .scaleY(1.1f)
-                .setDuration(100)
+                .scaleX(1.05f)
+                .scaleY(1.05f)
+                .setDuration(120)
                 .withEndAction(() -> {
                     if (stateImageView != null) {
                         stateImageView.animate()
                             .scaleX(1.0f)
                             .scaleY(1.0f)
-                            .setDuration(100)
+                            .setDuration(120)
                             .start();
                     }
                 })
@@ -528,8 +542,6 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         TO_TIMEOUT,
     }
 
-    // ============= 动画方法 =============
-
     /**
      * 显示录音窗口的入场动画
      */
@@ -540,18 +552,20 @@ public class AudioRecorderPanel implements View.OnTouchListener {
 
         // 设置初始状态
         recordingContentView.setAlpha(0f);
-        recordingContentView.setScaleX(0.5f);
-        recordingContentView.setScaleY(0.5f);
+        recordingContentView.setScaleX(0.7f);
+        recordingContentView.setScaleY(0.7f);
+        recordingContentView.setTranslationY(20f);
 
         // 创建动画集合
         AnimatorSet animatorSet = new AnimatorSet();
         ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(recordingContentView, "alpha", 0f, 1f);
-        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleX", 0.5f, 1f);
-        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleY", 0.5f, 1f);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleX", 0.7f, 1f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleY", 0.7f, 1f);
+        ObjectAnimator translationYAnimator = ObjectAnimator.ofFloat(recordingContentView, "translationY", 20f, 0f);
 
-        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator);
-        animatorSet.setDuration(250);
-        animatorSet.setInterpolator(new OvershootInterpolator(1.5f));
+        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator, translationYAnimator);
+        animatorSet.setDuration(300);
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         animatorSet.start();
     }
 
@@ -568,11 +582,12 @@ public class AudioRecorderPanel implements View.OnTouchListener {
 
         AnimatorSet animatorSet = new AnimatorSet();
         ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(recordingContentView, "alpha", 1f, 0f);
-        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleX", 1f, 0.5f);
-        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleY", 1f, 0.5f);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleX", 1f, 0.8f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleY", 1f, 0.8f);
+        ObjectAnimator translationYAnimator = ObjectAnimator.ofFloat(recordingContentView, "translationY", 0f, -20f);
 
-        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator);
-        animatorSet.setDuration(200);
+        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator, translationYAnimator);
+        animatorSet.setDuration(250);
         animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -593,35 +608,10 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             return;
         }
 
-        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "translationX", 0, -15, 15, -10, 10, -5, 5, 0);
-        animator.setDuration(400);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "translationX", 0, -12, 12, -8, 8, -4, 4, 0);
+        animator.setDuration(450);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.start();
-    }
-
-    /**
-     * 倒计时脉冲动画
-     */
-    private void animateCountDown(TextView textView) {
-        if (textView == null) {
-            return;
-        }
-
-        if (countDownAnimator != null && countDownAnimator.isRunning()) {
-            countDownAnimator.cancel();
-        }
-
-        countDownAnimator = ValueAnimator.ofFloat(1.0f, 1.3f, 1.0f);
-        countDownAnimator.setDuration(600);
-        countDownAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        countDownAnimator.addUpdateListener(animation -> {
-            float scale = (float) animation.getAnimatedValue();
-            if (textView != null) {
-                textView.setScaleX(scale);
-                textView.setScaleY(scale);
-            }
-        });
-        countDownAnimator.start();
     }
 
     /**

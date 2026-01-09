@@ -59,7 +59,7 @@
             android:paddingLeft="5dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            tools:text="翻译/translation"
+            tools:text="转文字/Transcription"
             android:visibility="visible" />
 
         <ProgressBar

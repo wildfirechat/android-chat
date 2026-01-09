@@ -82,7 +82,8 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     public void onBind(UiMessage message) {
         super.onBind(message);
         SoundMessageContent voiceMessage = (SoundMessageContent) message.message.content;
-        int increment = UIUtils.getDisplayWidth(fragment.getContext()) / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
+        // 整体允许站到屏幕宽度的 55/100
+        int increment = (UIUtils.getDisplayWidth(fragment.getContext()) * 55 / 100 - UIUtils.dip2Px(65)) / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
 
         durationTextView.setText(voiceMessage.getDuration() + "''");
         speechToTextLayout.setVisibility(View.GONE);
