@@ -69,7 +69,7 @@
     <string name="send">Send</string>
 
     <!--Chat Interface-->
-    <string name="please_to_talk">Hold to Talk</string>
+    <string name="hold_to_talk">Hold to Talk</string>
     <string name="shot">Camera</string>
     <string name="location">Location</string>
     <string name="file">File</string>

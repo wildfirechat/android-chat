@@ -410,7 +410,7 @@ public class PttPanel implements View.OnTouchListener {
         });
         animatorSet.start();
     }
-    
+
     /**
      * 取消所有动画
      */

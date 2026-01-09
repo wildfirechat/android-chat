@@ -123,10 +123,11 @@
                     android:layout_height="40dp"
                     android:background="@drawable/shape_session_btn_voice_normal"
                     android:gravity="center"
-                    android:text="@string/please_to_talk"
-                    android:textColor="@color/gray1"
+                    android:text="@string/hold_to_talk"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
                     android:visibility="gone"
-                    tools:visibility="gone" />
+                    tools:visibility="visible" />
 
                 <LinearLayout
                     android:id="@+id/channelMenuContainerLinearLayout"
