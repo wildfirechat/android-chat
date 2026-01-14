@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -406,9 +405,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         // Don't skip text selectable TextViews anymore - we want both text selection AND context menu
         if (view.isClickable()) {
-            if (!view.hasOnLongClickListeners()) {
-                view.setOnLongClickListener(listener);
-            }
+            // 华为 harmonyOS 2.0 版本，没有 hasOnLongClickListeners
+            view.setOnLongClickListener(listener);
         }
     }
 
@@ -569,7 +567,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (holder instanceof MessageContentViewHolder) {
             MessageContentViewHolder viewHolder = (MessageContentViewHolder) holder;
             UiMessage uiMessage = getItem(position);
-            ((MessageContentViewHolder) holder).onBind(uiMessage, position);
             MessageItemView itemView = (MessageItemView) holder.itemView;
 
             // 设置高亮
@@ -604,6 +601,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     processPortraitLongClick(viewHolder, itemView);
                 }
             }
+            ((MessageContentViewHolder) holder).onBind(uiMessage, position);
         } else {
             // bottom loading progress bar, do nothing
         }
