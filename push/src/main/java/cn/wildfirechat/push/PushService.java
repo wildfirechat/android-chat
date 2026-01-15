@@ -74,45 +74,50 @@ public class PushService {
     }
 
     public static void init(Application gContext, String applicationId) {
-        PushService.applicationId = applicationId;
-        if (isHuawei(gContext)) {
-            INST.pushServiceType = PushServiceType.HMS;
-            INST.initHMS(gContext);
-        } else if (isHonor(gContext)) {
-            INST.pushServiceType = PushServiceType.Honor;
-            INST.initHonor(gContext);
-        } else if (isMEIZU(gContext)) {
-            INST.pushServiceType = PushServiceType.MeiZu;
-            INST.initMZ(gContext);
-        } else if (isVIVO(gContext)) {
-            INST.pushServiceType = PushServiceType.VIVO;
-            INST.initVIVO(gContext);
-        } else if (isOPPO(gContext)) {
-            INST.pushServiceType = PushServiceType.OPPO;
-            INST.initOPPO(gContext);
-        } else if (isXiaomi(gContext)) {
-            INST.pushServiceType = PushServiceType.Xiaomi;
-            INST.initXiaomi(gContext);
-        } else if (useGoogleFCM(gContext)) {
-            INST.pushServiceType = PushServiceType.Google;
-//            INST.initFCM(gContext);
-        } else {
-            //其它使用小米推送
-            INST.pushServiceType = PushServiceType.Xiaomi;
-            INST.initXiaomi(gContext);
+        // catch all push init exceptions
+        try {
+            PushService.applicationId = applicationId;
+            if (isHuawei(gContext)) {
+                INST.pushServiceType = PushServiceType.HMS;
+                INST.initHMS(gContext);
+            } else if (isHonor(gContext)) {
+                INST.pushServiceType = PushServiceType.Honor;
+                INST.initHonor(gContext);
+            } else if (isMEIZU(gContext)) {
+                INST.pushServiceType = PushServiceType.MeiZu;
+                INST.initMZ(gContext);
+            } else if (isVIVO(gContext)) {
+                INST.pushServiceType = PushServiceType.VIVO;
+                INST.initVIVO(gContext);
+            } else if (isOPPO(gContext)) {
+                INST.pushServiceType = PushServiceType.OPPO;
+                INST.initOPPO(gContext);
+            } else if (isXiaomi(gContext)) {
+                INST.pushServiceType = PushServiceType.Xiaomi;
+                INST.initXiaomi(gContext);
+            } else if (useGoogleFCM(gContext)) {
+                INST.pushServiceType = PushServiceType.Google;
+                INST.initFCM(gContext);
+            } else {
+                //其它使用小米推送
+                INST.pushServiceType = PushServiceType.Xiaomi;
+                INST.initXiaomi(gContext);
+            }
+
+            ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
+                @OnLifecycleEvent(Lifecycle.Event.ON_START)
+                public void onForeground() {
+                    clearNotification(gContext);
+                }
+
+                @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+                public void onBackground() {
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
-            @OnLifecycleEvent(Lifecycle.Event.ON_START)
-            public void onForeground() {
-                clearNotification(gContext);
-            }
-
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            public void onBackground() {
-            }
-        });
-
     }
 
     private static boolean useGoogleFCM(Context context) {
