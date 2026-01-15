@@ -24,34 +24,34 @@ public class WeChatImageUtils {
     private static final String TAG = "WeChatImageUtils";
 
     /**
-     * 适当的宽高
+     * 计算图片、视频消息在消息列表合适的展示宽高
      *
-     * @param outWidth
-     * @param outHeight
-     * @return
+     * @param orgWidth 图片原始宽度
+     * @param orgHeight 图片原始高度
+     * @return 在消息列表里面合适的展示尺寸
      */
-    public static int[] getImageSizeByOrgSizeToWeChat(int outWidth, int outHeight) {
+    public static int[] getImageSizeByOrgSizeToWeChat(int orgWidth, int orgHeight) {
         int imageWidth = 300;
         int imageHeight = 300;
         int maxWidth = 400;
         int maxHeight = 400;
         int minWidth = 300;
         int minHeight = 250;
-        if (outWidth == 0 && outHeight == 0) {
+        if (orgWidth == 0 && orgHeight == 0) {
             return new int[]{imageWidth, imageHeight};
         }
-        if (outWidth / maxWidth > outHeight / maxHeight) {//
-            if (outWidth >= maxWidth) {//
+        if (orgWidth / maxWidth > orgHeight / maxHeight) {//
+            if (orgWidth >= maxWidth) {//
                 imageWidth = maxWidth;
-                imageHeight = outHeight * maxWidth / outWidth;
+                imageHeight = orgHeight * maxWidth / orgWidth;
             } else {
-                imageWidth = outWidth;
-                imageHeight = outHeight;
+                imageWidth = orgWidth;
+                imageHeight = orgHeight;
 
             }
-            if (outHeight < minHeight) {
+            if (orgHeight < minHeight) {
                 imageHeight = minHeight;
-                int width = outWidth * minHeight / outHeight;
+                int width = orgWidth * minHeight / orgHeight;
                 if (width > maxWidth) {
                     imageWidth = maxWidth;
                 } else {
@@ -59,21 +59,21 @@ public class WeChatImageUtils {
                 }
             }
         } else {
-            if (outHeight >= maxHeight) {
+            if (orgHeight >= maxHeight) {
                 imageHeight = maxHeight;
-                if (outHeight / maxHeight > 10) {
-                    imageWidth = outWidth * 5 * maxHeight / outHeight;
+                if (orgHeight / maxHeight > 10) {
+                    imageWidth = orgWidth * 5 * maxHeight / orgHeight;
                 } else {
-                    imageWidth = outWidth * maxHeight / outHeight;
+                    imageWidth = orgWidth * maxHeight / orgHeight;
                 }
 
             } else {
-                imageHeight = outHeight;
-                imageWidth = outWidth;
+                imageHeight = orgHeight;
+                imageWidth = orgWidth;
             }
-            if (outWidth < minWidth) {
+            if (orgWidth < minWidth) {
                 imageWidth = minWidth;
-                int height = outHeight * minWidth / outWidth;
+                int height = orgHeight * minWidth / orgWidth;
                 if (height > maxHeight) {
                     imageHeight = maxHeight;
                 } else {
