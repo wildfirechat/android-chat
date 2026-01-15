@@ -95,7 +95,7 @@ public class PushService {
             INST.initXiaomi(gContext);
         } else if (useGoogleFCM(gContext)) {
             INST.pushServiceType = PushServiceType.Google;
-            INST.initFCM(gContext);
+//            INST.initFCM(gContext);
         } else {
             //其它使用小米推送
             INST.pushServiceType = PushServiceType.Xiaomi;
