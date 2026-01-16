@@ -125,5 +125,13 @@ public interface MessageContentType {
     int MESSAGE_CONTENT_TYPE_FEED = 501;
     int MESSAGE_CONTENT_TYPE_FEED_COMMENT = 502;
 
+    // Backup related message types (Must match iOS: Common.h line 179-180)
+    int ContentType_Backup_Request = 613;
+    int ContentType_Backup_Response = 612;
+
+    // Restore related message types (Must match iOS: Common.h line 177-178)
+    int ContentType_Restore_Request = 610;
+    int ContentType_Restore_Response = 611;
+
     //自定义消息type要做1000以上
 }

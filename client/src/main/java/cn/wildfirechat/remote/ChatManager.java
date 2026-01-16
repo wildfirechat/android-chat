@@ -140,6 +140,8 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
+import cn.wildfirechat.message.notification.BackupRequestNotificationContent;
+import cn.wildfirechat.message.notification.BackupResponseNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
 import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
@@ -165,6 +167,8 @@ import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.RestoreRequestNotificationContent;
+import cn.wildfirechat.message.notification.RestoreResponseNotificationContent;
 import cn.wildfirechat.message.notification.RichNotificationMessageContent;
 import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
@@ -2347,6 +2351,21 @@ public class ChatManager {
             if (notify) {
                 onReceiveMessage(Collections.singletonList(message), false);
             }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return message;
+    }
+
+    public Message insertMessage(Message message) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            message = mClient.insertMessage(message, false);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -10848,6 +10867,10 @@ public class ChatManager {
         registerMessageContent(StreamingTextGeneratingMessageContent.class);
         registerMessageContent(StreamingTextGeneratedMessageContent.class);
         registerMessageContent(NotDeliveredMessageContent.class);
+        registerMessageContent(BackupRequestNotificationContent.class);
+        registerMessageContent(BackupResponseNotificationContent.class);
+        registerMessageContent(RestoreRequestNotificationContent.class);
+        registerMessageContent(RestoreResponseNotificationContent.class);
     }
 
     private MessageContent contentOfType(int type) {
