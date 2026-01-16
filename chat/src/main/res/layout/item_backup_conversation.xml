@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/selector_common_item"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/conversationTitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Conversation Title"
+        android:textSize="16sp"
+        android:textColor="@color/black0"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/messageCountTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading messages..."
+        android:textSize="14sp"
+        android:textColor="@color/gray1"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>

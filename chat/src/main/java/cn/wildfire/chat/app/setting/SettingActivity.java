@@ -44,6 +44,7 @@ public class SettingActivity extends WfcBaseActivity {
         findViewById(R.id.uploadLogOptionItemView).setOnClickListener(v -> uploadLog());
         findViewById(R.id.batteryOptionItemView).setOnClickListener(v -> batteryOptimize());
         findViewById(R.id.aboutOptionItemView).setOnClickListener(v -> about());
+        findViewById(R.id.backupAndRestoreOptionItemView).setOnClickListener(v -> backupAndRestore());
     }
 
     protected void bindViews() {
@@ -147,6 +148,11 @@ public class SettingActivity extends WfcBaseActivity {
 
     void about() {
         Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+    }
+
+    void backupAndRestore() {
+        Intent intent = new Intent(this, BackupAndRestoreActivity.class);
         startActivity(intent);
     }
 }

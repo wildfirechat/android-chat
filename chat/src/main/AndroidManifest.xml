@@ -94,6 +94,51 @@
             android:name="cn.wildfire.chat.app.setting.AboutActivity"
             android:label="@string/about"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.BackupAndRestoreActivity"
+            android:label="Backup and Restore"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.ConversationSelectActivity"
+            android:label="Select Conversations"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.BackupOptionsActivity"
+            android:label="Backup Options"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.BackupProgressActivity"
+            android:label="Backup Progress"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.BackupDestinationActivity"
+            android:label="Select Backup Location"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.BackupRequestProgressActivity"
+            android:label="Backup Request"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.RestoreSourceActivity"
+            android:label="Select Restore Source"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.BackupListActivity"
+            android:label="Backup List"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.RestoreOptionsActivity"
+            android:label="Restore Options"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.PCRestoreListActivity"
+            android:label="PC Backup List"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.PCRestoreProgressActivity"
+            android:label="Restoring from PC"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
