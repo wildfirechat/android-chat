@@ -16,6 +16,8 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.WebStorage;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -163,6 +165,11 @@ public class MainActivity extends WfcBaseActivity {
                 sp = getSharedPreferences("moment", Context.MODE_PRIVATE);
                 sp.edit().clear().apply();
                 OKHttpHelper.clearCookies();
+
+                WebStorage.getInstance().deleteAllData();
+                CookieManager.getInstance().removeAllCookies(null);
+                CookieManager.getInstance().flush();
+
                 if (status == ConnectionStatus.ConnectionStatusLogout) {
                     reLogin(false);
                 } else {
