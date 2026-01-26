@@ -203,6 +203,7 @@ interface IRemoteClient {
     boolean deleteFriendRequest(in String userId, in boolean direction);
     String getFriendAlias(in String userId);
     oneway void setFriendAlias(in String userId, in String alias, in IGeneralCallback callback);
+    oneway void setFriendExtra(in String userId, in String extra, in IGeneralCallback callback);
     String getFriendExtra(in String userId);
     oneway void clearUnreadFriendRequestStatus();
     int getUnreadFriendRequestStatus();

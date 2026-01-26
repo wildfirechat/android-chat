@@ -5157,6 +5157,46 @@ public class ChatManager {
     }
 
     /**
+     * 设置好友附加信息
+     *
+     * @param userId
+     * @param extra
+     * @param callback
+     */
+    public void setFriendExtra(String userId, String extra, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.setFriendExtra(userId, extra, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    userInfoCache.remove(userId);
+                    if (callback != null) {
+                        mainHandler.post(callback::onSuccess);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 获取好友附加信息
      *
      * @param userId

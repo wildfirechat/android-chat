@@ -1839,6 +1839,33 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setFriendExtra(String userId, String extra, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.setFriendExtra(userId, extra, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    if (callback != null) {
+                        try {
+                            callback.onSuccess();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    if (callback != null) {
+                        try {
+                            callback.onFailure(i);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+
+        @Override
         public void clearUnreadFriendRequestStatus() throws RemoteException {
             ProtoLogic.clearUnreadFriendRequestStatus();
         }
