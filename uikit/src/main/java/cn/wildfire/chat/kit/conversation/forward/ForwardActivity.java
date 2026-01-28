@@ -75,8 +75,8 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
             PickOrCreateConversationFragment pickFragment = (PickOrCreateConversationFragment) fragment;
             pickFragment.setOnSelectionChangedListener(count -> {
                 runOnUiThread(() -> {
-                    selectedCountTextView.setText("已选择" + count + "项");
-                    sendButton.setText("发送(" + count + ")");
+                    selectedCountTextView.setText(getString(R.string.selected_count_format, count));
+                    sendButton.setText(getString(R.string.send_with_count, count));
                     sendButton.setEnabled(count > 0);
 
                     List<ConversationInfo> selected = pickFragment.getSelectedConversations();
@@ -105,7 +105,7 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem multiSelectItem = menu.findItem(R.id.menuMultiSelect);
         if (multiSelectItem != null) {
-            multiSelectItem.setTitle(isMultiSelectMode ? "取消多选" : "多选");
+            multiSelectItem.setTitle(isMultiSelectMode ? R.string.cancel_multi_select : R.string.multi_select);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -171,7 +171,7 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
         List<ConversationInfo> selectedConversations = pickFragment.getSelectedConversations();
 
         if (selectedConversations == null || selectedConversations.isEmpty()) {
-            Toast.makeText(this, "请选择转发目标", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.select_forward_target, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -194,10 +194,10 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
             forwardViewModel.forwardToMultipleTargets(targetConversations, msgList.toArray(new Message[0]))
                 .observe(ForwardActivity.this, result -> {
                     if (result.isSuccess()) {
-                        Toast.makeText(ForwardActivity.this, "转发成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ForwardActivity.this, R.string.forward_success, Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        Toast.makeText(ForwardActivity.this, "转发失败: " + result.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ForwardActivity.this, getString(R.string.forward_failed, result.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 });
         });

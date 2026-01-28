@@ -802,5 +802,12 @@
     <string name="recognizing_qrcode">正在识别二维码...</string>
     <string name="image_file_not_exist">图片文件不存在</string>
 
-    <string name="join_group_request_tip">[%s条加群申请]</string>
+    <string name="join_group_request_tip">[%d 条加群申请]</string>
+
+    <!-- Forward Activity -->
+    <string name="multi_select">多选</string>
+    <string name="cancel_multi_select">取消多选</string>
+    <string name="selected_count_format">已选择%d项</string>
+    <string name="send_with_count">发送(%d)</string>
+    <string name="select_forward_target">请选择转发目标</string>
 </resources>

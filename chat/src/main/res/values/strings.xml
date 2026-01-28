@@ -226,6 +226,17 @@
 
     <!-- Backup and Restore -->
     <string name="backup_and_restore">备份与恢复</string>
+    <string name="backup_options">备份选项</string>
+    <string name="backup_progress">备份进度</string>
+    <string name="select_backup_location">选择备份位置</string>
+    <string name="backup_request">备份请求</string>
+    <string name="select_restore_source">选择恢复源</string>
+    <string name="backup_list">备份列表</string>
+    <string name="restore_options">恢复选项</string>
+    <string name="pc_backup_list">PC备份列表</string>
+    <string name="restoring_from_pc">从PC恢复中</string>
+    <string name="share_to_wildfire">分享到野火IM</string>
+    <string name="pc_login">PC登录</string>
     <string name="backup_desc">备份您的消息以便稍后恢复</string>
     <string name="create_backup">创建备份</string>
     <string name="restore_backup">恢复备份</string>

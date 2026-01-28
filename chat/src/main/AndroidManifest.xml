@@ -96,60 +96,60 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.BackupAndRestoreActivity"
-            android:label="Backup and Restore"
+            android:label="@string/backup_and_restore"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.ConversationSelectActivity"
-            android:label="Select Conversations"
+            android:label="@string/select_conversations"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.BackupOptionsActivity"
-            android:label="Backup Options"
+            android:label="@string/backup_options"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.BackupProgressActivity"
-            android:label="Backup Progress"
+            android:label="@string/backup_progress"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
         <activity
             android:name="cn.wildfire.chat.app.setting.BackupDestinationActivity"
-            android:label="Select Backup Location"
+            android:label="@string/select_backup_location"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.BackupRequestProgressActivity"
-            android:label="Backup Request"
+            android:label="@string/backup_request"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.RestoreSourceActivity"
-            android:label="Select Restore Source"
+            android:label="@string/select_restore_source"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.BackupListActivity"
-            android:label="Backup List"
+            android:label="@string/backup_list"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.RestoreOptionsActivity"
-            android:label="Restore Options"
+            android:label="@string/restore_options"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.PCRestoreListActivity"
-            android:label="PC Backup List"
+            android:label="@string/pc_backup_list"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.PCRestoreProgressActivity"
-            android:label="Restoring from PC"
+            android:label="@string/restoring_from_pc"
             android:screenOrientation="portrait" />
 
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
             android:exported="true"
-            android:label="野火IM"
+            android:label="@string/app_name"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <intent-filter android:label="分享到野火IM">
+            <intent-filter android:label="@string/share_to_wildfire">
                 <action android:name="android.intent.action.SENDTO" />
                 <action android:name="android.intent.action.SEND" />
                 <!--                <action android:name="android.intent.action.SEND_MULTIPLE" />-->
@@ -161,7 +161,7 @@
         <activity
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
             android:exported="false"
-            android:label="PC登录">
+            android:label="@string/pc_login">
             <intent-filter>
                 <action android:name="${packageName}.pc.login" />
                 <category android:name="android.intent.category.DEFAULT" />
