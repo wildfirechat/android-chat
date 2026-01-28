@@ -6,6 +6,7 @@ package cn.wildfire.chat.app;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +23,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 
 public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
-    private final Map<String, String> groupPortraitMap = new HashMap<>();
+    private final Map<String, Pair<Long,  String>> groupPortraitMap = new HashMap<>();
 
     @Override
     public String userDefaultPortrait(UserInfo userInfo) {
@@ -38,9 +39,9 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (groupInfo instanceof NullGroupInfo || !TextUtils.isEmpty(groupInfo.portrait) || userInfos == null || userInfos.isEmpty()) {
             return groupInfo.portrait;
         }
-        String portrait = groupPortraitMap.get(groupInfo.target);
-        if (portrait != null) {
-            return portrait;
+        Pair<Long, String> pair = groupPortraitMap.get(groupInfo.target);
+        if (pair != null && pair.first == groupInfo.updateDt) {
+            return pair.second;
         }
 
         boolean pending = false;
@@ -69,8 +70,8 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (pending) {
             return null;
         }
-        portrait = AppService.APP_SERVER_ADDRESS + "/avatar/group?request=" + Uri.encode(request.toString());
-        groupPortraitMap.put(groupInfo.target, portrait);
+        String portrait = AppService.APP_SERVER_ADDRESS + "/avatar/group?request=" + Uri.encode(request.toString());
+        groupPortraitMap.put(groupInfo.target, new Pair<>(groupInfo.updateDt, portrait));
         return portrait;
     }
 }
