@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.favorite.viewholder;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.favorite.FavoriteListFragment;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
@@ -57,6 +59,16 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
     }
 
     protected void onClick() {
-
+        if (favoriteItem == null || favoriteItem.getConversation() == null) {
+            return;
+        }
+        // 点击收藏内容，打开原消息所在的会话并定位到该消息
+        Intent intent = ConversationActivity.buildConversationIntent(
+            fragment.getActivity(),
+            favoriteItem.getConversation(),
+            null,
+            favoriteItem.getMessageUid()
+        );
+        fragment.startActivity(intent);
     }
 }
