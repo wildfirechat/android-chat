@@ -119,13 +119,6 @@ public class MainActivity extends WfcBaseActivity {
         contentLinearLayout = findViewById(R.id.contentLinearLayout);
     }
 
-    private Observer<Boolean> imStatusLiveDataObserver = status -> {
-        if (status && !isInitialized) {
-            init();
-            isInitialized = true;
-        }
-    };
-
     @Override
     protected int contentLayout() {
         return R.layout.main_activity;
@@ -148,8 +141,17 @@ public class MainActivity extends WfcBaseActivity {
         if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
         }
+
         IMServiceStatusViewModel imServiceStatusViewModel = new ViewModelProvider(this).get(IMServiceStatusViewModel.class);
-        imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
+        imServiceStatusViewModel.imServiceStatusLiveData().observe(this, (status) -> {
+            if (status && !isInitialized) {
+                handleShareIntent();
+                init();
+                isInitialized = true;
+
+            }
+        });
+
         IMConnectionStatusViewModel connectionStatusViewModel = new ViewModelProvider(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
@@ -199,20 +201,6 @@ public class MainActivity extends WfcBaseActivity {
             }
         });
 
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
-        if (Intent.ACTION_SEND.equals(action)) {
-            if ("text/plain".equals(type)) {
-                handleSendText(intent);
-            } else {
-                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                handleSendFile(fileUri);
-            }
-        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
-            handleSendMultiple(intent);
-        }
-
         requestMandatoryPermissions();
     }
 
@@ -242,6 +230,23 @@ public class MainActivity extends WfcBaseActivity {
 //            secretChatMenuItem.setEnabled(false);
         }
     }
+
+    private void handleShareIntent() {
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        if (Intent.ACTION_SEND.equals(action)) {
+            if ("text/plain".equals(type)) {
+                handleSendText(intent);
+            } else {
+                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                handleSendFile(fileUri);
+            }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            handleSendMultiple(intent);
+        }
+    }
+
 
     private void reLogin(boolean isKickedOff) {
         if (isFinishing()) {
