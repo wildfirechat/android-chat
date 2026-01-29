@@ -2,16 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -25,22 +24,22 @@
             android:id="@+id/statusTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Preparing..."
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/black0"
+            android:layout_marginTop="20dp"
             android:gravity="center"
-            android:layout_marginTop="20dp" />
+            android:text="Preparing..."
+            android:textColor="@color/black0"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/detailTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connecting to PC"
-            android:textSize="14sp"
-            android:textColor="@color/gray1"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:layout_marginTop="8dp" />
+            android:text="Connecting to PC"
+            android:textColor="@color/gray1"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
