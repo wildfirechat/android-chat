@@ -8,17 +8,42 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 群成员信息类
+ * <p>
+ * 表示群组成员的信息和角色。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
-
 public class GroupMember implements Parcelable {
+    /**
+     * 群成员类型枚举
+     */
     public enum GroupMemberType {
+        /**
+         * 普通成员
+         */
         Normal(0),
+        /**
+         * 管理员
+         */
         Manager(1),
+        /**
+         * 群主
+         */
         Owner(2),
+        /**
+         * 被禁言成员
+         */
         Muted(3),
+        /**
+         * 被移除成员
+         */
         Removed(4),
+        /**
+         * 被允许成员（特殊权限）
+         */
         Allowed(5);
 
         private int value;
@@ -31,6 +56,12 @@ public class GroupMember implements Parcelable {
             return this.value;
         }
 
+        /**
+         * 根据值获取群成员类型
+         *
+         * @param type 群成员类型的值
+         * @return 群成员类型枚举
+         */
         public static GroupMemberType type(int type) {
             if (type >= 0 && type < GroupMemberType.values().length) {
                 return GroupMemberType.values()[type];
@@ -40,15 +71,45 @@ public class GroupMember implements Parcelable {
         }
     }
 
+    /**
+     * 群组ID
+     */
     public String groupId;
+
+    /**
+     * 群成员ID
+     */
     public String memberId;
+
+    /**
+     * 群成员别名/备注
+     */
     public String alias;
+
+    /**
+     * 扩展字段
+     */
     public String extra;
+
+    /**
+     * 群成员类型
+     */
     public GroupMemberType type;
+
+    /**
+     * 更新时间戳
+     */
     public long updateDt;
+
+    /**
+     * 创建时间戳
+     */
     public long createDt;
 
 
+    /**
+     * 默认构造函数
+     */
     public GroupMember() {
     }
 

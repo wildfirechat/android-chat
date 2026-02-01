@@ -11,6 +11,16 @@ import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * 离开频道聊天消息内容
+ * <p>
+ * 当用户离开频道聊天时发送的透明消息。
+ * 此消息不会被持久化，仅用于实时状态同步。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = MessageContentType.ContentType_Leave_Channel_Chat, flag = PersistFlag.Transparent)
 public class LeaveChannelChatMessageContent extends MessageContent {
     @Override

@@ -8,21 +8,52 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by heavyrainlee on 14/12/2017.
+ * 加入群组请求类
+ * <p>
+ * 用于表示申请加入群组的请求信息。
+ * 包含群组ID、申请者、审批者、申请理由、请求状态等信息。
+ * 支持加群请求的发送、接受、拒绝等操作。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class JoinGroupRequest implements Parcelable {
+    /**
+     * 群组ID
+     */
     public String groupId;
+    /**
+     * 群成员ID
+     */
     public String memberId;
+    /**
+     * 请求用户ID
+     */
     public String requestUserId;
+    /**
+     * 审批用户ID
+     */
     public String acceptUserId;
+    /**
+     * 申请理由
+     */
     public String reason;
+    /**
+     * 额外信息
+     */
     public String extra;
-//    RequestStatus_Sent = 0,
-//    RequestStatus_Accepted = 1,
-//    RequestStatus_Rejected = 2
+    /**
+     * 请求状态：0-已发送，1-已接受，2-已拒绝
+     */
     public int status;
+    /**
+     * 已读状态
+     */
     public int readStatus;
+    /**
+     * 时间戳
+     */
     public long timestamp;
 
     public JoinGroupRequest() {

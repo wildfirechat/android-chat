@@ -12,6 +12,16 @@ import java.util.Objects;
 
 import cn.wildfirechat.client.Platform;
 
+/**
+ * PC端在线信息类
+ * <p>
+ * 用于表示用户在PC端、Web端、小程序或Pad端的在线状态信息。
+ * 包含在线类型、平台、在线状态、客户端ID、客户端名称和最后在线时间。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class PCOnlineInfo implements Parcelable {
 
     /**

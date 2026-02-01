@@ -17,11 +17,26 @@ import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_CHANGE_MUTE;
 
+/**
+ * 群组禁言通知内容
+ * <p>
+ * 当群组的禁言设置被修改时发送的通知消息。
+ * 包含操作者和禁言类型信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = CONTENT_TYPE_CHANGE_MUTE, flag = PersistFlag.Persist)
 public class GroupMuteNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改禁言设置的操作者ID
+     */
     public String operator;
 
-    //0 正常；1 全局禁言
+    /**
+     * 禁言类型（0-正常，1-全员禁言）
+     */
     public int type;
 
     @Override

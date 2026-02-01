@@ -7,10 +7,30 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 客户端状态类
+ * <p>
+ * 用于表示用户在不同平台设备上的在线状态。
+ * 包含平台类型、在线状态和最后在线时间等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 public class ClientState implements Parcelable {
+    /**
+     * 平台类型
+     */
     private int platform;
-    //设备的在线状态，0是在线，1是有session但不在线，其它不在线。
+
+    /**
+     * 设备的在线状态（0-在线，1-有session但不在线，其他-不在线）
+     */
     private int state;
+
+    /**
+     * 最后在线时间
+     */
     private long lastSeen;
 
     public ClientState(int platform, int state, long lastSeen) {

@@ -16,12 +16,24 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 动态表情消息内容类
+ * <p>
+ * 用于表示动态表情（贴纸）类型的消息内容。
+ * 支持发送和接收动态表情，包含表情的尺寸信息以便正确显示。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = MessageContentType.ContentType_Sticker, flag = PersistFlag.Persist_And_Count)
 public class StickerMessageContent extends MediaMessageContent {
+    /**
+     * 动态表情宽度
+     */
     public int width;
+    /**
+     * 动态表情高度
+     */
     public int height;
 
     public StickerMessageContent() {

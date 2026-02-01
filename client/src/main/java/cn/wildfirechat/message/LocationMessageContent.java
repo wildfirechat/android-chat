@@ -22,15 +22,32 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Location;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 位置消息内容类
+ * <p>
+ * 用于表示地理位置类型的消息内容，支持位置信息的分享。
+ * 包含位置标题、位置缩略图和经纬度坐标信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Location, flag = PersistFlag.Persist_And_Count)
 public class LocationMessageContent extends MessageContent {
+    /**
+     * 位置标题
+     */
     private String title;
-    //不跨进程传输
+    /**
+     * 位置缩略图，不跨进程传输
+     */
     private Bitmap thumbnail;
+    /**
+     * 位置缩略图的字节数组
+     */
     public byte[] thumbnailByte;
+    /**
+     * 位置坐标信息
+     */
     private Location location;
 
     public LocationMessageContent() {

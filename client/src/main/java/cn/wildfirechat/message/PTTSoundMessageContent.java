@@ -15,9 +15,15 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 对讲语音消息内容
+ * <p>
+ * 用于按住对讲模式下的语音消息，与普通语音消息不同，对讲语音通常即时性更强。
+ * 继承自SoundMessageContent，添加了对讲特定的标识和显示逻辑。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2021
  */
-
 @ContentTag(type = MessageContentType.ContentType_Ptt_Voice, flag = PersistFlag.Persist_And_Count)
 public class PTTSoundMessageContent extends SoundMessageContent {
 

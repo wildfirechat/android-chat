@@ -22,12 +22,36 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_ALLOW_MEMBER;
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_MUTE_MEMBER;
 
+/**
+ * 群成员禁言发言权限通知内容
+ * <p>
+ * 当群成员在全员禁言时的发言权限被修改时发送的通知消息。
+ * 包含操作者、操作类型和被操作成员列表。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = CONTENT_TYPE_ALLOW_MEMBER, flag = PersistFlag.Persist)
 public class GroupAllowMemberNotificationContent extends NotificationMessageContent {
+    /**
+     * 群组ID
+     */
     public String groupId;
+
+    /**
+     * 修改权限的操作者ID
+     */
     public String operator;
-    // 操作类型，1禁言，0取消禁言
+
+    /**
+     * 操作类型（1-设置禁言时发言权限，0-取消禁言时发言权限）
+     */
     public int type;
+
+    /**
+     * 被操作的成员ID列表
+     */
     public List<String> memberIds;
 
     @Override

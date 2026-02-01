@@ -21,33 +21,61 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
 
+/**
+ * 消息未送达通知内容
+ * <p>
+ * 当消息发送失败或未能送达时发送的通知消息。
+ * 包含详细的错误信息和失败原因，支持全部失败和部分失败两种情况。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2024
+ */
 @ContentTag(type = ContentType_NOT_DELIVERED, flag = PersistFlag.Persist)
 public class NotDeliveredMessageContent extends NotificationMessageContent {
-    // 请求的类型，1 发送消息，2 撤回消息，3 删除消息
+    /**
+     * 请求的类型（1-发送消息，2-撤回消息，3-删除消息）
+     */
     private int type;
 
-    // 发送的消息 uid
+    /**
+     * 发送的消息UID
+     */
     private long messageUid;
 
-    // 是全部失败，还是部分失败
+    /**
+     * 是否全部失败
+     */
     private boolean allFailure;
 
-    // 部分失败时，失败的用户 id 列表
+    /**
+     * 部分失败时，失败的用户ID列表
+     */
     private List<String> userIds;
 
-    // 归属IM服务请求桥接服务出现的错误，有可能是桥接服务没有配置，或者不可用。
+    /**
+     * 归属IM服务请求桥接服务出现的错误码
+     */
     private int localImErrorCode;
 
-    // 归属桥接服务出现的错误
+    /**
+     * 归属桥接服务出现的错误码
+     */
     private int localBridgeErrorCode;
 
-    // 远端桥接服务出现的错误
+    /**
+     * 远端桥接服务出现的错误码
+     */
     private int remoteBridgeErrorCode;
 
-    // 远端IM服务出现的错误
+    /**
+     * 远端IM服务出现的错误码
+     */
     private int remoteServerErrorCode;
 
-    // 错误提示信息
+    /**
+     * 错误提示信息
+     */
     private String errorMessage;
 
 

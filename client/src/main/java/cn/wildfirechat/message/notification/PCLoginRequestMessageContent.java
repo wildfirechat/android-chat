@@ -16,10 +16,27 @@ import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * PC端登录请求消息内容
+ * <p>
+ * 当PC端请求登录时发送的消息。
+ * 包含平台类型和会话ID，用于多端登录验证。
+ * 此消息不会被持久化。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = MessageContentType.ContentType_PC_LOGIN_REQUSET, flag = PersistFlag.No_Persist)
 public class PCLoginRequestMessageContent extends MessageContent {
-    // 3 windows, 4 osx, 5 web
+    /**
+     * 平台类型（3-Windows，4-macOS，5-Web）
+     */
     private int platform;
+
+    /**
+     * 会话ID
+     */
     private String sessionId;
 
     public int getPlatform() {

@@ -11,11 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 频道信息类
+ * <p>
+ * 用于表示频道的详细信息，包括频道ID、名称、头像、描述、所有者等基本信息。
+ * 频道是野火IM中的一种特殊会话类型，支持订阅机制和权限控制。
+ * 通过状态掩码可以控制频道的各种访问权限和功能特性。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
-
 public class ChannelInfo implements Parcelable {
+    /**
+     * 频道状态掩码接口
+     */
     public interface ChannelStatusMask {
         //第0位表示是否允许查看用户所有信息，还是只允许看用户id，用户名称，用户昵称和用户头像
         int Channel_State_Mask_FullInfo = 0x01;
@@ -31,14 +40,41 @@ public class ChannelInfo implements Parcelable {
         int Channel_State_Mask_Deleted = 0x40;
     }
 
+    /**
+     * 频道ID
+     */
     public String channelId;
+    /**
+     * 频道名称
+     */
     public String name;
+    /**
+     * 频道头像URL
+     */
     public String portrait;
+    /**
+     * 频道描述
+     */
     public String desc;
+    /**
+     * 频道所有者ID
+     */
     public String owner;
+    /**
+     * 频道状态（使用ChannelStatusMask中的掩码值）
+     */
     public int status;
+    /**
+     * 额外信息
+     */
     public String extra;
+    /**
+     * 更新时间戳
+     */
     public long updateDt;
+    /**
+     * 频道菜单列表
+     */
     public List<ChannelMenu> menus;
 
     public ChannelInfo() {

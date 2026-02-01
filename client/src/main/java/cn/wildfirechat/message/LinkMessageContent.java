@@ -18,14 +18,33 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 链接消息内容类
+ * <p>
+ * 用于表示链接分享类型的消息内容。
+ * 支持分享URL链接，包含标题、内容摘要、URL地址和缩略图等信息。
+ * 常用于分享网页链接、文章等内容。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Link, flag = PersistFlag.Persist_And_Count)
 public class LinkMessageContent extends MessageContent {
+    /**
+     * 链接标题
+     */
     private String title;
+    /**
+     * 链接内容摘要
+     */
     private String contentDigest;
+    /**
+     * 链接URL地址
+     */
     private String url;
+    /**
+     * 链接缩略图URL
+     */
     private String thumbnailUrl;
 
     public LinkMessageContent() {

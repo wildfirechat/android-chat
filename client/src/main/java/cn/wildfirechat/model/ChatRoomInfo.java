@@ -7,6 +7,16 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 聊天室信息类
+ * <p>
+ * 用于表示聊天室的基本信息。
+ * 包含聊天室ID、标题、描述、头像、状态、成员数等属性。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class ChatRoomInfo implements Parcelable {
     public static final int STATE_NORMAL = 0;
     public static final int STATE_NOT_START = 1;

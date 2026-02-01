@@ -12,9 +12,26 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * 流式文本生成完成消息内容
+ * <p>
+ * 用于AI流式文本生成完成后，保存最终生成的完整文本。
+ * 此消息会被持久化存储，用于保存AI生成的完整回复内容。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2023
+ */
 @ContentTag(type = ContentType_Streaming_Text_Generated, flag = PersistFlag.Persist_And_Count)
 public class StreamingTextGeneratedMessageContent extends MessageContent {
+    /**
+     * 生成的完整文本内容
+     */
     private String text;
+
+    /**
+     * 流式响应的唯一标识
+     */
     private String streamId;
 
     public String getText() {

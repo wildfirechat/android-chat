@@ -20,13 +20,30 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_ALIAS;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 修改群昵称通知内容
+ * <p>
+ * 当群成员的群昵称被修改时发送的通知消息。
+ * 包含操作者、目标成员和新的群昵称信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_MODIFY_GROUP_ALIAS, flag = PersistFlag.Persist)
 public class ModifyGroupAliasNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改群昵称的操作者ID
+     */
     public String operateUser;
+
+    /**
+     * 新的群昵称
+     */
     public String alias;
+
+    /**
+     * 被修改群昵称的成员ID
+     */
     public String memberId;
 
     public ModifyGroupAliasNotificationContent() {

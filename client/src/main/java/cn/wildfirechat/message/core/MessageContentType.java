@@ -5,10 +5,15 @@
 package cn.wildfirechat.message.core;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 消息内容类型常量接口
+ * <p>
+ * 定义所有消息内容类型的常量值。
+ * 1000以下为系统内置类型，自定义消息需要使用1000以上。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
-
 //Content Type. 1000以下为系统内置类型，自定义消息需要使用1000以上
 public interface MessageContentType {
     //基本消息类型

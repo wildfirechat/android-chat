@@ -12,8 +12,21 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.ChannelMenu;
 
+/**
+ * 频道菜单事件消息内容
+ * <p>
+ * 用于触发频道菜单项操作的透明消息。
+ * 当用户点击频道菜单时，会发送此消息来通知其他用户。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = MessageContentType.ContentType_Channel_Menu_Event, flag = PersistFlag.Transparent)
 public class ChannelMenuEventMessageContent extends MessageContent {
+    /**
+     * 触发的菜单项
+     */
     private ChannelMenu menu;
 
     public ChannelMenu getMenu() {

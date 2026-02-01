@@ -2,10 +2,6 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
-/*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
- */
-
 package cn.wildfirechat.message;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Card;
@@ -20,18 +16,41 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-
+/**
+ * 名片消息内容类
+ * <p>
+ * 用于表示名片类型的消息内容，支持分享用户、群组、聊天室和频道的名片。
+ * 可以在会话中发送好友名片、群组名片等，方便其他用户快速添加或查看。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = ContentType_Card, flag = PersistFlag.Persist_And_Count)
 public class CardMessageContent extends MessageContent {
     /**
-     * 0，用户；1，群组；2，聊天室；3，频道
+     * 名片类型：0-用户；1-群组；2-聊天室；3-频道
      */
     private int type;
+    /**
+     * 目标ID（用户ID、群组ID等）
+     */
     private String target;
-    // 用户名，一般是type为用户时使用
+    /**
+     * 用户名，一般是type为用户时使用
+     */
     private String name;
+    /**
+     * 显示名称
+     */
     private String displayName;
+    /**
+     * 头像URL
+     */
     private String portrait;
+    /**
+     * 发送者信息
+     */
     private String from;
 
     public CardMessageContent() {

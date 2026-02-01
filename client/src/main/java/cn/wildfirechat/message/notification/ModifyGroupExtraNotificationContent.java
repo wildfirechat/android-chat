@@ -20,12 +20,25 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_EXTRA;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 修改群附加信息通知内容
+ * <p>
+ * 当群组的附加信息被修改时发送的通知消息。
+ * 此消息不会被持久化，仅用于实时状态同步。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_MODIFY_GROUP_EXTRA, flag = PersistFlag.No_Persist)
 public class ModifyGroupExtraNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改群附加信息的操作者ID
+     */
     public String operateUser;
+
+    /**
+     * 新的群附加信息
+     */
     public String groupExtra;
 
     public ModifyGroupExtraNotificationContent() {

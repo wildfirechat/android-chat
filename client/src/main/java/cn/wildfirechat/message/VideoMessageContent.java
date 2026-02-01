@@ -24,19 +24,32 @@ import cn.wildfirechat.model.VideoParam;
 import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 视频消息内容类
+ * <p>
+ * 用于表示视频类型的消息内容，支持小视频的发送和接收。
+ * 包含视频时长、缩略图等信息，便于在会话列表中预览。
+ * 视频时长单位为毫秒。
+ * </p>
  *
- * @refactor dhl
- * 添加小视频的宽高，时长
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = MessageContentType.ContentType_Video, flag = PersistFlag.Persist_And_Count)
 public class VideoMessageContent extends MediaMessageContent {
 
     private static final String TAG = "VideoMessageContent";
+    /**
+     * 视频缩略图
+     */
     private Bitmap thumbnail;
+    /**
+     * 视频缩略图的字节数组
+     */
     private byte[] thumbnailBytes;
 
+    /**
+     * 视频时长，单位为毫秒
+     */
     private long duration ;
 
     // 所有消息都需要一个默认构造函数

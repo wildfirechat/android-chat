@@ -18,12 +18,25 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_CHANGE_GROUP_NAME;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 修改群名称通知内容
+ * <p>
+ * 当群组名称被修改时发送的通知消息。
+ * 包含操作者和新的群名称信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_CHANGE_GROUP_NAME, flag = PersistFlag.Persist)
 public class ChangeGroupNameNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改群名称的操作者ID
+     */
     public String operateUser;
+
+    /**
+     * 新的群名称
+     */
     public String name;
 
     public ChangeGroupNameNotificationContent() {

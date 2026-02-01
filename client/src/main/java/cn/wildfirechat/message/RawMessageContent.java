@@ -18,11 +18,20 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.QuoteInfo;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 原始消息内容
+ * <p>
+ * 用于处理未解析的原始消息负载，通常用于内部消息处理或调试。
+ * 此消息不会被持久化存储。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Unknown, flag = PersistFlag.No_Persist)
 public class RawMessageContent extends MessageContent {
+    /**
+     * 原始消息负载数据
+     */
     public MessagePayload payload;
 
 

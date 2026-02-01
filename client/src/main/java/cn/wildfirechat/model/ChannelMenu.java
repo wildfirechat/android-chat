@@ -14,17 +14,71 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 频道菜单类
+ * <p>
+ * 用于表示频道的菜单项信息。
+ * 支持多级菜单，包含菜单ID、类型、名称、URL、媒体ID等属性。
+ * 常用于频道功能的扩展和自定义。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 public class ChannelMenu implements Parcelable {
+    /**
+     * 菜单ID
+     */
     public String menuId;
+
+    /**
+     * 菜单类型
+     */
     public String type;
+
+    /**
+     * 菜单名称
+     */
     public String name;
+
+    /**
+     * 菜单键值
+     */
     public String key;
+
+    /**
+     * 菜单链接URL
+     */
     public String url;
+
+    /**
+     * 媒体ID
+     */
     public String mediaId;
+
+    /**
+     * 文章ID
+     */
     public String articleId;
+
+    /**
+     * 应用ID
+     */
     public String appId;
+
+    /**
+     * 应用页面
+     */
     public String appPage;
+
+    /**
+     * 附加信息
+     */
     public String extra;
+
+    /**
+     * 子菜单列表
+     */
     public List<ChannelMenu> subMenus;
 
     public JSONObject toJsonObj() {

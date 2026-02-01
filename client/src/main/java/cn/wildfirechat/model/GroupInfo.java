@@ -8,19 +8,34 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 群组信息类
+ * <p>
+ * 表示IM系统中的群组信息，包含群组的基本资料和设置。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
-
 public class GroupInfo implements Parcelable {
+    /**
+     * 群组类型枚举
+     */
     public enum GroupType {
-        //member can add quit change group name and portrait, owner can do all the operations
+        /**
+         * 普通群：成员可以添加、退出、修改群名和头像，群主可以执行所有操作
+         */
         Normal(0),
-        //every member can add quit change group name and portrait, no one can kickoff others
+        /**
+         * 自由群：每个成员都可以添加、退出、修改群名和头像，没有人可以踢出其他人
+         */
         Free(1),
-        //member can only quit, owner can do all the operations
+        /**
+         * 受限群：成员只能退出，群主可以执行所有操作
+         */
         Restricted(2),
-        //member can do nothing, server api manage the group.
+        /**
+         * 组织群：成员不能做任何操作，由服务器API管理群组
+         */
         Organization(3);
 
         private int value;
@@ -33,6 +48,12 @@ public class GroupInfo implements Parcelable {
             return this.value;
         }
 
+        /**
+         * 根据值获取群组类型
+         *
+         * @param type 群组类型的值
+         * @return 群组类型枚举
+         */
         public static GroupType type(int type) {
             if (type >= 0 && type < GroupType.values().length) {
                 return GroupType.values()[type];
@@ -42,44 +63,104 @@ public class GroupInfo implements Parcelable {
         }
     }
 
+    /**
+     * 群组ID
+     */
     public String target;
+
+    /**
+     * 群组名称
+     */
     public String name;
+
+    /**
+     * 群组头像URL
+     */
     public String portrait;
+
+    /**
+     * 群主用户ID
+     */
     public String owner;
+
+    /**
+     * 群组类型
+     */
     public GroupType type;
+
+    /**
+     * 群成员数量
+     */
     public int memberCount;
+
+    /**
+     * 扩展字段
+     */
     public String extra;
+
+    /**
+     * 群备注
+     */
     public String remark;
+
+    /**
+     * 更新时间戳
+     */
     public long updateDt;
-    // 群成员的最后更新日期，一般是没有什么作用，唯一的作用就是当用户退出群组后，再获取群组信息，memberDt会为负数。
-    // < -1 已退出群组；-1 未加入群组；>-1 已加入群组
+
+    /**
+     * 群成员的最后更新日期
+     * < -1 已退出群组；-1 未加入群组；> -1 已加入群组
+     */
     public long memberDt;
 
-
-    //0 正常；1 全局禁言
+    /**
+     * 禁言状态：0 正常；1 全局禁言
+     */
     public int mute;
 
-    //在group type为Restricted时，0 开放加入权限（群成员可以拉人，用户也可以主动加入）；1 只能群成员拉人入群；2 只能群管理拉人入群；3 加群需要验证
+    /**
+     * 加群权限（群类型为Restricted时有效）：
+     * 0 开放加入权限（群成员可以拉人，用户也可以主动加入）；
+     * 1 只能群成员拉人入群；
+     * 2 只能群管理拉人入群；
+     * 3 加群需要验证
+     */
     public int joinType;
 
-    //是否运行群中普通成员私聊。0 允许，1不允许
+    /**
+     * 是否允许群中普通成员私聊：0 允许；1 不允许
+     */
     public int privateChat;
 
-    //是否可以搜索到该群，0 群可以被搜索到；1 群不会被搜索到
+    /**
+     * 是否可以搜索到该群：0 群可以被搜索到；1 群不会被搜索到
+     */
     public int searchable;
 
-    //群成员是否可以加载加入之前的历史消息，0 不可以；1可以。仅专业版有效
+    /**
+     * 群成员是否可以加载加入之前的历史消息：0 不可以；1 可以（仅专业版有效）
+     */
     public int historyMessage;
 
-    //群最大成员数。仅专业版有效
+    /**
+     * 群最大成员数（仅专业版有效）
+     */
     public int maxMemberCount;
 
-    //是否是超级群组，0 普通群组；1 超级群组。超级群组不支持服务器端删除。
+    /**
+     * 是否是超级群组：0 普通群组；1 超级群组（超级群组不支持服务器端删除）
+     */
     public int superGroup;
 
-    //群组是否被解散，0 没有被解散；1 已经被解散。
+    /**
+     * 群组是否被解散：0 没有被解散；1 已经被解散
+     */
     public int deleted;
 
+    /**
+     * 默认构造函数
+     */
     public GroupInfo() {
     }
 

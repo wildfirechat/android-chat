@@ -21,12 +21,36 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 群成员禁言通知内容
+ * <p>
+ * 当群成员被禁言或取消禁言时发送的通知消息。
+ * 包含操作者、操作类型和被禁言成员列表。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = CONTENT_TYPE_MUTE_MEMBER, flag = PersistFlag.Persist)
 public class GroupMuteMemberNotificationContent extends NotificationMessageContent {
+    /**
+     * 群组ID
+     */
     public String groupId;
+
+    /**
+     * 禁言操作的操作者ID
+     */
     public String operator;
-    // 操作类型，1禁言，0取消禁言
+
+    /**
+     * 操作类型（1-禁言，0-取消禁言）
+     */
     public int type;
+
+    /**
+     * 被禁言的成员ID列表
+     */
     public List<String> memberIds;
 
     @Override

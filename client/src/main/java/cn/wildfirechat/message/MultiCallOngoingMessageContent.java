@@ -18,11 +18,36 @@ import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * 多人通话进行中消息内容
+ * <p>
+ * 用于通知某个多人通话正在进行中的透明消息。
+ * 当群组内有成员正在进行通话时，其他成员会收到此通知。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = MessageContentType.ContentType_Call_Multi_Call_Ongoing, flag = PersistFlag.Transparent)
 public class MultiCallOngoingMessageContent extends MessageContent {
+    /**
+     * 通话唯一标识
+     */
     private String callId;
+
+    /**
+     * 通话发起者ID
+     */
     private String initiator;
+
+    /**
+     * 是否为纯音频通话
+     */
     private boolean audioOnly;
+
+    /**
+     * 通话参与者ID列表
+     */
     private List<String> targets;
 
     public MultiCallOngoingMessageContent() {

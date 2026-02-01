@@ -5,9 +5,15 @@
 package cn.wildfirechat.model;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 修改群组信息类型枚举
+ * <p>
+ * 定义了可以修改的群组信息字段类型。
+ * 包括群名称、群头像、附加信息、禁言设置、加入类型、私聊权限、搜索可见性、历史消息、最大成员数等。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public enum ModifyGroupInfoType {
     Modify_Group_Name(0),
     Modify_Group_Portrait(1),

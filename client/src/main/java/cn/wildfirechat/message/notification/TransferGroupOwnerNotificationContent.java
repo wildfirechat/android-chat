@@ -18,12 +18,25 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 转让群主通知内容
+ * <p>
+ * 当群组被转让给新群主时发送的通知消息。
+ * 包含原群主和新群主的信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_TRANSFER_GROUP_OWNER, flag = PersistFlag.Persist)
 public class TransferGroupOwnerNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 执行转让操作的原群主ID
+     */
     public String operator;
+
+    /**
+     * 新群主ID
+     */
     public String newOwner;
 
     public TransferGroupOwnerNotificationContent() {

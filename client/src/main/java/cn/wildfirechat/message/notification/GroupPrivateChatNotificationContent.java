@@ -17,11 +17,26 @@ import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_CHANGE_PRIVATECHAT;
 
+/**
+ * 群组私聊设置通知内容
+ * <p>
+ * 当群组的私聊权限设置被修改时发送的通知消息。
+ * 包含操作者和新的私聊权限类型信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = CONTENT_TYPE_CHANGE_PRIVATECHAT, flag = PersistFlag.Persist)
 public class GroupPrivateChatNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改私聊设置的操作者ID
+     */
     public String operator;
 
-    //是否运行群中普通成员私聊。0 允许，1不允许
+    /**
+     * 私聊类型（0-允许私聊，1-禁止私聊）
+     */
     public int type;
 
     @Override

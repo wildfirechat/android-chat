@@ -12,14 +12,39 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 /**
- * Created by heavyrainlee on 14/12/2017.
+ * Socks5代理信息类
+ * <p>
+ * 用于表示Socks5代理服务器的连接信息。
+ * 包含主机、IP、端口、用户名和密码等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class Socks5ProxyInfo implements Parcelable, Comparable<Socks5ProxyInfo> {
+    /**
+     * 代理主机名
+     */
     public String host;
+
+    /**
+     * 代理IP地址
+     */
     public String ip;
+
+    /**
+     * 代理端口
+     */
     public int port;
+
+    /**
+     * 代理用户名
+     */
     public String username;
+
+    /**
+     * 代理密码
+     */
     public String password;
 
     public Socks5ProxyInfo() {

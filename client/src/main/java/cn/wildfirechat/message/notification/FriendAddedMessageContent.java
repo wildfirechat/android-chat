@@ -16,9 +16,15 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 好友添加成功通知内容
+ * <p>
+ * 当好友关系建立成功时发送的通知消息。
+ * 通知用户好友已添加，可以开始聊天。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Friend_Added, flag = PersistFlag.Persist)
 public class FriendAddedMessageContent extends NotificationMessageContent {
     public FriendAddedMessageContent() {

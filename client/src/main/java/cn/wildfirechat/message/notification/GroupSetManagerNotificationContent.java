@@ -21,12 +21,31 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 设置群管理员通知内容
+ * <p>
+ * 当群成员被设置为或取消管理员时发送的通知消息。
+ * 包含操作者、操作类型和目标成员列表。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = CONTENT_TYPE_SET_MANAGER, flag = PersistFlag.Persist)
 public class GroupSetManagerNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 设置管理员的操作者ID
+     */
     public String operator;
-    // 1, 设置为管理员；0，取消管理员
+
+    /**
+     * 操作类型（1-设置为管理员，0-取消管理员）
+     */
     public int type;
 
+    /**
+     * 被操作的成员ID列表
+     */
     public List<String> memberIds;
 
     @Override

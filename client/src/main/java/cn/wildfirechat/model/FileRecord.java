@@ -7,14 +7,55 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 文件记录类
+ * <p>
+ * 用于记录会话中的文件传输记录。
+ * 包含用户ID、会话、消息UID、文件名、URL、大小、下载次数和时间戳。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class FileRecord implements Parcelable {
+    /**
+     * 用户ID
+     */
     public String userId;
+
+    /**
+     * 会话对象
+     */
     public Conversation conversation;
+
+    /**
+     * 消息UID
+     */
     public long messageUid;
+
+    /**
+     * 文件名
+     */
     public String name;
+
+    /**
+     * 文件URL
+     */
     public String url;
+
+    /**
+     * 文件大小
+     */
     public int size;
+
+    /**
+     * 下载次数
+     */
     public int downloadCount;
+
+    /**
+     * 时间戳
+     */
     public long timestamp;
 
     public FileRecord() {

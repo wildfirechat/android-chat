@@ -20,17 +20,45 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 音视频通话消息内容
+ * <p>
+ * 用于发起或记录音视频通话的消息。
+ * 支持单人通话和多人通话，包含通话的详细信息和状态。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Call_Start, flag = PersistFlag.Persist_And_Count)
 public class CallStartMessageContent extends MessageContent {
+    /**
+     * 通话唯一标识
+     */
     private String callId;
-    // 多人视音频是有效
+
+    /**
+     * 通话目标用户ID列表，多人音视频时有效
+     */
     private List<String> targetIds;
+
+    /**
+     * 通话接通时间
+     */
     private long connectTime;
+
+    /**
+     * 通话结束时间
+     */
     private long endTime;
+
+    /**
+     * 是否为纯音频通话
+     */
     private boolean audioOnly;
+
+    /**
+     * 通话PIN码（用于加入通话）
+     */
     private String pin;
 
 

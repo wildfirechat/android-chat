@@ -15,11 +15,20 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 语音消息内容类
+ * <p>
+ * 用于表示语音类型的消息内容，支持语音录制和播放功能。
+ * 语音消息包含音频文件路径和语音时长信息，时长单位为秒。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = MessageContentType.ContentType_Voice, flag = PersistFlag.Persist_And_Count)
 public class SoundMessageContent extends MediaMessageContent {
+    /**
+     * 语音时长，单位为秒
+     */
     protected int duration;
 
     public SoundMessageContent() {

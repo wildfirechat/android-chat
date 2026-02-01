@@ -13,17 +13,46 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Typing;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 正在输入消息内容
+ * <p>
+ * 用于实时显示对方正在输入的状态消息。
+ * 支持文本、语音、视频、位置、文件等多种输入类型的提示。
+ * 此消息不会被持久化存储，仅在会话期间有效。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Typing, flag = PersistFlag.Transparent)
 public class TypingMessageContent extends MessageContent {
+    /**
+     * 文本输入类型
+     */
     public static final int TYPING_TEXT = 0;
+
+    /**
+     * 语音输入类型
+     */
     public static final int TYPING_VOICE = 1;
+
+    /**
+     * 视频/相机输入类型
+     */
     public static final int TYPING_CAMERA = 2;
+
+    /**
+     * 位置输入类型
+     */
     public static final int TYPING_LOCATION = 3;
+
+    /**
+     * 文件输入类型
+     */
     public static final int TYPING_FILE = 4;
 
+    /**
+     * 输入类型
+     */
     private int typingType;
 
     public TypingMessageContent() {

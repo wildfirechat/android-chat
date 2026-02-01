@@ -8,10 +8,33 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+/**
+ * 用户在线状态类
+ * <p>
+ * 用于表示用户的在线状态信息。
+ * 支持多端同时在线（iOS、Android、Web、PC等），以及自定义状态（忙碌、离开、隐身等）。
+ * 可以获取用户在各平台的在线状态和最后在线时间。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 public class UserOnlineState implements Parcelable {
+    /**
+     * 用户ID
+     */
     private String userId;
+    /**
+     * 自定义状态：0-未设置，1-忙碌，2-离开（主动设置），3-离开（长时间不操作），4-隐身
+     */
     private int customState;
+    /**
+     * 自定义状态文本
+     */
     private String customText;
+    /**
+     * 各客户端的在线状态数组
+     */
     private ClientState[] clientStates;
 
 

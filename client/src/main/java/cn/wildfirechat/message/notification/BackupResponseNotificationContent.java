@@ -18,7 +18,14 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 /**
  * 备份响应通知消息
- * PC端响应Android端的备份请求
+ * <p>
+ * PC端响应Android端的备份请求。
+ * 包含是否同意备份及服务器连接信息（IP和端口）。
+ * 此消息不会被持久化，仅用于实时传输。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
 @ContentTag(type = MessageContentType.ContentType_Backup_Response, flag = PersistFlag.Transparent)
 public class BackupResponseNotificationContent extends NotificationMessageContent {

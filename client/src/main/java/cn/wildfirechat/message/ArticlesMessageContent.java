@@ -19,9 +19,26 @@ import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * 图文消息内容
+ * <p>
+ * 用于发送多图文消息，包含一个主文章和多个子文章。
+ * 常用于公众号文章、新闻推送等场景，每篇文章包含标题、封面、摘要、链接等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = MessageContentType.ContentType_Articles, flag = PersistFlag.Persist_And_Count)
 public class ArticlesMessageContent extends MessageContent {
+    /**
+     * 主文章
+     */
     public Article topArticle;
+
+    /**
+     * 子文章列表
+     */
     public ArrayList<Article> subArticles;
 
     @Override
@@ -81,12 +98,41 @@ public class ArticlesMessageContent extends MessageContent {
         return contents;
     }
 
+    /**
+     * 文章类
+     * <p>
+     * 表示单篇文章的信息，包括ID、封面、标题、摘要、URL等。
+     * </p>
+     */
     public static class Article implements Parcelable {
+        /**
+         * 文章唯一标识
+         */
         public String articleId;
+
+        /**
+         * 文章封面图片URL
+         */
         public String cover;
+
+        /**
+         * 文章标题
+         */
         public String title;
+
+        /**
+         * 文章摘要
+         */
         public String digest;
+
+        /**
+         * 文章链接URL
+         */
         public String url;
+
+        /**
+         * 是否需要阅读回执
+         */
         boolean readReport;
 
         JSONObject toJson() {

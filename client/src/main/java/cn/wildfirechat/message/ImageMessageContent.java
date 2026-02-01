@@ -23,21 +23,41 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
- *   图片展示高仿微信,并且
- *   占位图-缩略图-原图
+ * 图片消息内容类
+ * <p>
+ * 用于表示图片类型的消息内容，支持图片的发送和接收。
+ * 图片展示采用占位图-缩略图-原图的三级加载机制，仿照微信的图片显示方式。
+ * 支持获取图片的原始尺寸信息，便于UI展示。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = MessageContentType.ContentType_Image, flag = PersistFlag.Persist_And_Count)
 public class ImageMessageContent extends MediaMessageContent {
 
     private static final String TAG = "ImageMessageContent";
 
-    private Bitmap thumbnail; // 不跨进程传输
+    /**
+     * 缩略图，不跨进程传输
+     */
+    private Bitmap thumbnail;
+    /**
+     * 缩略图的字节数组
+     */
     private byte[] thumbnailBytes;
 
+    /**
+     * 图片原始宽度
+     */
     private double imageWidth;
+    /**
+     * 图片原始高度
+     */
     private double imageHeight;
+    /**
+     * 缩略图参数（已废弃）
+     */
     @Deprecated
     private String thumbPara;
 

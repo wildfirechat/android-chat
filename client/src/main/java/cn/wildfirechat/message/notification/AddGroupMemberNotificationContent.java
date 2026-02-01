@@ -26,13 +26,30 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 添加群成员通知内容类
+ * <p>
+ * 用于表示添加群组成员的通知消息。
+ * 当有新成员加入群组时，会发送此通知消息给群组所有成员。
+ * 支持邀请加入、扫码加入、通过名片加入等多种加入方式。
+ * 包含邀请者、被邀请者和审批者等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_ADD_GROUP_MEMBER, flag = PersistFlag.Persist)
 public class AddGroupMemberNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 邀请者ID
+     */
     public String invitor;
+    /**
+     * 被邀请的用户ID列表
+     */
     public List<String> invitees;
+    /**
+     * 审批者ID（当需要审批时）
+     */
     public String approver;
 
     public AddGroupMemberNotificationContent() {

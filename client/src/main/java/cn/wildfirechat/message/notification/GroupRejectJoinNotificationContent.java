@@ -26,11 +26,31 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 拒绝加入群组通知内容
+ * <p>
+ * 当用户申请加入群组被拒绝时发送的通知消息。
+ * 包含被拒绝用户及拒绝原因。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = ContentType_REJECT_JOIN_GROUP, flag = PersistFlag.Persist)
 public class GroupRejectJoinNotificationContent extends NotificationMessageContent {
+    /**
+     * 群组ID
+     */
     public String groupId;
+
+    /**
+     * 拒绝的操作者ID
+     */
     public String operator;
-    //int是拒绝的原因，1是黑名单，2是陌生人
+
+    /**
+     * 被拒绝的用户及其拒绝原因（1-黑名单，2-陌生人）
+     */
     public Map<String, Integer> rejectUser;
 
     @Override

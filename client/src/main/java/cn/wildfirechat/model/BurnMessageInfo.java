@@ -9,13 +9,50 @@ import android.os.Parcelable;
 
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 阅后即焚消息信息类
+ * <p>
+ * 用于表示阅后即焚消息的详细信息。
+ * 包含消息ID、消息UID、目标ID、方向、是否为媒体、销毁时间和消息时间。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 public class BurnMessageInfo implements Parcelable {
+    /**
+     * 消息ID
+     */
     private long messageId;
+
+    /**
+     * 消息UID
+     */
     private long messageUid;
+
+    /**
+     * 目标ID
+     */
     private String targetId;
+
+    /**
+     * 消息方向
+     */
     private int direction;
+
+    /**
+     * 是否为媒体消息
+     */
     private int isMedia;
+
+    /**
+     * 阅后即焚时间（秒）
+     */
     private int burnTime;
+
+    /**
+     * 消息时间
+     */
     private long messageDt;
 
     public long getMessageId() {

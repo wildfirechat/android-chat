@@ -15,36 +15,97 @@ import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.model.ProtoMessageContent;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 消息载荷类
+ * <p>
+ * 表示消息在网络传输和本地存储时的数据结构。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class MessagePayload implements Parcelable {
 
+    /**
+     * 消息类型
+     */
     public /*MessageContentType*/ int type;
+
+    /**
+     * 可搜索内容
+     */
     public String searchableContent;
+
+    /**
+     * 推送内容
+     */
     public String pushContent;
+
+    /**
+     * 推送数据
+     */
     public String pushData;
+
+    /**
+     * 消息内容
+     */
     public String content;
+
+    /**
+     * 二进制内容
+     */
     public byte[] binaryContent;
 
+    /**
+     * 扩展字段
+     */
     public String extra;
 
+    /**
+     * @提醒类型
+     */
     public int mentionedType;
+
+    /**
+     * @提醒对象列表
+     */
     public List<String> mentionedTargets;
 
+    /**
+     * 媒体类型
+     */
     public MessageContentMediaType mediaType;
+
+    /**
+     * 远程媒体URL
+     */
     public String remoteMediaUrl;
 
-    //前面的属性都会在网络发送，下面的属性只在本地存储
+    /**
+     * 本地媒体路径（只在本地存储）
+     */
     public String localMediaPath;
 
+    /**
+     * 本地内容
+     */
     public String localContent;
 
+    /**
+     * 消息是否未加载
+     */
     public int notLoaded;
 
+    /**
+     * 默认构造函数
+     */
     public MessagePayload() {
     }
 
+    /**
+     * 从Proto消息内容构造
+     *
+     * @param protoMessageContent Proto消息内容
+     */
     public MessagePayload(ProtoMessageContent protoMessageContent) {
         this.type = protoMessageContent.getType();
         this.searchableContent = protoMessageContent.getSearchableContent();
@@ -66,6 +127,11 @@ public class MessagePayload implements Parcelable {
         this.notLoaded = protoMessageContent.getNotLoaded();
     }
 
+    /**
+     * 转换为Proto消息内容
+     *
+     * @return Proto消息内容
+     */
     public ProtoMessageContent toProtoContent() {
         ProtoMessageContent out = new ProtoMessageContent();
         out.setType(type);

@@ -14,29 +14,78 @@ import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 消息类
+ * <p>
+ * 表示IM中的一条消息，包含消息的基本信息和内容。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class Message implements Parcelable {
 
 
+    /**
+     * 消息ID，本地数据库自增ID
+     */
     public long messageId;
+
+    /**
+     * 消息所属会话
+     */
     public Conversation conversation;
+
+    /**
+     * 消息发送者ID
+     */
     public String sender;
+
     /**
      * 消息在会话中定向发送给指定用户
      */
     public String[] toUsers;
+
+    /**
+     * 消息内容
+     */
     public MessageContent content;
+
+    /**
+     * 消息方向（发送/接收）
+     */
     public MessageDirection direction;
+
+    /**
+     * 消息状态
+     */
     public MessageStatus status;
+
+    /**
+     * 消息UID，服务器生成，全局唯一
+     */
     public long messageUid;
+
+    /**
+     * 服务器时间戳
+     */
     public long serverTime;
+
+    /**
+     * 本地扩展字段
+     */
     public String localExtra;
 
+    /**
+     * 默认构造函数
+     */
     public Message() {
     }
 
+    /**
+     * 拷贝构造函数
+     *
+     * @param msg 源消息对象
+     */
     public Message(Message msg){
         this.messageId = msg.messageId;
         this.conversation = msg.conversation;
@@ -55,6 +104,11 @@ public class Message implements Parcelable {
         return 0;
     }
 
+    /**
+     * 获取消息摘要文本
+     *
+     * @return 消息摘要
+     */
     public String digest() {
         return content.digest(this);
     }

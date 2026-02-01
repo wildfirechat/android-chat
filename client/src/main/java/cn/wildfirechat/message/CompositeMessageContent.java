@@ -32,12 +32,31 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 组合消息内容
+ * <p>
+ * 用于将多条消息组合成一个消息发送，常用于转发聊天记录。
+ * 支持将多个消息打包成一个文件进行传输，可以包含文本、图片、语音等各种类型的消息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = ContentType_Composite_Message, flag = PersistFlag.Persist_And_Count)
 public class CompositeMessageContent extends MediaMessageContent {
+    /**
+     * 组合消息的标题
+     */
     private String title;
-    //可能会非常大，不进行 ipc，需要使用时，在进行 decode
+
+    /**
+     * 包含的消息列表，可能会非常大，不进行IPC，需要使用时再进行decode
+     */
     private List<Message> messages;
-    // 内部 ipc 使用
+
+    /**
+     * 二进制内容，用于内部IPC传输
+     */
     private byte[] binaryContent;
 
     private boolean mediaCompositeMessageLoaded = false;

@@ -14,9 +14,15 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 好友打招呼通知内容
+ * <p>
+ * 当用户向好友打招呼时发送的通知消息。
+ * 用于添加好友前的初次联系。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Friend_Greeting, flag = PersistFlag.Persist)
 public class FriendGreetingMessageContent extends NotificationMessageContent {
     public FriendGreetingMessageContent() {

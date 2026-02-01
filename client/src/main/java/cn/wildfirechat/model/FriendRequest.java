@@ -8,23 +8,44 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by heavyrainlee on 14/12/2017.
+ * 好友请求类
+ * <p>
+ * 用于表示好友请求的信息，包括发送的好友请求和接收的好友请求。
+ * 包含请求方向、目标用户、申请理由、请求状态等信息。
+ * 支持好友请求的发送、接受、拒绝等操作。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class FriendRequest implements Parcelable {
     /**
-     * RequestDirection_Send = 0,
-     * RequestDirection_Receive = 1
+     * 请求方向：0-发送，1-接收
      */
     public int direction;
+    /**
+     * 目标用户ID
+     */
     public String target;
+    /**
+     * 申请理由
+     */
     public String reason;
+    /**
+     * 额外信息
+     */
     public String extra;
-    //    RequestStatus_Sent = 0,
-//    RequestStatus_Accepted = 1,
-//    RequestStatus_Rejected = 3
+    /**
+     * 请求状态：0-已发送，1-已接受，3-已拒绝
+     */
     public int status;
+    /**
+     * 已读状态
+     */
     public int readStatus;
+    /**
+     * 时间戳
+     */
     public long timestamp;
 
     public FriendRequest() {

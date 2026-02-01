@@ -22,12 +22,25 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 移除群成员通知内容
+ * <p>
+ * 当群成员被管理员或群主移出群组时发送的通知消息。
+ * 包含操作者和被移除成员列表信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_KICKOF_GROUP_MEMBER, flag = PersistFlag.Persist)
 public class KickoffGroupMemberNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 移除成员的操作者ID
+     */
     public String operator;
+
+    /**
+     * 被移除的成员ID列表
+     */
     public List<String> kickedMembers;
 
     public KickoffGroupMemberNotificationContent() {

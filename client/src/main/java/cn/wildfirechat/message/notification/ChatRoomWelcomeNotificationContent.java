@@ -9,8 +9,21 @@ import android.os.Parcel;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
 
+/**
+ * 聊天室欢迎消息内容
+ * <p>
+ * 用于聊天室场景的欢迎消息。
+ * 当用户进入聊天室时显示的欢迎信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class ChatRoomWelcomeNotificationContent extends NotificationMessageContent {
 
+    /**
+     * 欢迎文本
+     */
     private String welcome;
 
     @Override

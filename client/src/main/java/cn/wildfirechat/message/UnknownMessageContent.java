@@ -13,11 +13,20 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Unknown;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 未知消息内容
+ * <p>
+ * 当收到无法识别的消息类型时，使用此类包装原始消息负载。
+ * 这样可以确保即使遇到新版本的消息类型，旧版本客户端也能正常显示。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Unknown, flag = PersistFlag.Persist)
 public class UnknownMessageContent extends MessageContent {
+    /**
+     * 原始消息负载
+     */
     private MessagePayload orignalPayload;
 
     public UnknownMessageContent() {

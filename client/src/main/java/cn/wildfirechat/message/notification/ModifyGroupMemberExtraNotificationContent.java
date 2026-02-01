@@ -20,13 +20,30 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 修改群成员附加信息通知内容
+ * <p>
+ * 当群成员的附加信息被修改时发送的通知消息。
+ * 此消息不会被持久化，仅用于实时状态同步。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_MODIFY_GROUP_MEMBER_EXTRA, flag = PersistFlag.No_Persist)
 public class ModifyGroupMemberExtraNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改群成员附加信息的操作者ID
+     */
     public String operateUser;
+
+    /**
+     * 新的群成员附加信息
+     */
     public String groupMemberExtra;
+
+    /**
+     * 被修改附加信息的成员ID
+     */
     public String memberId;
 
     public ModifyGroupMemberExtraNotificationContent() {

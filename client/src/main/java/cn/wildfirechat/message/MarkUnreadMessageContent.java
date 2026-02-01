@@ -16,12 +16,25 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 标记未读消息内容
+ * <p>
+ * 用于在多端同步时标记某条消息为未读状态。
+ * 当用户在一个设备上将消息标记为未读时，会通过此消息同步到其他设备。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Mark_Unread_Sync, flag = PersistFlag.No_Persist)
 public class MarkUnreadMessageContent extends MessageContent {
+    /**
+     * 被标记为未读的消息UID
+     */
     private long messageUid;
+
+    /**
+     * 标记时间戳
+     */
     private long timestamp;
 
     public MarkUnreadMessageContent() {

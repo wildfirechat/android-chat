@@ -18,7 +18,14 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 /**
  * 备份请求通知消息
- * 当Android端请求备份到PC端时发送此通知
+ * <p>
+ * 当Android端请求备份到PC端时发送此通知消息。
+ * 包含会话列表、是否包含媒体文件等信息。
+ * 此消息不会被持久化，仅用于实时传输。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
 @ContentTag(type = MessageContentType.ContentType_Backup_Request, flag = PersistFlag.Transparent)
 public class BackupRequestNotificationContent extends NotificationMessageContent {

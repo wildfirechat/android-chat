@@ -14,6 +14,16 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 开始密聊通知内容
+ * <p>
+ * 当发起或接受秘密聊天会话时发送的通知消息。
+ * 通知用户密聊会话的建立状态。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = ContentType_Start_Secret_Chat, flag = PersistFlag.Persist)
 public class StartSecretChatMessageContent extends NotificationMessageContent {
     @Override

@@ -16,12 +16,24 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_File;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 文件消息内容类
+ * <p>
+ * 用于表示文件类型的消息内容，支持通用文件的传输。
+ * 包含文件名、文件大小等信息，支持各种格式的文件发送和接收。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_File, flag = PersistFlag.Persist_And_Count)
 public class FileMessageContent extends MediaMessageContent {
+    /**
+     * 文件名称
+     */
     private String name;
+    /**
+     * 文件大小，单位为字节
+     */
     private int size;
     private static final String FILE_NAME_PREFIX = "[文件] ";
 

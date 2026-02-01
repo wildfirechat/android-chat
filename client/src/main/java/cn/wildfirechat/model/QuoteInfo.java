@@ -13,12 +13,40 @@ import org.json.JSONObject;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 引用消息信息类
+ * <p>
+ * 用于消息回复功能，存储被引用消息的基本信息。
+ * 包含消息UID、发送者、显示名称和消息摘要等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class QuoteInfo implements Parcelable {
+    /**
+     * 被引用消息的UID
+     */
     private long messageUid;
-    // 本地使用
+
+    /**
+     * 被引用的消息对象（本地使用）
+     */
     private Message message;
+
+    /**
+     * 消息发送者ID
+     */
     private String userId;
+
+    /**
+     * 消息发送者显示名称
+     */
     private String userDisplayName;
+
+    /**
+     * 消息摘要
+     */
     private String messageDigest;
 
     public long getMessageUid() {

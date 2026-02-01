@@ -11,24 +11,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by heavyrain on 2017/12/13.
+ * 群组搜索结果类
+ * <p>
+ * 用于表示群组搜索的结果信息。
+ * 包含群组信息、匹配类型和匹配成员列表。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class GroupSearchResult implements Parcelable {
+    /**
+     * 群组搜索匹配类型掩码接口
+     */
     public interface GroupSearchMarchTypeMask {
-        //march group name
+        /**
+         * 匹配群名称
+         */
         int Group_Name_Mask = 0x01;
-        //march member user name
+
+        /**
+         * 匹配成员用户名
+         */
         int Member_Name_Mask = 0x02;
-        //march group member alias
+
+        /**
+         * 匹配群成员别名
+         */
         int Member_Alias_Mask = 0x04;
-        //march group remark
+
+        /**
+         * 匹配群备注
+         */
         int Group_Remark_Mask = 0x08;
     }
 
+    /**
+     * 群组信息
+     */
     public GroupInfo groupInfo;
-    //GroupSearchMarchTypeMask
+
+    /**
+     * 匹配类型（GroupSearchMarchTypeMask）
+     */
     public int marchedType;
+
+    /**
+     * 匹配的成员ID列表
+     */
     public List<String> marchedMembers;
 
     public GroupSearchResult() {

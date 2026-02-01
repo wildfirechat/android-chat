@@ -18,12 +18,25 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_CREATE_GROUP;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 创建群组通知内容类
+ * <p>
+ * 用于表示创建群组的通知消息。
+ * 当有新群组创建时，会发送此通知消息给群组成员。
+ * 包含群组创建者信息和群组名称等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_CREATE_GROUP, flag = PersistFlag.Persist)
 public class CreateGroupNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 群组创建者ID
+     */
     public String creator;
+    /**
+     * 群组名称
+     */
     public String groupName;
 
     public CreateGroupNotificationContent() {

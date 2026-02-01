@@ -5,9 +5,15 @@
 package cn.wildfirechat.model;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 修改个人信息类型枚举
+ * <p>
+ * 定义了可以修改的用户个人信息字段类型。
+ * 包括显示名称、头像、性别、手机、邮箱、地址、公司、社交信息、附加信息等。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public enum ModifyMyInfoType {
     Modify_DisplayName(0),
     Modify_Portrait(1),

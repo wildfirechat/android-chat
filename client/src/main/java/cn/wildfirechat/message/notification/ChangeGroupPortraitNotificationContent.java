@@ -18,11 +18,20 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_CHANGE_GROUP_PORTRAIT;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 修改群头像通知内容
+ * <p>
+ * 当群组头像被修改时发送的通知消息。
+ * 包含操作者信息，通知群成员群头像已更新。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_CHANGE_GROUP_PORTRAIT, flag = PersistFlag.Persist)
 public class ChangeGroupPortraitNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改群头像的操作者ID
+     */
     public String operateUser;
 
     public ChangeGroupPortraitNotificationContent() {

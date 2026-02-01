@@ -539,6 +539,11 @@ public class ChatManager {
         INST.registerCoreMessageContents();
     }
 
+    /**
+     * 获取应用程序上下文
+     *
+     * @return 应用程序上下文
+     */
     public Context getApplicationContext() {
         return gContext;
     }
@@ -1265,6 +1270,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取平台类型
+     *
+     * @return 平台类型，返回 {@link Platform}
+     */
     public Platform getPlatform() {
         if (isPad) {
             return Platform.PlatformType_APad;
@@ -2110,6 +2120,11 @@ public class ChatManager {
     }
 
 
+    /**
+     * 添加音视频会议事件监听器
+     *
+     * @param listener 音视频会议事件监听器
+     */
     public void addConferenceEventListener(OnConferenceEventListener listener) {
         if (listener == null) {
             return;
@@ -2117,6 +2132,11 @@ public class ChatManager {
         conferenceEventListeners.add(listener);
     }
 
+    /**
+     * 移除音视频会议事件监听器
+     *
+     * @param listener 音视频会议事件监听器
+     */
     public void removeConferenceEventListener(OnConferenceEventListener listener) {
         conferenceEventListeners.remove(listener);
     }
@@ -2359,6 +2379,12 @@ public class ChatManager {
         return message;
     }
 
+    /**
+     * 插入消息到本地数据库
+     *
+     * @param message 要插入的消息对象
+     * @return 插入后的消息，如果失败返回null
+     */
     public Message insertMessage(Message message) {
         if (!checkRemoteService()) {
             return null;
@@ -5025,8 +5051,15 @@ public class ChatManager {
         }
     }
 
-    // 优先级如下：
-    // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
+    /**
+     * 获取群成员显示名称
+     * <p>
+     * 优先级：群备注 > 好友备注 > 用户displayName > &lt;uid&gt;
+     *
+     * @param groupId  群组ID
+     * @param memberId 群成员ID
+     * @return 群成员的显示名称
+     */
     public String getGroupMemberDisplayName(String groupId, String memberId) {
         UserInfo userInfo = getUserInfo(memberId, groupId, false);
         if (userInfo == null) {
@@ -5044,6 +5077,14 @@ public class ChatManager {
         return "<" + memberId + ">";
     }
 
+    /**
+     * 获取群成员显示名称
+     * <p>
+     * 优先级：群备注 > 好友备注 > 用户displayName > &lt;uid&gt;
+     *
+     * @param userInfo 用户信息
+     * @return 群成员的显示名称
+     */
     public String getGroupMemberDisplayName(UserInfo userInfo) {
         if (!TextUtils.isEmpty(userInfo.groupAlias)) {
             return userInfo.groupAlias;
@@ -5057,6 +5098,14 @@ public class ChatManager {
         return "<" + userInfo.uid + ">";
     }
 
+    /**
+     * 获取用户显示名称
+     * <p>
+     * 优先级：好友备注 > 用户displayName > &lt;uid&gt;
+     *
+     * @param userInfo 用户信息
+     * @return 用户的显示名称
+     */
     public String getUserDisplayName(UserInfo userInfo) {
         if (userInfo == null) {
             return "";
@@ -5071,16 +5120,34 @@ public class ChatManager {
         return "<" + userInfo.uid + ">";
     }
 
+    /**
+     * 获取用户显示名称
+     *
+     * @param userId 用户ID
+     * @return 用户的显示名称
+     */
     public String getUserDisplayName(String userId) {
         UserInfo userInfo = getUserInfo(userId, false);
         return getUserDisplayName(userInfo);
     }
 
+    /**
+     * 获取群组显示名称
+     *
+     * @param groupId 群组ID
+     * @return 群组的显示名称
+     */
     public String getGroupDisplayName(String groupId) {
         GroupInfo groupInfo = getGroupInfo(groupId, false);
         return getGroupDisplayName(groupInfo);
     }
 
+    /**
+     * 获取群组显示名称
+     *
+     * @param groupInfo 群组信息
+     * @return 群组的显示名称
+     */
     public String getGroupDisplayName(GroupInfo groupInfo) {
         if (groupInfo == null) {
             return "群聊";
@@ -7183,6 +7250,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取编码后的客户端ID
+     *
+     * @return 编码后的客户端ID
+     */
     public String getEncodedClientId() {
         if (!checkRemoteService()) {
             return null;
@@ -8521,6 +8593,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 编码数据
+     *
+     * @param data 原始数据
+     * @return 编码后的数据
+     */
     public byte[] encodeData(byte[] data) {
         if (!checkRemoteService()) {
             return null;
@@ -8534,6 +8612,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 解码数据
+     *
+     * @param data 编码后的数据
+     * @return 解码后的原始数据
+     */
     public byte[] decodeData(byte[] data) {
         if (!checkRemoteService()) {
             return null;
@@ -8547,6 +8631,14 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 解码数据（扩展版）
+     *
+     * @param type 数据类型
+     * @param data 编码后的数据
+     * @param gzip 是否使用gzip压缩
+     * @return 解码后的原始数据
+     */
     public byte[] decodeData(int type, byte[] data, boolean gzip) {
         if (!checkRemoteService()) {
             return null;
@@ -8560,6 +8652,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 发送朋友圈请求
+     *
+     * @param path      请求路径
+     * @param mediaData 媒体数据
+     * @param callback  回调
+     */
     public void sendMomentsRequest(String path, byte[] mediaData, GeneralCallbackBytes callback) {
         if (!checkRemoteService()) {
             return;
@@ -8596,7 +8695,11 @@ public class ChatManager {
         });
     }
 
-    // connect host
+    /**
+     * 获取连接主机地址
+     *
+     * @return 主机地址
+     */
     public String getHost() {
         if (!checkRemoteService()) {
             return null;
@@ -8610,7 +8713,11 @@ public class ChatManager {
         }
     }
 
-    // shortlink port
+    /**
+     * 获取短连接端口
+     *
+     * @return 端口号
+     */
     public int getPort() {
         if (!checkRemoteService()) {
             return 80;
@@ -8624,7 +8731,11 @@ public class ChatManager {
         }
     }
 
-    // route host
+    /**
+     * 获取路由主机地址
+     *
+     * @return 路由主机地址
+     */
     public String getHostEx() {
         if (!checkRemoteService()) {
             return null;
@@ -9058,6 +9169,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取图片缩略图参数
+     *
+     * @return 图片缩略图参数字符串
+     */
     public String getImageThumbPara() {
         if (!checkRemoteService()) {
             return null;
@@ -10361,10 +10477,29 @@ public class ChatManager {
         return null;
     }
 
+    /**
+     * 发送音视频会议请求
+     *
+     * @param sessionId 会话ID
+     * @param roomId    房间ID
+     * @param request   请求类型
+     * @param data      请求数据
+     * @param callback  结果回调
+     */
     public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
         sendConferenceRequest(sessionId, roomId, request, false, data, callback);
     }
 
+    /**
+     * 发送音视频会议请求
+     *
+     * @param sessionId 会话ID
+     * @param roomId    房间ID
+     * @param request   请求类型
+     * @param advanced  是否为高级版
+     * @param data      请求数据
+     * @param callback  结果回调
+     */
     public void sendConferenceRequest(long sessionId, String roomId, String request, boolean advanced, String data, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)

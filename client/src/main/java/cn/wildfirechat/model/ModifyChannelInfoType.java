@@ -5,9 +5,15 @@
 package cn.wildfirechat.model;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 修改频道信息类型枚举
+ * <p>
+ * 定义了可以修改的频道信息字段类型。
+ * 包括频道名称、频道头像、频道描述、频道附加信息等。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public enum ModifyChannelInfoType {
     Modify_Channel_Name(0),
     Modify_Channel_Portrait(1),

@@ -14,11 +14,20 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_P_Text
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Text;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 加密文本消息内容
+ * <p>
+ * 用于端到端加密的文本消息，继承自TextMessageContent。
+ * 在秘密聊天或需要额外加密的场景中使用。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_P_Text, flag = PersistFlag.Persist)
 public class PTextMessageContent extends TextMessageContent {
+    /**
+     * 消息文本内容
+     */
     private String content;
 
     public PTextMessageContent() {

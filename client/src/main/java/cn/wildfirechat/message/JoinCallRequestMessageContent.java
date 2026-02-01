@@ -14,9 +14,26 @@ import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * 加入通话请求消息内容
+ * <p>
+ * 用于请求加入正在进行的多人通话的透明消息。
+ * 当用户想要加入一个已有的通话时会发送此消息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = MessageContentType.ContentType_Call_Join_Call_Request, flag = PersistFlag.Transparent)
 public class JoinCallRequestMessageContent extends MessageContent {
+    /**
+     * 通话唯一标识
+     */
     private String callId;
+
+    /**
+     * 请求者客户端ID
+     */
     private String clientId;
 
     public String getCallId() {

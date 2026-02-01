@@ -20,19 +20,50 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Recall;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 消息撤回通知内容类
+ * <p>
+ * 用于表示消息撤回的通知内容。
+ * 当用户撤回一条消息时，会发送此通知消息给会话中的其他用户。
+ * 包含撤回操作者的信息、被撤回消息的UID以及被撤回消息的原始内容信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Recall, flag = PersistFlag.Persist)
 public class RecallMessageContent extends NotificationMessageContent {
+    /**
+     * 撤回操作者ID
+     */
     private String operatorId;
+    /**
+     * 被撤回消息的UID
+     */
     private long messageUid;
 
+    /**
+     * 原始消息发送者ID
+     */
     private String originalSender;
+    /**
+     * 原始消息内容类型
+     */
     private int originalContentType;
+    /**
+     * 原始消息可搜索内容
+     */
     private String originalSearchableContent;
+    /**
+     * 原始消息内容
+     */
     private String originalContent;
+    /**
+     * 原始消息额外信息
+     */
     private String originalExtra;
+    /**
+     * 原始消息时间戳
+     */
     private long originalMessageTimestamp;
 
     public RecallMessageContent() {

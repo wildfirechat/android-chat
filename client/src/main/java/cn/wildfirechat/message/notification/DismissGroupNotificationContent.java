@@ -18,11 +18,20 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_DISMISS_GROUP;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 解散群组通知内容
+ * <p>
+ * 当群组被解散时发送的通知消息。
+ * 包含操作者信息，通知所有群成员群组已被解散。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_DISMISS_GROUP, flag = PersistFlag.Persist)
 public class DismissGroupNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 解散群组的操作者ID
+     */
     public String operator;
 
     public DismissGroupNotificationContent() {

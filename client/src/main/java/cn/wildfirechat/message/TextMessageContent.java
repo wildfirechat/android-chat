@@ -17,13 +17,24 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.QuoteInfo;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 文本消息内容类
+ * <p>
+ * 用于表示文本类型的消息内容，支持普通文本和引用回复功能。
+ * 文本消息是野火IM中最基本的消息类型，支持@提及功能和引用其他消息进行回复。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Text, flag = PersistFlag.Persist_And_Count)
 public class TextMessageContent extends MessageContent {
+    /**
+     * 文本消息内容
+     */
     private String content;
-    // 引用信息
+    /**
+     * 引用信息
+     */
     private QuoteInfo quoteInfo;
 
     public TextMessageContent() {

@@ -10,14 +10,34 @@ import android.os.Parcelable;
 import cn.wildfirechat.message.Message;
 
 /**
- * Created by heavyrain on 2017/12/13.
+ * 会话搜索结果类
+ * <p>
+ * 用于表示会话搜索的结果信息。
+ * 包含会话对象、匹配消息、时间戳和匹配数量。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class ConversationSearchResult implements Parcelable {
+    /**
+     * 会话对象
+     */
     public Conversation conversation;
-    //only marchedCount == 1, load the message
+
+    /**
+     * 匹配的消息（仅当marchedCount == 1时加载）
+     */
     public Message marchedMessage;
+
+    /**
+     * 时间戳
+     */
     public long timestamp;
+
+    /**
+     * 匹配数量
+     */
     public int marchedCount;
 
     public ConversationSearchResult() {

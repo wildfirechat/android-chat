@@ -18,7 +18,13 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 /**
  * 恢复请求通知消息
- * Android端请求PC端提供恢复备份列表
+ * <p>
+ * Android端请求PC端提供恢复备份列表的通知消息。
+ * 用于跨设备数据恢复场景。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
 @ContentTag(type = MessageContentType.ContentType_Restore_Request, flag = PersistFlag.No_Persist)
 public class RestoreRequestNotificationContent extends NotificationMessageContent {

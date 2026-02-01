@@ -5,11 +5,22 @@
 package cn.wildfirechat.message.core;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 消息方向枚举
+ * <p>
+ * 定义消息是发送还是接收。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public enum MessageDirection {
+    /**
+     * 发送消息
+     */
     Send(0),
+    /**
+     * 接收消息
+     */
     Receive(1);
 
     private int value;
@@ -18,10 +29,21 @@ public enum MessageDirection {
         this.value = value;
     }
 
+    /**
+     * 获取枚举值
+     *
+     * @return 枚举值
+     */
     public int value() {
         return this.value;
     }
 
+    /**
+     * 根据值获取消息方向
+     *
+     * @param direction 消息方向值
+     * @return 消息方向枚举
+     */
     public static MessageDirection direction(int direction) {
         MessageDirection messageDirection = null;
         switch (direction) {

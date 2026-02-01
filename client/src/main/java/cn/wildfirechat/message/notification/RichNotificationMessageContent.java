@@ -19,22 +19,57 @@ import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
+/**
+ * 富通知消息内容
+ * <p>
+ * 用于显示带有丰富内容的系统通知消息。
+ * 支持标题、描述、数据列表、附加信息等多种内容展示。
+ * 常用于登录通知、系统消息等场景。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 @ContentTag(type = MessageContentType.ContentType_Rich_Notification, flag = PersistFlag.Persist_And_Count)
 public class RichNotificationMessageContent extends NotificationMessageContent{
-    // 富通知消息
+    /**
+     * 通知标题
+     */
     public String title;
+
+    /**
+     * 通知描述
+     */
     public String desc;
+
+    /**
+     * 备注信息
+     */
     public String remark;
 
-    // @[@{@"key":@"登录账户", @"value":@"野火IM", @"color":@"#173155"}, @{@"key":@"登录地点", @"value":@"北京", @"color":@"#173155"}]
+    /**
+     * 数据列表，用于显示键值对信息（如：登录账户、登录地点等）
+     */
     public ArrayList<Data> datas;
 
-    // 附加信息
+    /**
+     * 附加名称
+     */
     public String exName;
+
+    /**
+     * 附加头像URL
+     */
     public String exPortrait;
+
+    /**
+     * 附加链接URL
+     */
     public String exUrl;
 
-    // 应用信息
+    /**
+     * 应用ID
+     */
     public String appId;
 
     @Override
@@ -162,9 +197,26 @@ public class RichNotificationMessageContent extends NotificationMessageContent{
         }
     };
 
+    /**
+     * 数据项类
+     * <p>
+     * 用于表示富通知中的单个数据项，包含键、值和颜色信息。
+     * </p>
+     */
     public static class Data implements Parcelable {
+        /**
+         * 数据项的键名
+         */
         public String key;
+
+        /**
+         * 数据项的值
+         */
         public String value;
+
+        /**
+         * 数据项的显示颜色
+         */
         public String color;
 
 

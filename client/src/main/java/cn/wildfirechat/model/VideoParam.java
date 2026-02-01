@@ -3,17 +3,35 @@ package cn.wildfirechat.model;
 import android.graphics.Bitmap;
 
 /**
- * @ClassName VideoParam
- * @Description 小视频的参数 ，宽 高，时长
- * @Author dhl
- * @Date 2021/1/7 13:59
- * @Version 1.0
+ * 视频参数类
+ * <p>
+ * 用于表示小视频的参数信息。
+ * 包含视频宽度、高度、时长和缩略图字节数组。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2021
  */
 public class VideoParam {
 
+    /**
+     * 视频宽度
+     */
     private int width ;
+
+    /**
+     * 视频高度
+     */
     private int height;
+
+    /**
+     * 视频时长（毫秒）
+     */
     private long duration ;
+
+    /**
+     * 缩略图字节数组
+     */
     private byte[] thumbnailBytes ;
         public VideoParam(int width, int height, long duration, byte[] thumbnailBytes ){
             this.width = width ;

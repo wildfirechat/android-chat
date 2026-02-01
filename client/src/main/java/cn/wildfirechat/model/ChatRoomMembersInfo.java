@@ -9,8 +9,25 @@ import android.os.Parcelable;
 
 import java.util.List;
 
+/**
+ * 聊天室成员信息类
+ * <p>
+ * 用于表示聊天室的成员信息。
+ * 包含成员数量和成员ID列表。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class ChatRoomMembersInfo implements Parcelable {
+    /**
+     * 成员数量
+     */
     public int memberCount;
+
+    /**
+     * 成员ID列表
+     */
     public List<String> members;
 
 

@@ -8,24 +8,43 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * 会话类
+ * <p>
+ * 表示一个会话，包含会话类型、目标ID和线路信息。
+ * </p>
+ *
  * @author heavyrain lee
  * @date 2017/12/6
  */
-
 public class Conversation implements Parcelable {
 
+    /**
+     * 会话类型枚举
+     */
     public enum ConversationType {
-        // 单聊
+        /**
+         * 单聊
+         */
         Single(0),
-        // 群聊
+        /**
+         * 群聊
+         */
         Group(1),
-        // 聊天室
+        /**
+         * 聊天室
+         */
         ChatRoom(2),
-        //频道
+        /**
+         * 频道
+         */
         Channel(3),
-        //设备
+        /**
+         * 设备（IoT设备）
+         */
         Things(4),
-        //密聊
+        /**
+         * 密聊
+         */
         SecretChat(5);
 
 
@@ -35,10 +54,21 @@ public class Conversation implements Parcelable {
             this.value = value;
         }
 
+        /**
+         * 获取会话类型的值
+         *
+         * @return 会话类型的值
+         */
         public int getValue() {
             return value;
         }
 
+        /**
+         * 根据值获取会话类型
+         *
+         * @param type 会话类型的值
+         * @return 会话类型枚举
+         */
         public static ConversationType type(int type) {
             ConversationType conversationType = null;
             switch (type) {
@@ -67,20 +97,46 @@ public class Conversation implements Parcelable {
         }
     }
 
+    /**
+     * 会话类型
+     */
     public ConversationType type;
+
+    /**
+     * 会话目标ID（用户ID、群组ID等）
+     */
     public String target;
-    // 可以用来做自定义会话，区分不同业务线
+
+    /**
+     * 会话线路，可以用来做自定义会话，区分不同业务线
+     */
     public int line;
 
+    /**
+     * 默认构造函数
+     */
     public Conversation() {
     }
 
+    /**
+     * 构造函数
+     *
+     * @param type  会话类型
+     * @param target 会话目标ID
+     * @param line  会话线路
+     */
     public Conversation(ConversationType type, String target, int line) {
         this.type = type;
         this.target = target;
         this.line = line;
     }
 
+    /**
+     * 构造函数（使用默认线路0）
+     *
+     * @param type  会话类型
+     * @param target 会话目标ID
+     */
     public Conversation(ConversationType type, String target) {
         this.type = type;
         this.target = target;

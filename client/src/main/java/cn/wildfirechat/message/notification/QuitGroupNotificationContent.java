@@ -18,11 +18,20 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_QUIT_GROUP;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 退出群组通知内容
+ * <p>
+ * 当群成员主动退出群组时发送的通知消息。
+ * 包含退出成员的信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_QUIT_GROUP, flag = PersistFlag.Persist)
 public class QuitGroupNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 退出群组的成员ID
+     */
     public String operator;
 
     public QuitGroupNotificationContent() {

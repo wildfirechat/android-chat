@@ -16,24 +16,70 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 会议邀请消息内容
+ * <p>
+ * 用于发送会议邀请，包含会议的详细信息如主题、描述、时间等。
+ * 支持音频会议、视频会议、观众模式等多种会议类型。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Conference_Invite, flag = PersistFlag.Persist_And_Count)
 public class ConferenceInviteMessageContent extends MessageContent {
+    /**
+     * 会议唯一标识
+     */
     private String callId;
+
+    /**
+     * 会议主持人ID
+     */
     private String host;
+
+    /**
+     * 会议标题
+     */
     private String title;
+
+    /**
+     * 会议描述
+     */
     private String desc;
 
+    /**
+     * 会议开始时间
+     */
     private long startTime;
+
+    /**
+     * 是否为纯音频会议
+     */
     private boolean audioOnly;
+
+    /**
+     * 是否为观众模式
+     */
     private boolean audience;
-    // 会议PIN码，加入会议时使用
+
+    /**
+     * 会议PIN码，加入会议时使用
+     */
     private String pin;
-    // 会议密码，查询会议时使用
+
+    /**
+     * 会议密码，查询会议时使用
+     */
     private String password;
+
+    /**
+     * 是否为高级会议
+     */
     private boolean advanced;
+
+    /**
+     * 会议扩展信息
+     */
     private String callExtra;
 
 

@@ -8,18 +8,54 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by heavyrainlee on 17/12/2017.
+ * 领域/租户信息类
+ * <p>
+ * 用于表示多租户系统中的领域（租户）信息。
+ * 包含领域ID、名称、邮箱、描述、电话、地址等基本信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
-
 public class DomainInfo implements Parcelable {
+    /**
+     * 领域ID
+     */
     public String domainId;
+
+    /**
+     * 领域名称
+     */
     public String name;
+
+    /**
+     * 联系邮箱
+     */
     public String email;
+
+    /**
+     * 领域描述
+     */
     public String desc;
+
+    /**
+     * 联系电话
+     */
     public String tel;
+
+    /**
+     * 领域地址
+     */
     public String address;
+
+    /**
+     * 附加信息
+     */
     public String extra;
+
+    /**
+     * 更新时间
+     */
     public long updateDt;
 
     public DomainInfo() {

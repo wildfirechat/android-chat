@@ -10,11 +10,40 @@ import android.text.TextUtils;
 
 import cn.wildfirechat.remote.ChatManager;
 
+/**
+ * 秘密聊天信息类
+ * <p>
+ * 用于表示端到端加密聊天会话的信息。
+ * 包含目标ID、用户ID、会话状态、阅后即焚时间和创建时间。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2022
+ */
 public class SecretChatInfo implements Parcelable {
+    /**
+     * 目标用户ID
+     */
     private String targetId;
+
+    /**
+     * 用户ID
+     */
     private String userId;
+
+    /**
+     * 秘密聊天状态
+     */
     private ChatManager.SecretChatState state;
+
+    /**
+     * 阅后即焚时间（秒）
+     */
     private int burnTime;
+
+    /**
+     * 会话创建时间
+     */
     private long createTime;
 
     public String getTargetId() {

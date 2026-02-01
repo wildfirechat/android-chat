@@ -22,12 +22,26 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Delete
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Recall;
 
 /**
- * Created by heavyrain lee on 2017/12/6.
+ * 删除消息内容
+ * <p>
+ * 当消息被删除时发送的通知消息。
+ * 包含删除操作者和被删除消息的UID信息。
+ * 此消息不会被持久化。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Delete, flag = PersistFlag.No_Persist)
 public class DeleteMessageContent extends MessageContent {
+    /**
+     * 删除消息的操作者ID
+     */
     private String operatorId;
+
+    /**
+     * 被删除消息的UID
+     */
     private long messageUid;
 
     public DeleteMessageContent() {

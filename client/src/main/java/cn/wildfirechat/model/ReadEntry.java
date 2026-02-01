@@ -7,9 +7,30 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 消息已读记录类
+ * <p>
+ * 用于记录会话消息的已读状态。
+ * 包含用户ID、会话和已读时间信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class ReadEntry implements Parcelable {
+    /**
+     * 用户ID
+     */
     public String userId;
+
+    /**
+     * 会话对象
+     */
     public Conversation conversation;
+
+    /**
+     * 已读时间
+     */
     public long readDt;
 
     public ReadEntry() {

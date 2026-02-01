@@ -10,18 +10,53 @@ import android.os.Parcelable;
 import cn.wildfirechat.message.Message;
 
 /**
- * Created by heavyrain on 2017/12/13.
+ * 会话信息类
+ * <p>
+ * 表示会话列表中的一个会话项，包含会话、最新消息、未读数等信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class ConversationInfo implements Parcelable {
+    /**
+     * 会话对象
+     */
     public Conversation conversation;
+
+    /**
+     * 最新消息
+     */
     public Message lastMessage;
+
+    /**
+     * 时间戳
+     */
     public long timestamp;
+
+    /**
+     * 草稿内容
+     */
     public String draft;
+
+    /**
+     * 未读消息计数
+     */
     public UnreadCount unreadCount;
+
+    /**
+     * 置顶标志：0 不置顶；1 置顶
+     */
     public int top;
+
+    /**
+     * 是否免打扰
+     */
     public boolean isSilent;
 
+    /**
+     * 默认构造函数
+     */
     public ConversationInfo() {
     }
 

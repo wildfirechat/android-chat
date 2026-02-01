@@ -18,7 +18,13 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 /**
  * 恢复响应通知消息
- * PC端响应Android端的恢复请求
+ * <p>
+ * PC端响应Android端的恢复请求。
+ * 包含是否同意恢复及服务器连接信息（IP和端口）。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
 @ContentTag(type = MessageContentType.ContentType_Restore_Response, flag = PersistFlag.No_Persist)
 public class RestoreResponseNotificationContent extends NotificationMessageContent {

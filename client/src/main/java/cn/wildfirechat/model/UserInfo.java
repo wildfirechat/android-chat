@@ -10,31 +10,98 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 /**
- * Created by heavyrainlee on 14/12/2017.
+ * 用户信息类
+ * <p>
+ * 表示IM系统中的用户信息，包含用户的基本资料和扩展信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 public class UserInfo implements Parcelable, Comparable<UserInfo> {
+    /**
+     * 用户ID
+     */
     public String uid;
+
+    /**
+     * 用户名
+     */
     public String name;
+
+    /**
+     * 显示名称
+     */
     public String displayName;
-    // 用户在群里面给自己设置的备注，不同群不一样
+
+    /**
+     * 用户在群里面给自己设置的备注，不同群不一样
+     */
     public String groupAlias;
-    // 我为好友设置的备注
+
+    /**
+     * 我为好友设置的备注
+     */
     public String friendAlias;
+
+    /**
+     * 用户头像URL
+     */
     public String portrait;
+
+    /**
+     * 性别：0 未知；1 男；2 女
+     */
     public int gender;
+
+    /**
+     * 手机号
+     */
     public String mobile;
+
+    /**
+     * 邮箱
+     */
     public String email;
+
+    /**
+     * 地址
+     */
     public String address;
+
+    /**
+     * 公司
+     */
     public String company;
+
+    /**
+     * 社交信息
+     */
     public String social;
+
+    /**
+     * 扩展字段
+     */
     public String extra;
+
+    /**
+     * 更新时间戳
+     */
     public long updateDt;
-    //0 normal; 1 robot; 2 thing;
+
+    /**
+     * 用户类型：0 普通用户；1 机器人；2 IoT设备
+     */
     public int type;
-    //0 normal; 1 deleted;
+
+    /**
+     * 删除状态：0 正常；1 已删除
+     */
     public int deleted;
 
+    /**
+     * 默认构造函数
+     */
     public UserInfo() {
     }
 

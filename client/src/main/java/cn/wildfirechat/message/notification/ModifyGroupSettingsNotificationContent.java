@@ -21,15 +21,30 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 修改群设置通知内容
+ * <p>
+ * 当群组设置被修改时发送的通知消息。
+ * 此消息不会被持久化，仅用于实时状态同步。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_MODIFY_GROUP_SETTINGS, flag = PersistFlag.No_Persist)
 public class ModifyGroupSettingsNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改群设置的操作者ID
+     */
     public String operateUser;
-    //修改设置类型。7为修改是否查看历史消息；8为修改群最大成员数，9为修改是否为超级群
+
+    /**
+     * 修改设置类型（7-修改是否查看历史消息，8-修改群最大成员数，9-修改是否为超级群）
+     */
     public int type;
-    //修改后的值
+
+    /**
+     * 修改后的值
+     */
     public int value;
 
     public ModifyGroupSettingsNotificationContent() {

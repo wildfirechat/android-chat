@@ -7,6 +7,16 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 未读消息数统计类
+ * <p>
+ * 用于表示会话的未读消息数量统计信息。
+ * 包含单聊未读数、群聊@提及数、群聊@All数等未读统计信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 public class UnreadCount implements Parcelable {
     public UnreadCount(ProtoUnreadCount protocolUnreadCount) {
         this.unread = protocolUnreadCount.getUnread();

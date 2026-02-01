@@ -17,11 +17,26 @@ import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_CHANGE_JOINTYPE;
 
+/**
+ * 群组加入类型通知内容
+ * <p>
+ * 当群组的加入权限设置被修改时发送的通知消息。
+ * 包含操作者和新的加入类型信息。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
+ */
 @ContentTag(type = CONTENT_TYPE_CHANGE_JOINTYPE, flag = PersistFlag.Persist)
 public class GroupJoinTypeNotificationContent extends GroupNotificationMessageContent {
+    /**
+     * 修改加入权限的操作者ID
+     */
     public String operator;
 
-    //在group type为Restricted时，0 开放加入权限（群成员可以拉人，用户也可以主动加入）；1 只能群成员拉人入群；2 只能群管理拉人入群
+    /**
+     * 加入类型（0-开放加入，1-仅群成员邀请，2-仅管理员邀请，3-需要加群验证）
+     */
     public int type;
 
     @Override

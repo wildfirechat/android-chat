@@ -14,11 +14,20 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Tip_Notification;
 
 /**
- * Created by heavyrainlee on 20/12/2017.
+ * 提示通知内容
+ * <p>
+ * 通用的提示通知消息，用于显示各种提示信息。
+ * 可以用于系统通知、操作提示等场景。
+ * </p>
+ *
+ * @author WildFireChat
+ * @since 2020
  */
-
 @ContentTag(type = ContentType_Tip_Notification, flag = PersistFlag.Persist)
 public class TipNotificationContent extends NotificationMessageContent {
+    /**
+     * 提示文本内容
+     */
     public String tip;
 
     public TipNotificationContent() {
