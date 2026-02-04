@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.activity.OnBackPressedCallback;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
@@ -43,6 +45,8 @@ public class BackupProgressFragment extends Fragment {
     private String passwordHint;
 
     private PickBackupConversationViewModel pickBackupConversationViewModel;
+    private OnBackPressedCallback onBackPressedCallback;
+    private boolean isFinished = false;
 
 
     @Nullable
@@ -64,6 +68,7 @@ public class BackupProgressFragment extends Fragment {
         passwordHint = null;
 
         initView(view);
+        setupBackPressHandler();
         startOperation();
     }
 
@@ -78,8 +83,32 @@ public class BackupProgressFragment extends Fragment {
         statusTextView.setText(R.string.preparing_backup);
 
         cancelButton.setOnClickListener(v -> cancel());
-        closeButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        closeButton.setOnClickListener(v -> popToRoot());
         closeButton.setVisibility(View.GONE);
+    }
+
+    private void setupBackPressHandler() {
+        onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isFinished) {
+                    popToRoot();
+                } else {
+                    // Do nothing or show toast "Backing up..."
+                }
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+    }
+
+    private void popToRoot() {
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+            int firstId = getParentFragmentManager().getBackStackEntryAt(0).getId();
+            getParentFragmentManager().popBackStack(firstId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            // Fallback
+            getParentFragmentManager().popBackStack();
+        }
     }
 
     private void startOperation() {
@@ -145,6 +174,7 @@ public class BackupProgressFragment extends Fragment {
     private void onBackupSuccess(String backupPath, int msgCount, int mediaCount, long mediaSize) {
         if (!isAdded()) return;
         requireActivity().runOnUiThread(() -> {
+            isFinished = true;
             statusTextView.setText(R.string.backup_completed);
             progressBar.setProgress(100);
             percentageTextView.setText("100%");
@@ -164,6 +194,7 @@ public class BackupProgressFragment extends Fragment {
     private void onError(int errorCode) {
         if (!isAdded()) return;
         requireActivity().runOnUiThread(() -> {
+            isFinished = true;
             String errorMsg = BackupConstants.getErrorMessage(errorCode);
             String operation = getString(R.string.backing_up) ;
             statusTextView.setText(operation + " " + getString(R.string.backup_failed));

@@ -10,13 +10,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -40,6 +41,7 @@ public class BackupRequestProgressFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView statusTextView;
     private TextView detailTextView;
+    private TextView closeButton;
 
     private List<ConversationInfo> conversations;
     private boolean includeMedia;
@@ -53,6 +55,8 @@ public class BackupRequestProgressFragment extends Fragment {
     // 消息监听
     private OnReceiveMessageListener messageListener;
     private PickBackupConversationViewModel pickBackupConversationViewModel;
+    private OnBackPressedCallback onBackPressedCallback;
+    private boolean isFinished = false;
 
     @Nullable
     @Override
@@ -75,6 +79,7 @@ public class BackupRequestProgressFragment extends Fragment {
         }
 
         initView(view);
+        setupBackPressHandler();
         startBackupRequest();
     }
 
@@ -82,13 +87,39 @@ public class BackupRequestProgressFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         statusTextView = view.findViewById(R.id.statusTextView);
         detailTextView = view.findViewById(R.id.detailTextView);
+        closeButton = view.findViewById(R.id.closeButton);
 
         progressBar.setVisibility(View.VISIBLE);
         statusTextView.setText(R.string.waiting_for_pc_response);
         detailTextView.setText(R.string.confirm_backup_on_pc);
 
+        closeButton.setOnClickListener(v -> popToRoot());
+
         timeoutHandler = new Handler(Looper.getMainLooper());
         timeoutRunnable = this::onTimeout;
+    }
+
+    private void setupBackPressHandler() {
+        onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isFinished) {
+                    popToRoot();
+                } else {
+                    // Prevent back navigation during backup
+                }
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+    }
+
+    private void popToRoot() {
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+            int firstId = getParentFragmentManager().getBackStackEntryAt(0).getId();
+            getParentFragmentManager().popBackStack(firstId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            getParentFragmentManager().popBackStack();
+        }
     }
 
     private void startBackupRequest() {
@@ -191,13 +222,11 @@ public class BackupRequestProgressFragment extends Fragment {
         if (!isAdded()) return;
         isWaitingForResponse = false;
         requireActivity().runOnUiThread(() -> {
+            isFinished = true;
             progressBar.setVisibility(View.GONE);
             statusTextView.setText(R.string.backup_request_rejected_title);
             detailTextView.setText(R.string.pc_rejected_request);
-
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (isAdded()) getParentFragmentManager().popBackStack();
-            }, 2000);
+            closeButton.setVisibility(View.VISIBLE);
         });
     }
 
@@ -208,13 +237,11 @@ public class BackupRequestProgressFragment extends Fragment {
         if (!isAdded()) return;
         isWaitingForResponse = false;
         requireActivity().runOnUiThread(() -> {
+            isFinished = true;
             progressBar.setVisibility(View.GONE);
             statusTextView.setText(R.string.request_timeout_title);
             detailTextView.setText(R.string.pc_not_respond_30s);
-
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (isAdded()) getParentFragmentManager().popBackStack();
-            }, 2000);
+            closeButton.setVisibility(View.VISIBLE);
         });
     }
 
@@ -262,15 +289,15 @@ public class BackupRequestProgressFragment extends Fragment {
                     public void onSuccess() {
                         if (!isAdded()) return;
                         requireActivity().runOnUiThread(() -> {
+                            isFinished = true;
                             statusTextView.setText(R.string.backup_completed);
-                            detailTextView.setText(R.string.notifying_pc);
+//                            detailTextView.setText(R.string.notifying_pc);
+                            detailTextView.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.GONE);
+                            closeButton.setVisibility(View.VISIBLE);
 
                             File tempDir = new File(requireContext().getCacheDir(), "backup_upload");
                             deleteDirectory(tempDir);
-
-                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                                if (isAdded()) getParentFragmentManager().popBackStack();
-                            }, 2000);
                         });
                     }
 
@@ -278,6 +305,7 @@ public class BackupRequestProgressFragment extends Fragment {
                     public void onError(int errorCode) {
                         if (!isAdded()) return;
                         requireActivity().runOnUiThread(() -> {
+                            isFinished = true;
                             showErrorMessage(getString(R.string.failed_to_create_backup, errorCode));
                         });
                     }
@@ -308,10 +336,7 @@ public class BackupRequestProgressFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
             statusTextView.setText(R.string.operation_failed);
             detailTextView.setText(message);
-
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (isAdded()) getParentFragmentManager().popBackStack();
-            }, 2000);
+            closeButton.setVisibility(View.VISIBLE);
         });
     }
 
