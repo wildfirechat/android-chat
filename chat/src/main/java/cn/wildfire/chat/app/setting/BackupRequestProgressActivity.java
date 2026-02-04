@@ -14,36 +14,39 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.backup.BackupManager;
 import cn.wildfirechat.backup.BackupProgress;
+import cn.wildfirechat.chat.R;
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.notification.BackupRequestNotificationContent;
 import cn.wildfirechat.message.notification.BackupResponseNotificationContent;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.SendMessageCallback;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.BufferedSink;
 
 /**
  * 备份请求进度界面
@@ -64,6 +67,7 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
     private String serverIP;
     private int serverPort;
     private int uploadedFileCount = 0;
+    private OkHttpClient uploadHttpClient;
 
     // 消息监听
     private OnReceiveMessageListener messageListener;
@@ -121,35 +125,18 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
         // 启动超时计时器（30秒）
         timeoutHandler.postDelayed(timeoutRunnable, 30000);
 
-        // 准备会话列表数据
-        JSONArray conversationsArray = new JSONArray();
-        try {
-            for (ConversationInfo convInfo : conversations) {
-                Conversation conversation = convInfo.conversation;
-                int messageCount = getMessageCount(conversation);
+        int totalMessageCount = 0;
+        for (ConversationInfo convInfo : conversations) {
+            Conversation conversation = convInfo.conversation;
+            int messageCount = ChatManager.Instance().getMessageCount(conversation);
 
-                JSONObject convObj = new JSONObject();
-                JSONObject conversationObj = new JSONObject();
-                conversationObj.put("type", conversation.type.getValue());
-                conversationObj.put("target", conversation.target);
-                conversationObj.put("line", conversation.line);
-
-                convObj.put("conversation", conversationObj);
-                convObj.put("messageCount", messageCount);
-
-                conversationsArray.put(convObj);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            showErrorMessage(getString(R.string.failed_to_prepare_backup));
-            return;
+            totalMessageCount += messageCount;
         }
-
-        String conversationsJson = conversationsArray.toString();
 
         // 创建备份请求通知消息
         BackupRequestNotificationContent content = new BackupRequestNotificationContent(
-                conversationsJson,
+                conversations.size(),
+                totalMessageCount,
                 includeMedia,
                 System.currentTimeMillis()
         );
@@ -196,16 +183,14 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
                     if (msg.content instanceof BackupResponseNotificationContent) {
                         BackupResponseNotificationContent response = (BackupResponseNotificationContent) msg.content;
 
-                        runOnUiThread(() -> {
-                            timeoutHandler.removeCallbacks(timeoutRunnable);
-                            isWaitingForResponse = false;
+                        timeoutHandler.removeCallbacks(timeoutRunnable);
+                        isWaitingForResponse = false;
 
-                            if (response.isApproved()) {
-                                onBackupApproved(response);
-                            } else {
-                                onBackupRejected();
-                            }
-                        });
+                        if (response.isApproved()) {
+                            onBackupApproved(response);
+                        } else {
+                            onBackupRejected();
+                        }
                         break;
                     }
                 }
@@ -213,33 +198,6 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
         };
 
         ChatManager.Instance().addOnReceiveMessageListener(messageListener);
-    }
-
-    private int getMessageCount(Conversation conversation) {
-        try {
-            long fromIndex = 0;
-            int totalCount = 0;
-            while (true) {
-                List<Message> messages = ChatManagerHolder.gChatManager.getMessages(
-                        conversation,
-                        fromIndex,
-                        false,
-                        100,
-                        null
-                );
-                if (messages == null || messages.isEmpty()) {
-                    break;
-                }
-                totalCount += messages.size();
-                if (messages.size() < 100) {
-                    break;
-                }
-                fromIndex = messages.get(messages.size() - 1).messageId;
-            }
-            return totalCount;
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
     private void onBackupApproved(BackupResponseNotificationContent response) {
@@ -259,12 +217,7 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
         statusTextView.setText(R.string.backup_request_rejected_title);
         detailTextView.setText(R.string.pc_rejected_request);
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 2000);
+        ChatManager.Instance().getMainHandler().postDelayed(this::finish, 2000);
     }
 
     private void onTimeout() {
@@ -276,12 +229,7 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
         statusTextView.setText(R.string.request_timeout_title);
         detailTextView.setText(R.string.pc_not_respond_30s);
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 2000);
+        ChatManager.Instance().getMainHandler().postDelayed(this::finish, 2000);
     }
 
     private void createAndUploadBackup() {
@@ -366,24 +314,12 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
             detailTextView.setText(getString(R.string.file_progress, index + 1, files.size()));
         });
 
-        byte[] fileData;
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            fileData = new byte[(int) file.length()];
-            fis.read(fileData);
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            uploadFilesSequentially(files, index + 1, basePath);
-            return;
-        }
-
         String relativePath = file.getAbsolutePath().substring(basePath.getAbsolutePath().length());
         if (relativePath.startsWith("/")) {
             relativePath = relativePath.substring(1);
         }
 
-        uploadFile(fileData, relativePath, new FileUploadCallback() {
+        uploadFile(file, relativePath, new FileUploadCallback() {
             @Override
             public void onResult(boolean success) {
                 if (success) {
@@ -401,42 +337,71 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
         void onResult(boolean success);
     }
 
-    private void uploadFile(byte[] fileData, String relativePath, FileUploadCallback callback) {
+    private void uploadFile(File file, String relativePath, FileUploadCallback callback) {
         new Thread(() -> {
             try {
-                byte[] pathBytes = relativePath.getBytes("UTF-8");
-                ByteBuffer buffer = ByteBuffer.allocate(4 + pathBytes.length + 8 + fileData.length);
+                byte[] pathBytes = relativePath.getBytes(StandardCharsets.UTF_8);
+                ByteBuffer buffer = ByteBuffer.allocate(4 + pathBytes.length + 8);
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
                 buffer.putInt(pathBytes.length);
                 buffer.put(pathBytes);
-                buffer.putLong(fileData.length);
-                buffer.put(fileData);
+                buffer.putLong(file.length());
+                byte[] headerData = buffer.array();
 
-                byte[] bodyData = buffer.array();
+                if (uploadHttpClient == null) {
+                    uploadHttpClient = new OkHttpClient.Builder()
+                            .retryOnConnectionFailure(true)
+                            .build();
+                }
 
                 String urlString = String.format("http://%s:%d/backup", serverIP, serverPort);
-                URL url = new URL(urlString);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-                connection.setConnectTimeout(60000);
-                connection.setReadTimeout(60000);
-                connection.setRequestProperty("Content-Type", "application/octet-stream");
-                connection.setRequestProperty("Content-Length", String.valueOf(bodyData.length));
+                RequestBody requestBody = buildRequestBody(file, headerData);
 
-                connection.getOutputStream().write(bodyData);
-                connection.getOutputStream().flush();
-                connection.getOutputStream().close();
+                Request request = new Request.Builder()
+                        .url(urlString)
+                        .post(requestBody)
+//                        .header("Connection", "close")
+                        .build();
 
-                int responseCode = connection.getResponseCode();
-                connection.disconnect();
-
-                callback.onResult(responseCode == 200);
+                Call call = uploadHttpClient.newCall(request);
+                try (Response response = call.execute()) {
+                    callback.onResult(response.isSuccessful());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 callback.onResult(false);
             }
         }).start();
+    }
+
+    @NonNull
+    private static RequestBody buildRequestBody(File file, byte[] headerData) {
+        long totalLength = headerData.length + file.length();
+
+        RequestBody requestBody = new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                return MediaType.get("application/octet-stream");
+            }
+
+            @Override
+            public long contentLength() {
+                return totalLength;
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws java.io.IOException {
+                sink.write(headerData);
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    byte[] bufferBytes = new byte[8192];
+                    int read;
+                    while ((read = fis.read(bufferBytes)) != -1) {
+                        sink.write(bufferBytes, 0, read);
+                    }
+                }
+            }
+        };
+        return requestBody;
     }
 
     private List<File> getAllFiles(File directory) {

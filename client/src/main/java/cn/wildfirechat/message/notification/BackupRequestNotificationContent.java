@@ -31,11 +31,8 @@ import cn.wildfirechat.message.core.PersistFlag;
 public class BackupRequestNotificationContent extends NotificationMessageContent {
     private static final String TAG = "BackupRequest";
 
-    /**
-     * 会话列表（JSON字符串）
-     * 格式: [{conversation: {type, target, line}, messageCount: int}, ...]
-     */
-    private String conversationsJson;
+    private int conversationCount = 0;
+    private int messageCount = 0;
 
     /**
      * 是否包含媒体文件
@@ -47,20 +44,28 @@ public class BackupRequestNotificationContent extends NotificationMessageContent
      */
     private long timestamp;
 
-    public String getConversationsJson() {
-        return conversationsJson;
-    }
-
-    public void setConversationsJson(String conversationsJson) {
-        this.conversationsJson = conversationsJson;
-    }
-
     public boolean isIncludeMedia() {
         return includeMedia;
     }
 
     public void setIncludeMedia(boolean includeMedia) {
         this.includeMedia = includeMedia;
+    }
+
+    public int getConversationCount() {
+        return conversationCount;
+    }
+
+    public void setConversationCount(int conversationCount) {
+        this.conversationCount = conversationCount;
+    }
+
+    public int getMessageCount() {
+        return messageCount;
+    }
+
+    public void setMessageCount(int messageCount) {
+        this.messageCount = messageCount;
     }
 
     public long getTimestamp() {
@@ -74,8 +79,9 @@ public class BackupRequestNotificationContent extends NotificationMessageContent
     public BackupRequestNotificationContent() {
     }
 
-    public BackupRequestNotificationContent(String conversationsJson, boolean includeMedia, long timestamp) {
-        this.conversationsJson = conversationsJson;
+    public BackupRequestNotificationContent(int conversationCount, int messageCount, boolean includeMedia, long timestamp) {
+        this.conversationCount = conversationCount;
+        this.messageCount = messageCount;
         this.includeMedia = includeMedia;
         this.timestamp = timestamp;
     }
@@ -90,9 +96,8 @@ public class BackupRequestNotificationContent extends NotificationMessageContent
         MessagePayload payload = super.encode();
         JSONObject obj = new JSONObject();
         try {
-            if (conversationsJson != null) {
-                obj.put("c", conversationsJson);
-            }
+            obj.put("cc", conversationCount);
+            obj.put("mc", messageCount);
             obj.put("m", includeMedia);
             obj.put("t", timestamp);
             payload.binaryContent = obj.toString().getBytes();
@@ -108,7 +113,8 @@ public class BackupRequestNotificationContent extends NotificationMessageContent
         try {
             String jsonStr = new String(payload.binaryContent);
             JSONObject obj = new JSONObject(jsonStr);
-            conversationsJson = obj.optString("c");
+            conversationCount = obj.optInt("cc");
+            messageCount = obj.optInt("mc");
             includeMedia = obj.optBoolean("m");
             timestamp = obj.optLong("t");
         } catch (JSONException e) {
@@ -124,14 +130,16 @@ public class BackupRequestNotificationContent extends NotificationMessageContent
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(this.conversationsJson);
+        dest.writeInt(this.conversationCount);
+        dest.writeInt(this.messageCount);
         dest.writeInt(this.includeMedia ? 1 : 0);
         dest.writeLong(this.timestamp);
     }
 
     protected BackupRequestNotificationContent(Parcel in) {
         super(in);
-        this.conversationsJson = in.readString();
+        this.conversationCount = in.readInt();
+        this.messageCount = in.readInt();
         this.includeMedia = in.readInt() == 1;
         this.timestamp = in.readLong();
     }
