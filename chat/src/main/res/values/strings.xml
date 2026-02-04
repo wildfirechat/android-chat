@@ -309,7 +309,7 @@
     <string name="restore_completed_successfully">恢复完成成功</string>
     <string name="error_prefix">错误：</string>
     <string name="select_at_least_one_conversation">请至少选择一个会话</string>
-    <string name="messages_count_suffix">条消息</string>
+    <string name="messages_count_suffix">%d 条消息</string>
     <string name="unknown">未知</string>
     <string name="backup_time_label">备份时间: %1$s</string>
     <string name="device_label">设备: %1$s</string>

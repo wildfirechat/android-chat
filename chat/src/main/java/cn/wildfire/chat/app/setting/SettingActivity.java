@@ -22,6 +22,7 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.OrganizationService;
 import cn.wildfire.chat.app.main.SplashActivity;
 import cn.wildfire.chat.app.misc.DiagnoseActivity;
+import cn.wildfire.chat.app.setting.backup.BackupAndRestoreActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;

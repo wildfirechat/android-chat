@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.app.setting;
+package cn.wildfire.chat.app.setting.backup;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,25 +20,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfirechat.backup.BackupManager;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.message.notification.RestoreRequestNotificationContent;
 import cn.wildfirechat.message.notification.RestoreResponseNotificationContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.SendMessageCallback;
@@ -52,7 +44,7 @@ public class PCRestoreListActivity extends WfcBaseActivity {
     private TextView statusTextView;
     private ProgressBar progressBar;
     private PCBackupListAdapter adapter;
-    private List<PCBackupInfo> backupList;
+    private List<BackupManager.PCBackupInfo> backupList;
     private String serverIP;
     private int serverPort;
     private boolean isWaitingForResponse = true;
@@ -170,69 +162,26 @@ public class PCRestoreListActivity extends WfcBaseActivity {
     private void fetchBackupList() {
         statusTextView.setText(R.string.fetching_backup_list);
 
-        new Thread(() -> {
-            try {
-                String urlString = String.format("http://%s:%d/restore_list", serverIP, serverPort);
-                URL url = new URL(urlString);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setConnectTimeout(30000);
-                connection.setReadTimeout(30000);
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode == 200) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
+        BackupManager.getInstance().fetchBackupListFromPC(serverIP, serverPort, new BackupManager.BackupListCallback() {
+            @Override
+            public void onSuccess(List<BackupManager.PCBackupInfo> backups) {
+                runOnUiThread(() -> {
+                    if (backups == null || backups.isEmpty()) {
+                        showError(getString(R.string.no_backups_on_pc));
+                        return;
                     }
-                    reader.close();
 
-                    parseBackupList(response.toString());
-                } else {
-                    showError(getString(R.string.failed_to_fetch_list_status, responseCode));
-                }
-
-                connection.disconnect();
-            } catch (Exception e) {
-                showError(getString(R.string.failed_to_fetch_list, e.getMessage()));
+                    backupList = backups;
+                    adapter.setBackupList(backupList);
+                    progressBar.setVisibility(View.GONE);
+                    statusTextView.setVisibility(View.GONE);
+                    backupListRecyclerView.setVisibility(View.VISIBLE);
+                });
             }
-        }).start();
-    }
 
-    private void parseBackupList(String jsonString) {
-        runOnUiThread(() -> {
-            try {
-                JSONArray jsonArray = new JSONArray(jsonString);
-                backupList = new ArrayList<>();
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject backupJson = jsonArray.getJSONObject(i);
-                    PCBackupInfo info = new PCBackupInfo();
-                    info.name = backupJson.optString("name", getString(R.string.unknown_backup));
-                    info.time = backupJson.optString("time", "");
-                    info.path = backupJson.optString("path", "");
-                    info.fileCount = backupJson.optInt("fileCount", 0);
-                    info.conversationCount = backupJson.optInt("conversationCount", 0);
-                    info.messageCount = backupJson.optInt("messageCount", 0);
-                    info.mediaFileCount = backupJson.optInt("mediaFileCount", 0);
-                    backupList.add(info);
-                }
-
-                if (backupList.isEmpty()) {
-                    showError(getString(R.string.no_backups_on_pc));
-                    return;
-                }
-
-                // 显示列表
-                adapter.setBackupList(backupList);
-                progressBar.setVisibility(View.GONE);
-                statusTextView.setVisibility(View.GONE);
-                backupListRecyclerView.setVisibility(View.VISIBLE);
-
-            } catch (JSONException e) {
-                showError(getString(R.string.failed_to_parse_list));
+            @Override
+            public void onError(int errorCode, String message) {
+                runOnUiThread(() -> showError(getString(R.string.failed_to_fetch_list, message)));
             }
         });
     }
@@ -255,9 +204,9 @@ public class PCRestoreListActivity extends WfcBaseActivity {
 
     // Adapter for PC backup list
     private class PCBackupListAdapter extends RecyclerView.Adapter<PCBackupListAdapter.ViewHolder> {
-        private List<PCBackupInfo> backupList;
+        private List<BackupManager.PCBackupInfo> backupList;
 
-        public void setBackupList(List<PCBackupInfo> backupList) {
+        public void setBackupList(List<BackupManager.PCBackupInfo> backupList) {
             this.backupList = backupList;
             notifyDataSetChanged();
         }
@@ -273,7 +222,7 @@ public class PCRestoreListActivity extends WfcBaseActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             if (backupList != null && position < backupList.size()) {
-                PCBackupInfo info = backupList.get(position);
+                BackupManager.PCBackupInfo info = backupList.get(position);
                 holder.bind(info);
             }
         }
@@ -293,7 +242,7 @@ public class PCRestoreListActivity extends WfcBaseActivity {
                 backupInfoTextView = itemView.findViewById(R.id.backupInfoTextView);
             }
 
-            void bind(PCBackupInfo info) {
+            void bind(BackupManager.PCBackupInfo info) {
                 backupNameTextView.setText(info.name);
 
                 StringBuilder infoText = new StringBuilder();
@@ -320,16 +269,5 @@ public class PCRestoreListActivity extends WfcBaseActivity {
                 });
             }
         }
-    }
-
-    // PC backup info model
-    private static class PCBackupInfo {
-        String name;
-        String time;
-        String path;
-        int fileCount;
-        int conversationCount;
-        int messageCount;
-        int mediaFileCount;
     }
 }

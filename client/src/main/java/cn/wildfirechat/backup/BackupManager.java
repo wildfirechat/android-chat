@@ -9,18 +9,34 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.BufferedSink;
 
 /**
  * 消息备份管理器
@@ -33,10 +49,17 @@ public class BackupManager {
     private AtomicBoolean isCancelled;
     private String currentBackupDirectory;
     private Handler mainHandler;
+    private OkHttpClient httpClient;
 
     private BackupManager() {
         this.isCancelled = new AtomicBoolean(false);
         this.mainHandler = new Handler(Looper.getMainLooper());
+        this.httpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
     }
 
     public static synchronized BackupManager getInstance() {
@@ -629,6 +652,543 @@ public class BackupManager {
             @Override
             public void run() {
                 callback.onError(errorCode);
+            }
+        });
+    }
+
+    public interface BackupAndUploadCallback {
+        void onBackupProgress(BackupProgress progress);
+        void onUploadProgress(int uploadedFiles, int totalFiles);
+        void onSuccess();
+        void onError(int errorCode);
+    }
+
+    public interface DownloadAndRestoreCallback {
+        void onDownloadProgress(int downloadedFiles, int totalFiles);
+        void onRestoreProgress(BackupProgress progress);
+        void onSuccess(int msgCount, int mediaCount);
+        void onError(int errorCode, String message);
+    }
+
+    /**
+     * 创建备份并上传到 PC
+     */
+    public void createAndUploadBackup(final String directoryPath,
+                                      final List<ConversationInfo> conversations,
+                                      final String password,
+                                      final String passwordHint,
+                                      final String serverIP,
+                                      final int serverPort,
+                                      final BackupAndUploadCallback callback) {
+        createDirectoryBasedBackup(directoryPath, conversations, password, passwordHint, new BackupCallback() {
+            @Override
+            public void onProgress(BackupProgress progress) {
+                notifyBackupProgress(callback, progress);
+            }
+
+            @Override
+            public void onSuccess(String backupPath, int msgCount, int mediaCount, long mediaSize) {
+                uploadBackupToPC(new File(backupPath), serverIP, serverPort, new BackupUploadCallback() {
+                    @Override
+                    public void onProgress(int uploadedFiles, int totalFiles) {
+                        notifyUploadProgress(callback, uploadedFiles, totalFiles);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        notifySuccess(callback);
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        notifyError(callback, errorCode);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                notifyError(callback, errorCode);
+            }
+        });
+    }
+
+    /**
+     * 从 PC 下载备份并恢复
+     */
+    public void downloadAndRestoreBackup(final String backupPath,
+                                         final String serverIP,
+                                         final int serverPort,
+                                         final File targetDir,
+                                         final String password,
+                                         final boolean overwriteExisting,
+                                         final DownloadAndRestoreCallback callback) {
+        downloadBackupFromPC(backupPath, serverIP, serverPort, targetDir, new BackupDownloadCallback() {
+            @Override
+            public void onProgress(int downloadedFiles, int totalFiles) {
+                notifyDownloadProgress(callback, downloadedFiles, totalFiles);
+            }
+
+            @Override
+            public void onSuccess(File backupDir) {
+                restoreFromBackup(backupDir.getAbsolutePath(), password, overwriteExisting, new RestoreCallback() {
+                    @Override
+                    public void onProgress(BackupProgress progress) {
+                        notifyRestoreProgress(callback, progress);
+                    }
+
+                    @Override
+                    public void onSuccess(int msgCount, int mediaCount) {
+                        notifySuccess(callback, msgCount, mediaCount);
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        notifyError(callback, errorCode, BackupConstants.getErrorMessage(errorCode));
+                    }
+                });
+            }
+
+            @Override
+            public void onError(int errorCode, String message) {
+                notifyError(callback, errorCode, message);
+            }
+        });
+    }
+
+    private void notifyBackupProgress(final BackupAndUploadCallback callback, final BackupProgress progress) {
+        mainHandler.post(() -> callback.onBackupProgress(progress));
+    }
+
+    private void notifyUploadProgress(final BackupAndUploadCallback callback, final int uploaded, final int total) {
+        mainHandler.post(() -> callback.onUploadProgress(uploaded, total));
+    }
+
+    private void notifySuccess(final BackupAndUploadCallback callback) {
+        mainHandler.post(callback::onSuccess);
+    }
+
+    private void notifyError(final BackupAndUploadCallback callback, final int errorCode) {
+        mainHandler.post(() -> callback.onError(errorCode));
+    }
+
+    private void notifyDownloadProgress(final DownloadAndRestoreCallback callback, final int downloaded, final int total) {
+        mainHandler.post(() -> callback.onDownloadProgress(downloaded, total));
+    }
+
+    private void notifyRestoreProgress(final DownloadAndRestoreCallback callback, final BackupProgress progress) {
+        mainHandler.post(() -> callback.onRestoreProgress(progress));
+    }
+
+    private void notifySuccess(final DownloadAndRestoreCallback callback, final int msgCount, final int mediaCount) {
+        mainHandler.post(() -> callback.onSuccess(msgCount, mediaCount));
+    }
+
+    private void notifyError(final DownloadAndRestoreCallback callback, final int errorCode, final String message) {
+        mainHandler.post(() -> callback.onError(errorCode, message));
+    }
+
+    // ============================================
+    // PC 备份/恢复 (网络传输)
+    // ============================================
+
+    public interface BackupUploadCallback {
+        void onProgress(int uploadedFiles, int totalFiles);
+        void onSuccess();
+        void onError(int errorCode);
+    }
+
+    public interface BackupListCallback {
+        void onSuccess(List<PCBackupInfo> backups);
+        void onError(int errorCode, String message);
+    }
+
+    public interface BackupDownloadCallback {
+        void onProgress(int downloadedFiles, int totalFiles);
+        void onSuccess(File backupDir);
+        void onError(int errorCode, String message);
+    }
+
+    public static class PCBackupInfo {
+        public String name;
+        public String time;
+        public String path;
+        public int fileCount;
+        public int conversationCount;
+        public int messageCount;
+        public int mediaFileCount;
+    }
+
+    private interface FileUploadCallback {
+        void onResult(boolean success);
+    }
+
+    /**
+     * 上传备份到 PC
+     */
+    public void uploadBackupToPC(final File backupPath, final String serverIP, final int serverPort, final BackupUploadCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    performUpload(backupPath, serverIP, serverPort, callback);
+                } catch (Exception e) {
+                    Log.e(TAG, "Upload failed", e);
+                    notifyError(callback, BackupConstants.ERROR_IO_ERROR);
+                }
+            }
+        }).start();
+    }
+
+    private void performUpload(File backupPath, String serverIP, int serverPort, BackupUploadCallback callback) {
+        List<File> files = getAllFiles(backupPath);
+        if (files.isEmpty()) {
+            notifyError(callback, BackupConstants.ERROR_FILE_NOT_FOUND);
+            return;
+        }
+
+        int totalFiles = files.size();
+        notifyProgress(callback, 0, totalFiles);
+
+        for (int i = 0; i < totalFiles; i++) {
+            if (isCancelled.get()) {
+                notifyError(callback, BackupConstants.ERROR_CANCELLED);
+                return;
+            }
+
+            File file = files.get(i);
+            String relativePath = file.getAbsolutePath().substring(backupPath.getAbsolutePath().length());
+            if (relativePath.startsWith("/")) {
+                relativePath = relativePath.substring(1);
+            }
+
+            boolean success = uploadFile(file, relativePath, serverIP, serverPort);
+            if (!success) {
+                notifyError(callback, BackupConstants.ERROR_IO_ERROR);
+                return;
+            }
+
+            notifyProgress(callback, i + 1, totalFiles);
+        }
+
+        // Notify PC of completion
+        boolean completionSuccess = sendCompletionRequest(serverIP, serverPort, totalFiles);
+        if (completionSuccess) {
+            notifySuccess(callback);
+        } else {
+            notifyError(callback, BackupConstants.ERROR_IO_ERROR);
+        }
+    }
+
+    private boolean uploadFile(File file, String relativePath, String serverIP, int serverPort) {
+        try {
+            byte[] pathBytes = relativePath.getBytes(StandardCharsets.UTF_8);
+            ByteBuffer buffer = ByteBuffer.allocate(4 + pathBytes.length + 8);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            buffer.putInt(pathBytes.length);
+            buffer.put(pathBytes);
+            buffer.putLong(file.length());
+            byte[] headerData = buffer.array();
+
+            String urlString = String.format("http://%s:%d/backup", serverIP, serverPort);
+            RequestBody requestBody = buildRequestBody(file, headerData);
+
+            Request request = new Request.Builder()
+                    .url(urlString)
+                    .post(requestBody)
+                    .build();
+
+            try (Response response = httpClient.newCall(request).execute()) {
+                return response.isSuccessful();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to upload file " + relativePath, e);
+            return false;
+        }
+    }
+
+    private RequestBody buildRequestBody(final File file, final byte[] headerData) {
+        final long totalLength = headerData.length + file.length();
+
+        return new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                return MediaType.get("application/octet-stream");
+            }
+
+            @Override
+            public long contentLength() {
+                return totalLength;
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                sink.write(headerData);
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    byte[] bufferBytes = new byte[8192];
+                    int read;
+                    while ((read = fis.read(bufferBytes)) != -1) {
+                        sink.write(bufferBytes, 0, read);
+                    }
+                }
+            }
+        };
+    }
+
+    private boolean sendCompletionRequest(String serverIP, int serverPort, int fileCount) {
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(4);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            buffer.putInt(fileCount);
+            byte[] bodyData = buffer.array();
+
+            String urlString = String.format("http://%s:%d/backup_complete", serverIP, serverPort);
+            RequestBody body = RequestBody.create(MediaType.get("application/octet-stream"), bodyData);
+
+            Request request = new Request.Builder()
+                    .url(urlString)
+                    .post(body)
+                    .build();
+
+            try (Response response = httpClient.newCall(request).execute()) {
+                return response.isSuccessful();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to send completion request", e);
+            return false;
+        }
+    }
+
+    /**
+     * 获取 PC 备份列表
+     */
+    public void fetchBackupListFromPC(final String serverIP, final int serverPort, final BackupListCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String urlString = String.format("http://%s:%d/restore_list", serverIP, serverPort);
+                    Request request = new Request.Builder()
+                            .url(urlString)
+                            .get()
+                            .build();
+
+                    try (Response response = httpClient.newCall(request).execute()) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String jsonString = response.body().string();
+                            List<PCBackupInfo> backups = parseBackupList(jsonString);
+                            notifySuccess(callback, backups);
+                        } else {
+                            notifyError(callback, response.code(), "Failed to fetch list");
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Fetch backup list failed", e);
+                    notifyError(callback, BackupConstants.ERROR_IO_ERROR, e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    private List<PCBackupInfo> parseBackupList(String jsonString) throws JSONException {
+        JSONArray jsonArray = new JSONArray(jsonString);
+        List<PCBackupInfo> backupList = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject backupJson = jsonArray.getJSONObject(i);
+            PCBackupInfo info = new PCBackupInfo();
+            info.name = backupJson.optString("name", "Unknown");
+            info.time = backupJson.optString("time", "");
+            info.path = backupJson.optString("path", "");
+            info.fileCount = backupJson.optInt("fileCount", 0);
+            info.conversationCount = backupJson.optInt("conversationCount", 0);
+            info.messageCount = backupJson.optInt("messageCount", 0);
+            info.mediaFileCount = backupJson.optInt("mediaFileCount", 0);
+            backupList.add(info);
+        }
+        return backupList;
+    }
+
+    /**
+     * 从 PC 下载备份
+     */
+    public void downloadBackupFromPC(final String backupPath, final String serverIP, final int serverPort, final File targetDir, final BackupDownloadCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    performDownload(backupPath, serverIP, serverPort, targetDir, callback);
+                } catch (Exception e) {
+                    Log.e(TAG, "Download failed", e);
+                    notifyError(callback, BackupConstants.ERROR_IO_ERROR, e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    private void performDownload(String backupPath, String serverIP, int serverPort, File targetDir, BackupDownloadCallback callback) throws Exception {
+        // 1. Download metadata
+        String encodedPath = java.net.URLEncoder.encode(backupPath, "UTF-8");
+        String metadataUrl = String.format("http://%s:%d/restore_metadata?path=%s", serverIP, serverPort, encodedPath);
+
+        Request request = new Request.Builder().url(metadataUrl).get().build();
+        String metadataJsonString;
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) {
+                notifyError(callback, response.code(), "Failed to download metadata");
+                return;
+            }
+            metadataJsonString = response.body().string();
+        }
+
+        // Save metadata
+        if (!targetDir.exists()) targetDir.mkdirs();
+        File metadataFile = new File(targetDir, "metadata.json");
+        try (FileOutputStream fos = new FileOutputStream(metadataFile)) {
+            fos.write(metadataJsonString.getBytes(StandardCharsets.UTF_8));
+        }
+
+        JSONObject metadataJson = new JSONObject(metadataJsonString);
+        List<String> filePaths = new ArrayList<>();
+        JSONArray conversations = metadataJson.optJSONArray("conversations");
+        if (conversations != null) {
+            for (int i = 0; i < conversations.length(); i++) {
+                JSONObject conv = conversations.getJSONObject(i);
+                String convDir = conv.optString("directory");
+                filePaths.add("conversations/" + convDir + "/messages.json");
+            }
+        }
+
+        int totalFiles = filePaths.size();
+        notifyProgress(callback, 0, totalFiles);
+
+        for (int i = 0; i < totalFiles; i++) {
+            if (isCancelled.get()) {
+                notifyError(callback, BackupConstants.ERROR_CANCELLED, "Cancelled");
+                return;
+            }
+
+            String relativePath = filePaths.get(i);
+            downloadFile(backupPath, relativePath, serverIP, serverPort, targetDir);
+            notifyProgress(callback, i + 1, totalFiles);
+        }
+
+        notifySuccess(callback, targetDir);
+    }
+
+    private void downloadFile(String backupPath, String relativePath, String serverIP, int serverPort, File targetDir) throws Exception {
+        String fullPath = backupPath + "/" + relativePath;
+        String encodedPath = java.net.URLEncoder.encode(fullPath, "UTF-8");
+        String urlString = String.format("http://%s:%d/restore_file?path=%s", serverIP, serverPort, encodedPath);
+
+        Request request = new Request.Builder().url(urlString).get().build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) {
+                throw new IOException("Failed to download file: " + response.code());
+            }
+
+            File destFile = new File(targetDir, relativePath);
+            File parent = destFile.getParentFile();
+            if (!parent.exists()) parent.mkdirs();
+
+            try (InputStream is = response.body().byteStream();
+                 FileOutputStream fos = new FileOutputStream(destFile)) {
+                byte[] buffer = new byte[8192];
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+            }
+        }
+    }
+
+    private List<File> getAllFiles(File directory) {
+        List<File> files = new ArrayList<>();
+        if (directory != null && directory.exists() && directory.isDirectory()) {
+            File[] fileArray = directory.listFiles();
+            if (fileArray != null) {
+                for (File file : fileArray) {
+                    if (file.isFile()) {
+                        files.add(file);
+                    } else if (file.isDirectory()) {
+                        files.addAll(getAllFiles(file));
+                    }
+                }
+            }
+        }
+        return files;
+    }
+
+    private void notifyProgress(final BackupUploadCallback callback, final int uploaded, final int total) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onProgress(uploaded, total);
+            }
+        });
+    }
+
+    private void notifySuccess(final BackupUploadCallback callback) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onSuccess();
+            }
+        });
+    }
+
+    private void notifyError(final BackupUploadCallback callback, final int errorCode) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onError(errorCode);
+            }
+        });
+    }
+
+    private void notifySuccess(final BackupListCallback callback, final List<PCBackupInfo> list) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onSuccess(list);
+            }
+        });
+    }
+
+    private void notifyError(final BackupListCallback callback, final int errorCode, final String message) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onError(errorCode, message);
+            }
+        });
+    }
+
+    private void notifyProgress(final BackupDownloadCallback callback, final int downloaded, final int total) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onProgress(downloaded, total);
+            }
+        });
+    }
+
+    private void notifySuccess(final BackupDownloadCallback callback, final File dir) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onSuccess(dir);
+            }
+        });
+    }
+
+    private void notifyError(final BackupDownloadCallback callback, final int errorCode, final String message) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onError(errorCode, message);
             }
         });
     }

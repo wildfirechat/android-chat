@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.app.setting;
+package cn.wildfire.chat.app.setting.backup;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,16 +14,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,13 +33,6 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.SendMessageCallback;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okio.BufferedSink;
 
 /**
  * 备份请求进度界面
@@ -66,8 +52,6 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
 
     private String serverIP;
     private int serverPort;
-    private int uploadedFileCount = 0;
-    private OkHttpClient uploadHttpClient;
 
     // 消息监听
     private OnReceiveMessageListener messageListener;
@@ -241,21 +225,46 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
         // Use user ID as backup password
         String userId = ChatManagerHolder.gChatManager.getUserId();
 
-        BackupManager backupManager = BackupManager.getInstance();
-        backupManager.createDirectoryBasedBackup(
+        BackupManager.getInstance().createAndUploadBackup(
                 tempDir.getAbsolutePath(),
                 conversations,
-                userId, // Use user ID as password
+                userId,
                 null,
-                new BackupManager.BackupCallback() {
+                serverIP,
+                serverPort,
+                new BackupManager.BackupAndUploadCallback() {
                     @Override
-                    public void onProgress(BackupProgress progress) {
-                        updateProgress(progress);
+                    public void onBackupProgress(BackupProgress progress) {
+                        runOnUiThread(() -> {
+                            int percentage = progress.getPercentage();
+                            statusTextView.setText(getString(R.string.backing_up_progress, percentage));
+                            detailTextView.setText(getString(R.string.completed_progress,
+                                    progress.getCompletedUnitCount(),
+                                    progress.getTotalUnitCount()));
+                        });
                     }
 
                     @Override
-                    public void onSuccess(String backupPath, int msgCount, int mediaCount, long mediaSize) {
-                        uploadBackupToPC(new File(backupPath));
+                    public void onUploadProgress(int uploadedFiles, int totalFiles) {
+                        runOnUiThread(() -> {
+                            statusTextView.setText(R.string.uploading_to_pc);
+                            int progress = (int) ((uploadedFiles * 100) / totalFiles);
+                            statusTextView.setText(getString(R.string.uploading_progress, progress));
+                            detailTextView.setText(getString(R.string.file_progress, uploadedFiles, totalFiles));
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(() -> {
+                            statusTextView.setText(R.string.backup_completed);
+                            detailTextView.setText(R.string.notifying_pc);
+
+                            File tempDir = new File(getCacheDir(), "backup_upload");
+                            deleteDirectory(tempDir);
+
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> finish(), 2000);
+                        });
                     }
 
                     @Override
@@ -266,217 +275,6 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
                     }
                 }
         );
-    }
-
-    private void updateProgress(BackupProgress progress) {
-        runOnUiThread(() -> {
-            int percentage = progress.getPercentage();
-            statusTextView.setText(getString(R.string.backing_up_progress, percentage));
-            detailTextView.setText(getString(R.string.completed_progress,
-                    progress.getCompletedUnitCount(),
-                    progress.getTotalUnitCount()));
-        });
-    }
-
-    private void uploadBackupToPC(File backupPath) {
-        runOnUiThread(() -> {
-            statusTextView.setText(R.string.uploading_to_pc);
-            detailTextView.setText(R.string.preparing_file_list);
-        });
-
-        List<File> files = getAllFiles(backupPath);
-
-        if (files.isEmpty()) {
-            showErrorMessage(getString(R.string.no_backup_files));
-            return;
-        }
-
-        uploadedFileCount = files.size();
-
-        runOnUiThread(() -> {
-            detailTextView.setText(getString(R.string.files_waiting_upload, files.size()));
-        });
-
-        uploadFilesSequentially(files, 0, backupPath);
-    }
-
-    private void uploadFilesSequentially(List<File> files, int index, File basePath) {
-        if (index >= files.size()) {
-            onUploadSuccess();
-            return;
-        }
-
-        File file = files.get(index);
-
-        runOnUiThread(() -> {
-            int progress = (int) ((index * 100) / files.size());
-            statusTextView.setText(getString(R.string.uploading_progress, progress));
-            detailTextView.setText(getString(R.string.file_progress, index + 1, files.size()));
-        });
-
-        String relativePath = file.getAbsolutePath().substring(basePath.getAbsolutePath().length());
-        if (relativePath.startsWith("/")) {
-            relativePath = relativePath.substring(1);
-        }
-
-        uploadFile(file, relativePath, new FileUploadCallback() {
-            @Override
-            public void onResult(boolean success) {
-                if (success) {
-                    uploadFilesSequentially(files, index + 1, basePath);
-                } else {
-                    runOnUiThread(() -> {
-                        showErrorMessage(getString(R.string.failed_to_upload_file));
-                    });
-                }
-            }
-        });
-    }
-
-    private interface FileUploadCallback {
-        void onResult(boolean success);
-    }
-
-    private void uploadFile(File file, String relativePath, FileUploadCallback callback) {
-        new Thread(() -> {
-            try {
-                byte[] pathBytes = relativePath.getBytes(StandardCharsets.UTF_8);
-                ByteBuffer buffer = ByteBuffer.allocate(4 + pathBytes.length + 8);
-                buffer.order(ByteOrder.LITTLE_ENDIAN);
-                buffer.putInt(pathBytes.length);
-                buffer.put(pathBytes);
-                buffer.putLong(file.length());
-                byte[] headerData = buffer.array();
-
-                if (uploadHttpClient == null) {
-                    uploadHttpClient = new OkHttpClient.Builder()
-                            .retryOnConnectionFailure(true)
-                            .build();
-                }
-
-                String urlString = String.format("http://%s:%d/backup", serverIP, serverPort);
-                RequestBody requestBody = buildRequestBody(file, headerData);
-
-                Request request = new Request.Builder()
-                        .url(urlString)
-                        .post(requestBody)
-//                        .header("Connection", "close")
-                        .build();
-
-                Call call = uploadHttpClient.newCall(request);
-                try (Response response = call.execute()) {
-                    callback.onResult(response.isSuccessful());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                callback.onResult(false);
-            }
-        }).start();
-    }
-
-    @NonNull
-    private static RequestBody buildRequestBody(File file, byte[] headerData) {
-        long totalLength = headerData.length + file.length();
-
-        RequestBody requestBody = new RequestBody() {
-            @Override
-            public MediaType contentType() {
-                return MediaType.get("application/octet-stream");
-            }
-
-            @Override
-            public long contentLength() {
-                return totalLength;
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws java.io.IOException {
-                sink.write(headerData);
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    byte[] bufferBytes = new byte[8192];
-                    int read;
-                    while ((read = fis.read(bufferBytes)) != -1) {
-                        sink.write(bufferBytes, 0, read);
-                    }
-                }
-            }
-        };
-        return requestBody;
-    }
-
-    private List<File> getAllFiles(File directory) {
-        List<File> files = new ArrayList<>();
-        if (directory != null && directory.exists() && directory.isDirectory()) {
-            File[] fileArray = directory.listFiles();
-            if (fileArray != null) {
-                for (File file : fileArray) {
-                    if (file.isFile()) {
-                        files.add(file);
-                    } else if (file.isDirectory()) {
-                        files.addAll(getAllFiles(file));
-                    }
-                }
-            }
-        }
-        return files;
-    }
-
-    private void onUploadSuccess() {
-        runOnUiThread(() -> {
-            statusTextView.setText(R.string.backup_completed);
-            detailTextView.setText(R.string.notifying_pc);
-
-            sendCompletionRequest();
-
-            File tempDir = new File(getCacheDir(), "backup_upload");
-            deleteDirectory(tempDir);
-
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                }
-            }, 2000);
-        });
-    }
-
-    private void sendCompletionRequest() {
-        new Thread(() -> {
-            try {
-                ByteBuffer buffer = ByteBuffer.allocate(4);
-                buffer.order(ByteOrder.LITTLE_ENDIAN);
-                buffer.putInt(uploadedFileCount);
-                byte[] bodyData = buffer.array();
-
-                String urlString = String.format("http://%s:%d/backup_complete", serverIP, serverPort);
-                URL url = new URL(urlString);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-                connection.setConnectTimeout(10000);
-                connection.setReadTimeout(10000);
-                connection.setRequestProperty("Content-Type", "application/octet-stream");
-                connection.setRequestProperty("Content-Length", String.valueOf(bodyData.length));
-
-                // 发送数据
-                connection.getOutputStream().write(bodyData);
-                connection.getOutputStream().flush();
-                connection.getOutputStream().close();
-
-                // 获取响应码（这一步会触发实际请求）
-                int responseCode = connection.getResponseCode();
-
-                if (responseCode == 200) {
-                    android.util.Log.d("BackupRequest", "Successfully notified PC of completion");
-                } else {
-                    android.util.Log.e("BackupRequest", "Failed to notify PC, response code: " + responseCode);
-                }
-
-                connection.disconnect();
-            } catch (Exception e) {
-                android.util.Log.e("BackupRequest", "Failed to send completion request", e);
-            }
-        }).start();
     }
 
     private void deleteDirectory(File directory) {

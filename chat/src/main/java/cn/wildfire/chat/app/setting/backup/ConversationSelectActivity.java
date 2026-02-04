@@ -1,13 +1,12 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.app.setting;
+package cn.wildfire.chat.app.setting.backup;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +40,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * 会话选择界面 - 用于选择要备份的会话
@@ -191,11 +191,7 @@ public class ConversationSelectActivity extends WfcBaseActivity {
                 Conversation conversation = info.conversation;
                 checkBox.setChecked(selectedConversations.contains(info));
 
-                // 显示默认消息数
-                messageCountTextView.setText(R.string.loading);
-
-                // 异步加载消息数
-                loadMessageCount(conversation);
+                messageCountTextView.setText(itemView.getContext().getString(R.string.messages_count_suffix, ChatManager.Instance().getMessageCount(conversation)));
 
                 // 根据会话类型显示不同的头像和名称
                 if (conversation.type == Conversation.ConversationType.Single) {
@@ -244,41 +240,6 @@ public class ConversationSelectActivity extends WfcBaseActivity {
                     titleTextView.setText(conversation.target);
                     portraitImageView.setImageResource(R.mipmap.avatar_def);
                 }
-            }
-
-            private void loadMessageCount(Conversation conversation) {
-                // 使用后台线程加载消息数
-                new Thread(() -> {
-                    try {
-                        long fromIndex = 0;
-                        int totalCount = 0;
-                        // 分批获取消息，统计总数
-                        while (true) {
-                            List<cn.wildfirechat.message.Message> messages = ChatManagerHolder.gChatManager.getMessages(
-                                    conversation,
-                                    fromIndex,
-                                    false,
-                                    100,
-                                    null
-                            );
-                            if (messages == null || messages.isEmpty()) {
-                                break;
-                            }
-                            totalCount += messages.size();
-                            fromIndex = messages.get(messages.size() - 1).messageId;
-                        }
-
-                        final int count = totalCount;
-                        // 回到主线程更新 UI
-                        runOnUiThread(() -> {
-                            messageCountTextView.setText(itemView.getContext().getString(R.string.messages_count_suffix, count));
-                        });
-                    } catch (Exception e) {
-                        runOnUiThread(() -> {
-                            messageCountTextView.setText(R.string.unknown);
-                        });
-                    }
-                }).start();
             }
         }
     }

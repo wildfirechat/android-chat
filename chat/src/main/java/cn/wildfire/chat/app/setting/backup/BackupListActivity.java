@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.app.setting;
+package cn.wildfire.chat.app.setting.backup;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;

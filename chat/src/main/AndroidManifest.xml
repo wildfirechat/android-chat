@@ -95,48 +95,48 @@
             android:label="@string/about"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.BackupAndRestoreActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.BackupAndRestoreActivity"
             android:label="@string/backup_and_restore"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.ConversationSelectActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.ConversationSelectActivity"
             android:label="@string/select_conversations"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.BackupOptionsActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.BackupOptionsActivity"
             android:label="@string/backup_options"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.BackupProgressActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.BackupProgressActivity"
             android:label="@string/backup_progress"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.BackupDestinationActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.BackupDestinationActivity"
             android:label="@string/select_backup_location"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.BackupRequestProgressActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.BackupRequestProgressActivity"
             android:label="@string/backup_request"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.RestoreSourceActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.RestoreSourceActivity"
             android:label="@string/select_restore_source"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.BackupListActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.BackupListActivity"
             android:label="@string/backup_list"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.RestoreOptionsActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.RestoreOptionsActivity"
             android:label="@string/restore_options"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.PCRestoreListActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.PCRestoreListActivity"
             android:label="@string/pc_backup_list"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.app.setting.PCRestoreProgressActivity"
+            android:name="cn.wildfire.chat.app.setting.backup.PCRestoreProgressActivity"
             android:label="@string/restoring_from_pc"
             android:screenOrientation="portrait" />
 

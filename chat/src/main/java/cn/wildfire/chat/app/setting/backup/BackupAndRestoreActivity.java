@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.app.setting;
+package cn.wildfire.chat.app.setting.backup;
 
 import android.content.Context;
 import android.content.Intent;

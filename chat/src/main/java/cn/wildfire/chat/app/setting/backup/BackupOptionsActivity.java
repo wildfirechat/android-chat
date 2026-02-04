@@ -2,11 +2,12 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.app.setting;
+package cn.wildfire.chat.app.setting.backup;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,17 +26,15 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import android.util.Pair;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * 备份选项配置界面
@@ -158,8 +158,7 @@ public class BackupOptionsActivity extends WfcBaseActivity {
                 // 显示默认消息数
                 messageCountTextView.setText(R.string.loading);
 
-                // 异步加载消息数
-                loadMessageCount(conversation);
+                messageCountTextView.setText(itemView.getContext().getString(R.string.messages_format, ChatManager.Instance().getMessageCount(conversation)));
 
                 // 根据会话类型显示不同的名称
                 if (conversation.type == Conversation.ConversationType.Single) {
@@ -194,47 +193,6 @@ public class BackupOptionsActivity extends WfcBaseActivity {
                     // 其他类型
                     titleTextView.setText(conversation.target);
                 }
-            }
-
-            private void loadMessageCount(Conversation conversation) {
-                // 使用后台线程加载消息数
-                new Thread(() -> {
-                    try {
-                        long fromIndex = 0;
-                        int totalCount = 0;
-                        // 分批获取消息，统计总数
-                        while (true) {
-                            List<cn.wildfirechat.message.Message> messages = ChatManagerHolder.gChatManager.getMessages(
-                                    conversation,
-                                    fromIndex,
-                                    false,
-                                    100,
-                                    null
-                            );
-                            if (messages == null || messages.isEmpty()) {
-                                break;
-                            }
-                            totalCount += messages.size();
-                            fromIndex = messages.get(messages.size() - 1).messageId;
-                        }
-
-                        final int count = totalCount;
-                        // 回到主线程更新 UI
-                        runOnUiThread(() -> {
-                            if (count == 0) {
-                                messageCountTextView.setText(R.string.no_messages);
-                            } else if (count == 1) {
-                                messageCountTextView.setText(R.string.one_message);
-                            } else {
-                                messageCountTextView.setText(itemView.getContext().getString(R.string.messages_format, count));
-                            }
-                        });
-                    } catch (Exception e) {
-                        runOnUiThread(() -> {
-                            messageCountTextView.setText(R.string.unknown);
-                        });
-                    }
-                }).start();
             }
         }
     }

@@ -313,7 +313,7 @@
     <string name="restore_completed_successfully">Restore completed successfully</string>
     <string name="error_prefix">Error: </string>
     <string name="select_at_least_one_conversation">Please select at least one conversation</string>
-    <string name="messages_count_suffix">messages</string>
+    <string name="messages_count_suffix">%d messages</string>
     <string name="unknown">Unknown</string>
     <string name="backup_time_label">Backup Time: %1$s</string>
     <string name="device_label">Device: %1$s</string>
