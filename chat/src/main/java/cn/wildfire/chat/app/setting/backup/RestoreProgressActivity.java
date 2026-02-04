@@ -7,8 +7,6 @@ package cn.wildfire.chat.app.setting.backup;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -16,20 +14,19 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
 import cn.wildfirechat.backup.BackupConstants;
 import cn.wildfirechat.backup.BackupManager;
 import cn.wildfirechat.backup.BackupProgress;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ConversationInfo;
 
 /**
  * 备份进度显示界面
  */
-public class BackupProgressActivity extends WfcBaseActivity {
+public class RestoreProgressActivity extends WfcBaseActivity {
 
     private ProgressBar progressBar;
     private TextView percentageTextView;
@@ -43,25 +40,11 @@ public class BackupProgressActivity extends WfcBaseActivity {
     private boolean includeMedia;
     private String password;
     private String passwordHint;
-    private boolean isBackupMode = true; // true=备份, false=恢复
+    private boolean isBackupMode = false; // true=备份, false=恢复
     private String backupPath; // For restore mode
 
-    public static void startForBackup(Context context,
-                                      ArrayList<ConversationInfo> conversations,
-                                      boolean includeMedia,
-                                      String password,
-                                      String passwordHint) {
-        Intent intent = new Intent(context, BackupProgressActivity.class);
-        intent.putParcelableArrayListExtra("conversations", conversations);
-        intent.putExtra("includeMedia", includeMedia);
-        intent.putExtra("password", password);
-        intent.putExtra("passwordHint", passwordHint);
-        intent.putExtra("isBackup", true);
-        context.startActivity(intent);
-    }
-
     public static void startForRestore(Context context, String backupPath, boolean includeMedia, String password) {
-        Intent intent = new Intent(context, BackupProgressActivity.class);
+        Intent intent = new Intent(context, RestoreProgressActivity.class);
         intent.putExtra("backupPath", backupPath);
         intent.putExtra("includeMedia", includeMedia);
         intent.putExtra("password", password);
@@ -71,7 +54,7 @@ public class BackupProgressActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.activity_backup_progress;
+        return R.layout.activity_restore_progress;
     }
 
     @Override
@@ -91,7 +74,7 @@ public class BackupProgressActivity extends WfcBaseActivity {
         }
 
         initView();
-        startOperation();
+        startRestore();
     }
 
     private void initView() {
@@ -111,50 +94,6 @@ public class BackupProgressActivity extends WfcBaseActivity {
         cancelButton.setOnClickListener(v -> cancel());
         closeButton.setOnClickListener(v -> finish());
         closeButton.setVisibility(View.GONE);
-    }
-
-    private void startOperation() {
-        if (isBackupMode) {
-            startBackup();
-        } else {
-            startRestore();
-        }
-    }
-
-    private void startBackup() {
-        // 获取备份目录
-        File backupDir = getBackupDirectory();
-        if (!backupDir.exists()) {
-            backupDir.mkdirs();
-        }
-
-        // 生成备份目录名
-        String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new java.util.Date());
-        File targetBackupDir = new File(backupDir, "backup_" + timestamp);
-
-        backupManager = BackupManager.getInstance();
-        backupManager.createDirectoryBasedBackup(
-                targetBackupDir.getAbsolutePath(),
-                conversations,
-                TextUtils.isEmpty(password) ? null : password,
-                passwordHint,
-                new BackupManager.BackupCallback() {
-                    @Override
-                    public void onProgress(BackupProgress progress) {
-                        updateProgress(progress);
-                    }
-
-                    @Override
-                    public void onSuccess(String backupPath, int msgCount, int mediaCount, long mediaSize) {
-                        onBackupSuccess(backupPath, msgCount, mediaCount, mediaSize);
-                    }
-
-                    @Override
-                    public void onError(int errorCode) {
-                        BackupProgressActivity.this.onError(errorCode);
-                    }
-                }
-        );
     }
 
     private void startRestore() {
@@ -182,7 +121,7 @@ public class BackupProgressActivity extends WfcBaseActivity {
 
                     @Override
                     public void onError(int errorCode) {
-                        BackupProgressActivity.this.onError(errorCode);
+                        RestoreProgressActivity.this.onError(errorCode);
                     }
                 }
         );
@@ -207,24 +146,6 @@ public class BackupProgressActivity extends WfcBaseActivity {
         });
     }
 
-    private void onBackupSuccess(String backupPath, int msgCount, int mediaCount, long mediaSize) {
-        runOnUiThread(() -> {
-            statusTextView.setText(R.string.backup_completed);
-            progressBar.setProgress(100);
-            percentageTextView.setText("100%");
-
-            String mediaInfo = includeMedia ? getString(R.string.media_files_info, mediaCount, mediaSize / (1024.0 * 1024.0)) : "";
-
-            detailTextView.setText(getString(R.string.backed_up_messages, msgCount, mediaInfo));
-
-            cancelButton.setVisibility(View.GONE);
-            closeButton.setVisibility(View.VISIBLE);
-
-            Toast.makeText(BackupProgressActivity.this,
-                    R.string.backup_completed_successfully, Toast.LENGTH_SHORT).show();
-        });
-    }
-
     private void onRestoreSuccess(int msgCount, int mediaCount) {
         runOnUiThread(() -> {
             statusTextView.setText(R.string.restore_completed);
@@ -237,7 +158,7 @@ public class BackupProgressActivity extends WfcBaseActivity {
             cancelButton.setVisibility(View.GONE);
             closeButton.setVisibility(View.VISIBLE);
 
-            Toast.makeText(BackupProgressActivity.this,
+            Toast.makeText(RestoreProgressActivity.this,
                     R.string.restore_completed_successfully, Toast.LENGTH_SHORT).show();
         });
     }
@@ -252,7 +173,7 @@ public class BackupProgressActivity extends WfcBaseActivity {
             cancelButton.setVisibility(View.GONE);
             closeButton.setVisibility(View.VISIBLE);
 
-            Toast.makeText(BackupProgressActivity.this,
+            Toast.makeText(RestoreProgressActivity.this,
                     operation + " " + getString(R.string.backup_failed) + ": " + errorMsg, Toast.LENGTH_LONG).show();
         });
     }
@@ -262,15 +183,5 @@ public class BackupProgressActivity extends WfcBaseActivity {
             backupManager.cancelCurrentOperation();
         }
         finish();
-    }
-
-    private File getBackupDirectory() {
-        // 使用公共Documents目录（用户可以访问，应用卸载后保留）
-        File documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        File dir = new File(documentsDir, "WildFireChatBackup");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        return dir;
     }
 }

@@ -1,27 +1,25 @@
-/*
- * Copyright (c) 2026 WildFireChat. All rights reserved.
- */
-
 package cn.wildfire.chat.app.setting.backup;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.backup.BackupManager;
 import cn.wildfirechat.backup.BackupProgress;
 import cn.wildfirechat.chat.R;
@@ -35,16 +33,15 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.SendMessageCallback;
 
 /**
- * 备份请求进度界面
- * 等待PC端响应备份请求
+ * 备份请求进度界面 Fragment
  */
-public class BackupRequestProgressActivity extends WfcBaseActivity {
+public class BackupRequestProgressFragment extends Fragment {
 
     private ProgressBar progressBar;
     private TextView statusTextView;
     private TextView detailTextView;
 
-    private ArrayList<ConversationInfo> conversations;
+    private List<ConversationInfo> conversations;
     private boolean includeMedia;
     private boolean isWaitingForResponse = true;
     private Handler timeoutHandler;
@@ -55,52 +52,43 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
 
     // 消息监听
     private OnReceiveMessageListener messageListener;
+    private PickBackupConversationViewModel pickBackupConversationViewModel;
 
-    public static void start(Context context, ArrayList<ConversationInfo> conversations, boolean includeMedia) {
-        Intent intent = new Intent(context, BackupRequestProgressActivity.class);
-        intent.putParcelableArrayListExtra("conversations", conversations);
-        intent.putExtra("includeMedia", includeMedia);
-        context.startActivity(intent);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_backup_request_progress, container, false);
     }
 
     @Override
-    protected int contentLayout() {
-        return R.layout.activity_backup_request_progress;
-    }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        conversations = getIntent().getParcelableArrayListExtra("conversations");
-        includeMedia = getIntent().getBooleanExtra("includeMedia", true);
+        pickBackupConversationViewModel = new ViewModelProvider(requireActivity()).get(PickBackupConversationViewModel.class);
+        conversations = pickBackupConversationViewModel.getSelectedConversations();
+        includeMedia = pickBackupConversationViewModel.isIncludeMedia();
 
         if (conversations == null || conversations.isEmpty()) {
-            Toast.makeText(this, R.string.no_conversations_to_backup, Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(requireContext(), R.string.no_conversations_to_backup, Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().popBackStack();
             return;
         }
 
-        initView();
+        initView(view);
         startBackupRequest();
     }
 
-    private void initView() {
-        progressBar = findViewById(R.id.progressBar);
-        statusTextView = findViewById(R.id.statusTextView);
-        detailTextView = findViewById(R.id.detailTextView);
+    private void initView(View view) {
+        progressBar = view.findViewById(R.id.progressBar);
+        statusTextView = view.findViewById(R.id.statusTextView);
+        detailTextView = view.findViewById(R.id.detailTextView);
 
         progressBar.setVisibility(View.VISIBLE);
         statusTextView.setText(R.string.waiting_for_pc_response);
         detailTextView.setText(R.string.confirm_backup_on_pc);
 
         timeoutHandler = new Handler(Looper.getMainLooper());
-        timeoutRunnable = new Runnable() {
-            @Override
-            public void run() {
-                onTimeout();
-            }
-        };
+        timeoutRunnable = this::onTimeout;
     }
 
     private void startBackupRequest() {
@@ -145,7 +133,8 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
 
             @Override
             public void onFail(int errorCode) {
-                runOnUiThread(() -> {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() -> {
                     showErrorMessage(getString(R.string.failed_to_send_request, errorCode));
                 });
             }
@@ -185,39 +174,52 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
     }
 
     private void onBackupApproved(BackupResponseNotificationContent response) {
+        if (!isAdded()) return;
         serverIP = response.getServerIP();
         serverPort = response.getServerPort();
 
-        statusTextView.setText(R.string.pc_approved_backup);
-        detailTextView.setText(getString(R.string.creating_backup_data, serverIP, serverPort));
+        requireActivity().runOnUiThread(() -> {
+            statusTextView.setText(R.string.pc_approved_backup);
+            detailTextView.setText(getString(R.string.creating_backup_data, serverIP, serverPort));
+        });
 
         // 开始创建备份并上传
         createAndUploadBackup();
     }
 
     private void onBackupRejected() {
+        if (!isAdded()) return;
         isWaitingForResponse = false;
-        progressBar.setVisibility(View.GONE);
-        statusTextView.setText(R.string.backup_request_rejected_title);
-        detailTextView.setText(R.string.pc_rejected_request);
+        requireActivity().runOnUiThread(() -> {
+            progressBar.setVisibility(View.GONE);
+            statusTextView.setText(R.string.backup_request_rejected_title);
+            detailTextView.setText(R.string.pc_rejected_request);
 
-        ChatManager.Instance().getMainHandler().postDelayed(this::finish, 2000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (isAdded()) getParentFragmentManager().popBackStack();
+            }, 2000);
+        });
     }
 
     private void onTimeout() {
         if (!isWaitingForResponse) {
             return;
         }
+        if (!isAdded()) return;
         isWaitingForResponse = false;
-        progressBar.setVisibility(View.GONE);
-        statusTextView.setText(R.string.request_timeout_title);
-        detailTextView.setText(R.string.pc_not_respond_30s);
+        requireActivity().runOnUiThread(() -> {
+            progressBar.setVisibility(View.GONE);
+            statusTextView.setText(R.string.request_timeout_title);
+            detailTextView.setText(R.string.pc_not_respond_30s);
 
-        ChatManager.Instance().getMainHandler().postDelayed(this::finish, 2000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (isAdded()) getParentFragmentManager().popBackStack();
+            }, 2000);
+        });
     }
 
     private void createAndUploadBackup() {
-        File tempDir = new File(getCacheDir(), "backup_upload");
+        File tempDir = new File(requireContext().getCacheDir(), "backup_upload");
         if (!tempDir.exists()) {
             tempDir.mkdirs();
         }
@@ -235,7 +237,8 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
                 new BackupManager.BackupAndUploadCallback() {
                     @Override
                     public void onBackupProgress(BackupProgress progress) {
-                        runOnUiThread(() -> {
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() -> {
                             int percentage = progress.getPercentage();
                             statusTextView.setText(getString(R.string.backing_up_progress, percentage));
                             detailTextView.setText(getString(R.string.completed_progress,
@@ -246,7 +249,8 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
 
                     @Override
                     public void onUploadProgress(int uploadedFiles, int totalFiles) {
-                        runOnUiThread(() -> {
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() -> {
                             statusTextView.setText(R.string.uploading_to_pc);
                             int progress = (int) ((uploadedFiles * 100) / totalFiles);
                             statusTextView.setText(getString(R.string.uploading_progress, progress));
@@ -256,20 +260,24 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
 
                     @Override
                     public void onSuccess() {
-                        runOnUiThread(() -> {
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() -> {
                             statusTextView.setText(R.string.backup_completed);
                             detailTextView.setText(R.string.notifying_pc);
 
-                            File tempDir = new File(getCacheDir(), "backup_upload");
+                            File tempDir = new File(requireContext().getCacheDir(), "backup_upload");
                             deleteDirectory(tempDir);
 
-                            new Handler(Looper.getMainLooper()).postDelayed(() -> finish(), 2000);
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                if (isAdded()) getParentFragmentManager().popBackStack();
+                            }, 2000);
                         });
                     }
 
                     @Override
                     public void onError(int errorCode) {
-                        runOnUiThread(() -> {
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() -> {
                             showErrorMessage(getString(R.string.failed_to_create_backup, errorCode));
                         });
                     }
@@ -294,21 +302,21 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
     }
 
     private void showErrorMessage(String message) {
+        if (!isAdded()) return;
         isWaitingForResponse = false;
-        progressBar.setVisibility(View.GONE);
-        statusTextView.setText(R.string.operation_failed);
-        detailTextView.setText(message);
+        requireActivity().runOnUiThread(() -> {
+            progressBar.setVisibility(View.GONE);
+            statusTextView.setText(R.string.operation_failed);
+            detailTextView.setText(message);
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 2000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (isAdded()) getParentFragmentManager().popBackStack();
+            }, 2000);
+        });
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
 
         if (messageListener != null) {
@@ -319,7 +327,7 @@ public class BackupRequestProgressActivity extends WfcBaseActivity {
             timeoutHandler.removeCallbacks(timeoutRunnable);
         }
 
-        File tempDir = new File(getCacheDir(), "backup_upload");
+        File tempDir = new File(requireContext().getCacheDir(), "backup_upload");
         deleteDirectory(tempDir);
     }
 }

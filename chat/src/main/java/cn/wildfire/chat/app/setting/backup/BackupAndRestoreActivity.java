@@ -48,7 +48,10 @@ public class BackupAndRestoreActivity extends WfcBaseActivity {
     public static class BackupAndRestoreFragmentImpl extends BackupAndRestoreFragment {
         @Override
         protected void onCreateBackupClick() {
-            ConversationSelectActivity.start(requireContext());
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, new ConversationSelectFragment())
+                    .addToBackStack(null)
+                    .commit();
         }
 
         @Override

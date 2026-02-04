@@ -91,7 +91,7 @@ public class BackupAndRestoreFragment extends Fragment {
     private void loadBackupList() {
         // 获取备份目录
         File backupDir = getBackupDirectory();
-        if (backupDir != null && backupDir.exists()) {
+        if (backupDir.exists()) {
             backupList = BackupManager.getInstance().getBackupList(backupDir.getAbsolutePath());
             adapter.setBackupList(backupList);
         }

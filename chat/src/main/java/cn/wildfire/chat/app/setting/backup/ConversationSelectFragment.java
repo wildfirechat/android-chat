@@ -1,13 +1,8 @@
-/*
- * Copyright (c) 2026 WildFireChat. All rights reserved.
- */
-
 package cn.wildfire.chat.app.setting.backup;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -15,10 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,7 +29,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -45,7 +41,7 @@ import cn.wildfirechat.remote.ChatManager;
 /**
  * 会话选择界面 - 用于选择要备份的会话
  */
-public class ConversationSelectActivity extends WfcBaseActivity {
+public class ConversationSelectFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private TextView selectAllButton;
@@ -56,36 +52,34 @@ public class ConversationSelectActivity extends WfcBaseActivity {
 
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
+    private PickBackupConversationViewModel pickBackupConversationViewModel;
 
-    public static void start(Context context) {
-        Intent intent = new Intent(context, ConversationSelectActivity.class);
-        context.startActivity(intent);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_conversation_select, container, false);
     }
 
     @Override
-    protected int contentLayout() {
-        return R.layout.activity_conversation_select;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initView();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView(view);
         initData();
     }
 
-    private void initView() {
-        recyclerView = findViewById(R.id.recyclerView);
-        selectAllButton = findViewById(R.id.selectAllButton);
-        confirmButton = findViewById(R.id.confirmButton);
+    private void initView(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
+        selectAllButton = view.findViewById(R.id.selectAllButton);
+        confirmButton = view.findViewById(R.id.confirmButton);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ConversationAdapter();
         recyclerView.setAdapter(adapter);
 
         // 初始化 ViewModels
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+        pickBackupConversationViewModel = new ViewModelProvider(requireActivity()).get(PickBackupConversationViewModel.class);
 
         selectAllButton.setOnClickListener(v -> selectAll());
         confirmButton.setOnClickListener(v -> confirmSelection());
@@ -124,16 +118,21 @@ public class ConversationSelectActivity extends WfcBaseActivity {
 
     private void confirmSelection() {
         if (selectedConversations.isEmpty()) {
-            Toast.makeText(this, R.string.select_at_least_one_conversation, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.select_at_least_one_conversation, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 直接跳转到备份选项界面
-        BackupOptionsActivity.start(this, new ArrayList<>(selectedConversations));
+        // 保存选中数据到 ViewModel
+        pickBackupConversationViewModel.setSelectedConversations(new ArrayList<>(selectedConversations));
+
+        // 跳转到备份选项界面
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new BackupOptionsFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
     private class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
-        private Fragment fragment = new Fragment() {};
         private List<ConversationInfo> conversations = new ArrayList<>();
         private final CenterCrop centerCrop = new CenterCrop();
         private final RoundedCorners roundedCorners = new RoundedCorners(6); // 6 px圆角
@@ -143,9 +142,10 @@ public class ConversationSelectActivity extends WfcBaseActivity {
             notifyDataSetChanged();
         }
 
+        @NonNull
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.item_conversation_select, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_conversation_select, parent, false);
             return new ViewHolder(view);
         }
 
@@ -197,14 +197,14 @@ public class ConversationSelectActivity extends WfcBaseActivity {
                 if (conversation.type == Conversation.ConversationType.Single) {
                     // 单聊 - 显示用户信息
                     LiveData<UserInfo> userInfoLiveData = userViewModel.getUserInfoAsync(conversation.target, false);
-                    userInfoLiveData.observe(ConversationSelectActivity.this, new Observer<UserInfo>() {
+                    userInfoLiveData.observe(getViewLifecycleOwner(), new Observer<UserInfo>() {
                         @Override
                         public void onChanged(UserInfo userInfo) {
                             if (userInfo != null) {
                                 CharSequence name = userViewModel.getUserDisplayNameEx(userInfo);
                                 titleTextView.setText(name);
 
-                                Glide.with(ConversationSelectActivity.this)
+                                Glide.with(ConversationSelectFragment.this)
                                         .load(userInfo.portrait)
                                         .placeholder(R.mipmap.avatar_def)
                                         .transform(centerCrop, roundedCorners)
@@ -215,7 +215,7 @@ public class ConversationSelectActivity extends WfcBaseActivity {
                 } else if (conversation.type == Conversation.ConversationType.Group) {
                     // 群聊 - 显示群组信息
                     LiveData<Pair<GroupInfo, Integer>> groupLiveData = groupViewModel.getConversationGroupInfoAsync(conversation.target, false);
-                    groupLiveData.observe(ConversationSelectActivity.this, new Observer<Pair<GroupInfo, Integer>>() {
+                    groupLiveData.observe(getViewLifecycleOwner(), new Observer<Pair<GroupInfo, Integer>>() {
                         @Override
                         public void onChanged(Pair<GroupInfo, Integer> pair) {
                             if (pair != null && pair.first != null) {
@@ -223,7 +223,7 @@ public class ConversationSelectActivity extends WfcBaseActivity {
                                 String name = ChatManagerHolder.gChatManager.getGroupDisplayName(groupInfo);
                                 titleTextView.setText(name);
 
-                                Glide.with(ConversationSelectActivity.this)
+                                Glide.with(ConversationSelectFragment.this)
                                         .load(groupInfo.portrait)
                                         .placeholder(R.mipmap.avatar_def)
                                         .transform(centerCrop, roundedCorners)

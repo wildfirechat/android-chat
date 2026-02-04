@@ -1,78 +1,63 @@
-/*
- * Copyright (c) 2026 WildFireChat. All rights reserved.
- */
-
 package cn.wildfire.chat.app.setting.backup;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
- * 备份目标选择界面
+ * 备份目标选择界面 Fragment
  */
-public class BackupDestinationActivity extends WfcBaseActivity {
-
-    private ArrayList<ConversationInfo> conversations;
-    private boolean includeMedia;
+public class BackupDestinationFragment extends Fragment {
 
     private CardView backupToPCCard;
     private TextView backupToPCTitleTextView;
     private TextView backupToPCDescTextView;
 
     private SettingViewModel settingViewModel;
+    private PickBackupConversationViewModel pickBackupConversationViewModel;
 
-    public static void start(Context context, ArrayList<ConversationInfo> conversations, boolean includeMedia) {
-        Intent intent = new Intent(context, BackupDestinationActivity.class);
-        intent.putParcelableArrayListExtra("conversations", conversations);
-        intent.putExtra("includeMedia", includeMedia);
-        context.startActivity(intent);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_backup_destination, container, false);
     }
 
     @Override
-    protected int contentLayout() {
-        return R.layout.activity_backup_destination;
-    }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        conversations = getIntent().getParcelableArrayListExtra("conversations");
-        includeMedia = getIntent().getBooleanExtra("includeMedia", true);
-
-        initView();
+        pickBackupConversationViewModel = new ViewModelProvider(requireActivity()).get(PickBackupConversationViewModel.class);
+        initView(view);
         observeSettingChanges();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         updatePCOnlineStatus();
     }
 
-    private void initView() {
-        findViewById(R.id.backupToLocalCard).setOnClickListener(v -> backupToLocal());
+    private void initView(View view) {
+        view.findViewById(R.id.backupToLocalCard).setOnClickListener(v -> backupToLocal());
 
-        backupToPCCard = findViewById(R.id.backupToPCCard);
+        backupToPCCard = view.findViewById(R.id.backupToPCCard);
         backupToPCTitleTextView = backupToPCCard.findViewById(R.id.titleTextView);
         backupToPCDescTextView = backupToPCCard.findViewById(R.id.descTextView);
 
@@ -81,7 +66,7 @@ public class BackupDestinationActivity extends WfcBaseActivity {
             if (isPCOnline()) {
                 backupToPC();
             } else {
-                Toast.makeText(this, R.string.pc_is_not_online, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.pc_is_not_online, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -91,7 +76,7 @@ public class BackupDestinationActivity extends WfcBaseActivity {
         settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
 
         // 监听设置变更
-        settingViewModel.settingUpdatedLiveData().observe(this, new Observer<Object>() {
+        settingViewModel.settingUpdatedLiveData().observe(getViewLifecycleOwner(), new Observer<Object>() {
             @Override
             public void onChanged(Object o) {
                 // 当设置变更时，重新检查PC在线状态
@@ -134,14 +119,17 @@ public class BackupDestinationActivity extends WfcBaseActivity {
     }
 
     private void backupToLocal() {
-        // 调用现有的本地备份流程
-        // 使用当前用户ID作为备份密码
-        String userId = ChatManagerHolder.gChatManager.getUserId();
-        BackupProgressActivity.startForBackup(this, conversations, includeMedia, userId, null);
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new BackupProgressFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
     private void backupToPC() {
-        // 跳转到备份请求进度界面
-        BackupRequestProgressActivity.start(this, conversations, includeMedia);
+        // 跳转到备份请求进度界面 Fragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new BackupRequestProgressFragment())
+                .addToBackStack(null)
+                .commit();
     }
 }

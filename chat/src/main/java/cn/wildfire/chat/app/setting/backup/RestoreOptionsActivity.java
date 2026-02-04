@@ -124,6 +124,6 @@ public class RestoreOptionsActivity extends WfcBaseActivity {
 
         // Use user ID as password (same as backup)
         String userId = cn.wildfire.chat.kit.ChatManagerHolder.gChatManager.getUserId();
-        BackupProgressActivity.startForRestore(this, backupDirectory.getAbsolutePath(), includeMedia, userId);
+        RestoreProgressActivity.startForRestore(this, backupDirectory.getAbsolutePath(), includeMedia, userId);
     }
 }
