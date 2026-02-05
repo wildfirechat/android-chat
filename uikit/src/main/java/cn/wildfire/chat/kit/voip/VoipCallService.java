@@ -190,10 +190,10 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
         // 如果需要支持录制系统音频的话，需要打开下面的注释
         // 仅录制系统音频，实际未进行屏幕共享
-        if (screenShareForRecord) {
-            session.startRecordSystemAudio(data);
-            return START_NOT_STICKY;
-        }
+//        if (screenShareForRecord) {
+//            session.startRecordSystemAudio(data);
+//            return START_NOT_STICKY;
+//        }
 
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
