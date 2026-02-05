@@ -257,6 +257,7 @@
     <string name="pc_client_not_online">PC client is offline</string>
     <string name="pc_is_not_online">PC is offline</string>
     <string name="restore_from_local">Local Restore</string>
+    <string name="restore_from_local_desc">Restore from Local Storage</string>
     <string name="restore_from_pc">Restore from PC</string>
     <string name="restore_from_pc_desc">Download and restore from PC</string>
     <string name="restore_from_pc_offline">Restore from PC (Offline)</string>

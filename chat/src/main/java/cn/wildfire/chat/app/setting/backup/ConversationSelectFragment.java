@@ -37,6 +37,7 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetConversationListCallback;
 
 /**
  * 会话选择界面 - 用于选择要备份的会话
@@ -92,8 +93,19 @@ public class ConversationSelectFragment extends Fragment {
                 Conversation.ConversationType.Group,
                 Conversation.ConversationType.Channel
         );
-        allConversations = ChatManagerHolder.gChatManager.getConversationList(types, Arrays.asList(0));
-        adapter.setData(allConversations);
+        ChatManagerHolder.gChatManager.getConversationListAsync(types, Arrays.asList(0), new GetConversationListCallback() {
+            @Override
+            public void onSuccess(List<ConversationInfo> conversationInfos) {
+                allConversations = conversationInfos;
+                adapter.setData(conversationInfos);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
     }
 
     private void selectAll() {

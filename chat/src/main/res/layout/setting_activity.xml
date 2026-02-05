@@ -34,7 +34,7 @@
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:show_divider="false"
-            app:title="Backup and Restore" />
+            app:title="@string/backup_and_restore" />
     </LinearLayout>
 
     <LinearLayout
