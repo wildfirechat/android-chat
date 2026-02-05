@@ -14,11 +14,11 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
+import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.uikit.permission.PermissionKit;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.Conversation;
 
 public class VoipExt extends ConversationExt {
 //    private String targetId;
@@ -101,10 +101,12 @@ public class VoipExt extends ConversationExt {
 //        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), 102);
     }
 
+    // 下面是开始屏幕共享并录制系统音频的示例代码
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        WfcUIKit.singleCall(activity, targetId, true);
 //        Intent intent = new Intent(fragment.getContext(), VoipCallService.class);
-//        intent.putExtra("screenShareForSystemAudioRecord", true);
+//        intent.putExtra("screenShare", true);
+//        // screenShare 默认就录制系统音频，故不需要下面这行
+////        intent.putExtra("screenShareForSystemAudioRecord", true);
 //        intent.putExtra("data", data);
 //        VoipCallService.start(fragment.getContext(), intent);
 //    }

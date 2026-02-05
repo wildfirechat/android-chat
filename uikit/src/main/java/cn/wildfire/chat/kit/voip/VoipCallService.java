@@ -171,30 +171,38 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         }
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
         boolean playback = intent.getBooleanExtra("playback", false);
+        // 录制系统音频
+        boolean screenShareForRecord = intent.getBooleanExtra("screenShareForSystemAudioRecord", false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session),
-                screenShare || session.isScreenSharing() ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION :
-                    (playback ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE));
+                    screenShare || screenShareForRecord || session.isScreenSharing() ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION :
+                            (playback ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE));
         } else {
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
+
+        Intent data = intent.getParcelableExtra("data");
+        // 默认是支持录制系统音频，如果不需要录制系统音频的话，用 session.startScreenShare(data, false)
         if (screenShare) {
-            Intent data = intent.getParcelableExtra("data");
             session.startScreenShare(data);
             return START_NOT_STICKY;
         }
 
-        // 录制系统音频示例代码
-//        boolean screenShareForRecord = intent.getBooleanExtra("screenShareForSystemAudioRecord", false);
-//        if (screenShareForRecord) {
-//            Intent data = intent.getParcelableExtra("data");
-//            session.startRecordSystemAudio(data);
-//            return START_NOT_STICKY;
-//        }
+        // 如果需要支持录制系统音频的话，需要打开下面的注释
+        // 仅录制系统音频，实际未进行屏幕共享
+        if (screenShareForRecord) {
+            session.startRecordSystemAudio(data);
+            return START_NOT_STICKY;
+        }
 
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
         checkCallState();
+
+        if (!intent.hasExtra("showFloatingView")) {
+            return START_NOT_STICKY;
+        }
+
         showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
         if (showFloatingWindow) {
             rendererInitialized = false;
@@ -243,7 +251,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             }
 
             if (session.getState() == AVEngineKit.CallState.Connected
-                && ChatManager.Instance().getUserId().equals(session.getInitiator())) {
+                    && ChatManager.Instance().getUserId().equals(session.getInitiator())) {
                 broadcastCallOngoing(session);
             }
 
@@ -302,10 +310,10 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             title = "VOIP...";
         }
         return builder.setSmallIcon(R.mipmap.ic_launcher_notification)
-            .setContentTitle(title)
-            .setContentIntent(pendingIntent)
-            .setOngoing(true)
-            .build();
+                .setContentTitle(title)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .build();
     }
 
     @Override
@@ -337,8 +345,8 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         }
         params.type = type;
         params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-            | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
 
         params.format = PixelFormat.TRANSLUCENT;
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;

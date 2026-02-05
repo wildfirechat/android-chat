@@ -201,7 +201,10 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         if (requestCode == CAPTURE_PERMISSION_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 Intent intent = new Intent(this, VoipCallService.class);
+                // 默认支持屏幕共享和录制系统音频，但录制系统音频需要特殊版本的音视频 SDK，请联系我们
                 intent.putExtra("screenShare", true);
+                // 如果仅仅需要录制系统音频的话，用screenShareForSystemAudioRecord
+//                intent.putExtra("screenShareForSystemAudioRecord", true);
                 intent.putExtra("data", data);
                 VoipCallService.start(this, intent);
                 // 开始屏幕共享是，voip最小化
