@@ -45,7 +45,7 @@ public class ImageRecommendView extends FrameLayout {
 
         // 提示文字
         mHintTextView = new AppCompatTextView(context);
-        mHintTextView.setText("你可能想发送");
+        mHintTextView.setText(R.string.maybe_send);
         mHintTextView.setTextSize(14);
         mHintTextView.setTextColor(Color.BLACK);
         LinearLayout.LayoutParams hintParams = new LinearLayout.LayoutParams(

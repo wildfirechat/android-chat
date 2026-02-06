@@ -270,18 +270,18 @@ public class UserInfoFragment extends Fragment {
             .into(portraitImageView);
         if (!TextUtils.isEmpty(userInfo.friendAlias)) {
             titleTextView.setText(userInfo.friendAlias);
-            displayNameTextView.setText("昵称:" + userInfo.displayName);
+            displayNameTextView.setText(getString(R.string.nickname_label, userInfo.displayName));
         } else {
             titleTextView.setText(userInfo.displayName);
             displayNameTextView.setVisibility(View.GONE);
         }
         if (!TextUtils.isEmpty(userInfo.groupAlias)) {
-            groupAliasTextView.setText("群昵称:" + userInfo.groupAlias);
+            groupAliasTextView.setText(getString(R.string.group_nickname_label, userInfo.groupAlias));
             groupAliasTextView.setVisibility(View.VISIBLE);
         } else {
             groupAliasTextView.setVisibility(View.GONE);
         }
-        accountTextView.setText("野火ID:" + userInfo.name);
+        accountTextView.setText(getString(R.string.wildfire_id_label, userInfo.name));
     }
 
     void chat() {

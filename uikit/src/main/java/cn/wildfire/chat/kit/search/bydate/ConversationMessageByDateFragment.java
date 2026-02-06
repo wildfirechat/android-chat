@@ -77,7 +77,7 @@ public class ConversationMessageByDateFragment extends Fragment {
             if (months == null || months.isEmpty()) {
                 monthRecyclerView.setVisibility(View.GONE);
                 emptyView.setVisibility(View.VISIBLE);
-                emptyTextView.setText("暂无消息记录");
+                emptyTextView.setText(R.string.no_message_records);
             } else {
                 monthRecyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);

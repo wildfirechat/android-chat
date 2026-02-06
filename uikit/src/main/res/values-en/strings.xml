@@ -799,6 +799,22 @@
     <string name="selected_count_format">Selected %d items</string>
     <string name="send_with_count">Send(%d)</string>
     <string name="select_forward_target">Please select forward target</string>
-    <string name="send_request">"Send request "</string>
-    <string name="request_sent">"Request sent. "</string>
+
+    <!-- New internationalized strings for hardcoded text -->
+    <string name="nickname_label">Nickname:%1$s</string>
+    <string name="group_nickname_label">Group Nickname:%1$s</string>
+    <string name="wildfire_id_label">Wildfire ID:%1$s</string>
+    <string name="no_message_records">No message records</string>
+    <string name="no_link_records">No link records</string>
+    <string name="open_link">Open Link</string>
+    <string name="open_in_browser">Open in browser</string>
+    <string name="jump_to_message">Jump to message</string>
+    <string name="release_to_end_ptt">Release to end</string>
+    <string name="camera_off_status">Camera off</string>
+    <string name="speaking_status">Speaking</string>
+    <string name="maybe_send">You may want to send</string>
+    <string name="tap_to_capture_long_to_record">Tap to capture, long press to record</string>
+    <string name="new_join_group_requests">%1$d new join group requests</string>
+    <string name="send_request">Send request</string>
+    <string name="request_sent">Request sent</string>
 </resources>

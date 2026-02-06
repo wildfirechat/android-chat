@@ -176,7 +176,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 if (client.state == AVEngineKit.CallState.Connected) {
                     ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
                 } else if (client.videoMuted) {
-                    ((VoipCallItem) view).getStatusTextView().setText("关闭摄像头");
+                    ((VoipCallItem) view).getStatusTextView().setText(R.string.camera_off_status);
                     ((VoipCallItem) view).getStatusTextView().setVisibility(View.VISIBLE);
                 }
             }
@@ -340,7 +340,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     public void didRemoveRemoteVideoTrack(String userId) {
         VoipCallItem item = rootLinearLayout.findViewWithTag(userId);
         if (item != null) {
-            item.getStatusTextView().setText("关闭摄像头");
+            item.getStatusTextView().setText(R.string.camera_off_status);
             item.getStatusTextView().setVisibility(View.VISIBLE);
         }
     }
@@ -372,7 +372,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         if (voipCallItem != null) {
             if (volume > 1000) {
                 voipCallItem.getStatusTextView().setVisibility(View.VISIBLE);
-                voipCallItem.getStatusTextView().setText("正在说话");
+                voipCallItem.getStatusTextView().setText(R.string.speaking_status);
             } else {
                 voipCallItem.getStatusTextView().setVisibility(View.GONE);
                 voipCallItem.getStatusTextView().setText("");

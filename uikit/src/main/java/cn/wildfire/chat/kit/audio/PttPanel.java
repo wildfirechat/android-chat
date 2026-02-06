@@ -254,7 +254,7 @@ public class PttPanel implements View.OnTouchListener {
     private void showCountDown(int seconds) {
         stateImageView.setVisibility(View.GONE);
         stateTextView.setVisibility(View.VISIBLE);
-        stateTextView.setText("松手结束对讲");
+        stateTextView.setText(R.string.release_to_end_ptt);
 //        stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
         countDownTextView.setText(String.format("%s", seconds));
         countDownTextView.setVisibility(View.VISIBLE);

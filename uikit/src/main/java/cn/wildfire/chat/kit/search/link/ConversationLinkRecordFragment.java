@@ -69,7 +69,7 @@ public class ConversationLinkRecordFragment extends Fragment {
             if (linkItems == null || linkItems.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 emptyView.setVisibility(View.VISIBLE);
-                emptyTextView.setText("暂无链接记录");
+                emptyTextView.setText(R.string.no_link_records);
             } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);
@@ -81,8 +81,8 @@ public class ConversationLinkRecordFragment extends Fragment {
 
     private void onLinkClick(ConversationLinkRecordViewModel.LinkItem linkItem) {
         new android.app.AlertDialog.Builder(getContext())
-                .setTitle("打开链接")
-                .setItems(new CharSequence[]{"在浏览器中打开", "跳转到消息"}, (dialog, which) -> {
+                .setTitle(R.string.open_link)
+                .setItems(new CharSequence[]{getString(R.string.open_in_browser), getString(R.string.jump_to_message)}, (dialog, which) -> {
                     if (which == 0) {
                         openInBrowser(linkItem.url);
                     } else {

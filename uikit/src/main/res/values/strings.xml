@@ -810,4 +810,20 @@
     <string name="selected_count_format">已选择%d项</string>
     <string name="send_with_count">发送(%d)</string>
     <string name="select_forward_target">请选择转发目标</string>
+
+    <!-- New internationalized strings for hardcoded text -->
+    <string name="nickname_label">昵称:%1$s</string>
+    <string name="group_nickname_label">群昵称:%1$s</string>
+    <string name="wildfire_id_label">野火ID:%1$s</string>
+    <string name="no_message_records">暂无消息记录</string>
+    <string name="no_link_records">暂无链接记录</string>
+    <string name="open_link">打开链接</string>
+    <string name="open_in_browser">在浏览器中打开</string>
+    <string name="jump_to_message">跳转到消息</string>
+    <string name="release_to_end_ptt">松手结束对讲</string>
+    <string name="camera_off_status">关闭摄像头</string>
+    <string name="speaking_status">正在说话</string>
+    <string name="maybe_send">你可能想发送</string>
+    <string name="tap_to_capture_long_to_record">轻触拍照，长按摄像</string>
+    <string name="new_join_group_requests">有%1$d条新加群申请</string>
 </resources>

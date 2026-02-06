@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CameraLibrary</string>
+    <string name="tap_to_capture_long_to_record">轻触拍照，长按摄像</string>
 </resources>

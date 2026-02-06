@@ -831,7 +831,7 @@ public class ConversationFragment extends Fragment implements
             conversationStickyHeaderContainerLinearLayout.setVisibility(unreadGroupRequestCount > 0 ? View.VISIBLE : View.GONE);
             joinGroupRequestHeaderTextView.setVisibility(unreadGroupRequestCount > 0 ? View.VISIBLE : View.GONE);
             if (unreadGroupRequestCount > 0) {
-                joinGroupRequestHeaderTextView.setText("有" + unreadGroupRequestCount + "条新加群申请");
+                joinGroupRequestHeaderTextView.setText(getString(R.string.new_join_group_requests, unreadGroupRequestCount));
                 joinGroupRequestHeaderTextView.setOnClickListener(v -> {
                     Intent intent = new Intent(getActivity(), JoinGroupRequestListActivity.class);
                     intent.putExtra("groupId", groupInfo.target);
