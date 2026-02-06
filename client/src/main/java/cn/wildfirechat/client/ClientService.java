@@ -684,7 +684,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         if(messageId > 0) {
                             ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
                         } else {
-                            ProtoLogic.sendMessage(protoMessage, expireDuration, new SendMessageCallback(callback));
+                            ProtoLogic.sendMessageEx2(messageId, protoMessage, expireDuration, new SendMessageCallback(callback));
                         }
                     }
 
