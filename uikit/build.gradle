@@ -93,6 +93,17 @@ dependencies {
 //    implementation 'com.google.android:flexbox:2.0.1'
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:8.7.5.1'
+
+
+    // markwon
+    implementation 'io.noties.markwon:core:4.6.2'
+    // extensions
+    implementation("io.noties.markwon:ext-strikethrough:4.6.2")
+    implementation("io.noties.markwon:ext-tables:4.6.2")
+    implementation("io.noties.markwon:ext-tasklist:4.6.2")
+    implementation("io.noties.markwon:linkify:4.6.2")
+//    implementation("io.noties.markwon:syntax-highlight:4.6.2")
+
 //    compileOnly 'io.kvh:amr:1.1.1'
 
     // moment start

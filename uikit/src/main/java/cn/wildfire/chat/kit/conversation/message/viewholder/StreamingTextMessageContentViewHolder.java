@@ -7,8 +7,6 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,11 +23,12 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
+import io.noties.markwon.Markwon;
 
 
 @MessageContentType(value = {
-    StreamingTextGeneratingMessageContent.class,
-    StreamingTextGeneratedMessageContent.class
+        StreamingTextGeneratingMessageContent.class,
+        StreamingTextGeneratedMessageContent.class
 })
 @EnableContextMenu
 public class StreamingTextMessageContentViewHolder extends SelectableTextViewHolder {
@@ -61,21 +60,8 @@ public class StreamingTextMessageContentViewHolder extends SelectableTextViewHol
         } else {
             progressBar.setVisibility(View.GONE);
         }
-        if (content.startsWith("<") && content.endsWith(">")) {
-            Spanned spanned = null;
-            try {
-                spanned = Html.fromHtml(content);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (spanned != null && spanned.length() > 0) {
-                contentTextView.setText(spanned);
-            } else {
-                contentTextView.setText(content);
-            }
-        } else {
-            contentTextView.setText(content);
-        }
+        Markwon markwon = fragment.getMarkwon();
+        markwon.setMarkdown(contentTextView, content);
     }
 
     @Override
