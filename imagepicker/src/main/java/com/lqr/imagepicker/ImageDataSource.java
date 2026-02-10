@@ -104,8 +104,11 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if(!imageFolders.isEmpty() && imageFolders.get(0).images.size() == data.getCount()){
+            return;
+        }
         imageFolders.clear();
-        if (data != null && !data.isAfterLast()) {
+        if (!data.isAfterLast()) {
             ArrayList<ImageItem> allImages = new ArrayList<>();   //所有图片的集合,不分文件夹
             while (data.moveToNext()) {
                 //查询数据

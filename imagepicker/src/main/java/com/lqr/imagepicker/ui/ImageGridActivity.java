@@ -55,6 +55,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     private FolderPopUpWindow mFolderPopupWindow;  //ImageSet的PopupWindow
     private List<ImageFolder> mImageFolders;   //所有的图片文件夹
     private ImageGridAdapter mImageGridAdapter;  //图片九宫格展示的适配器
+    private int mGridViewScrollPosition = 0;
 
     private String takePhotoOutputPath;
     private ImageDataSource imageDataSource;
@@ -101,6 +102,8 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
 
         mImageGridAdapter = new ImageGridAdapter(this, showCamera, multiMode, limit);
         mImageFolderAdapter = new ImageFolderAdapter(this, null);
+        mImageGridAdapter.setOnImageItemClickListener(this);
+        mGridView.setAdapter(mImageGridAdapter);
 
         String[] permissions = null;
         checkAccessPermission();
@@ -137,8 +140,6 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
                 imageDataSource = new ImageDataSource(this, null, showVideo, this);
             }
             imageDataSource.refresh();
-            mImageGridAdapter.notifyDataSetChanged();
-            mImageFolderAdapter.notifyDataSetChanged();
             updatePickStatus();
         }
         if (!isFullAccessGranted && isPartialAccessGranted) {
@@ -209,6 +210,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
             Intent intent = new Intent(ImageGridActivity.this, ImagePreviewActivity.class);
             intent.putExtra(ImagePicker.EXTRA_SELECTED_IMAGE_POSITION, 0);
             intent.putExtra(ImagePicker.EXTRA_IMAGE_ITEMS, store.getSelectedImages());
+            mGridViewScrollPosition = mGridView.getFirstVisiblePosition();
             startActivityForResult(intent, ImagePicker.REQUEST_CODE_PREVIEW);
         } else if (id == R.id.btn_back) {
             //点击返回按钮
@@ -242,13 +244,12 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     public void onImageLoad(List<ImageFolder> imageFolders) {
         this.mImageFolders = imageFolders;
         store.setImageFolders(imageFolders);
-        if (imageFolders.size() == 0) {
+        if (imageFolders.isEmpty()) {
             mImageGridAdapter.refreshData(null);
         } else {
             mImageGridAdapter.refreshData(imageFolders.get(0).images);
+            mGridView.smoothScrollToPosition(mGridViewScrollPosition);
         }
-        mImageGridAdapter.setOnImageItemClickListener(this);
-        mGridView.setAdapter(mImageGridAdapter);
         mImageFolderAdapter.refreshData(imageFolders);
     }
 
@@ -260,6 +261,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
             Intent intent = new Intent(ImageGridActivity.this, ImagePreviewActivity.class);
             intent.putExtra(ImagePicker.EXTRA_SELECTED_IMAGE_POSITION, position);
 //            intent.putExtra(ImagePicker.EXTRA_IMAGE_ITEMS, imagePicker.getCurrentImageFolderItems());//imagePicker.getCurrentImageFolderItems()的数据量太大，android5以后会OOM但不会报错
+            mGridViewScrollPosition = mGridView.getFirstVisiblePosition();
             startActivityForResult(intent, ImagePicker.REQUEST_CODE_PREVIEW);  //如果是多选，点击图片进入预览界面
         } else {
             store.addSelectedImageItem(position, store.getCurrentImageFolderItems().get(position), true);
