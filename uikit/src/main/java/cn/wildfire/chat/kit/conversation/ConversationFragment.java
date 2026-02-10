@@ -1469,6 +1469,8 @@ public class ConversationFragment extends Fragment implements
                     .usePlugin(TablePlugin.create(context)) // to render tables
                     .usePlugin(TaskListPlugin.create(context)) // to render task lists
                     .usePlugin(StrikethroughPlugin.create()) // to render strikethrough
+                    // 如果需要语法高亮，请参考
+                    // https://levelup.gitconnected.com/rendering-markdown-with-code-syntax-highlighting-in-compose-android-f8cda0647c87
                     // enable syntax highlighting with prism4j
 //                .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDarkula.create()))
                     .usePlugin(LinkifyPlugin.create(Linkify.WEB_URLS))
