@@ -301,6 +301,12 @@ public class ChatManager {
 
     private Map<String, UserOnlineState> userOnlineStateMap;
 
+    /**
+     * 记录每个会话的最后一个流式文本生成中的消息
+     * key: conversationKey (targetId_line), value: Message
+     */
+    private Map<String, Message> streamingTextGeneratingMessages = new ConcurrentHashMap<>();
+
     private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
     private Class<? extends UrlRedirector> urlRedirectorClazz;
     private UrlRedirector urlRedirector;
@@ -694,6 +700,11 @@ public class ChatManager {
      */
     private void onReceiveMessage(final List<Message> messages, final boolean hasMore) {
         mainHandler.post(() -> {
+            // 处理流式文本消息
+            for (Message message : messages) {
+                handleStreamingTextMessage(message);
+            }
+
             Iterator<OnReceiveMessageListener> iterator = onReceiveMessageListeners.iterator();
             OnReceiveMessageListener listener;
             while (iterator.hasNext()) {
@@ -715,6 +726,27 @@ public class ChatManager {
                 }
             }
         });
+    }
+
+    /**
+     * 处理流式文本消息
+     */
+    private void handleStreamingTextMessage(Message message) {
+        String key = conversationKey(message.conversation);
+        if (message.content instanceof StreamingTextGeneratingMessageContent) {
+            // 流式文本正在生成，保存消息
+            streamingTextGeneratingMessages.put(key, message);
+        } else if (message.content instanceof StreamingTextGeneratedMessageContent) {
+            // 流式文本生成完成，清空对应会话的生成中消息
+            streamingTextGeneratingMessages.remove(key);
+        }
+    }
+
+    /**
+     * 生成会话唯一键
+     */
+    private String conversationKey(Conversation conversation) {
+        return conversation.target + "_" + conversation.line;
     }
 
     private void onMsgDelivered(Map<String, Long> deliveries) {
@@ -9204,6 +9236,26 @@ public class ChatManager {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * 获取会话的流式文本生成中的消息
+     *
+     * @param conversation 会话
+     * @return 流式文本生成中的消息，如果没有或已过期则返回null
+     */
+    public Message getStreamingTextGeneratingMessage(Conversation conversation) {
+        String key = conversationKey(conversation);
+        Message message = streamingTextGeneratingMessages.get(key);
+        if (message != null) {
+            // 如果消息生成时间超过1分钟，则认为是过期的，返回null
+            long now = System.currentTimeMillis();
+            if (now - message.serverTime > 60 * 1000) {
+                streamingTextGeneratingMessages.remove(key);
+                return null;
+            }
+        }
+        return message;
     }
 
     /**

@@ -794,6 +794,17 @@ public class ConversationFragment extends Fragment implements
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
 
+            // 检查是否有正在生成的流式文本消息
+            Message generatingMessage = ChatManager.Instance().getStreamingTextGeneratingMessage(conversation);
+            if (generatingMessage != null) {
+                UiMessage uiGeneratingMessage = new UiMessage(generatingMessage);
+                List<UiMessage> newMessages = new ArrayList<>(uiMessages);
+                newMessages.add(uiGeneratingMessage);
+                adapter.setMessages(newMessages);
+                adapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+            }
+
             if (adapter.getItemCount() > 1) {
                 int initialMessagePosition;
                 if (focusMessageId != -1) {
