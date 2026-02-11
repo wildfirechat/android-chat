@@ -168,22 +168,22 @@ public class Message implements Parcelable {
         if (!sender.equals(message.sender)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(toUsers, message.toUsers)) return false;
-        if (!content.equals(message.content)) return false;
+//        if (!content.equals(message.content)) return false;
         if (direction != message.direction) return false;
         return status == message.status;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (messageId ^ (messageId >>> 32));
+        int result = Long.hashCode(messageId);
         result = 31 * result + conversation.hashCode();
         result = 31 * result + sender.hashCode();
         result = 31 * result + Arrays.hashCode(toUsers);
-        result = 31 * result + content.hashCode();
+//        result = 31 * result + content.hashCode();
         result = 31 * result + direction.hashCode();
         result = 31 * result + status.hashCode();
-        result = 31 * result + (int) (messageUid ^ (messageUid >>> 32));
-        result = 31 * result + (int) (serverTime ^ (serverTime >>> 32));
+        result = 31 * result + Long.hashCode(messageUid);
+        result = 31 * result + Long.hashCode(serverTime);
         return result;
     }
 }

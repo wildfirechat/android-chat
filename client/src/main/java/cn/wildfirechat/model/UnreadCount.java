@@ -69,4 +69,21 @@ public class UnreadCount implements Parcelable {
             return new UnreadCount[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UnreadCount that = (UnreadCount) o;
+        return unread == that.unread && unreadMention == that.unreadMention && unreadMentionAll == that.unreadMentionAll;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = unread;
+        result = 31 * result + unreadMention;
+        result = 31 * result + unreadMentionAll;
+        return result;
+    }
+
 }

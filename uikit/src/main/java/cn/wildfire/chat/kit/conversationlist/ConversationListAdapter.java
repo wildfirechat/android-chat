@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
@@ -57,6 +58,11 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         submit(statusNotifications, this.conversationInfos);
     }
 
+    /**
+     * 返回会话列表 header 的数量，由于 header 是一个 container，所有的 status notification 都是在这个 container里面实现，所以只可能返回 0 或 1
+     *
+     * @return 0 或 1
+     */
     public int headerCount() {
         return isEmpty(this.statusNotifications) ? 0 : 1;
     }
@@ -82,16 +88,19 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
         List<StatusNotification> oldNotifications = this.statusNotifications;
         List<ConversationInfo> oldConversationInfos = this.conversationInfos;
-        this.statusNotifications = notifications;
+
         this.conversationInfos = conversationInfos;
+        int oldHeaderCount = headerCount();
+        this.statusNotifications = notifications;
+        // 设置 statusNotifications 后，重新计算
+        int newHeaderCount = headerCount();
 
         if (listSize(oldConversationInfos) == 0) {
             notifyDataSetChanged();
             return;
         }
+
         // TODO work thread 做 diff
-        int oldHeaderCount = listSize(oldNotifications);
-        int newHeaderCount = listSize(statusNotifications);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
             @Override
             public int getOldListSize() {
@@ -106,9 +115,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
                 if (oldItemPosition < oldHeaderCount && newItemPosition < newHeaderCount) {
-                    StatusNotification oldNotification = oldNotifications.get(oldItemPosition);
-                    StatusNotification newNotification = statusNotifications.get(newItemPosition);
-                    return oldNotification.equals(newNotification);
+                    return true;
                 } else if (oldItemPosition >= oldHeaderCount && newItemPosition >= newHeaderCount) {
                     oldItemPosition = oldItemPosition - oldHeaderCount;
                     newItemPosition = newItemPosition - newHeaderCount;
@@ -125,9 +132,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                 if (oldItemPosition < oldHeaderCount && newItemPosition < newHeaderCount) {
-                    StatusNotification oldNotification = oldNotifications.get(oldItemPosition);
-                    StatusNotification newNotification = statusNotifications.get(newItemPosition);
-                    return oldNotification.equals(newNotification);
+                    return areStatusNotificationsTheSame(oldNotifications, statusNotifications);
                 } else if (oldItemPosition >= oldHeaderCount && newItemPosition >= newHeaderCount) {
                     oldItemPosition = oldItemPosition - oldHeaderCount;
                     newItemPosition = newItemPosition - newHeaderCount;
@@ -306,16 +311,13 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
             return;
         }
-        ((ConversationViewHolder) holder).onBind(conversationInfos.get(position - headerCount()), position);
+        int conversationItemPosition = position - headerCount();
+        ((ConversationViewHolder) holder).onBind(conversationInfos.get(conversationItemPosition), conversationItemPosition);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        if (isStatusNotificationHeader(position)) {
-            ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
-            return;
-        }
-        super.onBindViewHolder(holder, position, payloads);
+        onBindViewHolder(holder, position);
     }
 
     @Override
@@ -338,5 +340,21 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private static int listSize(List list) {
         return list == null ? 0 : list.size();
+    }
+
+    private boolean areStatusNotificationsTheSame(List<StatusNotification> oldNotifications, List<StatusNotification> newNotifications) {
+        boolean eq = Objects.equals(oldNotifications, newNotifications);
+        if (eq) {
+            return true;
+        } else if (listSize(oldNotifications) != listSize(newNotifications)) {
+            return false;
+        } else {
+            for (int i = 0; i < oldNotifications.size(); i++) {
+                if (!oldNotifications.get(i).equals(newNotifications.get(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

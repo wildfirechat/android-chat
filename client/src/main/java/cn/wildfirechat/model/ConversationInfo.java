@@ -106,7 +106,7 @@ public class ConversationInfo implements Parcelable {
         return timestamp == that.timestamp &&
                 top == that.top &&
                 isSilent == that.isSilent &&
-                Conversation.equals(conversation, that.conversation) &&
+                conversation.equals(that.conversation) &&
                 Conversation.equals(lastMessage, that.lastMessage) &&
                 Conversation.equals(draft, that.draft) &&
                 Conversation.equals(unreadCount, that.unreadCount);
