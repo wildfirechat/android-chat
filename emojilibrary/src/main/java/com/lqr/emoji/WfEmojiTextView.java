@@ -39,8 +39,6 @@ public class WfEmojiTextView extends EmojiTextView {
             return;
         }
 
-        Log.d(TAG, "setText: " + text);
-
         try {
             // 创建 Spannable 用于添加缩放效果
             Spannable spannable;
@@ -73,7 +71,6 @@ public class WfEmojiTextView extends EmojiTextView {
                 i += charCount;
             }
 
-            Log.d(TAG, "Scaled " + emojiCount + " emojis");
             super.setText(spannable, BufferType.SPANNABLE);
         } catch (Exception e) {
             Log.e(TAG, "Error processing emoji", e);

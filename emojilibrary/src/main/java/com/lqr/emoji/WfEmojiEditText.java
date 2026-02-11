@@ -123,7 +123,6 @@ public class WfEmojiEditText extends EmojiEditText {
                 i += charCount;
             }
 
-            Log.d(TAG, "Scaled " + emojiCount + " emojis");
         } catch (Exception e) {
             Log.e(TAG, "Error scaling emojis", e);
         } finally {

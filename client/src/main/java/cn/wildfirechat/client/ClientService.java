@@ -4541,7 +4541,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private cn.wildfirechat.message.Message convertProtoMessage(ProtoMessage protoMessage) {
         if (protoMessage == null || TextUtils.isEmpty(protoMessage.getTarget())) {
-            Log.e(TAG, "decode message error " + (protoMessage == null ? "null" : "target is empty"));
             return null;
         }
         cn.wildfirechat.message.Message msg = new cn.wildfirechat.message.Message();
