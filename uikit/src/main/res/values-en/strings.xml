@@ -836,6 +836,7 @@
     <string name="collection_creating">Creating...</string>
     <string name="collection_create_success">Collection created successfully</string>
     <string name="collection_create_failed">Failed to create</string>
+    <string name="collection_not_in_group">You are no longer in this group</string>
     <string name="expire_time_invalid">Expiration time must be later than current time</string>
     <string name="confirm_delete_entry">Are you sure you want to delete this entry?</string>
 </resources>

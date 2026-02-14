@@ -288,8 +288,12 @@ public class CollectionDetailActivity extends WfcBaseActivity {
                     @Override
                     public void onError(int errorCode, String message) {
                         runOnUiThread(() -> {
+                            String errorMsg = message;
+                            if (errorCode == 3003) {
+                                errorMsg = getString(R.string.collection_not_in_group);
+                            }
                             Toast.makeText(CollectionDetailActivity.this,
-                                    message != null ? message : getString(R.string.collection_join_failed),
+                                    errorMsg != null ? errorMsg : getString(R.string.collection_join_failed),
                                     Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -310,8 +314,12 @@ public class CollectionDetailActivity extends WfcBaseActivity {
                     @Override
                     public void onError(int errorCode, String message) {
                         runOnUiThread(() -> {
+                            String errorMsg = message;
+                            if (errorCode == 3003) {
+                                errorMsg = getString(R.string.collection_not_in_group);
+                            }
                             Toast.makeText(CollectionDetailActivity.this,
-                                    message != null ? message : getString(R.string.collection_join_failed),
+                                    errorMsg != null ? errorMsg : getString(R.string.collection_join_failed),
                                     Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -341,8 +349,12 @@ public class CollectionDetailActivity extends WfcBaseActivity {
                     @Override
                     public void onError(int errorCode, String message) {
                         runOnUiThread(() -> {
+                            String errorMsg = message;
+                            if (errorCode == 3003) {
+                                errorMsg = getString(R.string.collection_not_in_group);
+                            }
                             Toast.makeText(CollectionDetailActivity.this,
-                                    message != null ? message : getString(R.string.delete_failed),
+                                    errorMsg != null ? errorMsg : getString(R.string.delete_failed),
                                     Toast.LENGTH_SHORT).show();
                         });
                     }

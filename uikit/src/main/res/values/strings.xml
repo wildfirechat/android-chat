@@ -851,4 +851,5 @@
     <string name="collection_creating">创建中...</string>
     <string name="collection_create_success">接龙创建成功</string>
     <string name="collection_create_failed">创建失败</string>
+    <string name="collection_not_in_group">您已不在该群组中</string>
 </resources>
