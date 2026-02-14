@@ -81,7 +81,7 @@ public class CollectionMessageContentViewHolder extends NormalMessageContentView
 
         // 设置参与人数
         int count = content.getParticipantCount();
-        countTextView.setText(count + "人参与");
+        countTextView.setText(fragment.getString(R.string.collection_participant_count, count));
 
         // 设置描述
         if (content.getDesc() != null && !content.getDesc().isEmpty()) {
@@ -115,7 +115,7 @@ public class CollectionMessageContentViewHolder extends NormalMessageContentView
             // 显示更多提示
             int remaining = count - displayCount;
             if (remaining > 0) {
-                moreTextView.setText("还有" + remaining + "人参与...");
+                moreTextView.setText(fragment.getString(R.string.collection_more_participants, remaining));
                 moreTextView.setVisibility(View.VISIBLE);
             } else {
                 moreTextView.setVisibility(View.GONE);
@@ -125,13 +125,13 @@ public class CollectionMessageContentViewHolder extends NormalMessageContentView
         // 操作按钮统一显示"参与接龙"，不根据用户是否参与改变
         int status = content.getStatus();
         if (status == 1) {
-            actionTextView.setText("接龙已结束");
+            actionTextView.setText(R.string.collection_status_ended);
             actionTextView.setTextColor(0xFF999999);
         } else if (status == 2) {
-            actionTextView.setText("接龙已取消");
+            actionTextView.setText(R.string.collection_status_cancelled);
             actionTextView.setTextColor(0xFF999999);
         } else {
-            actionTextView.setText("参与接龙");
+            actionTextView.setText(R.string.collection_join_action);
             actionTextView.setTextColor(0xFF576b95);
         }
     }

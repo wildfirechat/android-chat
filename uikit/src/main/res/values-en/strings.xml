@@ -801,4 +801,41 @@
     <string name="select_forward_target">Please select forward target</string>
     <string name="send_request">"Send request "</string>
     <string name="request_sent">"Request sent. "</string>
+
+    <!-- Collection -->
+    <string name="collection_detail">Collection Detail</string>
+    <string name="collection_title">Title</string>
+    <string name="collection_title_hint">Please enter collection title</string>
+    <string name="collection_desc">Description</string>
+    <string name="collection_desc_hint">Please enter description (optional)</string>
+    <string name="collection_template">Template</string>
+    <string name="collection_template_hint">Please enter template (e.g., Name-Phone)</string>
+    <string name="collection_expire_type">Expiration</string>
+    <string name="collection_no_expire">No expiration</string>
+    <string name="collection_set_expire">Set expiration time</string>
+    <string name="collection_max_participants">Max Participants</string>
+    <string name="collection_max_participants_hint">0 means unlimited</string>
+    <string name="collection_participant_count">%d participants</string>
+    <string name="collection_empty_hint">No participants yet, be the first!</string>
+    <string name="collection_more_participants">%d more participants...</string>
+    <string name="collection_join_action">Join Collection</string>
+    <string name="collection_view_action">View Collection</string>
+    <string name="collection_close_action">Close Collection</string>
+    <string name="collection_status_ended">Collection ended</string>
+    <string name="collection_status_cancelled">Collection cancelled</string>
+    <string name="collection_only_for_group">Collection feature is only available in group chats</string>
+    <string name="collection_service_not_configured">Collection service not configured</string>
+    <string name="collection_join_hint">Please enter your content</string>
+    <string name="collection_join_success">Joined successfully</string>
+    <string name="collection_join_failed">Failed to join</string>
+    <string name="collection_delete_success">Deleted successfully</string>
+    <string name="collection_close_success">Collection closed</string>
+    <string name="collection_creator_info">Created by %s</string>
+    <string name="collection_creator_info_with_count">Created by %1$s · %2$d participants</string>
+    <string name="collection_submit">Submit</string>
+    <string name="collection_creating">Creating...</string>
+    <string name="collection_create_success">Collection created successfully</string>
+    <string name="collection_create_failed">Failed to create</string>
+    <string name="expire_time_invalid">Expiration time must be later than current time</string>
+    <string name="confirm_delete_entry">Are you sure you want to delete this entry?</string>
 </resources>
