@@ -107,6 +107,7 @@ import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.ChannelMenuEventMessageContent;
+import cn.wildfirechat.message.CollectionMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.EnterChannelChatMessageContent;
@@ -11098,6 +11099,7 @@ public class ChatManager {
         registerMessageContent(BackupResponseNotificationContent.class);
         registerMessageContent(RestoreRequestNotificationContent.class);
         registerMessageContent(RestoreResponseNotificationContent.class);
+        registerMessageContent(CollectionMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

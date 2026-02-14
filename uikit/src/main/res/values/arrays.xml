@@ -44,4 +44,9 @@
         <item>600000</item>
     </integer-array>
 
+    <string-array name="collection_expire_types">
+        <item>无限期</item>
+        <item>设置过期时间</item>
+    </string-array>
+
 </resources>

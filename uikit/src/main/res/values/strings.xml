@@ -810,4 +810,45 @@
     <string name="selected_count_format">已选择%d项</string>
     <string name="send_with_count">发送(%d)</string>
     <string name="select_forward_target">请选择转发目标</string>
+
+    <!-- 接龙功能 -->
+    <string name="collection">接龙</string>
+    <string name="create_collection">创建接龙</string>
+    <string name="collection_detail">接龙详情</string>
+    <string name="collection_title">标题</string>
+    <string name="collection_title_hint">请输入接龙标题</string>
+    <string name="collection_desc">描述</string>
+    <string name="collection_desc_hint">请输入接龙描述（可选）</string>
+    <string name="collection_template">模板</string>
+    <string name="collection_template_hint">请输入模板（如：姓名-电话）</string>
+    <string name="collection_expire_type">过期时间</string>
+    <string name="collection_no_expire">无限期</string>
+    <string name="collection_set_expire">设置过期时间</string>
+    <string name="collection_max_participants">最大参与人数</string>
+    <string name="collection_max_participants_hint">0表示无限制</string>
+    <string name="collection_participant_count">%d人参与</string>
+    <string name="collection_empty_hint">暂无参与，快来抢沙发吧~</string>
+    <string name="collection_more_participants">还有%d人参与...</string>
+    <string name="collection_join_action">参与接龙</string>
+    <string name="collection_view_action">查看接龙</string>
+    <string name="collection_close_action">关闭接龙</string>
+    <string name="collection_status_ended">接龙已结束</string>
+    <string name="collection_status_cancelled">接龙已取消</string>
+    <string name="collection_only_for_group">接龙功能仅支持群聊使用</string>
+    <string name="collection_service_not_configured">接龙服务未配置</string>
+    <string name="collection_join_hint">请输入参与内容</string>
+    <string name="collection_join_success">参与成功</string>
+    <string name="collection_join_failed">参与失败</string>
+    <string name="collection_delete_success">删除成功</string>
+    <string name="collection_close_success">接龙已关闭</string>
+    <string name="collection_creator_info">由 %s 发起的接龙</string>
+    <string name="collection_creator_info_with_count">由 %1$s 发起的接龙 · %2$d人参与</string>
+    <string name="collection_submit">提交</string>
+    <string name="confirm_delete_entry">确定要删除这条参与记录吗？</string>
+    <string name="delete_failed">删除失败</string>
+    <string name="done">完成</string>
+    <string name="expire_time_invalid">过期时间必须大于当前时间</string>
+    <string name="collection_creating">创建中...</string>
+    <string name="collection_create_success">接龙创建成功</string>
+    <string name="collection_create_failed">创建失败</string>
 </resources>
