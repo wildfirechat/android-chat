@@ -45,6 +45,7 @@
     <color name="blue1">#3B62E0</color>
     <color name="blue2">#3E65E4</color>
     <color name="blue3">#5B6E8E</color>
+    <color name="blue">#5b6b80</color>
 
     <color name="black0">#000000</color>
     <color name="black1">#1D1D1D</color>
@@ -73,4 +74,10 @@
 <!--    <color name="black">#000000</color>-->
 <!--    <color name="status_bar">#303135</color>-->
 <!--    <color name="transparent">#00000000</color>-->
+
+    <!-- 投票功能颜色 -->
+    <color name="black">#000000</color>
+    <color name="gray">#808080</color>
+    <color name="orange">#FF9500</color>
+    <color name="poll_progress_bg">#E8F0FE</color>
 </resources>

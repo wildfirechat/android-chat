@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/pollResultMessageContentItemView"
+    android:layout_width="240dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_send_white"
+    android:backgroundTint="@color/white"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- 标题 -->
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tool:text="📊 投票标题" />
+
+    <!-- 获胜选项 -->
+    <TextView
+        android:id="@+id/winnerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/colorPrimary"
+        android:textSize="13sp"
+        tool:text="🏆 获胜: 选项A" />
+
+    <!-- 统计信息 -->
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/gray3"
+        android:textSize="11sp"
+        tool:text="10人参与 · 投票已结束" />
+
+</LinearLayout>

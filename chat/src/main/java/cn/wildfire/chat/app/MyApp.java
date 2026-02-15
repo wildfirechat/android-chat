@@ -15,6 +15,9 @@ import java.lang.reflect.Method;
 
 import cn.wildfire.chat.app.collection.CollectionServiceImpl;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
+import cn.wildfire.chat.app.poll.PollServiceImpl;
+import cn.wildfirechat.message.PollMessageContent;
+import cn.wildfirechat.message.PollResultMessageContent;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -59,10 +62,20 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(CollectionMessageContentViewHolder.class, R.layout.conversation_item_collection_send, R.layout.conversation_item_collection_receive);
 
+            // 注册投票消息内容类型
+            ChatManager.Instance().registerMessageContent(PollMessageContent.class);
+            ChatManager.Instance().registerMessageContent(PollResultMessageContent.class);
+
             // 初始化接龙服务
             if (!TextUtils.isEmpty(Config.COLLECTION_SERVER_ADDRESS)) {
                 CollectionServiceImpl.getInstance().setBaseUrl(Config.COLLECTION_SERVER_ADDRESS);
                 cn.wildfire.chat.kit.collection.CollectionServiceProvider.getInstance().setService(CollectionServiceImpl.getInstance());
+            }
+
+            // 初始化投票服务
+            if (!TextUtils.isEmpty(Config.POLL_SERVER_ADDRESS)) {
+                PollServiceImpl.getInstance().setBaseUrl(Config.POLL_SERVER_ADDRESS);
+                cn.wildfire.chat.kit.poll.service.PollServiceProvider.getInstance().setService(PollServiceImpl.getInstance());
             }
 
             String id = null;

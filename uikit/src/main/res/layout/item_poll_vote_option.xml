@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center_vertical">
+
+    <!-- 进度条背景 -->
+    <View
+        android:id="@+id/progressBarView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="#E3F2FD"
+        android:visibility="gone" />
+
+    <!-- 选项文字 -->
+    <TextView
+        android:id="@+id/optionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="#000000" />
+
+    <!-- 对勾 -->
+    <TextView
+        android:id="@+id/checkmarkTextView"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/optionTextView"
+        android:layout_marginStart="8dp"
+        android:text="✓"
+        android:textSize="18sp"
+        android:textColor="#2196F3"
+        android:visibility="gone" />
+
+    <!-- 百分比 -->
+    <TextView
+        android:id="@+id/percentTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:textSize="15sp"
+        android:textColor="#808080" />
+
+</RelativeLayout>

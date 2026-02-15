@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/pollMessageContentItemView"
+    android:layout_width="240dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_receive"
+    android:backgroundTint="@color/white"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- 标题 -->
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tool:text="🗳️ 投票标题" />
+
+    <!-- 描述 -->
+    <TextView
+        android:id="@+id/descTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/gray3"
+        android:textSize="12sp"
+        tool:text="投票描述预览" />
+
+    <!-- 信息行 -->
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/gray3"
+        android:textSize="11sp"
+        tool:text="进行中 · 匿名投票" />
+
+    <!-- 操作按钮 -->
+    <TextView
+        android:id="@+id/actionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/click_to_vote"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp" />
+
+</LinearLayout>

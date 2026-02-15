@@ -43,6 +43,10 @@ public interface MessageContentType {
     // 接龙消息，与iOS MESSAGE_CONTENT_TYPE_COLLECTION 保持一致
     int ContentType_Collection = 17;
 
+    // 投票消息类型
+    int ContentType_Poll = 18;           // 投票创建消息
+    int ContentType_Poll_Result = 19;    // 投票结果消息
+
     // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;
     int ContentType_Dumy2 = 22;
