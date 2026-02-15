@@ -1,39 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:gravity="center_vertical">
+    android:layout_height="56dp"
+    android:gravity="center_vertical"
+    android:background="@color/white">
+
+    <!-- 选中状态背景 -->
+    <View
+        android:id="@+id/selectedBackgroundView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/poll_option_selected_bg"
+        android:visibility="gone" />
 
     <!-- 进度条背景 -->
     <View
         android:id="@+id/progressBarView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="#E3F2FD"
+        android:background="#F0F7FF"
         android:visibility="gone" />
+
+    <!-- 选中按钮（圆形） -->
+    <FrameLayout
+        android:id="@+id/checkButtonContainer"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp">
+
+        <!-- 未选中状态的圆形边框 -->
+        <View
+            android:id="@+id/uncheckedCircleView"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:background="@drawable/poll_checkmark_circle_empty" />
+
+        <!-- 选中状态的蓝色圆形 -->
+        <View
+            android:id="@+id/checkedCircleView"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:background="@drawable/poll_checkmark_circle"
+            android:visibility="gone" />
+
+        <!-- 对勾 -->
+        <TextView
+            android:id="@+id/checkmarkTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="✓"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <!-- 选项文字 -->
     <TextView
         android:id="@+id/optionTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
+        android:layout_toStartOf="@id/percentTextView"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textSize="16sp"
-        android:textColor="#000000" />
-
-    <!-- 对勾 -->
-    <TextView
-        android:id="@+id/checkmarkTextView"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/optionTextView"
-        android:layout_marginStart="8dp"
-        android:text="✓"
-        android:textSize="18sp"
-        android:textColor="#2196F3"
-        android:visibility="gone" />
+        android:textColor="@color/black" />
 
     <!-- 百分比 -->
     <TextView
@@ -43,7 +79,16 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:textSize="15sp"
-        android:textColor="#808080" />
+        android:textSize="14sp"
+        android:textColor="@color/gray" />
+
+    <!-- 分隔线 -->
+    <View
+        android:id="@+id/dividerView"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:background="#E0E0E0" />
 
 </RelativeLayout>

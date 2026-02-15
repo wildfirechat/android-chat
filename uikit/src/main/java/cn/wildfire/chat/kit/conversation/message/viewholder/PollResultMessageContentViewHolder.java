@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,10 +47,11 @@ public class PollResultMessageContentViewHolder extends NormalMessageContentView
     }
     
     public void onClick(View view) {
-        // 跳转到投票详情页
-        Intent intent = new Intent(fragment.getContext(), cn.wildfire.chat.kit.poll.activity.PollDetailActivity.class);
-        intent.putExtra("pollId", Long.parseLong(pollResultMessageContent.getPollId()));
-        intent.putExtra("groupId", pollResultMessageContent.getGroupId());
+        // 跳转到投票详情页，传递message以支持投票场景
+        Intent intent = cn.wildfire.chat.kit.poll.activity.PollDetailActivity
+            .buildIntent(fragment.getContext(), message.message,
+                Long.parseLong(pollResultMessageContent.getPollId()),
+                pollResultMessageContent.getGroupId());
         fragment.startActivity(intent);
     }
 
@@ -59,9 +61,22 @@ public class PollResultMessageContentViewHolder extends NormalMessageContentView
         infoTextView = itemView.findViewById(R.id.infoTextView);
     }
 
+    // 固定的Cell宽度
+    private static final int POLL_CELL_WIDTH = 240; // dp
+    
     @Override
     protected void onBind(UiMessage message) {
         pollResultMessageContent = (PollResultMessageContent) message.message.content;
+        
+        // 确保Cell宽度固定
+        View contentView = itemView.findViewById(R.id.pollResultMessageContentItemView);
+        if (contentView != null) {
+            ViewGroup.LayoutParams params = contentView.getLayoutParams();
+            if (params != null) {
+                params.width = (int) (POLL_CELL_WIDTH * fragment.getResources().getDisplayMetrics().density);
+                contentView.setLayoutParams(params);
+            }
+        }
         
         // 设置标题
         String title = "📊 " + pollResultMessageContent.getTitle();

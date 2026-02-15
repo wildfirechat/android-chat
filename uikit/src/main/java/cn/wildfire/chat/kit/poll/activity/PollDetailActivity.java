@@ -18,12 +18,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -188,6 +190,27 @@ public class PollDetailActivity extends WfcBaseActivity {
         exportButton.setOnClickListener(v -> onExport());
         closeButton.setOnClickListener(v -> onClosePoll());
         deleteButton.setOnClickListener(v -> onDeletePoll());
+        
+        // 设置返回按钮
+        setupBackButton();
+    }
+    
+    /**
+     * 设置返回按钮
+     * 从消息点击进入：显示"关闭"按钮
+     * 从列表点击进入：显示返回箭头
+     */
+    private void setupBackButton() {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if (message != null) {
+                // 从消息点击进入，显示"关闭"
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+            } else {
+                // 从列表点击进入，显示返回箭头（默认）
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
+            }
+        }
     }
 
     @Override
@@ -223,6 +246,12 @@ public class PollDetailActivity extends WfcBaseActivity {
         } else {
             super.onBackPressed();
         }
+    }
+    
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     /**
@@ -528,6 +557,34 @@ public class PollDetailActivity extends WfcBaseActivity {
     private void setupRecyclerView() {
         adapter = new PollOptionAdapter(poll.getOptions());
         recyclerView.setAdapter(adapter);
+        
+        // 添加 Section 标题
+        setupSectionHeader();
+    }
+    
+    /**
+     * 设置选项Section标题
+     */
+    private void setupSectionHeader() {
+        // 在 Header 和选项列表之间添加 Section 标题
+        View sectionHeader = LayoutInflater.from(this).inflate(R.layout.poll_section_header, recyclerView, false);
+        TextView sectionTitleTextView = sectionHeader.findViewById(R.id.sectionTitleTextView);
+        
+        // 根据投票类型设置标题
+        if (poll.getType() == 2) {
+            sectionTitleTextView.setText(getString(R.string.poll_options_with_type, getString(R.string.multiple_choice_simple)));
+        } else {
+            sectionTitleTextView.setText(R.string.poll_options_title);
+        }
+        
+        // 创建 ConcatAdapter 来组合 Header + Section + 选项 + Footer
+        ConcatAdapter concatAdapter = new ConcatAdapter(
+            new HeaderAdapter(headerView),
+            new HeaderAdapter(sectionHeader),
+            adapter,
+            new HeaderAdapter(footerView)
+        );
+        recyclerView.setAdapter(concatAdapter);
     }
 
     /**
@@ -852,6 +909,10 @@ public class PollDetailActivity extends WfcBaseActivity {
             TextView checkmarkTextView;
             TextView percentTextView;
             View progressBarView;
+            View selectedBackgroundView;
+            View uncheckedCircleView;
+            View checkedCircleView;
+            View checkButtonContainer;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -859,6 +920,10 @@ public class PollDetailActivity extends WfcBaseActivity {
                 checkmarkTextView = itemView.findViewById(R.id.checkmarkTextView);
                 percentTextView = itemView.findViewById(R.id.percentTextView);
                 progressBarView = itemView.findViewById(R.id.progressBarView);
+                selectedBackgroundView = itemView.findViewById(R.id.selectedBackgroundView);
+                uncheckedCircleView = itemView.findViewById(R.id.uncheckedCircleView);
+                checkedCircleView = itemView.findViewById(R.id.checkedCircleView);
+                checkButtonContainer = itemView.findViewById(R.id.checkButtonContainer);
             }
 
             void bind(PollOption option, int position) {
@@ -874,8 +939,31 @@ public class PollDetailActivity extends WfcBaseActivity {
                 // 选中的选项
                 long optionId = option.getOptionId();
                 boolean isSelected = selectedOptions.contains(optionId);
-                boolean isMyVote = poll.getMyOptionIds() != null &&
+                // 管理场景不显示自己的投票情况
+                boolean isMyVote = !isManagerMode() && poll.getMyOptionIds() != null &&
                     poll.getMyOptionIds().contains((int) optionId);
+                
+                // 管理场景：隐藏选择框，调整选项文字位置
+                if (isManagerMode()) {
+                    checkButtonContainer.setVisibility(View.GONE);
+                    // 管理场景：选项文字左边距16dp
+                    RelativeLayout.LayoutParams optionParams = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    optionParams.addRule(RelativeLayout.CENTER_VERTICAL);
+                    optionParams.addRule(RelativeLayout.LEFT_OF, R.id.percentTextView);
+                    optionParams.setMargins(16, 0, 12, 0);
+                    optionTextView.setLayoutParams(optionParams);
+                } else {
+                    checkButtonContainer.setVisibility(View.VISIBLE);
+                    // 投票场景：选项文字位于选择框右侧
+                    RelativeLayout.LayoutParams optionParams = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    optionParams.addRule(RelativeLayout.CENTER_VERTICAL);
+                    optionParams.addRule(RelativeLayout.RIGHT_OF, R.id.checkButtonContainer);
+                    optionParams.addRule(RelativeLayout.LEFT_OF, R.id.percentTextView);
+                    optionParams.setMargins(12, 0, 12, 0);
+                    optionTextView.setLayoutParams(optionParams);
+                }
 
                 // 显示百分比和进度条
                 if (showResult) {
@@ -891,35 +979,22 @@ public class PollDetailActivity extends WfcBaseActivity {
                     progressBarView.setVisibility(View.GONE);
                 }
 
-                // 选中状态
+                // 选中状态处理
                 if (isMyVote) {
-                    // 已投票选项：对勾紧跟选项
-                    checkmarkTextView.setVisibility(View.VISIBLE);
-                    checkmarkTextView.setTextColor(getResources().getColor(R.color.blue));
+                    // 已投票选项：显示选中状态
+                    showSelectedState(true);
                     optionTextView.setTextColor(getResources().getColor(R.color.blue));
-                    optionTextView.post(() -> {
-                        int textWidth = optionTextView.getMeasuredWidth();
-                        checkmarkTextView.setX(optionTextView.getX() +
-                            Math.min(textWidth, optionTextView.getPaint().measureText(option.getOptionText())));
-                    });
                 } else if (isSelected && !hasVoted) {
-                    // 投票前选中：对勾在最右侧
-                    checkmarkTextView.setVisibility(View.VISIBLE);
-                    checkmarkTextView.setTextColor(getResources().getColor(R.color.blue));
-                    optionTextView.setTextColor(getResources().getColor(R.color.black));
-                    checkmarkTextView.setX(itemView.getWidth() - checkmarkTextView.getWidth() - 16);
+                    // 投票前选中：显示选中状态（正在投票）
+                    showSelectedState(true);
+                    optionTextView.setTextColor(getResources().getColor(R.color.blue));
                 } else if (isSelected && hasVoted) {
-                    // 已投票后选中：对勾紧跟选项
-                    checkmarkTextView.setVisibility(View.VISIBLE);
-                    checkmarkTextView.setTextColor(getResources().getColor(R.color.blue));
+                    // 已投票后选中：显示选中状态
+                    showSelectedState(true);
                     optionTextView.setTextColor(getResources().getColor(R.color.black));
-                    optionTextView.post(() -> {
-                        int textWidth = optionTextView.getMeasuredWidth();
-                        checkmarkTextView.setX(optionTextView.getX() +
-                            Math.min(textWidth, optionTextView.getPaint().measureText(option.getOptionText())));
-                    });
                 } else {
-                    checkmarkTextView.setVisibility(View.GONE);
+                    // 未选中
+                    showSelectedState(false);
                     optionTextView.setTextColor(getResources().getColor(R.color.black));
                 }
 
@@ -952,6 +1027,25 @@ public class PollDetailActivity extends WfcBaseActivity {
                     });
                 } else {
                     itemView.setOnClickListener(null);
+                }
+            }
+            
+            /**
+             * 显示选中/未选中状态
+             */
+            private void showSelectedState(boolean selected) {
+                if (selected) {
+                    // 选中状态
+                    selectedBackgroundView.setVisibility(View.VISIBLE);
+                    uncheckedCircleView.setVisibility(View.GONE);
+                    checkedCircleView.setVisibility(View.VISIBLE);
+                    checkmarkTextView.setVisibility(View.VISIBLE);
+                } else {
+                    // 未选中状态
+                    selectedBackgroundView.setVisibility(View.GONE);
+                    uncheckedCircleView.setVisibility(View.VISIBLE);
+                    checkedCircleView.setVisibility(View.GONE);
+                    checkmarkTextView.setVisibility(View.GONE);
                 }
             }
         }

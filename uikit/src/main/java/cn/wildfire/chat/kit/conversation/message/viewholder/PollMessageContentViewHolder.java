@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,9 +52,22 @@ public class PollMessageContentViewHolder extends NormalMessageContentViewHolder
         actionTextView = itemView.findViewById(R.id.actionTextView);
     }
 
+    // 固定的Cell宽度
+    private static final int POLL_CELL_WIDTH = 240; // dp
+    
     @Override
     protected void onBind(UiMessage message) {
         pollMessageContent = (PollMessageContent) message.message.content;
+        
+        // 确保Cell宽度固定
+        View contentView = itemView.findViewById(R.id.pollMessageContentItemView);
+        if (contentView != null) {
+            ViewGroup.LayoutParams params = contentView.getLayoutParams();
+            if (params != null) {
+                params.width = (int) (POLL_CELL_WIDTH * fragment.getResources().getDisplayMetrics().density);
+                contentView.setLayoutParams(params);
+            }
+        }
         
         // 设置标题
         String title = "🗳️ " + pollMessageContent.getTitle();

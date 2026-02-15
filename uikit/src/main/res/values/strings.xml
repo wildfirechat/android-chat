@@ -953,4 +953,8 @@
     <string name="submitting">提交中...</string>
     <string name="submit">提交</string>
     <string name="share">分享</string>
+    
+    <!-- 投票详情 Section 标题 -->
+    <string name="poll_options_title">选项</string>
+    <string name="poll_options_with_type">选项 (%s)</string>
 </resources>
