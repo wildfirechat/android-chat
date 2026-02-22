@@ -8959,6 +8959,94 @@ public class ChatManager {
         setUserSetting(UserSettingScope.FavoriteUser, userId, isSet ? "1" : "0", callback);
     }
 
+    /**
+     * 设置缓存
+     *
+     * @param cacheType 缓存类型
+     * @param key       缓存key
+     * @param value     缓存值
+     */
+    public void setCache(int cacheType, String key, String value) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        try {
+            mClient.setCache(cacheType, key, value);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 删除缓存
+     *
+     * @param cacheType 缓存类型
+     * @param key       缓存key
+     */
+    public void deleteCache(int cacheType, String key) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        try {
+            mClient.deleteCache(cacheType, key);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 删除指定类型的所有缓存
+     *
+     * @param cacheType 缓存类型
+     */
+    public void deleteAllCache(int cacheType) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        try {
+            mClient.deleteAllCache(cacheType);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取缓存
+     *
+     * @param cacheType 缓存类型
+     * @param key       缓存key
+     * @return 缓存值
+     */
+    public String getCache(int cacheType, String key) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getCache(cacheType, key);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获取指定类型的所有缓存值
+     *
+     * @param cacheType 缓存类型
+     * @return 缓存值数组
+     */
+    public String[] getAllCache(int cacheType) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getAllCache(cacheType);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /*
     获取收藏群组，此方法已废弃，请使用 getFavGroups
      */
