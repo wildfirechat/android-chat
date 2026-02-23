@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
@@ -11,102 +12,123 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:orientation="vertical">
 
+        <!-- PC 图标和状态 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="30dp">
 
             <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                app:srcCompat="@mipmap/pc" />
+                android:id="@+id/pcImageView"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@mipmap/pc" />
 
             <TextView
                 android:id="@+id/descTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textColor="#666666"
+                android:textSize="16sp"
                 tools:text="PC端已登录" />
         </LinearLayout>
 
-        <!--        todo-->
+        <!-- 功能列表 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:orientation="horizontal"
-            android:visibility="visible">
+            android:layout_marginTop="30dp"
+            android:background="@android:color/white"
+            android:orientation="vertical">
 
+            <!-- 静音 -->
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/muteImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/ic_turn_off_ringer" />
+                android:id="@+id/muteLayout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/mute_mobile" />
+                    android:layout_weight="1"
+                    android:text="@string/mute_mobile"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
 
+                <Switch
+                    android:id="@+id/muteSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:gravity="center"
-                android:orientation="vertical">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="#E0E0E0" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/ic_file_transfer_helper" />
+            <!-- 锁定 -->
+            <LinearLayout
+                android:id="@+id/lockLayout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="锁定" />
+                    android:layout_weight="1"
+                    android:text="@string/lock_pc"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
 
+                <Switch
+                    android:id="@+id/lockSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="#E0E0E0" />
 
-                <ImageView
-                    android:id="@+id/fileHelperImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/ic_file_transfer_helper" />
+            <!-- 文件助手 -->
+            <LinearLayout
+                android:id="@+id/fileHelperLayout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/send_file" />
+                    android:layout_weight="1"
+                    android:text="@string/send_file"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
 
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="#999999" />
             </LinearLayout>
 
         </LinearLayout>
@@ -120,10 +142,13 @@
             android:id="@+id/kickOffPCButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:enabled="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@android:color/holo_red_light"
             android:text="@string/logout_pc"
-            android:textSize="20sp" />
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

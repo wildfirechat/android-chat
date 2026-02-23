@@ -10394,6 +10394,28 @@ public class ChatManager {
     }
 
     /**
+     * 获取PC客户端是否被锁定
+     *
+     * @param pcClientId PC客户端ID
+     * @return 是否被锁定
+     */
+    public boolean isLockPCClient(String pcClientId) {
+        String value = getUserSetting(UserSettingScope.LockPC, pcClientId);
+        return value != null && value.equals("1");
+    }
+
+    /**
+     * 锁定或解锁PC客户端
+     *
+     * @param pcClientId PC客户端ID
+     * @param isLock     true 锁定，false 解锁
+     * @param callback   处理结果
+     */
+    public void lockPCClient(String pcClientId, boolean isLock, final GeneralCallback callback) {
+        setUserSetting(UserSettingScope.LockPC, pcClientId, isLock ? "1" : "0", callback);
+    }
+
+    /**
      * 是否开启了PC在线时，移动端静音操作
      *
      * @return 当为true时，如果PC端（包括pc端，web端和小程序端）在线，移动端将不再收到提醒

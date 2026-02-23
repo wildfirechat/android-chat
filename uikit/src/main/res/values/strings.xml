@@ -639,6 +639,7 @@
     <string name="search_tip">输入关键词开始搜索</string>
     <string name="search_no_result">没有搜索结果</string>
     <string name="mute_mobile">手机静音</string>
+    <string name="lock_pc">锁定电脑</string>
     <string name="send_file">传文件</string>
     <string name="logout_pc">退出电脑登录</string>
     <string name="create_conversation">创建会话</string>

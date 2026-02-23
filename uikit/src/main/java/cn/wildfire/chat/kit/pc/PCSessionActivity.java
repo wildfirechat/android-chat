@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit.pc;
 import android.content.Intent;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,23 +26,30 @@ public class PCSessionActivity extends WfcBaseActivity {
 
     Button kickOffPCButton;
     TextView descTextView;
-    ImageView muteImageView;
+    ImageView pcImageView;
+    Switch muteSwitch;
+    Switch lockSwitch;
+    LinearLayout fileHelperLayout;
 
     private PCOnlineInfo pcOnlineInfo;
     private boolean isMuteWhenPCOnline = false;
 
     protected void bindEvents() {
         super.bindEvents();
-        findViewById(R.id.kickOffPCButton).setOnClickListener(v -> kickOffPC());
-        findViewById(R.id.muteImageView).setOnClickListener(v -> mutePhone());
-        findViewById(R.id.fileHelperImageView).setOnClickListener(v -> fileHelper());
+        kickOffPCButton.setOnClickListener(v -> kickOffPC());
+        muteSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mutePhone(isChecked));
+        lockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> lockPC(isChecked));
+        fileHelperLayout.setOnClickListener(v -> fileHelper());
     }
 
     protected void bindViews() {
         super.bindViews();
         kickOffPCButton = findViewById(R.id.kickOffPCButton);
         descTextView = findViewById(R.id.descTextView);
-        muteImageView = findViewById(R.id.muteImageView);
+        pcImageView = findViewById(R.id.pcImageView);
+        muteSwitch = findViewById(R.id.muteSwitch);
+        lockSwitch = findViewById(R.id.lockSwitch);
+        fileHelperLayout = findViewById(R.id.fileHelperLayout);
     }
 
     @Override
@@ -53,7 +62,7 @@ public class PCSessionActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        if (pcOnlineInfo == null){
+        if (pcOnlineInfo == null) {
             return;
         }
         Platform platform = pcOnlineInfo.getPlatform();
@@ -62,7 +71,11 @@ public class PCSessionActivity extends WfcBaseActivity {
         descTextView.setText(platform.getPlatFormName() + " " + getString(R.string.pc_online_status_logged_in));
 
         isMuteWhenPCOnline = ChatManager.Instance().isMuteNotificationWhenPcOnline();
-        muteImageView.setImageResource(isMuteWhenPCOnline ? R.mipmap.ic_turn_off_ringer_hover : R.mipmap.ic_turn_off_ringer);
+        muteSwitch.setChecked(isMuteWhenPCOnline);
+        
+        // 读取锁定状态
+        boolean isLocked = ChatManager.Instance().isLockPCClient(pcOnlineInfo.getClientId());
+        lockSwitch.setChecked(isLocked);
     }
 
     @Override
@@ -91,16 +104,15 @@ public class PCSessionActivity extends WfcBaseActivity {
         });
     }
 
-    void mutePhone() {
-        ChatManager.Instance().muteNotificationWhenPcOnline(!isMuteWhenPCOnline, new GeneralCallback() {
+    void mutePhone(boolean isMute) {
+        ChatManager.Instance().muteNotificationWhenPcOnline(isMute, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 if (isFinishing()) {
                     return;
                 }
                 Toast.makeText(PCSessionActivity.this, getString(R.string.operation_success), Toast.LENGTH_SHORT).show();
-                isMuteWhenPCOnline = !isMuteWhenPCOnline;
-                muteImageView.setImageResource(isMuteWhenPCOnline ? R.mipmap.ic_turn_off_ringer_hover : R.mipmap.ic_turn_off_ringer);
+                isMuteWhenPCOnline = isMute;
             }
 
             @Override
@@ -109,6 +121,30 @@ public class PCSessionActivity extends WfcBaseActivity {
                     return;
                 }
                 Toast.makeText(PCSessionActivity.this, getString(R.string.operation_failed) + " " + errorCode, Toast.LENGTH_SHORT).show();
+                // 恢复开关状态
+                muteSwitch.setChecked(!isMute);
+            }
+        });
+    }
+
+    void lockPC(boolean isLock) {
+        ChatManager.Instance().lockPCClient(pcOnlineInfo.getClientId(), isLock, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                if (isFinishing()) {
+                    return;
+                }
+                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_success), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                if (isFinishing()) {
+                    return;
+                }
+                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_failed) + " " + errorCode, Toast.LENGTH_SHORT).show();
+                // 恢复开关状态
+                lockSwitch.setChecked(!isLock);
             }
         });
     }
