@@ -19,9 +19,9 @@
         android:paddingTop="2dp"
         android:paddingRight="5dp"
         android:paddingBottom="2dp"
-        tools:text="下午 5点"
         android:textColor="@color/gray11"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:text="下午 5点" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,10 +50,10 @@
                 android:ellipsize="end"
                 android:maxLength="20"
                 android:singleLine="true"
-                tools:text="imndx"
                 android:textColor="#666666"
                 android:textSize="12sp"
                 android:visibility="gone"
+                tools:text="imndx"
                 tools:visibility="visible" />
 
             <LinearLayout
@@ -65,8 +65,8 @@
                 <FrameLayout
                     android:id="@+id/contentFrameLayout"
                     android:layout_width="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp">
 
                     <ViewStub
                         android:id="@+id/contentViewStub"
@@ -112,16 +112,22 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <CheckBox
-            android:id="@+id/checkbox"
-            style="@style/CustomCheckboxTheme"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_height="40dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="@dimen/item_margin_left_and_right"
-            android:clickable="false"
-            android:visibility="gone" />
+            android:layout_gravity="top"
+            android:gravity="center">
+
+            <CheckBox
+                android:id="@+id/checkbox"
+                style="@style/CustomCheckboxTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:clickable="false"
+                android:visibility="visible" />
+        </LinearLayout>
     </LinearLayout>
 
 </cn.wildfire.chat.kit.conversation.message.MessageItemView>

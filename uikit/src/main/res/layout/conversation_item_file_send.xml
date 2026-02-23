@@ -5,6 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="100dp"
     android:adjustViewBounds="true"
+    android:layout_gravity="right"
     android:background="@drawable/img_bubble_send_white"
     android:backgroundTint="@color/white"
     android:padding="10dp"
@@ -25,7 +26,7 @@
         android:layout_marginRight="10dp"
         android:layout_toRightOf="@id/fileIconImageView"
         android:ellipsize="end"
-        android:maxWidth="200dp"
+        android:maxWidth="160dp"
         android:maxLines="1"
         tools:text="文文件。。。"
         android:textSize="18sp" />
