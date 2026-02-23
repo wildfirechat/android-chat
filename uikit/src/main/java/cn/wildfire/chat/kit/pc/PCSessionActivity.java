@@ -12,6 +12,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -21,8 +23,9 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.OnSettingUpdateListener;
 
-public class PCSessionActivity extends WfcBaseActivity {
+public class PCSessionActivity extends WfcBaseActivity implements OnSettingUpdateListener {
 
     Button kickOffPCButton;
     TextView descTextView;
@@ -76,6 +79,38 @@ public class PCSessionActivity extends WfcBaseActivity {
         // 读取锁定状态
         boolean isLocked = ChatManager.Instance().isLockPCClient(pcOnlineInfo.getClientId());
         lockSwitch.setChecked(isLocked);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ChatManager.Instance().addSettingUpdateListener(this);
+        checkPCOnlineStatus();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ChatManager.Instance().removeSettingUpdateListener(this);
+    }
+
+    @Override
+    public void onSettingUpdate() {
+        checkPCOnlineStatus();
+    }
+
+    private void checkPCOnlineStatus() {
+        List<PCOnlineInfo> infos = ChatManager.Instance().getPCOnlineInfos();
+        boolean pcStillOnline = false;
+        for (PCOnlineInfo info : infos) {
+            if (info.getClientId().equals(pcOnlineInfo.getClientId())) {
+                pcStillOnline = true;
+                break;
+            }
+        }
+        if (!pcStillOnline) {
+            finish();
+        }
     }
 
     @Override
