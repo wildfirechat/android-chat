@@ -4,13 +4,16 @@
     android:id="@+id/collectionContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/img_bubble_send">
+    android:layout_gravity="right"
+    android:orientation="vertical"
+    android:maxWidth="240dp">
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:background="@drawable/img_bubble_send"
+        android:backgroundTint="@color/lightColorPrimary"
+        android:orientation="vertical">
 
         <!-- 标题区域 -->
         <LinearLayout
@@ -23,7 +26,6 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@drawable/ic_collection"
-                android:tint="#576b95"
                 app:tint="#576b95" />
 
             <TextView

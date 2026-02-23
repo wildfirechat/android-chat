@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -153,6 +154,8 @@ public class CollectionMessageContentViewHolder extends NormalMessageContentView
         entryTextView.setTextSize(14);
         entryTextView.setTextColor(0xFF333333);
         entryTextView.setText(index + ". " + entry.getContent());
+        entryTextView.setMaxLines(1);
+        entryTextView.setEllipsize(TextUtils.TruncateAt.END);
         return entryTextView;
     }
 
@@ -225,6 +228,9 @@ public class CollectionMessageContentViewHolder extends NormalMessageContentView
         // 接龙消息支持拷贝
         if (MessageContextMenuItemTags.TAG_COPY.equals(tag)) {
             return false;
+        }
+        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+            return true;
         }
         return super.contextMenuItemFilter(uiMessage, tag);
     }
