@@ -4929,7 +4929,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         for (ProtoMessage message : messages) {
             filterNewMessage(message);
         }
-        handler.post(() -> onReceiveMessageInternal(messages.toArray(new ProtoMessage[0])));
+
+        messages = messages.subList(Math.max(0, messages.size() - 100), messages.size());
+        List<ProtoMessage> finalMessages = messages;
+        handler.post(() -> onReceiveMessageInternal(finalMessages.toArray(new ProtoMessage[0])));
     }
 
     private void filterNewMessage(ProtoMessage protoMessage) {
