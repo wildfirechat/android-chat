@@ -98,13 +98,21 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     @Override
     public void onDragOffset(float offset, float maxOffset) {
         View view = findViewById(R.id.bgMaskView);
-        float alpha = 1 - offset / maxOffset;
+        float alpha = 1 - Math.abs(offset) / maxOffset;
         view.setAlpha(Math.max(alpha, 0.2f));
 
         if (videoPlayButton != null) {
-            videoPlayButton.setVisibility(offset != 0.0 ? View.GONE : View.VISIBLE);
+            // 拖拽时隐藏播放按钮，回弹完成时显示
+            if (Math.abs(offset) == 0.0f) {
+                // 已经回弹到位，恢复播放按钮（如果视频未播放）
+                if (currentVideoView == null) {
+                    videoPlayButton.setVisibility(View.VISIBLE);
+                }
+            } else {
+                videoPlayButton.setVisibility(View.GONE);
+            }
         }
-        if (videoLoadProgressBar != null && offset != 0.0) {
+        if (videoLoadProgressBar != null && Math.abs(offset) == 0.0f) {
             videoLoadProgressBar.setVisibility(View.GONE);
         }
     }
@@ -214,6 +222,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         playButton.setVisibility(View.VISIBLE);
         videoView.stopPlayback();
         videoView.setVisibility(View.INVISIBLE);
+        currentVideoView = null;
     }
 
     private void previewVideo(View view, MediaEntry entry) {

@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/videoContentLayout"
-    android:padding="10dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -14,6 +13,8 @@
         android:layout_height="150dp"
         android:adjustViewBounds="true"
         android:minWidth="80dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:scaleType="fitCenter"
         app:bubble_angle="10dp"
         app:bubble_arrowHeight="10dp"

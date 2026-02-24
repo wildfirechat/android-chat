@@ -255,7 +255,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
 
     public void reset() {
         setTranslationX(0);
-        setTranslationX(0);
+        setTranslationY(0);
     }
 
     private float getActiveY(MotionEvent event) {
@@ -280,8 +280,14 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
             addUpdateListener(new AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    if (mPhotoViewWeakReference.get() != null) {
-                        mPhotoViewWeakReference.get().setTranslationY((Float) animation.getAnimatedValue());
+                    ZoomableFrameLayout layout = mPhotoViewWeakReference.get();
+                    if (layout != null && layout.child() != null) {
+                        float currentValue = (Float) animation.getAnimatedValue();
+                        layout.child().setTranslationY(currentValue);
+                        // 通知dragListener更新背景透明度
+                        if (layout.dragListener != null) {
+                            layout.dragListener.onDragOffset(currentValue, layout.getViewHeight() / 6);
+                        }
                     }
                 }
             });
