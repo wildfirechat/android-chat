@@ -381,7 +381,7 @@ public class UserInfoFragment extends Fragment {
                 Toast.makeText(getActivity(), "更新头像失败: 选取文件失败 ", Toast.LENGTH_SHORT).show();
                 return;
             }
-            File thumbImgFile = ImageUtils.genThumbImgFile(images.get(0).path);
+            File thumbImgFile = ImageUtils.compressImage(images.get(0).path, 480, 480);
             if (thumbImgFile == null) {
                 Toast.makeText(getActivity(), "更新头像失败: 生成缩略图失败", Toast.LENGTH_SHORT).show();
                 return;

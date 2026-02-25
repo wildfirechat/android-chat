@@ -84,8 +84,18 @@ public class ImageUtils {
         return imageFileThumb;
     }
 
-    public static @Nullable
-    File compressImage(String srcImgPath) {
+    public static @Nullable File compressImage(String srcImgPath) {
+        return compressImage(srcImgPath, IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    /**
+     * 保持原始宽高比进行压缩
+     * @param srcImgPath 原始图片路径
+     * @param targetWidth 目标宽度
+     * @param targetHeight 目标高度
+     * @return 压缩后的图片，最终图片的大小和 targetWidth/targetHeight 可能不一致
+     */
+    public static @Nullable File compressImage(String srcImgPath, int targetWidth, int targetHeight) {
         //先取得原始照片的旋轉角度
         int rotate = 0;
         try {
@@ -115,15 +125,14 @@ public class ImageUtils {
         final int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (height > IMG_HEIGHT || width > IMG_WIDTH) {
+        if (height > targetHeight || width > targetWidth) {
 
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= IMG_HEIGHT
-                && (halfWidth / inSampleSize) >= IMG_WIDTH) {
+            while ((halfHeight / inSampleSize) >= targetHeight && (halfWidth / inSampleSize) >= targetWidth) {
                 inSampleSize *= 2;
             }
         }
@@ -174,6 +183,7 @@ public class ImageUtils {
         return hash.replaceAll("-", "");
     }
 
+    @Deprecated
     private static void generateNewGroupPortrait(Context context, String groupId, int width) {
         ChatManager.Instance().getWorkHandler().post(() -> {
             ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
@@ -259,6 +269,7 @@ public class ImageUtils {
         });
     }
 
+    @Deprecated
     public static String getGroupGridPortrait(Context context, String groupId, int width) {
         SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
         String path = sp.getString("wfc_group_generated_portrait_" + groupId + "_" + width, null);
