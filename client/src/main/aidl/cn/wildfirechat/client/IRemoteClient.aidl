@@ -380,4 +380,11 @@ interface IRemoteClient {
 
     int getLongLinkPort();
     int getRouteErrorCode();
+
+    // Cache related methods
+    oneway void setCache(in int cacheType, in String key, in String value);
+    oneway void deleteCache(in int cacheType, in String key);
+    oneway void deleteAllCache(in int cacheType);
+    String getCache(in int cacheType, in String key);
+    String[] getAllCache(in int cacheType);
 }

@@ -347,6 +347,24 @@
             android:label="@string/collection_detail"
             android:screenOrientation="portrait" />
 
+        <!-- 投票功能 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.PollHomeActivity"
+            android:label="@string/poll"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.CreatePollActivity"
+            android:label="@string/create_poll"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.PollListActivity"
+            android:label="@string/my_polls"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.PollDetailActivity"
+            android:label="@string/poll_detail"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

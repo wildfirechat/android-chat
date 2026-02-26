@@ -4221,6 +4221,31 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public int getRouteErrorCode() throws RemoteException {
             return StnLogic.getRouteCode();
         }
+
+        @Override
+        public void setCache(int cacheType, String key, String value) throws RemoteException {
+            ProtoLogic.upsertCache(cacheType, key, value);
+        }
+
+        @Override
+        public void deleteCache(int cacheType, String key) throws RemoteException {
+            ProtoLogic.deleteCache(cacheType, key);
+        }
+
+        @Override
+        public void deleteAllCache(int cacheType) throws RemoteException {
+            ProtoLogic.deleteAllCache(cacheType);
+        }
+
+        @Override
+        public String getCache(int cacheType, String key) throws RemoteException {
+            return ProtoLogic.getCache(cacheType, key);
+        }
+
+        @Override
+        public String[] getAllCache(int cacheType) throws RemoteException {
+            return ProtoLogic.getAllCache(cacheType);
+        }
     }
 
     private static UrlRedirector urlRedirector;

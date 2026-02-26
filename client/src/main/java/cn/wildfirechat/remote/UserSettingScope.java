@@ -57,6 +57,9 @@ public interface UserSettingScope {
     //不能直接使用，协议栈内会使用此值
     int Sync_Badge = 29;
 
+    //不能直接使用，协议栈内会使用此值
+    int LockPC = 30;
+    
     //自定义用户设置，请使用1000以上的key
     int kUserSettingCustomBegin = 1000;
 }

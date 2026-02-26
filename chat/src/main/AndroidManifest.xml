@@ -167,5 +167,23 @@
             android:name="cn.wildfire.chat.app.misc.DiagnoseActivity"
             android:label="@string/diagnose" />
 
+        <!-- Poll Activities -->
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.PollHomeActivity"
+            android:label="@string/poll"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.CreatePollActivity"
+            android:label="@string/create_poll"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.PollDetailActivity"
+            android:label="@string/poll_detail"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.poll.activity.PollListActivity"
+            android:label="@string/my_polls"
+            android:screenOrientation="portrait" />
+
     </application>
 </manifest>

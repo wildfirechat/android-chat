@@ -22,4 +22,7 @@
 
     <dimen name="dimen_30dp">30dp</dimen>
     <dimen name="dp_2">2dp</dimen>
+
+    <!-- 投票功能尺寸 -->
+    <dimen name="poll_button_width_large">200dp</dimen>
 </resources>

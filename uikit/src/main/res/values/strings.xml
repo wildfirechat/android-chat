@@ -639,6 +639,7 @@
     <string name="search_tip">输入关键词开始搜索</string>
     <string name="search_no_result">没有搜索结果</string>
     <string name="mute_mobile">手机静音</string>
+    <string name="lock_pc">锁定电脑</string>
     <string name="send_file">传文件</string>
     <string name="logout_pc">退出电脑登录</string>
     <string name="create_conversation">创建会话</string>
@@ -852,4 +853,109 @@
     <string name="collection_create_success">接龙创建成功</string>
     <string name="collection_create_failed">创建失败</string>
     <string name="collection_not_in_group">您已不在该群组中</string>
+
+    <!-- 投票功能 -->
+    <string name="poll">投票</string>
+    <string name="click_to_vote">点击参与投票</string>
+    <string name="poll_in_progress">进行中</string>
+    <string name="poll_ended">已结束</string>
+    <string name="anonymous_poll">匿名投票</string>
+    <string name="named_poll">实名投票</string>
+    <string name="winner">获胜</string>
+    <string name="poll_result_info">%d人参与 · 投票已结束</string>
+    
+    <!-- 创建投票 -->
+    <string name="create_poll">创建投票</string>
+    <string name="poll_title">投票标题</string>
+    <string name="poll_title_hint">请输入投票标题（必填）</string>
+    <string name="poll_desc">投票描述</string>
+    <string name="poll_desc_hint">请输入投票描述（可选）</string>
+    <string name="poll_options">投票选项</string>
+    <string name="add_option">添加选项</string>
+    <string name="option_hint">选项%d</string>
+    <string name="poll_settings">投票设置</string>
+    <string name="poll_type">投票类型</string>
+    <string name="single_choice">单选</string>
+    <string name="multiple_choice">多选（最多%d项）</string>
+    <string name="multiple_choice_simple">多选</string>
+    <string name="select_poll_type">选择投票类型</string>
+    <string name="end_time">截止时间</string>
+    <string name="no_end_time">无截止时间</string>
+    <string name="select_end_time">选择截止时间</string>
+    <string name="clear_end_time">清除</string>
+    <string name="visibility">可见性</string>
+    <string name="group_only">仅群内可见</string>
+    <string name="public_poll">公开（可转发）</string>
+    <string name="select_visibility">选择可见性</string>
+    <string name="options_tip">至少%d个选项，最多%d个选项</string>
+    <string name="publish_poll">发布投票</string>
+    <string name="publish">发布</string>
+    <string name="publishing">发布中...</string>
+    <string name="poll_created">投票已创建</string>
+    <string name="poll_sent_to_group">投票已发布到本群</string>
+    <string name="forward_public_poll_tip">公开投票可以转发给其他群或好友，是否立即转发？</string>
+    <string name="forward">转发</string>
+    <string name="later">暂不</string>
+    <string name="poll_only_for_group">投票仅支持在群内创建</string>
+    <string name="poll_service_not_configured">投票服务未配置</string>
+    <string name="poll_create_failed">发布失败: %s</string>
+    <string name="poll_title_required">请输入投票标题</string>
+    <string name="poll_options_required">至少需要%d个有效选项</string>
+    <string name="max_options_limit">最多只能添加%d个选项</string>
+    <string name="end_time_must_be_future">截止时间必须大于当前时间</string>
+    <string name="my_polls">我的投票</string>
+    <string name="poll_detail">投票详情</string>
+    <string name="voter_count">%d 参与人</string>
+    <string name="no_polls">暂无投票</string>
+    <string name="confirm_close_poll">确定要结束此投票吗？</string>
+    <string name="confirm_delete_poll">确定要删除此投票吗？</string>
+    <string name="poll_closed">投票已结束</string>
+    <string name="poll_deleted">投票已删除</string>
+
+    <!-- 投票详情页面 -->
+    <string name="poll_detail_title">投票详情</string>
+    <string name="poll_creator_format">由 %s 发起</string>
+    <string name="poll_status_ended">已结束</string>
+    <string name="poll_expired">已过期</string>
+    <string name="poll_anonymous">匿名</string>
+    <string name="poll_named">实名</string>
+    <string name="poll_voter_count">%d人参与</string>
+    <string name="poll_no_deadline">无限期</string>
+    <string name="poll_days_left">还剩%d天</string>
+    <string name="poll_hours_left">还剩%d小时</string>
+    <string name="poll_minutes_left">还剩%d分钟</string>
+    <string name="poll_less_than_one_minute">不到1分钟</string>
+    <string name="poll_already_voted">已投票</string>
+    <string name="poll_already_voted_error">您已经投过票了</string>
+    <string name="poll_not_in_group">您已不在该群组中</string>
+    <string name="poll_please_select_option">请选择选项</string>
+    <string name="poll_vote_success">投票成功</string>
+    <string name="poll_max_select_limit">最多只能选择%d项</string>
+    <string name="poll_selected_count">已选(%d/%d)</string>
+    <string name="poll_export_details">导出投票明细</string>
+    <string name="poll_end">结束投票</string>
+    <string name="poll_delete">删除投票</string>
+    <string name="poll_confirm_close">确定要结束此投票吗？结束后将无法继续投票。</string>
+    <string name="poll_confirm_delete">确定要删除此投票吗？删除后将无法恢复。</string>
+    <string name="poll_closed_success">投票已结束</string>
+    <string name="poll_deleted_success">投票已删除</string>
+    <string name="poll_no_voter_details">暂无投票明细</string>
+    <string name="poll_export_failed">导出失败</string>
+    <string name="poll_csv_option">选项</string>
+    <string name="poll_csv_user">用户</string>
+    <string name="poll_csv_time">投票时间</string>
+    <string name="poll_details_suffix">投票明细</string>
+    <string name="poll_default_file_name">投票</string>
+    <string name="poll_service_not_available">投票服务不可用</string>
+    <string name="poll_forward_not_implemented">转发功能尚未实现</string>
+    <string name="poll_vote_count_format">%d%% (%d票)</string>
+    <string name="loading">加载中...</string>
+    <string name="load_failed">加载失败</string>
+    <string name="submitting">提交中...</string>
+    <string name="submit">提交</string>
+    <string name="share">分享</string>
+    
+    <!-- 投票详情 Section 标题 -->
+    <string name="poll_options_title">选项</string>
+    <string name="poll_options_with_type">选项 (%s)</string>
 </resources>
