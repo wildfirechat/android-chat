@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.conversation.ext.CollectionExt;
 import cn.wildfire.chat.kit.conversation.ext.ExampleAudioInputExt;
 import cn.wildfire.chat.kit.conversation.ext.FileExt;
 import cn.wildfire.chat.kit.conversation.ext.ImageExt;
@@ -41,6 +42,7 @@ public class ConversationExtManager {
         registerExt(LocationExt.class);
         registerExt(ExampleAudioInputExt.class);
         registerExt(UserCardExt.class);
+        registerExt(CollectionExt.class);
     }
 
     public void registerExt(Class<? extends ConversationExt> clazz) {

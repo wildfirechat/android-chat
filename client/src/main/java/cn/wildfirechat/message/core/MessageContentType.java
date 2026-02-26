@@ -40,6 +40,8 @@ public interface MessageContentType {
     // 消息未能送达
     int ContentType_NOT_DELIVERED = 16;
 
+    // 接龙消息，与iOS MESSAGE_CONTENT_TYPE_COLLECTION 保持一致
+    int ContentType_Collection = 17;
 
     // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;

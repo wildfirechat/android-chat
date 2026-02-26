@@ -13,6 +13,13 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <!-- AppTheme with ActionBar -->
+    <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/gray5</item>
+        <item name="colorPrimaryDark">@color/gray5</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
     <style name="AppTheme.LightAppbar">
         <item name="colorPrimary">@color/gray5</item>
         <item name="colorPrimaryDark">@color/gray5</item>

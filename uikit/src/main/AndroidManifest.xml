@@ -337,6 +337,16 @@
             android:name=".mesh.DomainInfoActivity"
             android:label="@string/external_domain_details" />
 
+        <!-- 接龙功能 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.collection.CreateCollectionActivity"
+            android:label="@string/create_collection"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.collection.CollectionDetailActivity"
+            android:label="@string/collection_detail"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

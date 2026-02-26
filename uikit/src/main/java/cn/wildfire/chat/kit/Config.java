@@ -102,6 +102,12 @@ public class Config {
     public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.cn";
 
     /**
+     * 接龙服务地址，如果需要接龙功能，请部署接龙服务，然后这里填上接龙服务地址；如果不需要接龙功能，请置为 null
+     * 示例：http://192.168.1.81:8081
+     */
+    public static String COLLECTION_SERVER_ADDRESS = "https://jielong.wildfirechat.net";
+
+    /**
      * 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。
      */
     public static String SEND_LOG_COMMAND = "*#marslog#";

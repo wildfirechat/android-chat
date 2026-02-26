@@ -13,10 +13,12 @@ import android.text.TextUtils;
 
 import java.lang.reflect.Method;
 
+import cn.wildfire.chat.app.collection.CollectionServiceImpl;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.conversation.message.viewholder.CollectionMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
@@ -55,6 +57,13 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             wfcUIKit.setAppServiceProvider(AppService.Instance());
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
+            MessageViewHolderManager.getInstance().registerMessageViewHolder(CollectionMessageContentViewHolder.class, R.layout.conversation_item_collection_send, R.layout.conversation_item_collection_receive);
+
+            // 初始化接龙服务
+            if (!TextUtils.isEmpty(Config.COLLECTION_SERVER_ADDRESS)) {
+                CollectionServiceImpl.getInstance().setBaseUrl(Config.COLLECTION_SERVER_ADDRESS);
+                cn.wildfire.chat.kit.collection.CollectionServiceProvider.getInstance().setService(CollectionServiceImpl.getInstance());
+            }
 
             String id = null;
             String token = null;
