@@ -61,7 +61,11 @@ public enum MessageContentMediaType {
     /**
      * 为客户扩展预留的类型3
      */
-    CUSTOM3(11);
+    CUSTOM3(11),
+    /**
+     * 网盘
+     */
+    PAN(12);
 
     private int value;
 
