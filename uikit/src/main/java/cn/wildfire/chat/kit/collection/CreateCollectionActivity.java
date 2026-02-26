@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.collection;
 
 import android.app.ProgressDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -55,7 +56,6 @@ public class CreateCollectionActivity extends WfcBaseActivity {
     private TimePicker expireTimePicker;
 
     private int expireType = 0; // 0=无限期，1=有限期
-    private long expireAt = 0;
     private MenuItem doneMenuItem;
     private ProgressDialog progressDialog;
 
@@ -90,9 +90,9 @@ public class CreateCollectionActivity extends WfcBaseActivity {
         Calendar defaultCalendar = Calendar.getInstance();
         defaultCalendar.add(Calendar.HOUR, 24);
         expireDatePicker.updateDate(
-            defaultCalendar.get(Calendar.YEAR),
-            defaultCalendar.get(Calendar.MONTH),
-            defaultCalendar.get(Calendar.DAY_OF_MONTH)
+                defaultCalendar.get(Calendar.YEAR),
+                defaultCalendar.get(Calendar.MONTH),
+                defaultCalendar.get(Calendar.DAY_OF_MONTH)
         );
         expireTimePicker.setHour(defaultCalendar.get(Calendar.HOUR_OF_DAY));
         expireTimePicker.setMinute(defaultCalendar.get(Calendar.MINUTE));
@@ -120,10 +120,12 @@ public class CreateCollectionActivity extends WfcBaseActivity {
         // 标题输入监听，用于更新完成按钮状态
         titleEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -164,14 +166,19 @@ public class CreateCollectionActivity extends WfcBaseActivity {
         String template = templateEditText.getText().toString().trim();
 
         // 计算过期时间
-        expireAt = 0;
+        long expireAt = 0;
         if (expireType == 1) {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.YEAR, expireDatePicker.getYear());
             calendar.set(Calendar.MONTH, expireDatePicker.getMonth());
             calendar.set(Calendar.DAY_OF_MONTH, expireDatePicker.getDayOfMonth());
-            calendar.set(Calendar.HOUR_OF_DAY, expireTimePicker.getHour());
-            calendar.set(Calendar.MINUTE, expireTimePicker.getMinute());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                calendar.set(Calendar.HOUR_OF_DAY, expireTimePicker.getHour());
+                calendar.set(Calendar.MINUTE, expireTimePicker.getMinute());
+            } else {
+                calendar.set(Calendar.HOUR_OF_DAY, expireTimePicker.getCurrentHour());
+                calendar.set(Calendar.MINUTE, expireTimePicker.getCurrentMinute());
+            }
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
             expireAt = calendar.getTimeInMillis();
@@ -197,31 +204,31 @@ public class CreateCollectionActivity extends WfcBaseActivity {
         progressDialog.show();
 
         service.createCollection(conversation.target, title, desc, template, expireType, expireAt, 0,
-            new CollectionService.CreateCollectionCallback() {
-                @Override
-                public void onSuccess(Collection collection) {
-                    // 创建成功，后端会自动发送接龙消息，客户端不需要主动发送
-                    runOnUiThread(() -> {
-                        if (progressDialog != null && progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
-                        Toast.makeText(CreateCollectionActivity.this, R.string.collection_create_success, Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-                }
+                new CollectionService.CreateCollectionCallback() {
+                    @Override
+                    public void onSuccess(Collection collection) {
+                        // 创建成功，后端会自动发送接龙消息，客户端不需要主动发送
+                        runOnUiThread(() -> {
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                            Toast.makeText(CreateCollectionActivity.this, R.string.collection_create_success, Toast.LENGTH_SHORT).show();
+                            finish();
+                        });
+                    }
 
-                @Override
-                public void onError(int errorCode, String message) {
-                    runOnUiThread(() -> {
-                        if (progressDialog != null && progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
-                        Toast.makeText(CreateCollectionActivity.this,
-                            getString(R.string.collection_create_failed) + ": " + message,
-                            Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
+                    @Override
+                    public void onError(int errorCode, String message) {
+                        runOnUiThread(() -> {
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                            Toast.makeText(CreateCollectionActivity.this,
+                                    getString(R.string.collection_create_failed) + ": " + message,
+                                    Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
     }
 
     @Override

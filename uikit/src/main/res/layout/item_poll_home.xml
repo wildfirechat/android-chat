@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="16dp"
@@ -11,10 +12,10 @@
 
     <ImageView
         android:id="@+id/iconImageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:src="@drawable/ic_poll"
-        android:tint="?attr/colorPrimary" />
+        app:tint="@color/colorPrimary" />
 
     <TextView
         android:id="@+id/titleTextView"
@@ -29,6 +30,6 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_chevron_right"
-        android:tint="?android:attr/textColorSecondary" />
+        app:tint="?android:attr/textColorSecondary" />
 
 </LinearLayout>

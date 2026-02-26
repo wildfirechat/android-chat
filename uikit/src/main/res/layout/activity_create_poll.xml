@@ -145,7 +145,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="1px"
                     android:layout_marginStart="16dp"
                     android:background="#E5E5E5" />
 
@@ -174,7 +174,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="1px"
                     android:layout_marginStart="16dp"
                     android:background="#E5E5E5" />
 
@@ -203,7 +203,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="1px"
                     android:layout_marginStart="16dp"
                     android:background="#E5E5E5" />
 
@@ -244,7 +244,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="1px"
                     android:layout_marginStart="16dp"
                     android:background="#E5E5E5" />
 
@@ -290,7 +290,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/shape_bottom_green"
+                android:background="@drawable/shape_blue_button"
                 android:text="发布投票"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
