@@ -44,7 +44,7 @@ public class CollectionExt extends ConversationExt {
 
     @Override
     public int iconResId() {
-        return R.drawable.ic_collection;
+        return R.drawable.ic_ext_collection;
     }
 
     @Override

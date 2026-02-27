@@ -45,7 +45,7 @@ public class PollExt extends ConversationExt {
     @Override
     public int iconResId() {
         // 使用投票图标，如果没有则使用收藏图标作为替代
-        return R.drawable.ic_poll;
+        return R.drawable.ic_ext_poll;
     }
 
     @Override

@@ -22,7 +22,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/ic_collection"
+                android:src="@drawable/ic_ext_collection"
                 app:tint="#576b95" />
 
             <TextView
