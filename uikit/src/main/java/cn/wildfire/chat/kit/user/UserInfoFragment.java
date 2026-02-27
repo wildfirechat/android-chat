@@ -85,6 +85,7 @@ public class UserInfoFragment extends Fragment {
     OptionItemView groupSourceItemView;
 
     View momentButton;
+    View panButton;
 
     TextView favContactTextView;
     TextView externalDomainTextView;
@@ -144,6 +145,7 @@ public class UserInfoFragment extends Fragment {
     private void bindEvents(View view) {
         view.findViewById(R.id.chatButton).setOnClickListener(_v -> chat());
         view.findViewById(R.id.momentButton).setOnClickListener(_v -> moment());
+        view.findViewById(R.id.panButton).setOnClickListener(_v -> viewUserPan());
         view.findViewById(R.id.voipChatButton).setOnClickListener(_v -> voipChat());
         view.findViewById(R.id.aliasOptionItemView).setOnClickListener(_v -> alias());
         view.findViewById(R.id.messagesOptionItemView).setOnClickListener(_v -> showUserMessages());
@@ -167,6 +169,7 @@ public class UserInfoFragment extends Fragment {
         messagesOptionItemView = view.findViewById(R.id.messagesOptionItemView);
         qrCodeOptionItemView = view.findViewById(R.id.qrCodeOptionItemView);
         momentButton = view.findViewById(R.id.momentButton);
+        panButton = view.findViewById(R.id.panButton);
         favContactTextView = view.findViewById(R.id.favContactTextView);
         externalDomainTextView = view.findViewById(R.id.externalDomainTextView);
         groupSourceItemView = view.findViewById(R.id.groupMemberSourceOptionItemView);
@@ -219,6 +222,13 @@ public class UserInfoFragment extends Fragment {
 
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
             momentButton.setVisibility(View.GONE);
+        }
+
+        // 只在查看其他用户、网盘服务已配置、且不是机器人时显示"他/她的网盘"
+        if (!selfUid.equals(userInfo.uid) && !TextUtils.isEmpty(Config.PAN_SERVER_ADDRESS) && userInfo.type != 1) {
+            panButton.setVisibility(View.VISIBLE);
+        } else {
+            panButton.setVisibility(View.GONE);
         }
 
         if (!TextUtils.isEmpty(groupId)) {
@@ -295,6 +305,15 @@ public class UserInfoFragment extends Fragment {
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         intent.putExtra("userInfo", userInfo);
+        startActivity(intent);
+    }
+
+    void viewUserPan() {
+        // 打开他/她的网盘
+        android.util.Log.d("UserInfoFragment", "Opening pan for user: " + userInfo.uid + ", name: " + userInfo.displayName);
+        Intent intent = new Intent(getActivity(), cn.wildfire.chat.kit.pan.PanSpaceListActivity.class);
+        intent.putExtra("targetUserId", userInfo.uid);
+        intent.putExtra("targetUserName", userInfo.displayName);
         startActivity(intent);
     }
 

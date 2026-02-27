@@ -9621,17 +9621,17 @@ public class ChatManager {
      */
     public void startLog() {
         Log.d(TAG, "startLog");
-        startLog = true;
+//        startLog = true;
         if (!checkRemoteService()) {
             return;
         }
 
-        try {
-            mClient.startLog();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return;
-        }
+//        try {
+////            mClient.startLog();
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            return;
+//        }
     }
 
     /**

@@ -62,8 +62,8 @@ public class AppService implements AppServiceProvider {
     // ipv6
     // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://[2409:8a00:32c0:1ee8:782d:fBc8:2e1b:4d10]:8888";
     // ipv4
-    // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
+     public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://192.168.1.81:8888";
+//    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
 
     private AppService() {
 

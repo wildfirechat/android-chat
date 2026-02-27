@@ -197,6 +197,48 @@
 
     </LinearLayout>
 
+    <!-- 他/她的网盘 -->
+    <LinearLayout
+        android:id="@+id/panButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View style="@style/Line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/selector_common_item"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="他/她的网盘"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:src="@mipmap/ic_right" />
+
+        </LinearLayout>
+
+        <View style="@style/Line" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/chatButton"
         android:layout_width="match_parent"

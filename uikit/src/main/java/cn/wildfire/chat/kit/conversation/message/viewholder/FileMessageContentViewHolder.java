@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 import android.view.View;
@@ -91,11 +92,28 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
             Toast.makeText(fragment.getContext(), R.string.file_save_failed, Toast.LENGTH_SHORT).show();
         }
     }
+    
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_SAVE_TO_PAN, confirm = false, priority = 13)
+    public void saveToPan(View itemView, UiMessage message) {
+        // 跳转到保存到网盘页面
+        try {
+            Class<?> clazz = Class.forName("cn.wildfire.chat.kit.pan.PanSaveActivity");
+            Intent intent = new Intent(fragment.getContext(), clazz);
+            intent.putExtra("fileContent", (FileMessageContent) message.message.content);
+            fragment.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(fragment.getContext(), R.string.pan_service_not_configured, Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_SAVE_FILE.equals(tag)) {
             return context.getString(R.string.file_save_to_phone);
+        }
+        if (MessageContextMenuItemTags.TAG_SAVE_TO_PAN.equals(tag)) {
+            return context.getString(R.string.pan_save_to);
         }
         return super.contextMenuTitle(context, tag);
     }

@@ -167,6 +167,28 @@
             android:name="cn.wildfire.chat.app.misc.DiagnoseActivity"
             android:label="@string/diagnose" />
 
+        <!-- Pan Activities -->
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanSpaceListActivity"
+            android:label="@string/pan_title"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanFileListActivity"
+            android:label="@string/pan_title"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanFilePickerActivity"
+            android:label="@string/pan_select_file"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanSaveActivity"
+            android:label="@string/pan_save_to"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanTargetSelectActivity"
+            android:label="@string/pan_select_target_folder"
+            android:screenOrientation="portrait" />
+
         <!-- Poll Activities -->
         <activity
             android:name="cn.wildfire.chat.kit.poll.activity.PollHomeActivity"

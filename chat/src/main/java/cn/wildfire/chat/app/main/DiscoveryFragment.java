@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,12 +22,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.pan.PanSpaceListActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -52,6 +55,10 @@ public class DiscoveryFragment extends Fragment {
         if (!BuildConfig.DEBUG && !AVEngineKit.isSupportConference()) {
             conferenceOptionItemView.setVisibility(View.GONE);
         }
+        // 网盘入口可见性控制
+        if (TextUtils.isEmpty(Config.PAN_SERVER_ADDRESS)) {
+            view.findViewById(R.id.panOptionItemView).setVisibility(View.GONE);
+        }
         return view;
     }
 
@@ -62,6 +69,7 @@ public class DiscoveryFragment extends Fragment {
         view.findViewById(R.id.cookbookOptionItemView).setOnClickListener(v -> cookbook());
         view.findViewById(R.id.momentOptionItemView).setOnClickListener(v -> moment());
         view.findViewById(R.id.conferenceOptionItemView).setOnClickListener(v -> conference());
+        view.findViewById(R.id.panOptionItemView).setOnClickListener(v -> pan());
     }
 
     private void bindViews(View view) {
@@ -136,6 +144,10 @@ public class DiscoveryFragment extends Fragment {
         }
         Intent intent = new Intent(getActivity(), ConferencePortalActivity.class);
         startActivity(intent);
+    }
+
+    void pan() {
+        PanSpaceListActivity.start(getActivity());
     }
 
 }

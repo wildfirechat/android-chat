@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_create_folder"
+        android:title="@string/pan_create_folder"
+        android:orderInCategory="1" />
+    <item
+        android:id="@+id/menu_upload"
+        android:title="@string/pan_upload"
+        android:orderInCategory="2" />
+</menu>

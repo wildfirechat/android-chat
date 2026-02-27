@@ -15,6 +15,8 @@ import java.lang.reflect.Method;
 
 import cn.wildfire.chat.app.collection.CollectionServiceImpl;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
+import cn.wildfire.chat.app.pan.PanServiceProvider;
+import cn.wildfire.chat.app.pan.PanServiceImpl;
 import cn.wildfire.chat.app.poll.PollServiceImpl;
 import cn.wildfirechat.message.PollMessageContent;
 import cn.wildfirechat.message.PollResultMessageContent;
@@ -76,6 +78,12 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             if (!TextUtils.isEmpty(Config.POLL_SERVER_ADDRESS)) {
                 PollServiceImpl.getInstance().setBaseUrl(Config.POLL_SERVER_ADDRESS);
                 cn.wildfire.chat.kit.poll.service.PollServiceProvider.getInstance().setService(PollServiceImpl.getInstance());
+            }
+
+            // 初始化网盘服务
+            if (!TextUtils.isEmpty(Config.PAN_SERVER_ADDRESS)) {
+                PanServiceImpl.getInstance().setBaseUrl(Config.PAN_SERVER_ADDRESS);
+                PanServiceProvider.init(Config.PAN_SERVER_ADDRESS);
             }
 
             String id = null;

@@ -61,5 +61,13 @@
             app:start_src="@mipmap/ic_conference"
             app:title="@string/conference" />
 
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/panOptionItemView"
+            style="@style/OptionItem"
+            android:layout_marginBottom="10dp"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_func_file"
+            app:title="@string/pan_title" />
+
     </LinearLayout>
 </cn.wildfire.chat.kit.widget.OverScrollDecorScrollView>

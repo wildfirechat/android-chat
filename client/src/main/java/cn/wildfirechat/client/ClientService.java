@@ -4224,27 +4224,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setCache(int cacheType, String key, String value) throws RemoteException {
-            ProtoLogic.upsertCache(cacheType, key, value);
+            //ProtoLogic.upsertCache(cacheType, key, value);
         }
 
         @Override
         public void deleteCache(int cacheType, String key) throws RemoteException {
-            ProtoLogic.deleteCache(cacheType, key);
+            //ProtoLogic.deleteCache(cacheType, key);
         }
 
         @Override
         public void deleteAllCache(int cacheType) throws RemoteException {
-            ProtoLogic.deleteAllCache(cacheType);
+            //ProtoLogic.deleteAllCache(cacheType);
         }
 
         @Override
         public String getCache(int cacheType, String key) throws RemoteException {
-            return ProtoLogic.getCache(cacheType, key);
+            //return ProtoLogic.getCache(cacheType, key);
+            return null;
         }
 
         @Override
         public String[] getAllCache(int cacheType) throws RemoteException {
-            return ProtoLogic.getAllCache(cacheType);
+            //return ProtoLogic.getAllCache(cacheType);
+            return null;
         }
     }
 
