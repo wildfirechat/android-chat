@@ -7,7 +7,9 @@ package cn.wildfire.chat.kit.conversation.ext;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.collection.CollectionServiceProvider;
@@ -32,9 +34,15 @@ public class CollectionExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void createCollection(View containerView, Conversation conversation) {
-        Intent intent = new Intent(activity, CreateCollectionActivity.class);
-        intent.putExtra(CreateCollectionActivity.EXTRA_CONVERSATION, conversation);
-        startActivity(intent);
+        if (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net")
+                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net"))) {
+
+            Intent intent = new Intent(activity, CreateCollectionActivity.class);
+            intent.putExtra(CreateCollectionActivity.EXTRA_CONVERSATION, conversation);
+            startActivity(intent);
+        } else {
+            Toast.makeText(activity, "未部署接龙服务", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

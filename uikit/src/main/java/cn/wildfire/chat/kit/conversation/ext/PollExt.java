@@ -7,7 +7,9 @@ package cn.wildfire.chat.kit.conversation.ext;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
@@ -33,8 +35,13 @@ public class PollExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void openPollHome(View containerView, Conversation conversation) {
-        Intent intent = PollHomeActivity.buildIntent(activity, conversation.target);
-        startActivity(intent);
+        if (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net")
+                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net"))) {
+            Intent intent = PollHomeActivity.buildIntent(activity, conversation.target);
+            startActivity(intent);
+        } else {
+            Toast.makeText(activity, "未部署投票服务", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
