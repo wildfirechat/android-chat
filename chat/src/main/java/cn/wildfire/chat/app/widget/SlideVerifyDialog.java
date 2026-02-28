@@ -18,16 +18,17 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.wildfire.chat.app.R;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
-import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.chat.R;
+import cn.wildfirechat.remote.ChatManager;
 
 public class SlideVerifyDialog extends Dialog {
 
@@ -38,15 +39,18 @@ public class SlideVerifyDialog extends Dialog {
     private FrameLayout sliderTrackContainer;
 
     private String token;
-    private int sliderY;
+    private double sliderY;
     private float startX;
+    private double scaleX;
     private boolean isVerifying = false;
 
-    private OnVerifySuccessListener listener;
+    private final OnVerifySuccessListener listener;
 
     public interface OnVerifySuccessListener {
         void onVerifySuccess(String token);
+
         void onVerifyFailed(); // 验证失败（滑动位置不对），不关闭窗口
+
         void onLoadFailed(); // 加载验证码失败，需要关闭窗口
     }
 
@@ -111,11 +115,11 @@ public class SlideVerifyDialog extends Dialog {
                         float maxDistance = sliderTrackContainer.getWidth() - sliderButton.getWidth();
                         newX = Math.max(0, Math.min(newX, maxDistance));
                         sliderButton.setX(newX);
+                        sliderImageView.setX(newX);
                         return true;
 
                     case MotionEvent.ACTION_UP:
                         float finalX = sliderButton.getX();
-                        float maxDistance = sliderTrackContainer.getWidth() - sliderButton.getWidth();
 
                         // 只要滑动超过 10px 就验证
                         if (finalX >= 10) {
@@ -157,7 +161,7 @@ public class SlideVerifyDialog extends Dialog {
                 token = (String) result.get("token");
                 String backgroundImageStr = (String) result.get("backgroundImage");
                 String sliderImageStr = (String) result.get("sliderImage");
-                sliderY = (int) result.get("y");
+                sliderY = (double) result.get("y");
 
                 // Decode base64 images
                 try {
@@ -177,11 +181,18 @@ public class SlideVerifyDialog extends Dialog {
                     Bitmap sliderBitmap = BitmapFactory.decodeByteArray(sliderBytes, 0, sliderBytes.length);
                     sliderImageView.setImageBitmap(sliderBitmap);
 
-                    // Position slider image based on y coordinate
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) sliderImageView.getLayoutParams();
-                    float scaleY = (float) backgroundImageView.getHeight() / 150f;
-                    params.topMargin = (int) (sliderY * scaleY);
-                    sliderImageView.setLayoutParams(params);
+                    ChatManager.Instance().getMainHandler().post(() -> {
+                        sliderButton.animate().x(0).setDuration(200).start();
+                        sliderImageView.animate().x(0).setDuration(200).start();
+
+                        // Position slider image based on y coordinate
+                        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) sliderImageView.getLayoutParams();
+                        float scaleY = (float) backgroundImageView.getHeight() / 150f;
+                        params.topMargin = (int) (sliderY * scaleY);
+                        scaleX = (double) backgroundImageView.getWidth() / backgroundBitmap.getWidth();
+                        params.width = (int) (sliderBitmap.getWidth() * scaleX);
+                        sliderImageView.setLayoutParams(params);
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "加载验证码失败", Toast.LENGTH_SHORT).show();
@@ -217,9 +228,9 @@ public class SlideVerifyDialog extends Dialog {
         params.put("token", token);
         params.put("x", originalX);
 
-        OKHttpHelper.post(url, params, new SimpleCallback<Object>() {
+        OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
             @Override
-            public void onUiSuccess(Object result) {
+            public void onUiSuccess(Void result) {
                 isVerifying = false;
                 // Change button color to green
                 GradientDrawable drawable = (GradientDrawable) sliderButton.getBackground();
