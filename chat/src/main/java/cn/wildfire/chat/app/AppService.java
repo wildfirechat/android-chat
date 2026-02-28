@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
 import org.json.JSONArray;
@@ -25,8 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.wildfire.chat.app.callback.SlideVerifyCallback;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.PCSession;
+import cn.wildfire.chat.app.model.SlideVerifyInfo;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
@@ -921,4 +924,98 @@ public class AppService implements AppServiceProvider {
         });
     }
 
+    // ==================== 滑动验证码相关接口 ====================
+
+    /**
+     * 加载滑动验证码
+     *
+     * @param callback 回调接口
+     */
+    public void loadSlideVerifyCode(@NonNull SlideVerifyCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/slide_verify/generate";
+        Map<String, Object> params = new HashMap<>();
+
+        OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
+            @Override
+            public void onUiSuccess(Map<String, Object> result) {
+                if (result == null) {
+                    callback.onLoadFailure(-1, "返回数据为空");
+                    return;
+                }
+
+                String token = (String) result.get("token");
+                String backgroundImageStr = (String) result.get("backgroundImage");
+                String sliderImageStr = (String) result.get("sliderImage");
+                Double sliderY = parseDouble(result.get("y"));
+
+                if (TextUtils.isEmpty(token) || TextUtils.isEmpty(backgroundImageStr) || TextUtils.isEmpty(sliderImageStr) || sliderY == null) {
+                    callback.onLoadFailure(-1, "验证码数据不完整");
+                    return;
+                }
+
+                try {
+                    SlideVerifyInfo verifyInfo = new SlideVerifyInfo.Builder()
+                        .setToken(token)
+                        .setBackgroundImageFromBase64(backgroundImageStr)
+                        .setSliderImageFromBase64(sliderImageStr)
+                        .setSliderY(sliderY)
+                        .build();
+                    callback.onLoadSuccess(verifyInfo);
+                } catch (IllegalStateException e) {
+                    callback.onLoadFailure(-1, "图片解码失败：" + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onLoadFailure(code, msg);
+            }
+        });
+    }
+
+    /**
+     * 验证滑动位置
+     *
+     * @param token      验证令牌
+     * @param x          滑动的 X 坐标（原始坐标，未缩放）
+     * @param callback   回调接口
+     */
+    public void verifySlidePosition(@NonNull String token, int x, @NonNull SlideVerifyCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/slide_verify/verify";
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        params.put("x", x);
+
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult result) {
+                callback.onVerifySuccess(token);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onVerifyFailure(code, msg);
+            }
+        });
+    }
+
+    /**
+     * 安全地将 Object 转换为 Double
+     */
+    private Double parseDouble(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Double) {
+            return (Double) value;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        try {
+            return Double.parseDouble(value.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

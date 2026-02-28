@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 容器视图 -->
     <LinearLayout
         android:id="@+id/containerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_margin="32dp"
         android:orientation="vertical"
         android:padding="16dp"
         android:background="@android:color/white">
@@ -25,7 +25,7 @@
         <FrameLayout
             android:id="@+id/backgroundContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="150dp"
             android:layout_marginBottom="16dp">
 
             <ImageView
