@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cn.wildfire.chat.app.AppService;
+import cn.wildfire.chat.app.widget.SlideVerifyDialog;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
@@ -108,6 +109,29 @@ public class ChangePasswordActivity extends WfcBaseActivity {
             return;
         }
 
+        // Show slide verify dialog before changing password
+        SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
+            @Override
+            public void onVerifySuccess(String token) {
+                performChangePassword(oldPassword, newPassword, token);
+            }
+
+            @Override
+            public void onVerifyFailed() {
+                // 验证失败（滑动位置不对），不关闭窗口
+                // 这个方法现在不需要做任何事，因为 SlideVerifyDialog 已经处理了提示和重置
+            }
+
+            @Override
+            public void onLoadFailed() {
+                // 加载验证码失败，对话框已经关闭
+                // 不需要做任何事，用户可以重新点击按钮
+            }
+        });
+        verifyDialog.show();
+    }
+
+    private void performChangePassword(String oldPassword, String newPassword, String slideVerifyToken) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .content(R.string.password_changing)
             .progress(true, 10)
@@ -115,7 +139,7 @@ public class ChangePasswordActivity extends WfcBaseActivity {
             .build();
         dialog.show();
 
-        AppService.Instance().changePassword(oldPassword, newPassword, new SimpleCallback<StatusResult>() {
+        AppService.Instance().changePassword(oldPassword, newPassword, slideVerifyToken, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult result) {
                 if (isFinishing()) {

@@ -80,6 +80,10 @@ public class AppService implements AppServiceProvider {
     }
 
     public void passwordLogin(String mobile, String password, LoginCallback callback) {
+        passwordLogin(mobile, password, null, callback);
+    }
+
+    public void passwordLogin(String mobile, String password, String slideVerifyToken, LoginCallback callback) {
 
         String url = APP_SERVER_ADDRESS + "/login_pwd";
         Map<String, Object> params = new HashMap<>();
@@ -97,6 +101,10 @@ public class AppService implements AppServiceProvider {
             return;
         }
 
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
+
         OKHttpHelper.post(url, params, new SimpleCallback<LoginResult>() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
@@ -111,6 +119,10 @@ public class AppService implements AppServiceProvider {
     }
 
     public void smsLogin(String phoneNumber, String authCode, LoginCallback callback) {
+        smsLogin(phoneNumber, authCode, null, callback);
+    }
+
+    public void smsLogin(String phoneNumber, String authCode, String slideVerifyToken, LoginCallback callback) {
 
         String url = APP_SERVER_ADDRESS + "/login";
         Map<String, Object> params = new HashMap<>();
@@ -142,6 +154,10 @@ public class AppService implements AppServiceProvider {
             return;
         }
 
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
+
         OKHttpHelper.post(url, params, new SimpleCallback<LoginResult>() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
@@ -169,10 +185,18 @@ public class AppService implements AppServiceProvider {
     }
 
     public void changePassword(String oldPassword, String newPassword, SimpleCallback<StatusResult> callback) {
+        changePassword(oldPassword, newPassword, null, callback);
+    }
+
+    public void changePassword(String oldPassword, String newPassword, String slideVerifyToken, SimpleCallback<StatusResult> callback) {
         String url = APP_SERVER_ADDRESS + "/change_pwd";
         Map<String, Object> params = new HashMap<>();
         params.put("oldPassword", oldPassword);
         params.put("newPassword", newPassword);
+
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
 
         OKHttpHelper.post(url, params, callback);
 
@@ -185,10 +209,19 @@ public class AppService implements AppServiceProvider {
     }
 
     public void requestAuthCode(String phoneNumber, SendCodeCallback callback) {
+        requestAuthCode(phoneNumber, null, callback);
+    }
+
+    public void requestAuthCode(String phoneNumber, String slideVerifyToken, SendCodeCallback callback) {
 
         String url = APP_SERVER_ADDRESS + "/send_code";
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", phoneNumber);
+
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
+
         OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
@@ -208,12 +241,21 @@ public class AppService implements AppServiceProvider {
     }
 
     public void requestResetAuthCode(String phoneNumber, SendCodeCallback callback) {
+        requestResetAuthCode(phoneNumber, null, callback);
+    }
+
+    public void requestResetAuthCode(String phoneNumber, String slideVerifyToken, SendCodeCallback callback) {
 
         String url = APP_SERVER_ADDRESS + "/send_reset_code";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(phoneNumber)) {
             params.put("mobile", phoneNumber);
         }
+
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
+
         OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {

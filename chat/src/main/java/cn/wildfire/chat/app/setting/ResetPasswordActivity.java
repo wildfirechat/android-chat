@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cn.wildfire.chat.app.AppService;
+import cn.wildfire.chat.app.widget.SlideVerifyDialog;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
@@ -110,6 +111,29 @@ public class ResetPasswordActivity extends WfcBaseActivity {
     private Handler handler = new Handler();
 
     void requestAuthCode() {
+        // Show slide verify dialog before sending reset code
+        SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
+            @Override
+            public void onVerifySuccess(String token) {
+                performRequestResetCode(token);
+            }
+
+            @Override
+            public void onVerifyFailed() {
+                // 验证失败（滑动位置不对），不关闭窗口
+                // 这个方法现在不需要做任何事，因为 SlideVerifyDialog 已经处理了提示和重置
+            }
+
+            @Override
+            public void onLoadFailed() {
+                // 加载验证码失败，对话框已经关闭，只需要启用按钮
+                requestAuthCodeButton.setEnabled(true);
+            }
+        });
+        verifyDialog.show();
+    }
+
+    private void performRequestResetCode(String slideVerifyToken) {
         requestAuthCodeButton.setEnabled(false);
         handler.postDelayed(new Runnable() {
             @Override
@@ -122,7 +146,7 @@ public class ResetPasswordActivity extends WfcBaseActivity {
 
         Toast.makeText(this, R.string.requesting_reset_code, Toast.LENGTH_SHORT).show();
 
-        AppService.Instance().requestResetAuthCode(null, new AppService.SendCodeCallback() {
+        AppService.Instance().requestResetAuthCode(null, slideVerifyToken, new AppService.SendCodeCallback() {
             @Override
             public void onUiSuccess() {
                 Toast.makeText(ResetPasswordActivity.this, R.string.reset_code_send_success, Toast.LENGTH_SHORT).show();
@@ -143,6 +167,29 @@ public class ResetPasswordActivity extends WfcBaseActivity {
             return;
         }
 
+        // Show slide verify dialog before resetting password
+        SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
+            @Override
+            public void onVerifySuccess(String token) {
+                performResetPassword(newPassword, token);
+            }
+
+            @Override
+            public void onVerifyFailed() {
+                // 验证失败（滑动位置不对），不关闭窗口
+                // 这个方法现在不需要做任何事，因为 SlideVerifyDialog 已经处理了提示和重置
+            }
+
+            @Override
+            public void onLoadFailed() {
+                // 加载验证码失败，对话框已经关闭
+                // 不需要做任何事，用户可以重新点击按钮
+            }
+        });
+        verifyDialog.show();
+    }
+
+    private void performResetPassword(String newPassword, String slideVerifyToken) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .content(R.string.reset_password_progress)
             .progress(true, 10)
