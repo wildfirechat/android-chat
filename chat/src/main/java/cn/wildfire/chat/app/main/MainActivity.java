@@ -138,7 +138,7 @@ public class MainActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         bottomNavigationView.setItemIconTintList(null);
-        if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
+        if (!showWorkSpace()) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
         }
 
@@ -372,8 +372,7 @@ public class MainActivity extends WfcBaseActivity {
         MeFragment meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
-        boolean showWorkSpace = !TextUtils.isEmpty(Config.WORKSPACE_URL);
-        if (showWorkSpace) {
+        if (showWorkSpace()) {
             mFragmentList.add(WebViewFragment.loadUrl(Config.WORKSPACE_URL));
         }
         mFragmentList.add(discoveryFragment);
@@ -418,14 +417,14 @@ public class MainActivity extends WfcBaseActivity {
                     }
                     break;
                 case R.id.discovery:
-                    setCurrentViewPagerItem(showWorkSpace ? 3 : 2, false);
+                    setCurrentViewPagerItem(showWorkSpace() ? 3 : 2, false);
                     setTitle(R.string.app_title_discover);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
-                    setCurrentViewPagerItem(showWorkSpace ? 4 : 3, false);
+                    setCurrentViewPagerItem(showWorkSpace() ? 4 : 3, false);
                     setTitle(R.string.app_title_me);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);
@@ -751,7 +750,7 @@ public class MainActivity extends WfcBaseActivity {
 
         @Override
         public void onPageSelected(int position) {
-            if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
+            if (!showWorkSpace()) {
                 if (position > 1) {
                     position++;
                 }
@@ -788,4 +787,10 @@ public class MainActivity extends WfcBaseActivity {
             }
         }
     };
+
+    private boolean showWorkSpace() {
+        return !TextUtils.isEmpty(Config.WORKSPACE_URL)
+            && (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.WORKSPACE_URL.contains("wildfirechat.cn")
+            || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.WORKSPACE_URL.contains("wildfirechat.cn")));
+    }
 }
