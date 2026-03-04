@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -99,7 +100,7 @@ public class DiscoveryFragment extends Fragment {
     }
 
     void cookbook() {
-        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
+        if (!Config.IM_SERVER_HOST.equals("wildfirechat.net")) {
             WfcWebViewActivity.loadUrl(getContext(), getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
         } else {
             Toast.makeText(getContext(), "野火IM 开发文档对第三方应用不适用", Toast.LENGTH_SHORT).show();

@@ -15,7 +15,6 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -68,7 +67,7 @@ public class AboutActivity extends WfcBaseActivity {
     }
 
     public void intro() {
-        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
+        if (!Config.IM_SERVER_HOST.equals("wildfirechat.net")) {
             WfcWebViewActivity.loadUrl(this, getString(R.string.about_intro_title), getString(R.string.about_intro_url));
         } else {
             Toast.makeText(this, "野火IM 功能介绍对第三方应用不适用", Toast.LENGTH_SHORT).show();
