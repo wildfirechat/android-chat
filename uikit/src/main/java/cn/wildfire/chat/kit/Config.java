@@ -29,7 +29,8 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/ = "wildfirechat.net";
+    /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/
+    public static String IM_SERVER_HOST  = "121.199.48.45";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
