@@ -30,7 +30,9 @@ public class ErrorCode {
     public static final int INVALID_MESSAGE = 10;  //"invalid message");
 
     //Group error
-    public static final int GROUP_ALREADY_EXIST = 11;  //"group aleady exist");
+    public static final int GROUP_ALREADY_EXIST = 11;  //"group already exist");
+
+    public static final int ERROR_CODE_ALREADY_IN_GROUP = 12; // member already in group
 
     public static final int JOIN_GROUP_FAILED_NEED_VERIFY = 13;
 

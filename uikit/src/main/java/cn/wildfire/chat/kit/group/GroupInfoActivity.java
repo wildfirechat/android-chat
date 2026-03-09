@@ -26,6 +26,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
@@ -175,7 +176,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
                             Intent intent = ConversationActivity.buildConversationIntent(GroupInfoActivity.this, Conversation.ConversationType.Group, groupId, 0);
                             startActivity(intent);
                             finish();
-                        } else if (booleanOperateResult.getErrorCode() == 9) {
+                        } else if (booleanOperateResult.getErrorCode() == ErrorCode.JOIN_GROUP_FAILED_NEED_VERIFY) {
                             sendJoinGroupRequest();
                         } else {
                             Toast.makeText(GroupInfoActivity.this, R.string.add_member_fail, Toast.LENGTH_SHORT).show();
