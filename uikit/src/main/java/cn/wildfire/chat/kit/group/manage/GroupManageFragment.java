@@ -104,7 +104,7 @@ public class GroupManageFragment extends Fragment {
         types = getResources().getStringArray(R.array.group_history_message);
         historyOptionItemView.setDesc(types[groupInfo.historyMessage]);
 
-        if (groupInfo.joinType == 3) {
+        if (groupInfo.type == GroupInfo.GroupType.Restricted && groupInfo.joinType == 3) {
             joinGroupRequestLinearLayout.setVisibility(View.VISIBLE);
             int unread = groupViewModel.getJoinGroupRequestUnread(groupInfo.target);
             joinRequestOptionItemView.setBadgeCount(unread);
@@ -131,9 +131,11 @@ public class GroupManageFragment extends Fragment {
             }
         });
 
-        groupViewModel.joinGroupRequestUpdateLiveData().observe(getActivity(), o -> {
-            setupGroupOptionsView(groupInfo);
-        });
+        if(groupInfo.type == GroupInfo.GroupType.Restricted && groupInfo.joinType == 3){
+            groupViewModel.joinGroupRequestUpdateLiveData().observe(getActivity(), o -> {
+                setupGroupOptionsView(groupInfo);
+            });
+        }
     }
 
     void showGroupManagerSetting() {
