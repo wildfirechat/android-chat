@@ -905,6 +905,9 @@ public class FileUtils {
     }
 
     public static boolean isFileExists(String path) {
+        if(TextUtils.isEmpty(path))
+            return false;
+
         File file = new File(path);
         return file.exists();
     }

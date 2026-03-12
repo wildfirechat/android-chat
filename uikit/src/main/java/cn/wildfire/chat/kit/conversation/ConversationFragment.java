@@ -74,6 +74,7 @@ import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
+import cn.wildfire.chat.kit.archive.service.ArchiveServiceProvider;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.message.EnterChannelChatMessageContent;
@@ -181,6 +182,10 @@ public class ConversationFragment extends Fragment implements
     private String backgroundImageUri = null;
     private int backgroundImageResId = 0;
     private boolean isCommercialServer = false;
+    
+    // 归档消息加载相关
+    private boolean loadingArchivedMessages = false;
+    private boolean hasMoreArchivedMessages = true;
 
     private Observer<List<UiMessage>> messageLiveDataObserver = new Observer<List<UiMessage>>() {
         @Override
@@ -1217,9 +1222,53 @@ public class ConversationFragment extends Fragment implements
     private void loadMoreOldMessages(boolean scrollToBottom) {
         conversationViewModel.loadOldMessages(conversation, targetUser, adapter.getOldestMessageId(), adapter.getOldestMessageUid(), MESSAGE_LOAD_COUNT_PER_TIME, true)
                 .observe(this, uiMessages -> {
-                    adapter.addMessagesAtHead(uiMessages);
+                    // 如果本地和远程都没有更多消息，尝试从归档服务加载
+                    if ((uiMessages == null || uiMessages.isEmpty()) && hasMoreArchivedMessages && !loadingArchivedMessages) {
+                        loadMoreOldMessagesFromArchive(scrollToBottom);
+                    } else {
+                        adapter.addMessagesAtHead(uiMessages);
+                        swipeRefreshLayout.setRefreshing(false);
+                        if (scrollToBottom) {
+                            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                        }
+                    }
+                });
+    }
 
+    /**
+     * 从归档服务加载更多历史消息
+     *
+     * @param scrollToBottom 是否滚动到底部
+     */
+    private void loadMoreOldMessagesFromArchive(boolean scrollToBottom) {
+        if (loadingArchivedMessages || !hasMoreArchivedMessages) {
+            swipeRefreshLayout.setRefreshing(false);
+            return;
+        }
+
+        if (!ArchiveServiceProvider.getInstance().isAvailable()) {
+            swipeRefreshLayout.setRefreshing(false);
+            return;
+        }
+
+        loadingArchivedMessages = true;
+        conversationViewModel.loadArchivedMessages(conversation, adapter.getOldestMessageUid(), MESSAGE_LOAD_COUNT_PER_TIME)
+                .observe(this, result -> {
+                    loadingArchivedMessages = false;
                     swipeRefreshLayout.setRefreshing(false);
+                    
+                    if (result == null) {
+                        hasMoreArchivedMessages = false;
+                        return;
+                    }
+                    
+                    List<UiMessage> uiMessages = result.first;
+                    hasMoreArchivedMessages = result.second;
+                    
+                    if (uiMessages != null && !uiMessages.isEmpty()) {
+                        adapter.addMessagesAtHead(uiMessages);
+                    }
+                    
                     if (scrollToBottom) {
                         recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                     }

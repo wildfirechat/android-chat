@@ -114,6 +114,12 @@ public class Config {
     public static String POLL_SERVER_ADDRESS = "https://poll.wildfirechat.net";
 
     /**
+     * 归档服务地址，如果需要从历史归档服务器加载消息功能，请部署归档服务，然后这里填上归档服务地址；如果不需要归档功能，请置为 null
+     * 示例：http://192.168.1.81:8083
+     */
+    public static String ARCHIVE_SERVER_ADDRESS = null;
+
+    /**
      * 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。
      */
     public static String SEND_LOG_COMMAND = "*#marslog#";

@@ -32,6 +32,9 @@ import cn.wildfirechat.remote.GetOneRemoteMessageCallback;
 import cn.wildfirechat.remote.GetRemoteMessageCallback;
 import cn.wildfirechat.remote.SecretChatStateChangeListener;
 
+import cn.wildfire.chat.kit.archive.service.ArchiveService;
+import cn.wildfire.chat.kit.archive.service.ArchiveServiceProvider;
+
 public class ConversationViewModel extends ViewModel implements AppScopeViewModel, SecretChatStateChangeListener {
     private MutableLiveData<Conversation> clearConversationMessageLiveData;
     private MutableLiveData<Pair<String, ChatManager.SecretChatState>> secretConversationStateLiveData;
@@ -90,13 +93,15 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                                     }
                                     result.postValue(uiMsgs);
                                 } else {
-                                    result.postValue(new ArrayList<>());
+                                    // 远程IM服务没有更多消息，尝试从归档服务获取
+                                    loadArchivedMessagesInternal(conversation, fromMessageUid, count, result);
                                 }
                             }
 
                             @Override
                             public void onFail(int errorCode) {
-                                result.postValue(new ArrayList<>());
+                                // 远程IM服务加载失败，尝试从归档服务获取
+                                loadArchivedMessagesInternal(conversation, fromMessageUid, count, result);
                             }
                         });
                     } else {
@@ -329,5 +334,86 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
         if (secretConversationStateLiveData != null) {
             secretConversationStateLiveData.postValue(pair);
         }
+    }
+
+    /**
+     * 加载归档消息（内部方法，用于回调）
+     *
+     * @param conversation   会话
+     * @param fromMessageUid 起始消息UID
+     * @param count          加载数量
+     * @param result         结果LiveData
+     */
+    private void loadArchivedMessagesInternal(Conversation conversation, long fromMessageUid, int count,
+                                      MutableLiveData<List<UiMessage>> result) {
+        ArchiveService archiveService = ArchiveServiceProvider.getInstance().getService();
+        if (archiveService == null) {
+            result.postValue(new ArrayList<>());
+            return;
+        }
+
+        long startMid = fromMessageUid > 0 ? fromMessageUid : 0;
+        archiveService.getArchivedMessages(conversation.type.getValue(), conversation.target,
+                conversation.line, startMid, true, count,
+                new ArchiveService.OnArchiveCallback<ArchiveService.ArchiveMessageResult>() {
+                    @Override
+                    public void onSuccess(ArchiveService.ArchiveMessageResult archiveResult) {
+                        if (archiveResult != null && archiveResult.messages != null && !archiveResult.messages.isEmpty()) {
+                            List<UiMessage> uiMsgs = new ArrayList<>();
+                            for (Message msg : archiveResult.messages) {
+                                uiMsgs.add(0, new UiMessage(msg));
+                            }
+                            result.postValue(uiMsgs);
+                        } else {
+                            result.postValue(new ArrayList<>());
+                        }
+                    }
+
+                    @Override
+                    public void onError(int errorCode, String message) {
+                        result.postValue(new ArrayList<>());
+                    }
+                });
+    }
+
+    /**
+     * 直接从归档服务加载历史消息（用于当本地和远程都没有更多消息时）
+     *
+     * @param conversation   会话
+     * @param fromMessageUid 起始消息UID
+     * @param count          加载数量
+     * @return LiveData containing list of UiMessage
+     */
+    public MutableLiveData<Pair<List<UiMessage>, Boolean>> loadArchivedMessages(Conversation conversation, long fromMessageUid, int count) {
+        MutableLiveData<Pair<List<UiMessage>, Boolean>> result = new MutableLiveData<>();
+        ArchiveService archiveService = ArchiveServiceProvider.getInstance().getService();
+        if (archiveService == null) {
+            result.postValue(new Pair<>(new ArrayList<>(), false));
+            return result;
+        }
+
+        long startMid = fromMessageUid > 0 ? fromMessageUid : 0;
+        archiveService.getArchivedMessages(conversation.type.getValue(), conversation.target,
+                conversation.line, startMid, true, count,
+                new ArchiveService.OnArchiveCallback<ArchiveService.ArchiveMessageResult>() {
+                    @Override
+                    public void onSuccess(ArchiveService.ArchiveMessageResult archiveResult) {
+                        if (archiveResult != null && archiveResult.messages != null && !archiveResult.messages.isEmpty()) {
+                            List<UiMessage> uiMsgs = new ArrayList<>();
+                            for (Message msg : archiveResult.messages) {
+                                uiMsgs.add(new UiMessage(msg));
+                            }
+                            result.postValue(new Pair<>(uiMsgs, archiveResult.hasMore));
+                        } else {
+                            result.postValue(new Pair<>(new ArrayList<>(), false));
+                        }
+                    }
+
+                    @Override
+                    public void onError(int errorCode, String message) {
+                        result.postValue(new Pair<>(new ArrayList<>(), false));
+                    }
+                });
+        return result;
     }
 }

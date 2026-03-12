@@ -13,9 +13,11 @@ import android.text.TextUtils;
 
 import java.lang.reflect.Method;
 
+import cn.wildfire.chat.app.archive.ArchiveServiceImpl;
 import cn.wildfire.chat.app.collection.CollectionServiceImpl;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.app.poll.PollServiceImpl;
+import cn.wildfire.chat.kit.archive.service.ArchiveServiceProvider;
 import cn.wildfirechat.message.PollMessageContent;
 import cn.wildfirechat.message.PollResultMessageContent;
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -76,6 +78,12 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             if (!TextUtils.isEmpty(Config.POLL_SERVER_ADDRESS)) {
                 PollServiceImpl.getInstance().setBaseUrl(Config.POLL_SERVER_ADDRESS);
                 cn.wildfire.chat.kit.poll.service.PollServiceProvider.getInstance().setService(PollServiceImpl.getInstance());
+            }
+
+            // 初始化归档服务
+            if (!TextUtils.isEmpty(Config.ARCHIVE_SERVER_ADDRESS)) {
+                ArchiveServiceImpl.getInstance().setBaseUrl(Config.ARCHIVE_SERVER_ADDRESS);
+                ArchiveServiceProvider.getInstance().setService(ArchiveServiceImpl.getInstance());
             }
 
             String id = null;
