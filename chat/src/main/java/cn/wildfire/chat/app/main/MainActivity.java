@@ -662,7 +662,11 @@ public class MainActivity extends WfcBaseActivity {
             case ".mpe":
             case ".mp4":
             case ".avi":
-                content = new VideoMessageContent(filePath);
+                try {
+                    content = new VideoMessageContent(filePath);
+                } catch (Exception e) {
+                    content = new FileMessageContent(filePath);
+                }
                 break;
             default:
                 content = new FileMessageContent(filePath);
