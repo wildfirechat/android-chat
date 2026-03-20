@@ -110,7 +110,7 @@ public class GroupInfo implements Parcelable {
 
     /**
      * 群成员的最后更新日期
-     * < -1 已退出群组；-1 未加入群组；> -1 已加入群组
+     * < -1 已退出群组；> 0 已加入群组
      */
     public long memberDt;
 

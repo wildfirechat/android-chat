@@ -94,7 +94,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         if (groupInfo.memberDt < -1) {
             // 已退出群组
             actionButton.setText(R.string.join_group_chat);
-        } else if (groupInfo.memberDt == -1) {
+        } else if (groupInfo.memberDt <= 0) {
             // 未加入
             actionButton.setText(R.string.join_group_chat);
         } else {
