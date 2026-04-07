@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="静音"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -57,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="视频"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -80,6 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="共享屏幕"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -104,6 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="管理"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -127,6 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="更多"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>

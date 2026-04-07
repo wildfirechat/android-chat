@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,15 @@ class VideoConferenceMainView extends RelativeLayout {
 
     private OnClickListener clickListener;
 
+    // Drag related fields
+    private static final float CLICK_DRAG_TOLERANCE = 10f;
+    private boolean isPreviewDragging = false;
+    private float dragStartX, dragStartY;
+    private float previewStartX, previewStartY;
+    private int statusBarHeight = 0;
+    private int topBarHeight = 0;
+    private int bottomBarHeight = 0;
+
     public VideoConferenceMainView(Context context) {
         super(context);
         initView(context, null);
@@ -67,6 +77,136 @@ class VideoConferenceMainView extends RelativeLayout {
     private void bindViews(View view) {
         previewContainerFrameLayout = view.findViewById(R.id.previewContainerFrameLayout);
         focusContainerFrameLayout = view.findViewById(R.id.focusContainerFrameLayout);
+    }
+
+    private void initScreenDimensions() {
+        if (statusBarHeight == 0) {
+            // Get status bar height
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            }
+        }
+    }
+    
+    // Get parent dimensions for drag boundaries
+    private int getParentWidth() {
+        View parent = (View) getParent();
+        if (parent != null) {
+            return parent.getWidth();
+        }
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        return Math.max(dm.widthPixels, dm.heightPixels);
+    }
+    
+    private int getParentHeight() {
+        View parent = (View) getParent();
+        if (parent != null) {
+            return parent.getHeight();
+        }
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        return Math.max(dm.widthPixels, dm.heightPixels);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (previewContainerFrameLayout == null || previewContainerFrameLayout.getChildCount() == 0) {
+            return super.onTouchEvent(event);
+        }
+        
+        // Check if touch is within preview container
+        float x = event.getX();
+        float y = event.getY();
+        float previewX = previewContainerFrameLayout.getX();
+        float previewY = previewContainerFrameLayout.getY();
+        float previewW = previewContainerFrameLayout.getWidth();
+        float previewH = previewContainerFrameLayout.getHeight();
+        
+        boolean inPreview = x >= previewX && x <= previewX + previewW &&
+                           y >= previewY && y <= previewY + previewH;
+        
+        if (!inPreview) {
+            return super.onTouchEvent(event);
+        }
+        
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                dragStartX = event.getRawX();
+                dragStartY = event.getRawY();
+                previewStartX = previewContainerFrameLayout.getX();
+                previewStartY = previewContainerFrameLayout.getY();
+                isPreviewDragging = false;
+                getParent().requestDisallowInterceptTouchEvent(true);
+                return true;
+                
+            case MotionEvent.ACTION_MOVE:
+                float rawX = event.getRawX();
+                float rawY = event.getRawY();
+                float dx = rawX - dragStartX;
+                float dy = rawY - dragStartY;
+                
+                if (!isPreviewDragging && (Math.abs(dx) > CLICK_DRAG_TOLERANCE || Math.abs(dy) > CLICK_DRAG_TOLERANCE)) {
+                    isPreviewDragging = true;
+                }
+                
+                if (isPreviewDragging) {
+                    float newX = previewStartX + dx;
+                    float newY = previewStartY + dy;
+                    
+                    // Constrain to parent bounds
+                    initScreenDimensions();
+                    int parentWidth = getParentWidth();
+                    int parentHeight = getParentHeight();
+                    newX = Math.max(0, Math.min(newX, parentWidth - previewW));
+                    newY = Math.max(statusBarHeight, Math.min(newY, parentHeight - previewH));
+                    
+                    previewContainerFrameLayout.setX(newX);
+                    previewContainerFrameLayout.setY(newY);
+                }
+                return true;
+                
+            case MotionEvent.ACTION_UP:
+                getParent().requestDisallowInterceptTouchEvent(false);
+                if (!isPreviewDragging) {
+                    // Click - toggle bars
+                    if (clickListener != null) {
+                        clickListener.onClick(this);
+                    }
+                }
+                isPreviewDragging = false;
+                return true;
+                
+            case MotionEvent.ACTION_CANCEL:
+                getParent().requestDisallowInterceptTouchEvent(false);
+                isPreviewDragging = false;
+                return true;
+        }
+        
+        return super.onTouchEvent(event);
+    }
+    
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (previewContainerFrameLayout == null || previewContainerFrameLayout.getChildCount() == 0) {
+            return super.onInterceptTouchEvent(event);
+        }
+        
+        float x = event.getX();
+        float y = event.getY();
+        float previewX = previewContainerFrameLayout.getX();
+        float previewY = previewContainerFrameLayout.getY();
+        float previewW = previewContainerFrameLayout.getWidth();
+        float previewH = previewContainerFrameLayout.getHeight();
+        
+        boolean inPreview = x >= previewX && x <= previewX + previewW &&
+                           y >= previewY && y <= previewY + previewH;
+        
+        if (inPreview) {
+            // Intercept all touches in preview area for dragging
+            return true;
+        }
+        
+        return super.onInterceptTouchEvent(event);
     }
 
     public void setupProfiles(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
@@ -114,6 +254,50 @@ class VideoConferenceMainView extends RelativeLayout {
         this.clickListener = l;
     }
 
+    // Set bar heights for collision detection
+    public void setBarHeights(int topBarHeight, int bottomBarHeight) {
+        this.topBarHeight = topBarHeight;
+        this.bottomBarHeight = bottomBarHeight;
+    }
+
+    // Adjust preview position when bars are shown/hidden (no animation)
+    public void adjustPositionForBars(boolean barsVisible) {
+        if (previewContainerFrameLayout == null) return;
+        
+        float currentY = previewContainerFrameLayout.getY();
+        float currentX = previewContainerFrameLayout.getX();
+        float previewH = previewContainerFrameLayout.getHeight();
+        float previewW = previewContainerFrameLayout.getWidth();
+        
+        if (barsVisible && (topBarHeight > 0 || bottomBarHeight > 0)) {
+            int parentHeight = getParentHeight();
+            boolean needAdjust = false;
+            
+            // Check if overlapping with top bar
+            if (currentY < topBarHeight) {
+                currentY = topBarHeight + 10;
+                needAdjust = true;
+            }
+            
+            // Check if overlapping with bottom bar
+            float bottomBarTop = parentHeight - bottomBarHeight;
+            if (currentY + previewH > bottomBarTop) {
+                currentY = bottomBarTop - previewH - 10;
+                needAdjust = true;
+            }
+            
+            if (needAdjust) {
+                // Ensure within horizontal bounds
+                int parentWidth = getParentWidth();
+                currentX = Math.max(0, Math.min(currentX, parentWidth - previewW));
+                
+                previewContainerFrameLayout.setX(currentX);
+                previewContainerFrameLayout.setY(currentY);
+            }
+        }
+        // When bars hide, keep current position (respect user's drag)
+    }
+
     public static final String TAG = "ConferenceVideoFragment";
 
 
@@ -142,14 +326,19 @@ class VideoConferenceMainView extends RelativeLayout {
 
         for (AVEngineKit.ParticipantProfile profile : mainProfiles) {
             ConferenceParticipantItemView conferenceItem;
+            boolean isMyProfile = profile.getUserId().equals(ChatManager.Instance().getUserId());
             if (profile.isAudience() || profile.isVideoMuted()) {
                 conferenceItem = new ConferenceParticipantItemView(getContext());
 //                conferenceItem.setBackgroundResource(R.color.gray0);
             } else {
                 conferenceItem = new ConferenceParticipantItemVideoView(getContext());
-                ((ConferenceParticipantItemVideoView) conferenceItem).setEnableVideoZoom(true);
+                // Disable zoom for preview window to allow dragging
+                ((ConferenceParticipantItemVideoView) conferenceItem).setEnableVideoZoom(false);
             }
-            conferenceItem.setOnClickListener(clickListener);
+            // Only set click listener for focus view, not for preview window
+            if (!isMyProfile) {
+                conferenceItem.setOnClickListener(clickListener);
+            }
             conferenceItem.setup(this.callSession, profile);
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                 myParticipantItemView = conferenceItem;

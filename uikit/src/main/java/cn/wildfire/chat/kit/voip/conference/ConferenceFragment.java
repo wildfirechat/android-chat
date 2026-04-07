@@ -566,57 +566,34 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     private void setPanelVisibility(int visibility) {
-        TransitionSet transitionSet = new TransitionSet();
-        Transition transitionToBottom = new Slide(Gravity.BOTTOM);
-        transitionToBottom.setDuration(300);
-        transitionSet.addTransition(transitionToBottom);
-
-        Transition transitionToTop = new Slide(Gravity.TOP);
-        transitionToTop.setDuration(500);
-        transitionSet.addTransition(transitionToTop);
-
-        transitionToBottom.addTarget(bottomPanel);
-        transitionToBottom.addTarget(micLinearLayout);
-        transitionToTop.addTarget(topBarView);
-
-        transitionSet.addListener(new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(@NonNull Transition transition) {
-//                Activity activity = ((Activity) getContext());
-//                if (visibility == VISIBLE) {
-//                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                } else {
-//                    activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//                }
-            }
-
-            @Override
-            public void onTransitionEnd(@NonNull Transition transition) {
-            }
-
-            @Override
-            public void onTransitionCancel(@NonNull Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionPause(@NonNull Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionResume(@NonNull Transition transition) {
-
-            }
-        });
-
-        transitionSet.setOrdering(TransitionSet.ORDERING_TOGETHER);
-//        transitionSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        TransitionManager.beginDelayedTransition(rootFrameLayout, transitionSet);
-
+        boolean isVisible = visibility == VISIBLE;
+        
+        // Toggle visibility
         bottomPanel.setVisibility(visibility);
         topBarView.setVisibility(visibility);
         micLinearLayout.setVisibility(visibility == VISIBLE ? GONE : VISIBLE);
+        
+        // Adjust preview window position if bars are shown
+        if (isVisible) {
+            adjustPreviewWindowForBars(true);
+        }
+    }
+    
+    private void adjustPreviewWindowForBars(boolean barsVisible) {
+        if (!isVideoConference() || conferencePages == null) {
+            return;
+        }
+        
+        View view = conferencePages.get(currentPosition % 3);
+        if (view instanceof VideoConferenceMainView) {
+            VideoConferenceMainView mainView = (VideoConferenceMainView) view;
+            if (barsVisible) {
+                int topBarH = topBarView.getHeight();
+                int bottomBarH = bottomPanel.getHeight();
+                mainView.setBarHeights(topBarH > 0 ? topBarH : 0, bottomBarH > 0 ? bottomBarH : 0);
+            }
+            mainView.adjustPositionForBars(barsVisible);
+        }
     }
 
     private final Handler handler = new Handler();

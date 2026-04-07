@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="静音"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -57,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="扬声器"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -81,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="管理"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -104,6 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="结束"
+                android:textSize="11sp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
