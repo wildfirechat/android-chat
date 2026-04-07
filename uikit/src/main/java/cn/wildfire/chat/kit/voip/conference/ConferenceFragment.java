@@ -195,7 +195,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         view.findViewById(R.id.micLinearLayout).setOnClickListener(_v -> muteAudio());
         view.findViewById(R.id.videoView).setOnClickListener(_v -> muteVideo());
         view.findViewById(R.id.switchCameraImageView).setOnClickListener(_v -> switchCamera());
-        view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
+        view.findViewById(R.id.hangupTextView).setOnClickListener(_v -> hangup());
         view.findViewById(R.id.shareScreenView).setOnClickListener(_v -> shareScreen());
         view.findViewById(R.id.titleLinearLayout).setOnClickListener(_v -> showConferenceInfoDialog());
         view.findViewById(R.id.moreActionLinearLayout).setOnClickListener(_v -> showMoreActionDialog());

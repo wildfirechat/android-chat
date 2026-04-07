@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -20,6 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -34,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="静音"
-                android:textSize="11sp"
+                android:textSize="10dp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -44,6 +45,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -58,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="扬声器"
-                android:textSize="11sp"
+                android:textSize="10dp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -68,6 +70,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -83,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="管理"
-                android:textSize="11sp"
+                android:textSize="10dp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -93,6 +96,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -107,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="结束"
-                android:textSize="11sp"
+                android:textSize="10dp"
                 android:textColor="@color/white" />
 
         </LinearLayout>

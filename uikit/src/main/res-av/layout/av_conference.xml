@@ -19,20 +19,20 @@
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
-        android:paddingTop="40dp">
+        android:paddingTop="36dp">
 
         <ImageView
             android:id="@+id/speakerImageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:src="@drawable/av_conference_earphone_selector" />
 
         <ImageView
             android:id="@+id/switchCameraImageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:src="@drawable/av_conference_switch_camera" />
@@ -74,18 +74,22 @@
                 android:id="@+id/durationTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textColor="#80FFFFFF"
                 tools:text="02:20" />
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/hangupImageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:paddingLeft="10dp"
+        <TextView
+            android:id="@+id/hangupTextView"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:gravity="center"
             android:paddingRight="10dp"
-            android:src="@drawable/av_conference_hangup" />
+            android:text="结束"
+            android:textColor="#EE0000"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
