@@ -3,7 +3,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E5E5E5"
+    android:background="@color/background_secondary"
     android:orientation="vertical">
 
     <TextView
@@ -13,7 +13,7 @@
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
         android:text="category"
-        android:textColor="#989898"
+        android:textColor="@color/text_tertiary"
         android:textSize="13sp"
         android:visibility="visible" />
 

@@ -80,4 +80,9 @@
     <color name="gray">#808080</color>
     <color name="orange">#FF9500</color>
     <color name="poll_progress_bg">#E8F0FE</color>
+    <color name="text_primary">#333333</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_tertiary">#999999</color>
+    <color name="text_hint">#BFBFBF</color>
+    <color name="background_secondary">#F5F5F5</color>
 </resources>

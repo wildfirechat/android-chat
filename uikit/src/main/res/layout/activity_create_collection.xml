@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/collection_title"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <EditText
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/collection_desc"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <EditText
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/collection_template"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <EditText
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/collection_expire_type"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <RadioGroup

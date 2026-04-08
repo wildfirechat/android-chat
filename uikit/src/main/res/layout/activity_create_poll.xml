@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="投票描述"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <!-- 标题输入 -->
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="投票选项"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <!-- 选项列表容器 -->
@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="至少2个选项，最多10个选项"
-                android:textColor="#999999"
+                android:textColor="@color/text_tertiary"
                 android:textSize="12sp" />
 
             <!-- 设置区域 -->
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="投票设置"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <!-- 设置项容器 -->
@@ -124,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="投票类型"
-                        android:textColor="#333333"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -132,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="单选"
-                        android:textColor="#666666"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
                     <ImageView
@@ -147,7 +147,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginStart="16dp"
-                    android:background="#E5E5E5" />
+                    android:background="@color/background_secondary" />
 
                 <!-- 匿名投票 -->
                 <LinearLayout
@@ -163,7 +163,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="匿名投票"
-                        android:textColor="#333333"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <Switch
@@ -176,7 +176,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginStart="16dp"
-                    android:background="#E5E5E5" />
+                    android:background="@color/background_secondary" />
 
                 <!-- 始终显示结果 -->
                 <LinearLayout
@@ -192,7 +192,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="始终显示结果"
-                        android:textColor="#333333"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <Switch
@@ -205,7 +205,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginStart="16dp"
-                    android:background="#E5E5E5" />
+                    android:background="@color/background_secondary" />
 
                 <!-- 截止时间 -->
                 <LinearLayout
@@ -223,7 +223,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="截止时间"
-                        android:textColor="#333333"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -231,7 +231,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="无截止时间"
-                        android:textColor="#666666"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
                     <ImageView
@@ -246,7 +246,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginStart="16dp"
-                    android:background="#E5E5E5" />
+                    android:background="@color/background_secondary" />
 
                 <!-- 可见性 -->
                 <LinearLayout
@@ -264,7 +264,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="可见性"
-                        android:textColor="#333333"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -272,7 +272,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="仅群内可见"
-                        android:textColor="#666666"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
                     <ImageView

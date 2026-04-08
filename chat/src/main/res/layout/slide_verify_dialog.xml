@@ -55,7 +55,7 @@
                 android:layout_height="match_parent"
                 android:text="向右滑动完成验证"
                 android:textSize="14sp"
-                android:textColor="#999999"
+                android:textColor="@color/text_tertiary"
                 android:gravity="center"/>
 
             <View

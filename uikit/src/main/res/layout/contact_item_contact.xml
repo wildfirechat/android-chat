@@ -9,7 +9,7 @@
         android:id="@+id/categoryTextView"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:background="@color/gray5"
+        android:background="@color/primary_background"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
         android:text="@string/group_owner"

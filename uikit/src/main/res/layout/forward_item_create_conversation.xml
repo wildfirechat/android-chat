@@ -15,7 +15,7 @@
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:text="@string/create_new_conversation"
-        android:textColor="#989898"
+        android:textColor="@color/text_tertiary"
         android:textSize="13sp"
         android:visibility="visible" />
 

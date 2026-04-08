@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
+    android:background="@color/white"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="12dp">
@@ -31,7 +31,7 @@
         android:inputType="textMultiLine"
         android:maxLines="3"
         android:minHeight="40dp"
-        android:textColor="#333333"
+        android:textColor="@color/text_primary"
         android:textColorHint="#999999"
         android:textSize="15sp" />
 

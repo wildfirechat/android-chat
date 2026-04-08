@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="@color/gray4">
 
     <!-- Header -->
     <LinearLayout
@@ -28,7 +28,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/backup_desc"
             android:textSize="14sp"
-            android:textColor="#666666" />
+            android:textColor="@color/text_secondary" />
     </LinearLayout>
 
     <!-- Action Buttons -->
@@ -79,7 +79,7 @@
         android:text="@string/recent_backups"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:textColor="#666666" />
+        android:textColor="@color/text_secondary" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/backupListRecyclerView"

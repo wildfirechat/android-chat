@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
+    android:background="@color/white"
     android:orientation="vertical"
     android:padding="16dp"
     tools:background="#ffffff">
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:textColor="#333333"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
         android:textStyle="bold"
         tools:text="周末聚餐接龙" />
@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="#666666"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:visibility="gone"
         tools:text="本周六晚上聚餐，请大家报名"
@@ -73,6 +73,6 @@
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:layout_marginTop="16dp"
-        android:background="#f5f5f5" />
+        android:background="@color/gray4" />
 
 </LinearLayout>

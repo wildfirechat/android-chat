@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray5"
+    android:background="@color/primary_background"
     android:orientation="vertical">
 
     <LinearLayout
@@ -15,11 +15,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="23dp"
-            android:background="#E5E5E5"
+            android:background="@color/background_secondary"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:text="@string/group_chat"
-            android:textColor="#989898"
+            android:textColor="@color/text_tertiary"
             android:textSize="13sp"
             android:visibility="visible" />
 

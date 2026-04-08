@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ImagePickerTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ImagePickerTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:fitsSystemWindows">true</item>
         <item name="colorAccent">#3B62E0</item>
         <item name="android:textColorSecondary">#969696</item>
         <item name="android:navigationBarColor">@color/status_bar</item>
     </style>
 
-    <style name="ImagePickerThemeFullScreen" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ImagePickerThemeFullScreen" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:navigationBarColor">#969696</item>
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:windowFullscreen">false</item>

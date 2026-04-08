@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/gray5"
+            android:background="@color/primary_background"
             android:paddingLeft="@dimen/option_item_margin_left"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -52,7 +52,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/gray5"
+            android:background="@color/primary_background"
             android:paddingLeft="@dimen/option_item_margin_left"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -91,7 +91,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/gray5"
+            android:background="@color/primary_background"
             android:paddingLeft="@dimen/option_item_margin_left"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"

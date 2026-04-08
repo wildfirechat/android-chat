@@ -40,7 +40,7 @@
             android:layout_marginTop="4dp"
             android:text="15 conversations, 3250 messages"
             android:textSize="14sp"
-            android:textColor="#666666" />
+            android:textColor="@color/text_secondary" />
 
         <LinearLayout
             android:layout_width="match_parent"

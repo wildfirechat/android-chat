@@ -10,7 +10,7 @@
         android:id="@+id/expandTextView"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#FFFFFF"
+        android:background="@color/white"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
         android:text="@string/click_to_expand_more"

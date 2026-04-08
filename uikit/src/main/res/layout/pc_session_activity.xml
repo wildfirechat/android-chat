@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/gray4"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="16sp"
                 tools:text="PC端已登录" />
         </LinearLayout>
@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/mute_mobile"
-                    android:textColor="#333333"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <Switch
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/lock_pc"
-                    android:textColor="#333333"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <Switch
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/send_file"
-                    android:textColor="#333333"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <ImageView

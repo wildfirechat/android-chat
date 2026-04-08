@@ -13,6 +13,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/line" />
+        android:background="@color/background_secondary" />
 
 </LinearLayout>

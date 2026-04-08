@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#121212</color>
+    <color name="line">#2C2C2C</color>
+    <color name="primary_background">#000000</color>
+
+    <color name="primary_item_pressed_color">#2C2C2C</color>
+    <color name="primary_item_stick_top_color">#1C1C1E</color>
+
+    <color name="gray0">#D1D1D1</color>
+    <color name="gray1">#A0A0A0</color>
+    <color name="gray2">#8E8E93</color>
+    <color name="gray3">#808E8E93</color>
+    <color name="gray4">#1C1C1E</color>
+    <color name="gray5">#000000</color>
+    <color name="gray7">#999999</color>
+    <color name="gray8">#48484A</color>
+    <color name="gray10">#2C2C2E</color>
+    <color name="gray11">#8E8E93</color>
+    <color name="gray12">#AEAEB2</color>
+    <color name="gray13">#636366</color>
+    <color name="gray14">#1C1C1E</color>
+    <color name="gray15">#D1D1D1</color>
+    <color name="gray16">#C7C7CC</color>
+    <color name="gray17">#8E8E93</color>
+    <color name="gray18">#1C1C1E</color>
+    <color name="gray19">#2C2C2E</color>
+    <color name="gray20">#2C2C2C</color>
+    <color name="gray21">#3A3A3C</color>
+    <color name="gray22">#1C1C1E</color>
+    <color name="gray23">#8E8E93</color>
+
+    <color name="black0">#FFFFFF</color>
+    <color name="black1">#EBEBEB</color>
+    <color name="black2">#F2F2F7</color>
+    <color name="black3">#E5E5EA</color>
+    <color name="black4">#D1D1D6</color>
+    <color name="black6">#999999</color>
+    <color name="black7">#D1D1D6</color>
+    <color name="black8">#C7C7CC</color>
+
+    <color name="black">#FFFFFF</color>
+    <color name="gray">#999999</color>
+
+    <color name="side_bar">#A0A0A0</color>
+    <color name="side_bar_pressed">#606060</color>
+
+    <color name="colorPrimary">#3B62E0</color>
+    <color name="colorPrimaryDark">#3B62E0</color>
+    <color name="text_primary">#EBEBEB</color>
+    <color name="text_secondary">#AEAEB2</color>
+    <color name="text_tertiary">#8E8E93</color>
+    <color name="text_hint">#48484A</color>
+    <color name="background_secondary">#1C1C1E</color>
+</resources>

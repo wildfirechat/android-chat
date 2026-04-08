@@ -34,7 +34,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="接龙标题"
-                android:textColor="#333333"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:text="0人参与"
-                android:textColor="#999999"
+                android:textColor="@color/text_tertiary"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -57,7 +57,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:text="描述"
-            android:textColor="#666666"
+            android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:visibility="gone" />
 
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="暂无参与，快来抢沙发吧~"
-            android:textColor="#999999"
+            android:textColor="@color/text_tertiary"
             android:textSize="13sp"
             android:visibility="gone" />
 
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text=""
-            android:textColor="#999999"
+            android:textColor="@color/text_tertiary"
             android:textSize="12sp"
             android:visibility="gone" />
 

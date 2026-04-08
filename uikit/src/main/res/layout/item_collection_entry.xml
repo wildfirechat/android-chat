@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
+    android:background="@color/white"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="12dp">
@@ -27,7 +27,7 @@
         android:layout_marginStart="12dp"
         android:layout_weight="1"
         android:ellipsize="end"
-        android:textColor="#333333"
+        android:textColor="@color/text_primary"
         android:textSize="15sp"
         tools:text="参与内容" />
 

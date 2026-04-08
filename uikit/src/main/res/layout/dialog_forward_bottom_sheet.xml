@@ -14,7 +14,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
         android:text="分别发送给："
-        android:textColor="#000000"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -44,7 +44,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="3"
-            android:textColor="#666666"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
         <TextView
@@ -75,7 +75,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:hint="发消息"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textColorHint="#999999"
             android:textSize="14sp" />
 
@@ -114,7 +114,7 @@
             android:layout_weight="1"
             android:background="@drawable/shape_forward_btn_cancel_bg"
             android:text="取消"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp" />
 
         <Button

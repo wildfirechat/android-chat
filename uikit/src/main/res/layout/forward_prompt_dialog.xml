@@ -45,10 +45,10 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="15dp"
-        android:background="#E5E5E5"
+        android:background="@color/background_secondary"
         android:gravity="center_vertical"
         android:paddingLeft="5dp"
-        android:textColor="#989898"
+        android:textColor="@color/text_tertiary"
         android:textSize="13sp"
         android:visibility="visible"
         tools:text="message" />

@@ -128,7 +128,7 @@
                 android:ellipsize="end"
                 android:maxLength="20"
                 android:singleLine="true"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:visibility="gone"
                 tools:text="imndx"
