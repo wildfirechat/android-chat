@@ -79,7 +79,7 @@ public class PCOnlineInfo implements Parcelable {
             PCOnlineInfo info = new PCOnlineInfo();
             info.type = type;
             info.timestamp = Long.parseLong(parts[0]);
-            info.platform = Platform.values()[Integer.parseInt(parts[1])];
+            info.platform = Platform.platform(Integer.parseInt(parts[1]));
             info.clientId = parts[2];
             info.clientName = parts[3];
             info.isOnline = true;
