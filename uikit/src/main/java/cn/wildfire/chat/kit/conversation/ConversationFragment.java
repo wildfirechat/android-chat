@@ -320,7 +320,7 @@ public class ConversationFragment extends Fragment implements
             if (isDisplayableMessage(uiMessage)) {
                 adapter.updateMessage(uiMessage);
             }
-            if (uiMessage.progress == 100) {
+            if (uiMessage.progress == 100 && uiMessage.message.status != MessageStatus.Sending) {
                 uiMessage.progress = 0;
                 messageViewModel.playAudioMessage(uiMessage);
             }
