@@ -681,6 +681,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     public void onSuccess(String result) {
                         protoMessage.getContent().setRemoteMediaUrl(result);
                         ProtoLogic.updateMessageContent(protoMessage);
+                        try {
+                            if(callback != null) {
+                                callback.onMediaUploaded(result);
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                         if(messageId > 0) {
                             ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
                         } else {
