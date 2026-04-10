@@ -127,7 +127,9 @@ public class ConferenceManager implements OnReceiveMessageListener {
     }
 
     private void checkConferenceEndTime() {
-        if (currentConferenceInfo == null || currentConferenceInfo.getEndTime() <= 0) {
+        if (currentConferenceInfo == null
+                || currentConferenceInfo.getEndTime() <= 0
+                || AVEngineKit.Instance().getCurrentSession().getState() == AVEngineKit.CallState.Idle) {
             stopEndTimeCheckTimer();
             return;
         }
