@@ -128,6 +128,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
     private void checkConferenceEndTime() {
         if (currentConferenceInfo == null || currentConferenceInfo.getEndTime() <= 0) {
+            stopEndTimeCheckTimer();
             return;
         }
         
