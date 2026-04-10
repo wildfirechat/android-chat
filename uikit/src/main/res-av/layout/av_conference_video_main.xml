@@ -14,8 +14,8 @@
 
     <FrameLayout
         android:id="@+id/previewContainerFrameLayout"
-        android:layout_width="200dp"
-        android:layout_height="250dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true" />
 

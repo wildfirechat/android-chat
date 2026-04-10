@@ -66,7 +66,7 @@
                 android:enabled="false"
                 android:gravity="center"
                 android:text="@string/send"
-                android:textColor="@color/white"
+                android:textColor="@color/menu_text_color"
                 android:textSize="13sp"
                 android:visibility="visible" />
         </LinearLayout>

@@ -35,6 +35,7 @@ import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
+import androidx.transition.Visibility;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -335,7 +336,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             }
         } else {
             Activity activity = getActivity();
-            if(activity != null && !activity.isFinishing()){
+            if (activity != null && !activity.isFinishing()) {
                 activity.finish();
             }
         }
@@ -356,7 +357,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             if (!session.isScreenSharing()) {
                 Toast.makeText(getContext(), getString(R.string.conf_screen_share_hint), Toast.LENGTH_LONG).show();
                 session.muteAudio(false);
-                if(AVEngineKit.SCREEN_SHARING_REPLACE_MODE){
+                if (AVEngineKit.SCREEN_SHARING_REPLACE_MODE) {
                     session.muteVideo(true);
                 }
 
@@ -522,7 +523,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 new MaterialDialog.Builder(getContext())
                     .content(R.string.conf_unmute_not_allowed_audio)
                     .negativeText(R.string.cancel)
-                    .onNegative((dialog, which) -> {})
+                    .onNegative((dialog, which) -> {
+                    })
                     .positiveText(R.string.conf_request_unmute_audio)
                     .onPositive((dialog, which) -> {
                         Toast.makeText(getContext(), R.string.conf_request_resent, Toast.LENGTH_SHORT).show();
@@ -553,7 +555,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 new MaterialDialog.Builder(getContext())
                     .content(R.string.conf_unmute_not_allowed_video)
                     .negativeText(R.string.cancel)
-                    .onNegative((dialog, which) -> {})
+                    .onNegative((dialog, which) -> {
+                    })
                     .positiveText(R.string.conf_request_unmute_video)
                     .onPositive((dialog, which) -> {
                         Toast.makeText(getContext(), R.string.conf_request_resent, Toast.LENGTH_SHORT).show();
@@ -567,31 +570,77 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     private void setPanelVisibility(int visibility) {
-        boolean isVisible = visibility == VISIBLE;
-        
+        TransitionSet transitionSet = new TransitionSet();
+        Transition transitionToBottom = new Slide(Gravity.BOTTOM);
+        transitionToBottom.setDuration(300);
+        transitionSet.addTransition(transitionToBottom);
+
+        Transition transitionToTop = new Slide(Gravity.TOP);
+        transitionToTop.setDuration(500);
+        transitionSet.addTransition(transitionToTop);
+
+        transitionToBottom.addTarget(bottomPanel);
+        transitionToBottom.addTarget(micLinearLayout);
+        transitionToTop.addTarget(topBarView);
+
+        transitionSet.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(@NonNull Transition transition) {
+//                Activity activity = ((Activity) getContext());
+//                if (visibility == VISIBLE) {
+//                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                } else {
+//                    activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//                }
+            }
+
+            @Override
+            public void onTransitionEnd(@NonNull Transition transition) {
+                // Adjust preview window position if bars are shown
+                if (visibility == VISIBLE) {
+                    adjustPreviewWindowForBars(true);
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(@NonNull Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(@NonNull Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(@NonNull Transition transition) {
+
+            }
+        });
+
+        transitionSet.setOrdering(TransitionSet.ORDERING_TOGETHER);
+//        transitionSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        TransitionManager.beginDelayedTransition(rootFrameLayout, transitionSet);
+
         // Toggle visibility
         bottomPanel.setVisibility(visibility);
         topBarView.setVisibility(visibility);
         micLinearLayout.setVisibility(visibility == VISIBLE ? GONE : VISIBLE);
-        
-        // Adjust preview window position if bars are shown
-        if (isVisible) {
-            adjustPreviewWindowForBars(true);
-        }
+
     }
-    
+
     private void adjustPreviewWindowForBars(boolean barsVisible) {
         if (!isVideoConference() || conferencePages == null) {
             return;
         }
-        
+
         View view = conferencePages.get(currentPosition % 3);
         if (view instanceof VideoConferenceMainView) {
             VideoConferenceMainView mainView = (VideoConferenceMainView) view;
             if (barsVisible) {
                 int topBarH = topBarView.getHeight();
                 int bottomBarH = bottomPanel.getHeight();
-                mainView.setBarHeights(topBarH > 0 ? topBarH : 0, bottomBarH > 0 ? bottomBarH : 0);
+                mainView.setBarHeights(Math.max(topBarH, 0), Math.max(bottomBarH, 0));
             }
             mainView.adjustPositionForBars(barsVisible);
         }
@@ -607,23 +656,23 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             AVEngineKit.CallSession session = callSession;
             if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
                 String text;
-                
+
                 //检查会议结束时间
                 ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
                 if (conferenceInfo != null && conferenceInfo.getEndTime() > 0) {
                     long now = System.currentTimeMillis() / 1000;
                     long remainingTime = conferenceInfo.getEndTime() - now;
-                    
+
                     //如果距离结束还有5分钟（300秒）以内，显示倒计时
                     if (remainingTime <= 300 && remainingTime > 0) {
                         //首次进入5分钟内，显示提示
                         if (!hasNotifiedWillEnd) {
                             hasNotifiedWillEnd = true;
-                            Toast.makeText(getContext(), 
-                                String.format("会议将在%d分钟后结束，请注意", remainingTime / 60), 
+                            Toast.makeText(getContext(),
+                                String.format("会议将在%d分钟后结束，请注意", remainingTime / 60),
                                 Toast.LENGTH_LONG).show();
                         }
-                        
+
                         //计算倒计时显示文本
                         if (remainingTime < 60) {
                             text = String.format("即将结束(%ds)", remainingTime);
@@ -640,7 +689,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                         return;
                     }
                 }
-                
+
                 //正常显示会议时长
                 if (session.getConnectedTime() == 0) {
                     text = "会议连接中";
