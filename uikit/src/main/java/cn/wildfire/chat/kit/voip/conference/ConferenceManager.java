@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.voip.conference;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
@@ -52,6 +53,11 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
     private static final String TAG = "ConferenceManager";
 
+    //会议结束时间检查相关
+    private Handler endTimeCheckHandler;
+    private Runnable endTimeCheckRunnable;
+    private boolean isProcessingEnd;
+
     private ConferenceManager(Application application) {
         this.context = application;
         this.applyingUnmuteAudioMembers = new ArrayList<>();
@@ -87,8 +93,70 @@ public class ConferenceManager implements OnReceiveMessageListener {
             isHandUp = false;
             isApplyingUnmuteAudio = false;
             isApplyingUnmuteVideo = false;
+            stopEndTimeCheckTimer();
         } else {
             joinChatRoom();
+            startEndTimeCheckTimer();
+        }
+    }
+
+    //会议结束时间检查相关
+    private void startEndTimeCheckTimer() {
+        stopEndTimeCheckTimer();
+        isProcessingEnd = false;
+        
+        endTimeCheckHandler = new Handler();
+        endTimeCheckRunnable = new Runnable() {
+            @Override
+            public void run() {
+                checkConferenceEndTime();
+                if (endTimeCheckHandler != null) {
+                    endTimeCheckHandler.postDelayed(this, 1000);
+                }
+            }
+        };
+        endTimeCheckHandler.postDelayed(endTimeCheckRunnable, 1000);
+    }
+
+    private void stopEndTimeCheckTimer() {
+        if (endTimeCheckHandler != null) {
+            endTimeCheckHandler.removeCallbacks(endTimeCheckRunnable);
+            endTimeCheckHandler = null;
+            endTimeCheckRunnable = null;
+        }
+    }
+
+    private void checkConferenceEndTime() {
+        if (currentConferenceInfo == null || currentConferenceInfo.getEndTime() <= 0) {
+            return;
+        }
+        
+        long now = System.currentTimeMillis() / 1000;
+        long remainingTime = currentConferenceInfo.getEndTime() - now;
+        
+        //如果会议已经结束
+        if (remainingTime <= 0) {
+            handleConferenceEnded();
+        }
+    }
+
+    private void handleConferenceEnded() {
+        if (isProcessingEnd) {
+            return;
+        }
+        isProcessingEnd = true;
+        
+        stopEndTimeCheckTimer();
+        
+        //如果是owner，销毁会议；否则离开会议
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            if (isOwner()) {
+                destroyConference(session.getCallId(), null);
+                session.leaveConference(true);
+            } else {
+                session.leaveConference(false);
+            }
         }
     }
 

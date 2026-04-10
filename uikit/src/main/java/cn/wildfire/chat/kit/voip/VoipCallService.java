@@ -45,6 +45,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.voip.conference.ConferenceManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.message.JoinCallRequestMessageContent;
@@ -326,6 +327,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
+        
+        //会议服务停止时，清理会议管理器
+        if (ConferenceManager.getManager().getCurrentConferenceInfo() != null) {
+            ConferenceManager.getManager().setCurrentConferenceInfo(null);
+        }
     }
 
     private void showFloatingWindow(AVEngineKit.CallSession session) {

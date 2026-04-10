@@ -230,6 +230,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                     .show();
             } else if (!isFinishing()) {
                 ConferenceManager.getManager().addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
+                ConferenceManager.getManager().setCurrentConferenceInfo(null);
                 finish();
             }
         });

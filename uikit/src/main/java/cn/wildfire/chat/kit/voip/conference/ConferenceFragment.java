@@ -330,6 +330,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     .build()
                     .show();
             } else {
+                conferenceManager.setCurrentConferenceInfo(null);
                 session.leaveConference(false);
             }
         } else {
@@ -598,12 +599,49 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     private final Handler handler = new Handler();
 
+    private boolean hasNotifiedWillEnd = false;
+
     private final Runnable updateCallDurationRunnable = new Runnable() {
         @Override
         public void run() {
             AVEngineKit.CallSession session = callSession;
             if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
                 String text;
+                
+                //检查会议结束时间
+                ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+                if (conferenceInfo != null && conferenceInfo.getEndTime() > 0) {
+                    long now = System.currentTimeMillis() / 1000;
+                    long remainingTime = conferenceInfo.getEndTime() - now;
+                    
+                    //如果距离结束还有5分钟（300秒）以内，显示倒计时
+                    if (remainingTime <= 300 && remainingTime > 0) {
+                        //首次进入5分钟内，显示提示
+                        if (!hasNotifiedWillEnd) {
+                            hasNotifiedWillEnd = true;
+                            Toast.makeText(getContext(), 
+                                String.format("会议将在%d分钟后结束，请注意", remainingTime / 60), 
+                                Toast.LENGTH_LONG).show();
+                        }
+                        
+                        //计算倒计时显示文本
+                        if (remainingTime < 60) {
+                            text = String.format("即将结束(%ds)", remainingTime);
+                        } else {
+                            text = String.format("即将结束(%02d:%02d)", remainingTime / 60, remainingTime % 60);
+                        }
+                        durationTextView.setText(text);
+                        handler.postDelayed(updateCallDurationRunnable, 1000);
+                        return;
+                    } else if (remainingTime <= 0) {
+                        text = "会议已结束";
+                        durationTextView.setText(text);
+                        handler.postDelayed(updateCallDurationRunnable, 1000);
+                        return;
+                    }
+                }
+                
+                //正常显示会议时长
                 if (session.getConnectedTime() == 0) {
                     text = "会议连接中";
                 } else {
