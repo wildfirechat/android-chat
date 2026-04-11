@@ -14,6 +14,7 @@ import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceQuota;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 
@@ -70,7 +71,19 @@ public interface AppServiceProvider {
 
     void getMyPrivateConferenceId(GeneralCallback2 callback);
 
-    void createConference(ConferenceInfo info, GeneralCallback2 callback);
+    void createConference(ConferenceInfo info, CreateConferenceCallback callback);
+
+    void getConferenceQuota(ConferenceQuotaCallback callback);
+
+    interface CreateConferenceCallback {
+        void onSuccess(String conferenceId);
+        void onFail(int code, String message);
+    }
+
+    interface ConferenceQuotaCallback {
+        void onSuccess(ConferenceQuota quota);
+        void onFail(int code, String message);
+    }
 
     void queryConferenceInfo(String conferenceId, String password, QueryConferenceInfoCallback callback);
 

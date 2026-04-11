@@ -41,6 +41,7 @@ import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceQuota;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserIdNamePortrait;
@@ -626,27 +627,66 @@ public class AppService implements AppServiceProvider {
     }
 
     @Override
-    public void createConference(ConferenceInfo info, GeneralCallback2 callback) {
+    public void createConference(ConferenceInfo info, AppServiceProvider.CreateConferenceCallback callback) {
         String url = APP_SERVER_ADDRESS + "/conference/create";
         OKHttpHelper.post(url, info, new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String response) {
                 try {
                     JSONObject object = new JSONObject(response);
-                    if (object.optInt("code", -1) == 0) {
+                    int code = object.optInt("code", -1);
+                    if (code == 0) {
                         String conferenceId = object.getString("result");
                         callback.onSuccess(conferenceId);
+                        return;
+                    } else {
+                        String message = object.optString("message", "");
+                        callback.onFail(code, message);
                         return;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                callback.onFail(-1);
+                callback.onFail(-1, "");
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onFail(code);
+                callback.onFail(code, msg);
+            }
+        });
+    }
+
+    @Override
+    public void getConferenceQuota(ConferenceQuotaCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/quota";
+        OKHttpHelper.post(url, null, new SimpleCallback<String>() {
+            @Override
+            public void onUiSuccess(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    if (object.optInt("code", -1) == 0) {
+                        JSONObject result = object.optJSONObject("result");
+                        if (result != null) {
+                            ConferenceQuota quota = new ConferenceQuota();
+                            quota.setYearMonth(result.optString("yearMonth", ""));
+                            quota.setTotalQuota(result.optInt("totalQuota", 0));
+                            quota.setUsedMinutes(result.optInt("usedMinutes", 0));
+                            quota.setRemainingMinutes(result.optInt("remainingMinutes", 0));
+                            quota.setUnlimited(result.optBoolean("unlimited", false));
+                            callback.onSuccess(quota);
+                            return;
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                callback.onFail(-1, "");
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFail(code, msg);
             }
         });
     }

@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -32,7 +33,6 @@ import cn.wildfire.chat.kit.widget.FixedTextInputEditText;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback2;
 
 public class OrderConferenceActivity extends WfcBaseActivity {
     FixedTextInputEditText titleEditText;
@@ -236,7 +236,7 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         info.setStartTime(startDateTime.getTime() / 1000);
         info.setEndTime(endDateTime.getTime() / 1000);
 
-        WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new AppServiceProvider.CreateConferenceCallback() {
             @Override
             public void onSuccess(String s) {
                 Toast.makeText(OrderConferenceActivity.this, R.string.conference_order_success, Toast.LENGTH_SHORT).show();
@@ -244,9 +244,10 @@ public class OrderConferenceActivity extends WfcBaseActivity {
             }
 
             @Override
-            public void onFail(int i) {
-                Toast.makeText(OrderConferenceActivity.this, getString(R.string.conference_order_failed, i), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "createConference fail" + i);
+            public void onFail(int code, String message) {
+                String errorMsg = !TextUtils.isEmpty(message) ? message : getString(R.string.conference_order_failed, code);
+                Toast.makeText(OrderConferenceActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "createConference fail, code: " + code + ", message: " + message);
             }
         });
     }

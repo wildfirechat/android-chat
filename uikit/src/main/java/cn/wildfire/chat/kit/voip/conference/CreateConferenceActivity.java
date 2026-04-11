@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -37,7 +38,6 @@ import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback2;
 
 public class CreateConferenceActivity extends WfcBaseActivity {
     FixedTextInputEditText titleEditText;
@@ -233,7 +233,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         // 可根据实际情况调整
         info.setMaxParticipants(20);
 
-        WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new AppServiceProvider.CreateConferenceCallback() {
             @Override
             public void onSuccess(String conferenceId) {
                 info.setConferenceId(conferenceId);
@@ -253,9 +253,10 @@ public class CreateConferenceActivity extends WfcBaseActivity {
             }
 
             @Override
-            public void onFail(int i) {
-                Toast.makeText(CreateConferenceActivity.this, getString(R.string.conference_create_failed_code, i), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "createConference fail" + i);
+            public void onFail(int code, String message) {
+                String errorMsg = !TextUtils.isEmpty(message) ? message : getString(R.string.conference_create_failed_code, code);
+                Toast.makeText(CreateConferenceActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "createConference fail, code: " + code + ", message: " + message);
                 joinConferenceButton.setEnabled(true);
             }
         });
