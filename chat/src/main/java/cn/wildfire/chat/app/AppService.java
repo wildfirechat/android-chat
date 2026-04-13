@@ -660,28 +660,10 @@ public class AppService implements AppServiceProvider {
     @Override
     public void getConferenceQuota(ConferenceQuotaCallback callback) {
         String url = APP_SERVER_ADDRESS + "/conference/quota";
-        OKHttpHelper.post(url, null, new SimpleCallback<String>() {
+        OKHttpHelper.post(url, null, new SimpleCallback<ConferenceQuota>() {
             @Override
-            public void onUiSuccess(String response) {
-                try {
-                    JSONObject object = new JSONObject(response);
-                    if (object.optInt("code", -1) == 0) {
-                        JSONObject result = object.optJSONObject("result");
-                        if (result != null) {
-                            ConferenceQuota quota = new ConferenceQuota();
-                            quota.setYearMonth(result.optString("yearMonth", ""));
-                            quota.setTotalQuota(result.optInt("totalQuota", 0));
-                            quota.setUsedMinutes(result.optInt("usedMinutes", 0));
-                            quota.setRemainingMinutes(result.optInt("remainingMinutes", 0));
-                            quota.setUnlimited(result.optBoolean("unlimited", false));
-                            callback.onSuccess(quota);
-                            return;
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                callback.onFail(-1, "");
+            public void onUiSuccess(ConferenceQuota conferenceQuota) {
+                callback.onSuccess(conferenceQuota);
             }
 
             @Override
@@ -1016,9 +998,9 @@ public class AppService implements AppServiceProvider {
     /**
      * 验证滑动位置
      *
-     * @param token      验证令牌
-     * @param x          滑动的 X 坐标（原始坐标，未缩放）
-     * @param callback   回调接口
+     * @param token    验证令牌
+     * @param x        滑动的 X 坐标（原始坐标，未缩放）
+     * @param callback 回调接口
      */
     public void verifySlidePosition(@NonNull String token, int x, @NonNull SlideVerifyCallback callback) {
         String url = APP_SERVER_ADDRESS + "/slide_verify/verify";
