@@ -58,6 +58,9 @@ public class ConferenceManager implements OnReceiveMessageListener {
     private Runnable endTimeCheckRunnable;
     private boolean isProcessingEnd;
 
+    private Handler keepChatroomAliveHandler;
+    private Runnable keepChatroomAliveRunnable;
+
     private ConferenceManager(Application application) {
         this.context = application;
         this.applyingUnmuteAudioMembers = new ArrayList<>();
@@ -94,9 +97,11 @@ public class ConferenceManager implements OnReceiveMessageListener {
             isApplyingUnmuteAudio = false;
             isApplyingUnmuteVideo = false;
             stopEndTimeCheckTimer();
+            stopKeepChatroomAliveTimer();
         } else {
             joinChatRoom();
             startEndTimeCheckTimer();
+            startKeepChatroomAliveTimer();
         }
     }
 
@@ -104,7 +109,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
     private void startEndTimeCheckTimer() {
         stopEndTimeCheckTimer();
         isProcessingEnd = false;
-        
+
         endTimeCheckHandler = new Handler();
         endTimeCheckRunnable = new Runnable() {
             @Override
@@ -126,18 +131,43 @@ public class ConferenceManager implements OnReceiveMessageListener {
         }
     }
 
+    //会议结束时间检查相关
+    private void startKeepChatroomAliveTimer() {
+
+        keepChatroomAliveHandler = new Handler();
+        keepChatroomAliveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                joinChatRoom();
+                if (keepChatroomAliveHandler != null) {
+                    keepChatroomAliveHandler.postDelayed(this, 3 * 60 * 1000);
+                }
+            }
+        };
+        endTimeCheckHandler.postDelayed(endTimeCheckRunnable, 3 * 60 * 1000);
+    }
+
+    private void stopKeepChatroomAliveTimer() {
+        if (keepChatroomAliveHandler != null) {
+            keepChatroomAliveHandler.removeCallbacks(keepChatroomAliveRunnable);
+            keepChatroomAliveHandler = null;
+            keepChatroomAliveRunnable = null;
+        }
+    }
+
     private void checkConferenceEndTime() {
         if (currentConferenceInfo == null
-                || currentConferenceInfo.getEndTime() <= 0
-                || AVEngineKit.Instance().getCurrentSession() == null
-                || AVEngineKit.Instance().getCurrentSession().getState() == AVEngineKit.CallState.Idle) {
+            || currentConferenceInfo.getEndTime() <= 0
+            || AVEngineKit.Instance().getCurrentSession() == null
+            || AVEngineKit.Instance().getCurrentSession().getState() == AVEngineKit.CallState.Idle) {
             stopEndTimeCheckTimer();
+            stopKeepChatroomAliveTimer();
             return;
         }
-        
+
         long now = System.currentTimeMillis() / 1000;
         long remainingTime = currentConferenceInfo.getEndTime() - now;
-        
+
         //如果会议已经结束
         if (remainingTime <= 0) {
             handleConferenceEnded();
@@ -149,9 +179,10 @@ public class ConferenceManager implements OnReceiveMessageListener {
             return;
         }
         isProcessingEnd = true;
-        
+
         stopEndTimeCheckTimer();
-        
+        stopKeepChatroomAliveTimer();
+
         //如果是owner，销毁会议；否则离开会议
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
