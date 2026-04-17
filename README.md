@@ -14,6 +14,8 @@
 
 **给您带来不便，敬请谅解。**
 
+> 联系官方获取到不受限版本后，请替换`./mars-core-release/mars-core-release.aar`文件，并 Clean 和 Rebuild
+
 ---------
 
 
