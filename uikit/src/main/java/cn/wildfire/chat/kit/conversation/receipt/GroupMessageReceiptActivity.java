@@ -83,8 +83,8 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
                         readCount++;
                     }
                 }
-                tabLayout.getTabAt(0).setText(getString(R.string.message_receipt_unread, unreadCount));
-                tabLayout.getTabAt(1).setText(getString(R.string.message_receipt_read, readCount));
+                tabLayout.getTabAt(0).setText(getString(R.string.message_receipt_unread_count, unreadCount));
+                tabLayout.getTabAt(1).setText(getString(R.string.message_receipt_read_count, readCount));
             }
 
             @Override
@@ -130,7 +130,7 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
-            return getString(position == 0 ? R.string.message_receipt_unread_tab : R.string.message_receipt_read_tab);
+            return getString(position == 0 ? R.string.message_receipt_unread : R.string.message_receipt_read);
         }
     }
 }

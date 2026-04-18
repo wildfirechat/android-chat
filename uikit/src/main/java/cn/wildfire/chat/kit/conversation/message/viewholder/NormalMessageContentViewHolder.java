@@ -11,14 +11,12 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -75,10 +73,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     ProgressBar progressBar;
     CheckBox checkBox;
 
-    ImageView singleReceiptImageView;
-    FrameLayout groupReceiptFrameLayout;
-    ProgressBar deliveryProgressBar;
-    ProgressBar readProgressBar;
+    TextView readReceiptTextView;
     UserInfo senderUserInfo;
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
@@ -91,8 +86,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         if (errorLinearLayout != null) {
             errorLinearLayout.setOnClickListener(this::onRetryClick);
         }
-        if (groupReceiptFrameLayout != null) {
-            groupReceiptFrameLayout.setOnClickListener(this::OnGroupMessageReceiptClick);
+        if (readReceiptTextView != null) {
+            readReceiptTextView.setOnClickListener(this::OnGroupMessageReceiptClick);
         }
     }
 
@@ -102,10 +97,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         nameTextView = itemView.findViewById(R.id.nameTextView);
         progressBar = itemView.findViewById(R.id.progressBar);
         checkBox = itemView.findViewById(R.id.checkbox);
-        singleReceiptImageView = itemView.findViewById(R.id.singleReceiptImageView);
-        groupReceiptFrameLayout = itemView.findViewById(R.id.groupReceiptFrameLayout);
-        deliveryProgressBar = itemView.findViewById(R.id.deliveryProgressBar);
-        readProgressBar = itemView.findViewById(R.id.readProgressBar);
+        readReceiptTextView = itemView.findViewById(R.id.readReceiptTextView);
     }
 
     @Override
@@ -178,6 +170,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     }
 
     public void OnGroupMessageReceiptClick(View itemView) {
+        if (message.message.conversation.type != Conversation.ConversationType.Group) {
+            return;
+        }
         ((ConversationMessageAdapter) adapter).onGroupMessageReceiptClick(message.message);
     }
 
@@ -533,31 +528,28 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             || (item.conversation.type == Conversation.ConversationType.Group && !ChatManager.Instance().isGroupReceiptEnabled())
             || !showMessageReceipt(message.message)) {
 
-            singleReceiptImageView.setVisibility(View.GONE);
-            groupReceiptFrameLayout.setVisibility(View.GONE);
+            readReceiptTextView.setVisibility(View.GONE);
             return;
         }
 
         Map<String, Long> readEntries = ((ConversationMessageAdapter) adapter).getReadEntries();
 
         if (item.conversation.type == Conversation.ConversationType.Single) {
-            singleReceiptImageView.setVisibility(View.VISIBLE);
-            groupReceiptFrameLayout.setVisibility(View.GONE);
+            readReceiptTextView.setVisibility(View.VISIBLE);
             Long readTimestamp = readEntries != null && !readEntries.isEmpty() ? readEntries.get(message.message.conversation.target) : null;
 
             if (readTimestamp != null && readTimestamp >= message.message.serverTime) {
-                ImageViewCompat.setImageTintList(singleReceiptImageView, null);
+                readReceiptTextView.setText(R.string.message_receipt_read);
             } else {
-                singleReceiptImageView.setImageResource(R.mipmap.receipt);
+                readReceiptTextView.setText(R.string.message_receipt_unread);
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {
-            singleReceiptImageView.setVisibility(View.GONE);
 
             if (sentStatus == MessageStatus.Sent) {
                 if (item.content instanceof CallStartMessageContent || (item.content.getPersistFlag().ordinal() & 0x2) == 0) {
-                    groupReceiptFrameLayout.setVisibility(View.GONE);
+                    readReceiptTextView.setVisibility(View.GONE);
                 } else {
-                    groupReceiptFrameLayout.setVisibility(View.VISIBLE);
+                    readReceiptTextView.setVisibility(View.VISIBLE);
                 }
 //                int deliveryCount = 0;
 //                if (deliveries != null) {
@@ -567,7 +559,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //                        }
 //                    }
 //                }
-                int readCount = 0;
+                int readCount = 1;
                 if (readEntries != null) {
                     for (Map.Entry<String, Long> readEntry : readEntries.entrySet()) {
                         if (readEntry.getValue() >= item.serverTime) {
@@ -577,22 +569,19 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 }
 
                 GroupInfo groupInfo;
-                groupInfo = (GroupInfo) itemView.getTag(R.id.readProgressBar);
+                groupInfo = (GroupInfo) itemView.getTag(R.id.readReceiptTextView);
                 if (groupInfo == null) {
                     groupInfo = ChatManager.Instance().getGroupInfo(item.conversation.target, false);
                     if (groupInfo != null && groupInfo.updateDt > 0) {
-                        itemView.setTag(R.id.readProgressBar, groupInfo);
+                        itemView.setTag(R.id.readReceiptTextView, groupInfo);
                     }
                 }
                 if (groupInfo == null) {
                     return;
                 }
-//                deliveryProgressBar.setMax(groupInfo.memberCount - 1);
-//                deliveryProgressBar.setProgress(deliveryCount);
-                readProgressBar.setMax(groupInfo.memberCount - 1);
-                readProgressBar.setProgress(readCount);
+                readReceiptTextView.setText(fragment.getString(R.string.message_receipt_read_percent, readCount, groupInfo.memberCount));
             } else {
-                groupReceiptFrameLayout.setVisibility(View.GONE);
+                readReceiptTextView.setVisibility(View.GONE);
             }
         }
     }

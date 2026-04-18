@@ -385,10 +385,11 @@
     <string name="date_pattern">yyyy/MM/dd</string>
     <string name="date_range_format">%1$s to %2$s</string>
     <string name="creating">Creating...</string>
-    <string name="message_receipt_unread">Unread(%d)</string>
-    <string name="message_receipt_read">Read(%d)</string>
-    <string name="message_receipt_unread_tab">Unread</string>
-    <string name="message_receipt_read_tab">Read</string>
+    <string name="message_receipt_unread_count">Unread(%d)</string>
+    <string name="message_receipt_read_count">Read(%d)</string>
+    <string name="message_receipt_unread">Unread</string>
+    <string name="message_receipt_read">Read</string>
+    <string name="message_receipt_read_percent">%d/%d Read</string>
     <string name="get_conversation_info_failed">Failed to get conversation info</string>
 
     <!-- Typing Status -->

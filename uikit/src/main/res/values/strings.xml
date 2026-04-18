@@ -375,10 +375,11 @@
     <string name="create_conversation_multi_contact_hint">选择多位联系人时，才会发起群聊</string>
     <string name="creating_conversation">创建中...</string>
 
-    <string name="message_receipt_unread">未读(%d)</string>
-    <string name="message_receipt_read">已读(%d)</string>
-    <string name="message_receipt_unread_tab">未读</string>
-    <string name="message_receipt_read_tab">已读</string>
+    <string name="message_receipt_unread_count">未读(%d)</string>
+    <string name="message_receipt_read_count">已读(%d)</string>
+    <string name="message_receipt_unread">未读</string>
+    <string name="message_receipt_read">已读</string>
+    <string name="message_receipt_read_percent">%d/%d 已读</string>
     <string name="get_conversation_info_failed">获取会话信息失败</string>
 
     <!-- Typing Status -->
