@@ -5,17 +5,20 @@
 package cn.wildfire.chat.app.main;
 
 import android.Manifest;
+import android.animation.ArgbEvaluator;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebStorage;
 import android.widget.LinearLayout;
@@ -24,8 +27,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -110,6 +113,8 @@ public class MainActivity extends WfcBaseActivity {
     private ConversationListViewModel conversationListViewModel;
     private long lastSelectConversatonListItemTimestamp = 0;
     private MenuItem secretChatMenuItem;
+    private int appBarHeight = 0;
+    private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     protected void bindViews() {
         super.bindViews();
@@ -749,10 +754,12 @@ public class MainActivity extends WfcBaseActivity {
     private ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            updateToolbar(position, positionOffset);
         }
 
         @Override
         public void onPageSelected(int position) {
+            updateToolbar(position, 0);
             if (!showWorkSpace()) {
                 if (position > 1) {
                     position++;
@@ -786,10 +793,61 @@ public class MainActivity extends WfcBaseActivity {
                 //滚动过程中隐藏快速导航条
                 contactListFragment.showQuickIndexBar(false);
             } else {
-                contactListFragment.showQuickIndexBar(true);
+                int contactIndex = showWorkSpace() ? 1 : 1;
+                contactListFragment.showQuickIndexBar(contentViewPager.getCurrentItem() == contactIndex);
             }
         }
     };
+
+    private void updateToolbar(int position, float positionOffset) {
+        if (getAppBarLayout() == null) {
+            return;
+        }
+        if (appBarHeight == 0) {
+            appBarHeight = getAppBarLayout().getHeight();
+        }
+        if (appBarHeight == 0) {
+            return;
+        }
+
+        int meIndex = showWorkSpace() ? 4 : 3;
+        int discoveryIndex = showWorkSpace() ? 3 : 2;
+
+        int toolbarColor = ContextCompat.getColor(this, isDarkTheme() ? R.color.colorPrimary : R.color.gray5);
+        int mePageColor = Color.WHITE;
+
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) getAppBarLayout().getLayoutParams();
+        if (position == discoveryIndex) {
+            params.topMargin = (int) (-appBarHeight * positionOffset);
+            getAppBarLayout().setAlpha(1.0f - positionOffset);
+
+            int statusBarColor = (int) argbEvaluator.evaluate(positionOffset, toolbarColor, mePageColor);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(statusBarColor);
+            }
+            // 切换状态栏图标颜色，当背景足够亮时切换为深色图标
+            if (positionOffset > 0.45f) {
+                setStatusBarTheme(this, false);
+            } else {
+                setStatusBarTheme(this, isDarkTheme());
+            }
+        } else if (position >= meIndex) {
+            params.topMargin = -appBarHeight;
+            getAppBarLayout().setAlpha(0.0f);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(mePageColor);
+            }
+            setStatusBarTheme(this, false);
+        } else {
+            params.topMargin = 0;
+            getAppBarLayout().setAlpha(1.0f);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(toolbarColor);
+            }
+            setStatusBarTheme(this, isDarkTheme());
+        }
+        getAppBarLayout().setLayoutParams(params);
+    }
 
     private boolean showWorkSpace() {
         return !TextUtils.isEmpty(Config.WORKSPACE_URL)

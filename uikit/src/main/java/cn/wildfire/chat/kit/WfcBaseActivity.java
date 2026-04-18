@@ -260,6 +260,10 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         return toolbar;
     }
 
+    public AppBarLayout getAppBarLayout() {
+        return appBarLayout;
+    }
+
     protected void setAppBarLayoutElevation(float elevation) {
         appBarLayout.setElevation(elevation);
     }
