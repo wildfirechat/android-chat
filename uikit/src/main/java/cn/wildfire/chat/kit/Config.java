@@ -155,7 +155,7 @@ public class Config {
     public static int AUDIO_MESSAGE_AMPLIFICATION_FACTOR = 3;
 
     // 是否开启水印功能
-    public static boolean ENABLE_WATER_MARK = true;
+    public static boolean ENABLE_WATER_MARK = false;
 
     // AI机器人ID
     public static String AI_ROBOT = "FireRobot";
