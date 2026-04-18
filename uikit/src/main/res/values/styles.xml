@@ -128,4 +128,9 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="RoundedCorners_4dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+
 </resources>

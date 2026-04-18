@@ -26,7 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-import java.lang.reflect.Method;
+import com.google.android.material.appbar.AppBarLayout;
 
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
@@ -34,6 +34,7 @@ import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
 public abstract class WfcBaseActivity extends AppCompatActivity {
     Toolbar toolbar;
+    private AppBarLayout appBarLayout;
 
     protected WaterMarkView mWmv;
 
@@ -85,6 +86,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
     }
 
     protected void bindViews() {
+        appBarLayout = findViewById(R.id.appbar);
         toolbar = findViewById(R.id.toolbar);
     }
 
@@ -252,5 +254,13 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             // Update the SystemUiVisibility dependening on whether we want a Light or Dark theme.
             pActivity.getWindow().getDecorView().setSystemUiVisibility(pIsDark ? (lFlags & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) : (lFlags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR));
         }
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
+    protected void setAppBarLayoutElevation(float elevation) {
+        appBarLayout.setElevation(elevation);
     }
 }

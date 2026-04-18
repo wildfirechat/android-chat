@@ -52,7 +52,7 @@ public class WaterMarkView extends View {
         if (text != null) {
             mText = text.split(DEFAULT_SEPARATOR);
         }
-        mTextColor = typedArray.getColor(R.styleable.WaterMarkView_water_mark_textColor, WaterMarkManager.INFO != null ? WaterMarkManager.INFO.getTextColor() : Color.parseColor("#33000000"));
+        mTextColor = typedArray.getColor(R.styleable.WaterMarkView_water_mark_textColor, WaterMarkManager.INFO != null ? WaterMarkManager.INFO.getTextColor() : Color.parseColor("#00000010"));
         mTextSize = typedArray.getDimensionPixelSize(R.styleable.WaterMarkView_water_mark_textSize, WaterMarkManager.INFO != null ? WaterMarkManager.INFO.getTextSize() : 42);
         mTextBold = typedArray.getBoolean(R.styleable.WaterMarkView_water_mark_textBold, WaterMarkManager.INFO != null && WaterMarkManager.INFO.isTextBold());
         mDx = typedArray.getDimensionPixelSize(R.styleable.WaterMarkView_water_mark_dx, WaterMarkManager.INFO != null ? WaterMarkManager.INFO.getDx() : 100);

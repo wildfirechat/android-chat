@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:background="@drawable/selector_common_item"
-    android:paddingLeft="16dp">
+    android:paddingLeft="10dp">
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/portraitRelativeLayout"
         android:layout_width="58dp"
         android:layout_height="58dp"
@@ -17,182 +17,157 @@
             android:id="@+id/portraitImageView"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:src="@mipmap/ic_launcher" />
+
         <!--未读消息数-->
         <TextView
             android:id="@+id/unreadCountTextView"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="2dp"
             android:background="@drawable/shape_red_dot"
             android:gravity="center"
-            android:text="99"
+            android:minWidth="18dp"
+            android:minHeight="18dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:text="9"
             android:textColor="@color/white"
             android:textSize="11sp"
+            android:textStyle="bold"
             android:visibility="gone"
             tools:visibility="visible" />
 
         <View
             android:id="@+id/redDotView"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="5dp"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="2dp"
             android:background="@drawable/shape_red_dot"
-            android:gravity="center"
-            android:textColor="@color/white"
             android:visibility="gone"
             tools:visibility="visible" />
 
-    </RelativeLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="8dp"
         android:layout_toRightOf="@+id/portraitRelativeLayout"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingRight="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/secretChatIndicator"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginRight="10px"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginRight="4dp"
                 android:src="@mipmap/ic_lock"
                 android:visibility="gone" />
 
-            <TableLayout
+            <TextView
+                android:id="@+id/nameTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:shrinkColumns="0">
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="17sp"
+                tools:text="会话名称" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <!--昵称或群名-->
-                    <TextView
-                        android:id="@+id/nameTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        tools:text="会话名称"
-                        android:textColor="@color/black1"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/organizationGroupIndicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:background="@drawable/shape_round_3"
-                        android:paddingLeft="2dp"
-                        android:paddingTop="1dp"
-                        android:paddingRight="2dp"
-                        android:paddingBottom="1dp"
-                        android:text="@string/official"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        android:visibility="gone" />
-                </TableRow>
-            </TableLayout>
+            <TextView
+                android:id="@+id/organizationGroupIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/shape_round_3"
+                android:paddingLeft="4dp"
+                android:paddingTop="1dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="1dp"
+                android:text="@string/official"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/timeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="12:01"
+                android:layout_marginLeft="8dp"
                 android:textColor="@color/gray11"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="12:01" />
         </LinearLayout>
 
-        <!--消息-->
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/promptTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="3dp"
-                android:layout_toLeftOf="@id/slient"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginRight="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/red7"
+                android:textSize="14sp"
+                android:visibility="gone"
+                tools:text="[草稿]"
+                tools:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/promptTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:ellipsize="end"
-                    android:layout_gravity="center_vertical"
-                    android:maxLines="1"
-                    android:text="@string/draft"
-                    android:textColor="@color/red7"
-                    android:textSize="13sp"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+            <ImageView
+                android:id="@+id/statusImageView"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginRight="4dp"
+                android:visibility="gone"
+                tools:src="@mipmap/img_error"
+                tools:visibility="visible" />
 
-                <ImageView
-                    android:id="@+id/statusImageView"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_marginRight="5dp"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone"
-                    tools:src="@mipmap/img_error"
-                    tools:visibility="visible" />
-
-                <com.lqr.emoji.WfEmojiTextView
-                    android:id="@+id/contentTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:ellipsize="marquee"
-                    android:singleLine="true"
-                    android:textColor="@color/gray11"
-                    android:textSize="13sp"
-                    tools:text="[草稿]" />
-
-            </LinearLayout>
+            <com.lqr.emoji.WfEmojiTextView
+                android:id="@+id/contentTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textColor="@color/gray11"
+                android:textSize="13sp"
+                android:paddingRight="10dp"
+                tools:text="最后一条消息内容" />
 
             <ImageView
                 android:id="@+id/slient"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginLeft="8dp"
                 android:src="@mipmap/block_notification"
                 android:visibility="gone"
                 tools:visibility="visible" />
-        </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <View
         style="@style/Line"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="2dp"
-        android:layout_toRightOf="@id/portraitRelativeLayout" />
+        android:layout_marginLeft="64dp" />
 </RelativeLayout>

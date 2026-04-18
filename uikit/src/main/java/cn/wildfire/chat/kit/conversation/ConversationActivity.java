@@ -47,6 +47,7 @@ public class ConversationActivity extends WfcBaseActivity {
             .add(R.id.containerFrameLayout, conversationFragment, "content")
             .commit();
 
+        setAppBarLayoutElevation(1);
         setConversationBackground();
     }
 

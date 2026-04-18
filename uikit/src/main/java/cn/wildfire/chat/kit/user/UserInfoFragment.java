@@ -263,7 +263,7 @@ public class UserInfoFragment extends Fragment {
         userInfo = ChatManager.Instance().getUserInfo(userInfo.uid, groupId, false);
         RequestOptions requestOptions = new RequestOptions()
             .placeholder(R.mipmap.avatar_def)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 10)));
+            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 8)));
         Glide.with(this)
             .load(userInfo.portrait)
             .apply(requestOptions)

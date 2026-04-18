@@ -137,7 +137,6 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bottomNavigationView.setItemIconTintList(null);
         if (!showWorkSpace()) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
         }
