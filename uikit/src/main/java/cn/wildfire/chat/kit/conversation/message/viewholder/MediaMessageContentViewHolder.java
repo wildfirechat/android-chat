@@ -44,7 +44,6 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
     public MediaMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         placeholderOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-        placeholderOptions.centerCrop();
         placeholderOptions.placeholder(R.drawable.image_chat_placeholder);
     }
 
@@ -109,6 +108,8 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
             .apply(placeholderOptions);
         if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             request = request.diskCacheStrategy(DiskCacheStrategy.NONE);
+        } else {
+            request = request.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
         }
         request.into(imageView);
     }
