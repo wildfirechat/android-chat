@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.wildfire.chat.kit.widget.BubbleImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/imageView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:adjustViewBounds="true"
-    android:maxWidth="200dp"
-    android:maxHeight="200dp"
-    android:paddingRight="8dp"
-    android:scaleType="centerCrop"
-    app:shapeAppearanceOverlay="@style/RoundedCorners_4dp" />
+    android:paddingBottom="4dp">
+
+    <cn.wildfire.chat.kit.widget.BubbleImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:maxWidth="200dp"
+        android:maxHeight="200dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/RoundedCorners_4dp" />
+
+</FrameLayout>

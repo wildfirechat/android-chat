@@ -31,58 +31,36 @@ public class WeChatImageUtils {
      * @return 在消息列表里面合适的展示尺寸
      */
     public static int[] getImageSizeByOrgSizeToWeChat(int orgWidth, int orgHeight) {
-        int imageWidth = 300;
-        int imageHeight = 300;
-        int maxWidth = 400;
-        int maxHeight = 400;
-        int minWidth = 300;
-        int minHeight = 250;
-        if (orgWidth == 0 && orgHeight == 0) {
-            return new int[]{imageWidth, imageHeight};
+        int maxWidth = 540;
+        int maxHeight = 540;
+        int minWidth = 160;
+        int minHeight = 160;
+
+        if (orgWidth <= 0 || orgHeight <= 0) {
+            return new int[]{300, 300};
         }
-        if (orgWidth / maxWidth > orgHeight / maxHeight) {//
-            if (orgWidth >= maxWidth) {//
-                imageWidth = maxWidth;
-                imageHeight = orgHeight * maxWidth / orgWidth;
-            } else {
-                imageWidth = orgWidth;
-                imageHeight = orgHeight;
 
-            }
-            if (orgHeight < minHeight) {
-                imageHeight = minHeight;
-                int width = orgWidth * minHeight / orgHeight;
-                if (width > maxWidth) {
-                    imageWidth = maxWidth;
-                } else {
-                    imageWidth = width;
-                }
-            }
-        } else {
-            if (orgHeight >= maxHeight) {
-                imageHeight = maxHeight;
-                if (orgHeight / maxHeight > 10) {
-                    imageWidth = orgWidth * 5 * maxHeight / orgHeight;
-                } else {
-                    imageWidth = orgWidth * maxHeight / orgHeight;
-                }
+        double ratio = (double) orgWidth / (double) orgHeight;
+        int width, height;
 
-            } else {
-                imageHeight = orgHeight;
-                imageWidth = orgWidth;
+        if (ratio >= 1.0) { // 宽图或正方形
+            width = maxWidth;
+            height = (int) (width / ratio);
+            if (height < minHeight) {
+                height = minHeight;
+                // 对于超宽图，宽度保持最大，高度拉伸到最小高度，由裁剪组件处理
             }
-            if (orgWidth < minWidth) {
-                imageWidth = minWidth;
-                int height = orgHeight * minWidth / orgWidth;
-                if (height > maxHeight) {
-                    imageHeight = maxHeight;
-                } else {
-                    imageHeight = height;
-                }
+        } else { // 长图
+            height = maxHeight;
+            width = (int) (height * ratio);
+            if (width < minWidth) {
+                width = minWidth;
+                // 对于超长图，高度保持最大，宽度拉伸到最小宽度，由裁剪组件处理
             }
         }
 
-        return new int[]{Math.min(imageWidth, maxWidth), Math.min(imageHeight, maxHeight)};
+        // 最终返回结果，配合 CENTER_CROP 使用效果最佳
+        return new int[]{Math.min(width, maxWidth), Math.min(height, maxHeight)};
     }
 
     /**

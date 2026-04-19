@@ -27,8 +27,8 @@ public class BubbleImageView extends ShapeableImageView{
 
     private int mAngle = dp2px(10);
     private int percent = 0;
-    private boolean mShowText = true;
-    private boolean mShowShadow = true;
+    private boolean mShowText = false;
+    private boolean mShowShadow = false;
 
     private Paint mPaint;
     private Paint mMaskPaint;
