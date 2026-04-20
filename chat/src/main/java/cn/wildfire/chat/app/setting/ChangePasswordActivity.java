@@ -109,6 +109,11 @@ public class ChangePasswordActivity extends WfcBaseActivity {
             return;
         }
 
+        if (!cn.wildfire.chat.kit.Config.ENABLE_SLIDE_VERIFY) {
+            performChangePassword(oldPassword, newPassword, null);
+            return;
+        }
+
         // Show slide verify dialog before changing password
         SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
             @Override

@@ -111,6 +111,11 @@ public class ResetPasswordActivity extends WfcBaseActivity {
     private Handler handler = new Handler();
 
     void requestAuthCode() {
+        if (!cn.wildfire.chat.kit.Config.ENABLE_SLIDE_VERIFY) {
+            performRequestResetCode(null);
+            return;
+        }
+
         // Show slide verify dialog before sending reset code
         SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
             @Override
@@ -164,6 +169,11 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
         if (!TextUtils.equals(newPassword, confirmPassword)) {
             Toast.makeText(this, R.string.password_not_match, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!cn.wildfire.chat.kit.Config.ENABLE_SLIDE_VERIFY) {
+            performResetPassword(newPassword, null);
             return;
         }
 

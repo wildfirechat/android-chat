@@ -202,6 +202,11 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         String account = accountEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
+        if (!Config.ENABLE_SLIDE_VERIFY) {
+            performLogin(account, password, null);
+            return;
+        }
+
         // Show slide verify dialog before login
         SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
             @Override

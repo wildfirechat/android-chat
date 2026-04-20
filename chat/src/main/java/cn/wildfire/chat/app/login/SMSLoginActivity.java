@@ -188,6 +188,11 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
         loginButton.setEnabled(false);
 
+        if (!Config.ENABLE_SLIDE_VERIFY) {
+            performSMSLogin(phoneNumber, authCode, null);
+            return;
+        }
+
         // 如果已经通过滑动验证（发送验证码时已验证），直接登录
         if (hasSlideVerifiedForCode && cachedSlideVerifyToken != null) {
             performSMSLogin(phoneNumber, authCode, null); // 不传递 slideVerifyToken
@@ -271,6 +276,11 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
     void requestAuthCode() {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
+
+        if (!Config.ENABLE_SLIDE_VERIFY) {
+            performRequestAuthCode(phoneNumber, null);
+            return;
+        }
 
         // Show slide verify dialog before sending auth code
         SlideVerifyDialog verifyDialog = new SlideVerifyDialog(this, new SlideVerifyDialog.OnVerifySuccessListener() {
