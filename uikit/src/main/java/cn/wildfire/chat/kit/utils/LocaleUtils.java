@@ -83,9 +83,10 @@ public class LocaleUtils {
         Configuration configuration = resources.getConfiguration();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            configuration.setLocale(locale);
-            configuration.setLocales(new LocaleList(locale));
-            return context.createConfigurationContext(configuration);
+            Configuration overrideConfig = new Configuration();
+            overrideConfig.setLocale(locale);
+            overrideConfig.setLocales(new LocaleList(locale));
+            return context.createConfigurationContext(overrideConfig);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             configuration.setLocale(locale);
         } else {
