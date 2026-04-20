@@ -370,72 +370,98 @@ public class MainActivity extends WfcBaseActivity {
         //设置ViewPager的最大缓存页面
         contentViewPager.setOffscreenPageLimit(4);
 
-        conversationListFragment = new ConversationListFragment();
-        contactListFragment = new ContactListFragment();
-        DiscoveryFragment discoveryFragment = new DiscoveryFragment();
-        MeFragment meFragment = new MeFragment();
+        DiscoveryFragment discoveryFragment = null;
+        MeFragment meFragment = null;
+        WebViewFragment workspaceFragment = null;
+
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof ConversationListFragment) {
+                    conversationListFragment = (ConversationListFragment) fragment;
+                } else if (fragment instanceof ContactListFragment) {
+                    contactListFragment = (ContactListFragment) fragment;
+                } else if (fragment instanceof DiscoveryFragment) {
+                    discoveryFragment = (DiscoveryFragment) fragment;
+                } else if (fragment instanceof MeFragment) {
+                    meFragment = (MeFragment) fragment;
+                } else if (fragment instanceof WebViewFragment) {
+                    workspaceFragment = (WebViewFragment) fragment;
+                }
+            }
+        }
+
+        if (conversationListFragment == null) {
+            conversationListFragment = new ConversationListFragment();
+        }
+        if (contactListFragment == null) {
+            contactListFragment = new ContactListFragment();
+        }
+        if (discoveryFragment == null) {
+            discoveryFragment = new DiscoveryFragment();
+        }
+        if (meFragment == null) {
+            meFragment = new MeFragment();
+        }
+
+        mFragmentList.clear();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
         if (showWorkSpace()) {
-            mFragmentList.add(WebViewFragment.loadUrl(Config.WORKSPACE_URL));
+            if (workspaceFragment == null) {
+                workspaceFragment = WebViewFragment.loadUrl(Config.WORKSPACE_URL);
+            }
+            mFragmentList.add(workspaceFragment);
         }
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
+
         contentViewPager.setAdapter(new HomeFragmentPagerAdapter(this, mFragmentList));
         contentViewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
+        this.onPageChangeCallback.onPageSelected(contentViewPager.getCurrentItem());
+
 
         bottomNavigationView.setOnItemReselectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.conversation_list:
-                    long now = System.currentTimeMillis();
-                    if (now - lastSelectConversatonListItemTimestamp < 200) {
-                        conversationListFragment.scrollToNextUnreadConversation();
-                    }
-                    lastSelectConversatonListItemTimestamp = now;
-                    break;
-                default:
-                    break;
+            if (item.getItemId() == R.id.conversation_list) {
+                long now = System.currentTimeMillis();
+                if (now - lastSelectConversatonListItemTimestamp < 200) {
+                    conversationListFragment.scrollToNextUnreadConversation();
+                }
+                lastSelectConversatonListItemTimestamp = now;
             }
         });
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.conversation_list:
-                    setCurrentViewPagerItem(0, false);
-                    setTitle(R.string.app_title_chat);
-                    if (!isDarkTheme()) {
-                        setTitleBackgroundResource(R.color.gray5, false);
-                    }
-                    break;
-                case R.id.contact:
-                    setCurrentViewPagerItem(1, false);
-                    setTitle(R.string.app_title_contact);
-                    if (!isDarkTheme()) {
-                        setTitleBackgroundResource(R.color.gray5, false);
-                    }
-                    break;
-                case R.id.workspace:
-                    setCurrentViewPagerItem(2, false);
-                    setTitle(R.string.app_title_workspace);
-                    if (!isDarkTheme()) {
-                        setTitleBackgroundResource(R.color.gray5, false);
-                    }
-                    break;
-                case R.id.discovery:
-                    setCurrentViewPagerItem(showWorkSpace() ? 3 : 2, false);
-                    setTitle(R.string.app_title_discover);
-                    if (!isDarkTheme()) {
-                        setTitleBackgroundResource(R.color.gray5, false);
-                    }
-                    break;
-                case R.id.me:
-                    setCurrentViewPagerItem(showWorkSpace() ? 4 : 3, false);
-                    setTitle(R.string.app_title_me);
-                    if (!isDarkTheme()) {
-                        setTitleBackgroundResource(R.color.white, false);
-                    }
-                    break;
-                default:
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.conversation_list) {
+                setCurrentViewPagerItem(0, false);
+                setTitle(R.string.app_title_chat);
+                if (!isDarkTheme()) {
+                    setTitleBackgroundResource(R.color.gray5, false);
+                }
+            } else if (itemId == R.id.contact) {
+                setCurrentViewPagerItem(1, false);
+                setTitle(R.string.app_title_contact);
+                if (!isDarkTheme()) {
+                    setTitleBackgroundResource(R.color.gray5, false);
+                }
+            } else if (itemId == R.id.workspace) {
+                setCurrentViewPagerItem(2, false);
+                setTitle(R.string.app_title_workspace);
+                if (!isDarkTheme()) {
+                    setTitleBackgroundResource(R.color.gray5, false);
+                }
+            } else if (itemId == R.id.discovery) {
+                setCurrentViewPagerItem(showWorkSpace() ? 3 : 2, false);
+                setTitle(R.string.app_title_discover);
+                if (!isDarkTheme()) {
+                    setTitleBackgroundResource(R.color.gray5, false);
+                }
+            } else if (itemId == R.id.me) {
+                setCurrentViewPagerItem(showWorkSpace() ? 4 : 3, false);
+                setTitle(R.string.app_title_me);
+                if (!isDarkTheme()) {
+                    setTitleBackgroundResource(R.color.white, false);
+                }
             }
             return true;
         });
@@ -486,15 +512,12 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.more:
-                showMoreActionMenu();
-                return true;
-            case R.id.search:
-                showSearchPortal();
-                break;
-            default:
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.more) {
+            showMoreActionMenu();
+            return true;
+        } else if (itemId == R.id.search) {
+            showSearchPortal();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -793,7 +816,7 @@ public class MainActivity extends WfcBaseActivity {
                 //滚动过程中隐藏快速导航条
                 contactListFragment.showQuickIndexBar(false);
             } else {
-                int contactIndex = showWorkSpace() ? 1 : 1;
+                int contactIndex = 1;
                 contactListFragment.showQuickIndexBar(contentViewPager.getCurrentItem() == contactIndex);
             }
         }
