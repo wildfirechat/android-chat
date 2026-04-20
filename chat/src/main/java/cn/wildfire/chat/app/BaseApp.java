@@ -5,8 +5,10 @@
 package cn.wildfire.chat.app;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Handler;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
 
 public class BaseApp extends MultiDexApplication {
@@ -15,6 +17,7 @@ public class BaseApp extends MultiDexApplication {
     private static Context mContext;//上下文
     private static long mMainThreadId;//主线程id
     private static Handler mHandler;//主线程Handler
+    private int mLastNightMode;
 
     @Override
     public void onCreate() {
@@ -24,6 +27,22 @@ public class BaseApp extends MultiDexApplication {
         mContext = getApplicationContext();
         mMainThreadId = android.os.Process.myTid();
         mHandler = new Handler();
+        mLastNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        int nightMode = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (nightMode != mLastNightMode) {
+            mLastNightMode = nightMode;
+            // 显式切换 AppCompat 夜间模式，触发所有 Activity 重建
+            AppCompatDelegate.setDefaultNightMode(
+                nightMode == Configuration.UI_MODE_NIGHT_YES
+                    ? AppCompatDelegate.MODE_NIGHT_YES
+                    : AppCompatDelegate.MODE_NIGHT_NO
+            );
+        }
     }
 
     public static Context getContext() {

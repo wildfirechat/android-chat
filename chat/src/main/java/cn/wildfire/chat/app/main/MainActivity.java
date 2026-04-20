@@ -10,7 +10,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -584,16 +583,6 @@ public class MainActivity extends WfcBaseActivity {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(
-            getBaseContext().getPackageName());
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
-        finish();
     }
 
     private void onScanPcQrCode(String qrcode) {
