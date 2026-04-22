@@ -99,7 +99,7 @@ public class Config {
      * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
      * 请注意，不能写应用服务地址
      */
-    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.cn";
+    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.net";
 
     /**
      * 接龙服务地址，如果需要接龙功能，请部署接龙服务，然后这里填上接龙服务地址；如果不需要接龙功能，请置为 null
