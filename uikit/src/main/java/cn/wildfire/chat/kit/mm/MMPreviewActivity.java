@@ -610,6 +610,9 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         float screenCenterX = screenW / 2f;
         float screenCenterY = screenH / 2f;
 
+        // FIT_CENTER: at scale=1 the overlay matches ViewPager's display, so
+        // the end frame is seamless. Start-frame distortion is negligible (tiny scale).
+        animOverlayView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         // Position the overlay at the source thumbnail location using scale + translation.
         // The overlay is MATCH_PARENT; pivot defaults to its center.
         animOverlayView.setImageBitmap(instanceEnterThumbnail);
@@ -678,6 +681,12 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         }
         if (overlayBitmap == null) overlayBitmap = instanceEnterThumbnail;
 
+        // FIT_XY: bitmap always fills the overlay's visual bounds exactly.
+        // This ensures correct proportions throughout the exit animation:
+        //   start frame → bitmap fills fromScreenRect (same proportions as displayed image)
+        //   end frame   → bitmap fills targetRect (tiny thumbnail, FIT_XY distortion unnoticeable)
+        // (Enter animation uses FIT_CENTER so its end frame matches ViewPager's display.)
+        animOverlayView.setScaleType(ImageView.ScaleType.FIT_XY);
         animOverlayView.setImageBitmap(overlayBitmap);
         animOverlayView.setPivotX(screenCenterX);
         animOverlayView.setPivotY(screenCenterY);

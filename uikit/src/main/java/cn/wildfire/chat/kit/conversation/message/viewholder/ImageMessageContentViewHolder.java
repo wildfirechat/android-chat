@@ -79,7 +79,11 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
             message.message.status = MessageStatus.Played;
             ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
         }
-        android.graphics.Bitmap thumbnail = ((ImageMessageContent) message.message.content).getThumbnail();
+        android.graphics.Bitmap thumbnail = null;
+        android.graphics.drawable.Drawable d = imageView.getDrawable();
+        if (d instanceof android.graphics.drawable.BitmapDrawable) {
+            thumbnail = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
+        }
         previewMM(imageView, thumbnail);
     }
 
