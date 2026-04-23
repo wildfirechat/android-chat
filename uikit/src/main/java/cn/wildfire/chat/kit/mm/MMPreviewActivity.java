@@ -116,6 +116,32 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
 
 
     @Override
+    public void onBackPressed() {
+        Rect targetRect = findCurrentEntrySourceRect();
+        if (targetRect == null) {
+            super.onBackPressed();
+            return;
+        }
+        RectF fromRect = null;
+        // Video is actively playing inside ZoomableFrameLayout
+        if (currentVideoView != null) {
+            ZoomableFrameLayout zfl = currentVideoView.findViewById(R.id.zoomableFrameLayout);
+            if (zfl != null) {
+                fromRect = zfl.getChildNaturalScreenRect();
+            }
+        }
+        // Image, or video showing thumbnail in PhotoView
+        if (fromRect == null && currentPhotoView != null) {
+            fromRect = currentPhotoView.getCurrentDisplayRectOnScreen();
+        }
+        if (fromRect != null) {
+            startExitAnimation(fromRect, targetRect);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void onDragToFinish() {
         if (currentPhotoView == null) {
             finish();

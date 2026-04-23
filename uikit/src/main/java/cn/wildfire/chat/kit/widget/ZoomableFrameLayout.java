@@ -319,6 +319,17 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         return new RectF(left, top, right, bottom);
     }
 
+    /**
+     * Returns the child view's screen rect at its natural (no-drag) position.
+     * Safe to call at any time, including when no drag has occurred.
+     */
+    public RectF getChildNaturalScreenRect() {
+        if (child() == null) return null;
+        int[] loc = new int[2];
+        child().getLocationOnScreen(loc);
+        return new RectF(loc[0], loc[1], loc[0] + child().getWidth(), loc[1] + child().getHeight());
+    }
+
     /** Animates the dragged child back to its neutral position (scale=1, translateX/Y=0). */
     private static class ResetDragAnimator extends ValueAnimator {
         private final WeakReference<ZoomableFrameLayout> mRef;
