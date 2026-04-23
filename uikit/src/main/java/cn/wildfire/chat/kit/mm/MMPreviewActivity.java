@@ -55,7 +55,8 @@ import cn.wildfire.chat.kit.qrcode.QRCodeHelper;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
-import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
+import cn.wildfire.chat.kit.widget.OnDragToFinishListener;
+import cn.wildfire.chat.kit.widget.ZoomableFrameLayout;
 import cn.wildfire.chat.kit.widget.PhotoView;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
@@ -68,7 +69,7 @@ import me.aurelion.x.ui.view.watermark.WaterMarkView;
 /**
  * @author imndx
  */
-public class MMPreviewActivity extends AppCompatActivity implements PhotoView.OnDragListener, ZoomableFrameLayout.OnDragListener {
+public class MMPreviewActivity extends AppCompatActivity implements OnDragToFinishListener {
     private SparseArray<View> views;
     private View currentVideoView;
     private ProgressBar videoLoadProgressBar;
@@ -125,21 +126,6 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         overridePendingTransition(0, R.anim.fade_out);
     }
 
-    @Override
-    public void onDragToFinishWithCurrentImageRect(RectF currentRect) {
-        if (currentRect == null) {
-            onDragToFinish();
-            return;
-        }
-        Rect targetRect = findCurrentEntrySourceRect();
-        if (targetRect != null) {
-            startExitAnimation(currentRect, targetRect);
-        } else {
-            onDragToFinish();
-        }
-    }
-
-    // Called from ZoomableFrameLayout (video drag-to-dismiss)
     @Override
     public void onDragToFinishWithCurrentViewRect(RectF currentRect) {
         if (currentRect == null) {

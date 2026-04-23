@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
 
-    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
+    <cn.wildfire.chat.kit.widget.ZoomableFrameLayout
         android:id="@+id/zoomableFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -19,7 +19,7 @@
             android:layout_gravity="center"
             android:foregroundGravity="center"
             android:visibility="gone" />
-    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
+    </cn.wildfire.chat.kit.widget.ZoomableFrameLayout>
 
     <cn.wildfire.chat.kit.widget.PhotoView
         android:id="@+id/photoView"
