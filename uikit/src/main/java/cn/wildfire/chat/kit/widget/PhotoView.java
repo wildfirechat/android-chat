@@ -63,6 +63,8 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     private boolean mIsDragging = false;
     private boolean mIsDraggingDown = false;
     private float mCurrentDragScale = 1.0f;
+    private float mCurrentDragDeltaX = 0f;
+    private float mCurrentDragDeltaY = 0f;
 
     private VelocityTracker mVelocityTracker;
     private GestureDetector mGestureDetector;
@@ -71,7 +73,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     private FlingRunnable mCurrentFlingRunnable;
     private ResetAnimator mResetAnimator;
 
-    private OnDragListener mDragListener;
+    private OnDragToFinishListener mDragListener;
     private OnLongClickListener mLongClickListener;
 
     public PhotoView(Context context) {
@@ -167,7 +169,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                 if (mIsDraggingDown) {
                     mIsDraggingDown = false;
                     mResetAnimator = new ResetAnimator(PhotoView.this,
-                        getMatrixValue(mDragDownMatrix, Matrix.MTRANS_Y), 0, mCurrentDragScale, 1.0f);
+                        mCurrentDragDeltaX, mCurrentDragDeltaY, mCurrentDragScale);
                 }
                 recycleVelocityTracker();
                 return true;
@@ -181,7 +183,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     }
 
     @SuppressWarnings("unused")
-    public void setOnDragListener(OnDragListener listener) {
+    public void setOnDragListener(OnDragToFinishListener listener) {
         mDragListener = listener;
     }
 
@@ -218,6 +220,8 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                 mIsDraggingDown = false;
                 mIsDragging = false;
                 mCurrentDragScale = 1.0f;
+                mCurrentDragDeltaX = 0f;
+                mCurrentDragDeltaY = 0f;
 
                 mVelocityTracker = VelocityTracker.obtain();
                 if (mVelocityTracker != null) {
@@ -260,17 +264,18 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                     if (mIsDraggingDown) {
                         mDragDownMatrix.reset();
                         float deltaY = getActiveY(event) - mActionDownY;
+                        float deltaX = getActiveX(event) - mActionDownX;
 
-                        // Scale calculation
+                        // Scale based on vertical displacement
                         float scale = 1 - Math.abs(deltaY) / getViewHeight();
                         scale = Math.max(scale, 0.4f);
                         mCurrentDragScale = scale;
+                        mCurrentDragDeltaX = deltaX;
+                        mCurrentDragDeltaY = deltaY;
 
-                        // Apply transformations
-                        // 1. Scale around the touch down point
+                        // Scale around the touch-down point; translate to follow the finger
                         mDragDownMatrix.postScale(scale, scale, mActionDownX, mActionDownY);
-                        // 2. Translate
-                        mDragDownMatrix.postTranslate(0, deltaY);
+                        mDragDownMatrix.postTranslate(deltaX, deltaY);
 
                         updateMatrix();
                         if (mDragListener != null) {
@@ -329,7 +334,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
                         startZoomAnimation(this, getMatrixScale(), mMinScale, 0, 0);
                     }
 
-                    float finalDeltaY = getMatrixValue(mDragDownMatrix, Matrix.MTRANS_Y);
+                    float finalDeltaY = mCurrentDragDeltaY;
 
                     // Check for dismiss condition
                     boolean shouldDismiss = false;
@@ -349,12 +354,13 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
 
                     if (shouldDismiss) {
                         if (mDragListener != null) {
-                            mDragListener.onDragToFinish();
+                            RectF currentRect = getCurrentDisplayRectOnScreen();
+                            mDragListener.onDragToFinishWithCurrentViewRect(currentRect);
                         }
                     } else if (mIsDraggingDown) {
                         // Restore animation
                         if (mDragListener != null) {
-                            mResetAnimator = new ResetAnimator(this, finalDeltaY, 0, mCurrentDragScale, 1.0f);
+                            mResetAnimator = new ResetAnimator(this, mCurrentDragDeltaX, mCurrentDragDeltaY, mCurrentDragScale);
                             mResetAnimator.start();
                         }
                     }
@@ -434,10 +440,10 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
         updateMatrix();
     }
 
-    public void setDragMatrix(float translateY, float scale) {
+    public void setDragMatrix(float translateX, float translateY, float scale) {
         mDragDownMatrix.reset();
         mDragDownMatrix.postScale(scale, scale, mActionDownX, mActionDownY);
-        mDragDownMatrix.postTranslate(0, translateY);
+        mDragDownMatrix.postTranslate(translateX, translateY);
         updateMatrix();
         if (mDragListener != null) {
             mDragListener.onDragOffset(Math.abs(translateY), getViewHeight() / 6);
@@ -550,17 +556,21 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
 
         private WeakReference<PhotoView> mPhotoViewWeakReference;
 
-        ResetAnimator(PhotoView imageView, float startY, float endY, float startScale, float endScale) {
+        ResetAnimator(PhotoView imageView, float startX, float startY, float startScale) {
             mPhotoViewWeakReference = new WeakReference<>(imageView);
-            setValues(PropertyValuesHolder.ofFloat("translateY", startY, endY),
-                    PropertyValuesHolder.ofFloat("scale", startScale, endScale));
+            setValues(
+                PropertyValuesHolder.ofFloat("translateX", startX, 0f),
+                PropertyValuesHolder.ofFloat("translateY", startY, 0f),
+                PropertyValuesHolder.ofFloat("scale", startScale, 1f)
+            );
             addUpdateListener(new AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     if (mPhotoViewWeakReference.get() != null) {
-                        float translateY = (float) animation.getAnimatedValue("translateY");
+                        float tx = (float) animation.getAnimatedValue("translateX");
+                        float ty = (float) animation.getAnimatedValue("translateY");
                         float scale = (float) animation.getAnimatedValue("scale");
-                        mPhotoViewWeakReference.get().setDragMatrix(translateY, scale);
+                        mPhotoViewWeakReference.get().setDragMatrix(tx, ty, scale);
                     }
                 }
             });
@@ -653,9 +663,23 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
         }
     }
 
-    public interface OnDragListener {
-        void onDragToFinish();
-
-        void onDragOffset(float offset, float maxOffset);
+    /**
+     * Returns the current displayed image rect in screen coordinates,
+     * taking into account any active drag-down transformation.
+     */
+    public RectF getCurrentDisplayRectOnScreen() {
+        Matrix matrix = new Matrix(mBaseMatrix);
+        matrix.postConcat(mScaleAndDragMatrix);
+        if (mIsDraggingDown) {
+            matrix.postConcat(mDragDownMatrix);
+        }
+        Drawable d = getDrawable();
+        if (d == null) return null;
+        RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+        matrix.mapRect(rect);
+        int[] viewLoc = new int[2];
+        getLocationOnScreen(viewLoc);
+        rect.offset(viewLoc[0], viewLoc[1]);
+        return rect;
     }
 }

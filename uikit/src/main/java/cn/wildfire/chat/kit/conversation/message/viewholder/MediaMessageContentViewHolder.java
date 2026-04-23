@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +59,10 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
     }
 
     protected void previewMM() {
+        previewMM(null, null);
+    }
+
+    protected void previewMM(View sourceView, android.graphics.Bitmap thumbnail) {
         List<UiMessage> messages = ((ConversationMessageAdapter) adapter).getMessages();
         List<MediaEntry> entries = new ArrayList<>();
         UiMessage msg;
@@ -80,7 +86,51 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         if (entries.isEmpty()) {
             return;
         }
-        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current, messages.get(0).message.conversation.type == Conversation.ConversationType.SecretChat);
+
+        android.graphics.Rect sourceRect = null;
+        if (sourceView != null) {
+            int[] location = new int[2];
+            sourceView.getLocationOnScreen(location);
+            sourceRect = new android.graphics.Rect(
+                location[0], location[1],
+                location[0] + sourceView.getWidth(),
+                location[1] + sourceView.getHeight()
+            );
+        }
+
+        // Build a SourceRectProvider that dynamically looks up any entry's thumbnail
+        // in the RecyclerView at dismiss time — works for any page the user swipes to.
+        View fragView = fragment.getView();
+        RecyclerView rv = fragView != null
+            ? (RecyclerView) fragView.findViewById(R.id.msgRecyclerView)
+            : null;
+        WeakReference<RecyclerView> rvRef = new WeakReference<>(rv);
+
+        MMPreviewActivity.SourceRectProvider provider = entry -> {
+            RecyclerView recyclerView = rvRef.get();
+            if (recyclerView == null || entry == null || entry.getMessage() == null) return null;
+            long msgId = entry.getMessage().messageId;
+            for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                RecyclerView.ViewHolder vh = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+                if (vh instanceof MediaMessageContentViewHolder) {
+                    MediaMessageContentViewHolder mvh = (MediaMessageContentViewHolder) vh;
+                    if (mvh.message != null && mvh.message.message.messageId == msgId) {
+                        // Use the thumbnail ImageView which exists in both image and video items
+                        View thumb = mvh.itemView.findViewById(R.id.imageView);
+                        if (thumb != null && thumb.isShown()) {
+                            int[] loc = new int[2];
+                            thumb.getLocationOnScreen(loc);
+                            return new Rect(loc[0], loc[1],
+                                loc[0] + thumb.getWidth(), loc[1] + thumb.getHeight());
+                        }
+                    }
+                }
+            }
+            return null;
+        };
+
+        boolean isSecret = messages.get(0).message.conversation.type == Conversation.ConversationType.SecretChat;
+        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current, isSecret, sourceRect, thumbnail, provider);
     }
 
     /**

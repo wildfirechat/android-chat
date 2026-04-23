@@ -81,10 +81,11 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
     }
 
     void play() {
-        previewMM();
         if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
             message.message.status = MessageStatus.Played;
             ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
         }
+        android.graphics.Bitmap thumbnail = ((VideoMessageContent) message.message.content).getThumbnail();
+        previewMM(imageView, thumbnail);
     }
 }

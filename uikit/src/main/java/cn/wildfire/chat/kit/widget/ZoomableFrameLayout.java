@@ -1,13 +1,12 @@
 /*
- * Copyright (c) 2021 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.voip;
+package cn.wildfire.chat.kit.widget;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -57,7 +56,14 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private float prevDy = 0f;
     private int lastX, lastY;
     private OnClickListener onClickListener;
-    private OnDragListener dragListener;
+    private OnDragToFinishListener dragListener;
+
+    // Drag-to-dismiss tracking (WeChat-style scale + translate)
+    private float currentDragScale = 1f;
+    private float currentDragDeltaX = 0f;
+    private float currentDragDeltaY = 0f;
+    private float currentDragPivotX = 0f;
+    private float currentDragPivotY = 0f;
 
     public ZoomableFrameLayout(Context context) {
         super(context);
@@ -92,6 +98,11 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         Log.i(TAG, "DOWN");
                         lastX = x;
                         lastY = y;
+                        currentDragScale = 1f;
+                        currentDragDeltaX = 0f;
+                        currentDragDeltaY = 0f;
+                        currentDragPivotX = x;
+                        currentDragPivotY = y;
                         if (scale > MIN_ZOOM) {
                             mode = Mode.DRAG_ZOOM;
                             startX = motionEvent.getX() - prevDx;
@@ -106,10 +117,25 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                                 dx = motionEvent.getX() - startX;
                                 dy = motionEvent.getY() - startY;
                             } else if (mode == Mode.DRAG) {
-                                float tmp = y - lastY;
-                                child().setTranslationY(tmp);
+                                float deltaX = motionEvent.getX() - lastX;
+                                float deltaY = motionEvent.getY() - lastY;
+                                float dragScale = Math.max(1f - Math.abs(deltaY) / getViewHeight(), 0.4f);
+                                currentDragScale = dragScale;
+                                currentDragDeltaX = deltaX;
+                                currentDragDeltaY = deltaY;
+                                // Pivot must be in child-local coordinates so scaling follows the finger
+                                float pivotX = lastX - child().getLeft();
+                                float pivotY = lastY - child().getTop();
+                                currentDragPivotX = pivotX;
+                                currentDragPivotY = pivotY;
+                                child().setPivotX(pivotX);
+                                child().setPivotY(pivotY);
+                                child().setScaleX(dragScale);
+                                child().setScaleY(dragScale);
+                                child().setTranslationX(deltaX);
+                                child().setTranslationY(deltaY);
                                 if (dragListener != null) {
-                                    dragListener.onDragOffset(tmp, getViewHeight() / 6);
+                                    dragListener.onDragOffset(Math.abs(deltaY), getViewHeight() / 6f);
                                 }
                             }
                         }
@@ -123,19 +149,16 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                     case MotionEvent.ACTION_UP:
                         Log.i(TAG, "UP");
                         if (enableDrag && mode == Mode.DRAG) {
-                            float tmp = y - lastY;
-                            if (scale > 1 || Math.abs(tmp) < getViewHeight() / 6) {
-                                new TranslateUpAnimator(ZoomableFrameLayout.this, tmp, 0);
+                            boolean shouldDismiss = scale <= 1 && Math.abs(currentDragDeltaY) >= getViewHeight() / 6f;
+                            if (!shouldDismiss) {
+                                // Snap back: animate translation and scale back to neutral
+                                new ResetDragAnimator(ZoomableFrameLayout.this, currentDragDeltaX, currentDragDeltaY, currentDragScale);
                             } else {
-                                new TranslateUpAnimator(ZoomableFrameLayout.this, tmp, tmp > 0 ? getViewHeight() : -getViewHeight())
-                                    .addListener(new AnimatorListenerAdapter() {
-                                        @Override
-                                        public void onAnimationEnd(Animator animation) {
-                                            if (dragListener != null) {
-                                                dragListener.onDragToFinish();
-                                            }
-                                        }
-                                    });
+                                // Dismiss: provide current child screen rect for return animation
+                                RectF childScreenRect = computeChildScreenRect();
+                                if (dragListener != null) {
+                                    dragListener.onDragToFinishWithCurrentViewRect(childScreenRect);
+                                }
                             }
                         }
                         mode = Mode.NONE;
@@ -236,7 +259,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         this.onClickListener = l;
     }
 
-    public void setOnDragListener(OnDragListener dragListener) {
+    public void setOnDragListener(OnDragToFinishListener dragListener) {
         this.dragListener = dragListener;
     }
 
@@ -270,24 +293,57 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         return getHeight() - getPaddingTop() - getPaddingBottom();
     }
 
-    private static class TranslateUpAnimator extends ValueAnimator {
+    /**
+     * Returns the child view's current bounding rect in screen coordinates,
+     * accounting for the drag-induced pivot, scale and translation.
+     */
+    private RectF computeChildScreenRect() {
+        if (child() == null) return null;
+        int[] loc = new int[2];
+        getLocationOnScreen(loc);
 
-        private final WeakReference<ZoomableFrameLayout> mPhotoViewWeakReference;
+        float s  = currentDragScale;
+        float px = currentDragPivotX;   // = lastX (initial touch X in view coords)
+        float py = currentDragPivotY;   // = lastY
+        float tx = currentDragDeltaX;
+        float ty = currentDragDeltaY;
 
-        TranslateUpAnimator(ZoomableFrameLayout zoomableFrameLayout, float from, float to) {
-            mPhotoViewWeakReference = new WeakReference<>(zoomableFrameLayout);
-            setFloatValues(from, to);
-            addUpdateListener(new AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    ZoomableFrameLayout layout = mPhotoViewWeakReference.get();
-                    if (layout != null && layout.child() != null) {
-                        float currentValue = (Float) animation.getAnimatedValue();
-                        layout.child().setTranslationY(currentValue);
-                        // 通知dragListener更新背景透明度
-                        if (layout.dragListener != null) {
-                            layout.dragListener.onDragOffset(currentValue, layout.getViewHeight() / 6);
-                        }
+        // px, py are pivot in child-local coords. Child is offset inside ZoomableFrameLayout
+        // by child().getLeft()/getTop(). A child-local point (vx, vy) maps to screen:
+        //   screen_x = loc[0] + child().getLeft() + px*(1-s) + s*vx + tx
+        //   screen_y = loc[1] + child().getTop()  + py*(1-s) + s*vy + ty
+        float left   = loc[0] + child().getLeft() + px * (1 - s) + tx;
+        float top    = loc[1] + child().getTop()  + py * (1 - s) + ty;
+        float right  = left + child().getWidth()  * s;
+        float bottom = top  + child().getHeight() * s;
+        return new RectF(left, top, right, bottom);
+    }
+
+    /** Animates the dragged child back to its neutral position (scale=1, translateX/Y=0). */
+    private static class ResetDragAnimator extends ValueAnimator {
+        private final WeakReference<ZoomableFrameLayout> mRef;
+
+        ResetDragAnimator(ZoomableFrameLayout layout, float fromX, float fromY, float fromScale) {
+            mRef = new WeakReference<>(layout);
+            setValues(
+                android.animation.PropertyValuesHolder.ofFloat("translateX", fromX, 0f),
+                android.animation.PropertyValuesHolder.ofFloat("translateY", fromY, 0f),
+                android.animation.PropertyValuesHolder.ofFloat("scale", fromScale, 1f)
+            );
+            setDuration(200);
+            setInterpolator(new android.view.animation.DecelerateInterpolator());
+            addUpdateListener(animation -> {
+                ZoomableFrameLayout l = mRef.get();
+                if (l != null && l.child() != null) {
+                    float tx = (Float) animation.getAnimatedValue("translateX");
+                    float ty = (Float) animation.getAnimatedValue("translateY");
+                    float sc = (Float) animation.getAnimatedValue("scale");
+                    l.child().setTranslationX(tx);
+                    l.child().setTranslationY(ty);
+                    l.child().setScaleX(sc);
+                    l.child().setScaleY(sc);
+                    if (l.dragListener != null) {
+                        l.dragListener.onDragOffset(Math.abs(ty), l.getViewHeight() / 6f);
                     }
                 }
             });
@@ -295,9 +351,4 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         }
     }
 
-    public interface OnDragListener {
-        void onDragToFinish();
-
-        void onDragOffset(float offset, float maxOffset);
-    }
 }

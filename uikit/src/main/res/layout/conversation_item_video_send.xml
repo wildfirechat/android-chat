@@ -11,20 +11,12 @@
         android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:adjustViewBounds="true"
-        android:minWidth="80dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:adjustViewBounds="true"
+        android:minWidth="80dp"
         android:scaleType="fitCenter"
-        app:bubble_angle="10dp"
-        app:bubble_arrowHeight="10dp"
-        app:bubble_arrowLocation="right"
-        app:bubble_arrowOffset="-5dp"
-        app:bubble_arrowTop="20dp"
-        app:bubble_arrowWidth="8dp"
-        app:bubble_showShadow="false"
-        app:bubble_showText="false"
-        tools:background="@color/gray" />
+        app:shapeAppearanceOverlay="@style/RoundedCorners_4dp" />
 
     <cn.wildfire.chat.kit.widget.CircularProgressBar
         android:id="@+id/cpbLoading"
@@ -47,14 +39,13 @@
         android:id="@+id/time_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/dp_2"
-        android:layout_marginRight="@dimen/dp_2"
-        android:layout_marginLeft="@dimen/dimen_30dp"
-        android:textColor="@color/white"
         android:layout_alignEnd="@+id/imageView"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/dimen_30dp"
+        android:layout_marginRight="@dimen/dp_2"
+        android:layout_marginBottom="@dimen/dp_2"
         android:padding="@dimen/dp_2"
-        android:textSize="12sp"
-        />
+        android:textColor="@color/white"
+        android:textSize="12sp" />
 
 </RelativeLayout>

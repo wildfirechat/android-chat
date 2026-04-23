@@ -7,8 +7,14 @@ package cn.wildfire.chat.kit.mm;
 import static cn.wildfire.chat.kit.mm.MediaEntry.TYPE_VIDEO;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +24,8 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -76,6 +84,28 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     private static List<MediaEntry> entries;
     private boolean pendingPreviewInitialMedia;
 
+    /**
+     * Callback that looks up the on-screen rect of a media entry's thumbnail
+     * in the conversation list at dismiss time. Returns null if the view is
+     * not currently visible.
+     */
+    public interface SourceRectProvider {
+        Rect getSourceRect(MediaEntry entry);
+    }
+
+    // Enter/exit animation state (set by callers before starting the activity)
+    static Rect enterSourceRect;          // snapshot rect for the enter animation only
+    static Bitmap enterThumbnail;
+    static SourceRectProvider enterSourceRectProvider; // dynamic lookup for exit animation
+
+    // Instance copies of animation state (consumed from static on create)
+    private Rect instanceEnterSourceRect;  // used only for enter animation
+    private Bitmap instanceEnterThumbnail;
+    private SourceRectProvider instanceSourceRectProvider; // used for exit animation
+    private int initialPosition;
+    private ImageView animOverlayView;
+    private View bgMaskView;
+
     protected WaterMarkView mWmv;
 
     public static final String TAG = "MMPreviewActivity";
@@ -93,6 +123,55 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         }
         finish();
         overridePendingTransition(0, R.anim.fade_out);
+    }
+
+    @Override
+    public void onDragToFinishWithCurrentImageRect(RectF currentRect) {
+        if (currentRect == null) {
+            onDragToFinish();
+            return;
+        }
+        Rect targetRect = findCurrentEntrySourceRect();
+        if (targetRect != null) {
+            startExitAnimation(currentRect, targetRect);
+        } else {
+            onDragToFinish();
+        }
+    }
+
+    // Called from ZoomableFrameLayout (video drag-to-dismiss)
+    @Override
+    public void onDragToFinishWithCurrentViewRect(RectF currentRect) {
+        if (currentRect == null) {
+            onDragToFinish();
+            return;
+        }
+        Rect targetRect = findCurrentEntrySourceRect();
+        if (targetRect != null) {
+            startExitAnimation(currentRect, targetRect);
+        } else {
+            onDragToFinish();
+        }
+    }
+
+    /**
+     * Looks up the on-screen rect for the entry currently shown in the ViewPager.
+     * Queries the RecyclerView dynamically so it works regardless of which page
+     * the user has scrolled to.
+     */
+    private Rect findCurrentEntrySourceRect() {
+        if (entries == null) return null;
+        int page = viewPager.getCurrentItem();
+        if (page < 0 || page >= entries.size()) return null;
+        MediaEntry entry = entries.get(page);
+        if (instanceSourceRectProvider != null) {
+            return instanceSourceRectProvider.getSourceRect(entry);
+        }
+        // Fallback: the enter-animation snapshot for the originally clicked item
+        if (page == initialPosition && instanceEnterSourceRect != null) {
+            return instanceEnterSourceRect;
+        }
+        return null;
     }
 
     @Override
@@ -137,7 +216,8 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
             container.addView(view);
             views.put(position % 3, view);
-            if (pendingPreviewInitialMedia) {
+            if (pendingPreviewInitialMedia && position == initialPosition) {
+                pendingPreviewInitialMedia = false;
                 preview(view, entry);
             }
             return view;
@@ -397,6 +477,18 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         setContentView(R.layout.activity_mm_preview);
         supportPostponeEnterTransition();
 
+        // Consume static enter-animation fields immediately so they are not
+        // accidentally re-used if the activity is recreated.
+        instanceEnterSourceRect = enterSourceRect;
+        instanceEnterThumbnail = enterThumbnail;
+        instanceSourceRectProvider = enterSourceRectProvider;
+        enterSourceRect = null;
+        enterThumbnail = null;
+        enterSourceRectProvider = null;
+        initialPosition = currentPosition;
+
+        bgMaskView = findViewById(R.id.bgMaskView);
+
         views = new SparseArray<>(3);
         viewPager = findViewById(R.id.viewPager);
         adapter = new MMPagerAdapter(entries);
@@ -418,6 +510,14 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             mWmv = WaterMarkManager.getView(this);
             ((ViewGroup) findViewById(android.R.id.content)).addView(mWmv);
         }
+
+        setupAnimOverlay();
+        if (instanceEnterSourceRect != null || instanceSourceRectProvider != null) {
+            bgMaskView.setAlpha(0f);
+            viewPager.setVisibility(View.INVISIBLE);
+            // Defer until the decor view has been measured so we know screen dimensions.
+            viewPager.post(this::startEnterAnimation);
+        }
     }
 
     @Override
@@ -431,6 +531,14 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (animOverlayView != null) {
+            animOverlayView.animate().cancel();
+            ViewGroup parent = (ViewGroup) animOverlayView.getParent();
+            if (parent != null) {
+                parent.removeView(animOverlayView);
+            }
+            animOverlayView = null;
+        }
         if (mWmv != null) {
             mWmv.onDestroy();
         }
@@ -445,6 +553,155 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             }
         }
         entries = null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Enter / exit shared-element-style animations
+    // -------------------------------------------------------------------------
+
+    private void setupAnimOverlay() {
+        // Attach a full-screen ImageView to the decor view so its coordinate
+        // space matches getLocationOnScreen() values directly.
+        ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
+        animOverlayView = new ImageView(this);
+        animOverlayView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        animOverlayView.setVisibility(View.GONE);
+        decorView.addView(animOverlayView, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+    }
+
+    /**
+     * Animate the thumbnail from the source thumbnail bounds to fill the screen,
+     * then reveal the ViewPager content.
+     */
+    private void startEnterAnimation() {
+        if (instanceEnterSourceRect == null || animOverlayView == null) {
+            viewPager.setVisibility(View.VISIBLE);
+            bgMaskView.setAlpha(1f);
+            return;
+        }
+
+        ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
+        float screenW = decorView.getWidth();
+        float screenH = decorView.getHeight();
+        if (screenW == 0 || screenH == 0) {
+            viewPager.setVisibility(View.VISIBLE);
+            bgMaskView.setAlpha(1f);
+            return;
+        }
+
+        Rect src = instanceEnterSourceRect;
+        float srcCenterX = src.left + src.width() / 2f;
+        float srcCenterY = src.top + src.height() / 2f;
+        float screenCenterX = screenW / 2f;
+        float screenCenterY = screenH / 2f;
+
+        // Position the overlay at the source thumbnail location using scale + translation.
+        // The overlay is MATCH_PARENT; pivot defaults to its center.
+        animOverlayView.setImageBitmap(instanceEnterThumbnail);
+        animOverlayView.setPivotX(screenCenterX);
+        animOverlayView.setPivotY(screenCenterY);
+        animOverlayView.setScaleX(src.width() / screenW);
+        animOverlayView.setScaleY(src.height() / screenH);
+        animOverlayView.setTranslationX(srcCenterX - screenCenterX);
+        animOverlayView.setTranslationY(srcCenterY - screenCenterY);
+        animOverlayView.setVisibility(View.VISIBLE);
+
+        animOverlayView.animate()
+            .scaleX(1f).scaleY(1f)
+            .translationX(0f).translationY(0f)
+            .setDuration(280)
+            .setInterpolator(new DecelerateInterpolator(1.5f))
+            .setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animOverlayView.setVisibility(View.GONE);
+                    viewPager.setVisibility(View.VISIBLE);
+                    // Keep instanceEnterThumbnail alive for use in exit animation
+                }
+            })
+            .start();
+
+        ValueAnimator bgAnim = ValueAnimator.ofFloat(0f, 1f);
+        bgAnim.setDuration(280);
+        bgAnim.addUpdateListener(a -> bgMaskView.setAlpha((float) a.getAnimatedValue()));
+        bgAnim.start();
+    }
+
+    /**
+     * Animate the currently-displayed image back to the source thumbnail position,
+     * fading out the background, then finish the activity.
+     *
+     * @param fromScreenRect current image rect in screen coordinates (from PhotoView)
+     * @param targetRect     destination rect in screen coordinates (the thumbnail in the conversation list)
+     */
+    private void startExitAnimation(RectF fromScreenRect, Rect targetRect) {
+        if (animOverlayView == null) {
+            onDragToFinish();
+            return;
+        }
+
+        ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
+        float screenW = decorView.getWidth();
+        float screenH = decorView.getHeight();
+        if (screenW == 0 || screenH == 0) {
+            onDragToFinish();
+            return;
+        }
+
+        float tgtCenterX = targetRect.left + targetRect.width() / 2f;
+        float tgtCenterY = targetRect.top + targetRect.height() / 2f;
+        float screenCenterX = screenW / 2f;
+        float screenCenterY = screenH / 2f;
+
+        // Grab the best available image for the overlay.
+        Bitmap overlayBitmap = null;
+        if (currentPhotoView != null) {
+            android.graphics.drawable.Drawable d = currentPhotoView.getDrawable();
+            if (d instanceof BitmapDrawable) {
+                overlayBitmap = ((BitmapDrawable) d).getBitmap();
+            }
+        }
+        if (overlayBitmap == null) overlayBitmap = instanceEnterThumbnail;
+
+        animOverlayView.setImageBitmap(overlayBitmap);
+        animOverlayView.setPivotX(screenCenterX);
+        animOverlayView.setPivotY(screenCenterY);
+        // Start the overlay exactly where the dragged image currently is.
+        animOverlayView.setScaleX(fromScreenRect.width() / screenW);
+        animOverlayView.setScaleY(fromScreenRect.height() / screenH);
+        animOverlayView.setTranslationX(fromScreenRect.centerX() - screenCenterX);
+        animOverlayView.setTranslationY(fromScreenRect.centerY() - screenCenterY);
+        animOverlayView.setVisibility(View.VISIBLE);
+
+        // Hide the actual pager content (already mostly invisible from drag alpha).
+        viewPager.setVisibility(View.INVISIBLE);
+
+        float currentBgAlpha = bgMaskView.getAlpha();
+        float targetScaleX = targetRect.width() / screenW;
+        float targetScaleY = targetRect.height() / screenH;
+
+        animOverlayView.animate()
+            .scaleX(targetScaleX).scaleY(targetScaleY)
+            .translationX(tgtCenterX - screenCenterX)
+            .translationY(tgtCenterY - screenCenterY)
+            .setDuration(250)
+            .setInterpolator(new DecelerateInterpolator())
+            .setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    finish();
+                    overridePendingTransition(0, 0);
+                }
+            })
+            .start();
+
+        ValueAnimator bgAnim = ValueAnimator.ofFloat(currentBgAlpha, 0f);
+        bgAnim.setDuration(250);
+        bgAnim.addUpdateListener(a -> bgMaskView.setAlpha((float) a.getAnimatedValue()));
+        bgAnim.start();
     }
 
     private void saveMedia2Album(File file, boolean isImage) {
@@ -591,12 +848,25 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     }
 
     public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret) {
+        previewMedia(context, entries, current, secret, null, null);
+    }
+
+    public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret,
+                                    Rect sourceRect, Bitmap thumbnail) {
+        previewMedia(context, entries, current, secret, sourceRect, thumbnail, null);
+    }
+
+    public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret,
+                                    Rect sourceRect, Bitmap thumbnail, SourceRectProvider provider) {
         if (entries == null || entries.isEmpty()) {
             Log.w(MMPreviewActivity.class.getSimpleName(), "message is null or empty");
             return;
         }
         MMPreviewActivity.entries = entries;
         MMPreviewActivity.currentPosition = current;
+        MMPreviewActivity.enterSourceRect = sourceRect;
+        MMPreviewActivity.enterThumbnail = thumbnail;
+        MMPreviewActivity.enterSourceRectProvider = provider;
         Intent intent = new Intent(context, MMPreviewActivity.class);
         intent.putExtra("secret", secret);
         context.startActivity(intent);
