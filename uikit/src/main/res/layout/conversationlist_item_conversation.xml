@@ -130,7 +130,7 @@
                 android:textColor="@color/red7"
                 android:textSize="14sp"
                 android:visibility="gone"
-                tools:text="[草稿]"
+                android:text="@string/draft"
                 tools:visibility="visible" />
 
             <ImageView
