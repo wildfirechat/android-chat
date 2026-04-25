@@ -58,11 +58,7 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         }
     }
 
-    protected void previewMM() {
-        previewMM(null, null);
-    }
-
-    protected void previewMM(View sourceView, android.graphics.Bitmap thumbnail) {
+    protected void previewMM(ImageView sourceView) {
         List<UiMessage> messages = ((ConversationMessageAdapter) adapter).getMessages();
         List<MediaEntry> entries = new ArrayList<>();
         UiMessage msg;
@@ -85,17 +81,6 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         }
         if (entries.isEmpty()) {
             return;
-        }
-
-        android.graphics.Rect sourceRect = null;
-        if (sourceView != null) {
-            int[] location = new int[2];
-            sourceView.getLocationOnScreen(location);
-            sourceRect = new android.graphics.Rect(
-                location[0], location[1],
-                location[0] + sourceView.getWidth(),
-                location[1] + sourceView.getHeight()
-            );
         }
 
         // Build a SourceRectProvider that dynamically looks up any entry's thumbnail
@@ -130,7 +115,7 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         };
 
         boolean isSecret = messages.get(0).message.conversation.type == Conversation.ConversationType.SecretChat;
-        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current, isSecret, sourceRect, thumbnail, provider);
+        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current, isSecret, sourceView, provider);
     }
 
     /**

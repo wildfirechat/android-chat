@@ -60,6 +60,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     private float mDoubleTapTouchY;
     private float mLastTouchX;
     private float mLastTouchY;
+    private boolean mEnableDragToFinish = true;
     private boolean mIsDragging = false;
     private boolean mIsDraggingDown = false;
     private float mCurrentDragScale = 1.0f;
@@ -192,6 +193,11 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
         mLongClickListener = l;
     }
 
+
+    public void setEnableDragToFinish(boolean enable) {
+        mEnableDragToFinish = enable;
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -247,7 +253,7 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
 
                 if (mIsDragging && !mScaleGestureDetector.isInProgress() && event.getPointerCount() == 1) {
                     RectF rectF = getDisplayRect();
-                    if (!mIsDraggingDown && rectF != null) {
+                    if (mEnableDragToFinish && !mIsDraggingDown && rectF != null) {
                         boolean isScrollVertical = Math.abs(getActiveX(event) - mActionDownX) +
                             mTouchSlop * 5 < Math.abs(getActiveY(event) - mActionDownY);
                         boolean isScrollUp = getActiveY(event) < mActionDownY;

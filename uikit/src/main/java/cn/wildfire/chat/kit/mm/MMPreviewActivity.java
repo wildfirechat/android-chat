@@ -326,7 +326,7 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
         ZoomableFrameLayout zoomableFrameLayout = view.findViewById(R.id.zoomableFrameLayout);
         zoomableFrameLayout.setEnableZoom(true);
-        zoomableFrameLayout.setEnableDrag(true);
+        zoomableFrameLayout.setEnableDragToFinish(instanceSourceRectProvider != null);
         zoomableFrameLayout.setOnDragListener(this);
         saveImageView.setVisibility(View.GONE);
 
@@ -441,6 +441,7 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
     private void previewImage(View view, MediaEntry entry) {
         PhotoView photoView = view.findViewById(R.id.photoView);
         photoView.setOnDragListener(this);
+        photoView.setEnableDragToFinish(instanceSourceRectProvider != null);
         currentPhotoView = photoView;
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
 
@@ -468,12 +469,12 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
 
         if (entry.getThumbnail() != null) {
             Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
-                .into(photoView);
+                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
+                    .into(photoView);
         } else {
             Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
-                .into(photoView);
+                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                    .into(photoView);
         }
 
         // 添加长按监听器
@@ -579,8 +580,8 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         animOverlayView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         animOverlayView.setVisibility(View.GONE);
         decorView.addView(animOverlayView, new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
         ));
     }
 
@@ -625,19 +626,19 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         animOverlayView.setVisibility(View.VISIBLE);
 
         animOverlayView.animate()
-            .scaleX(1f).scaleY(1f)
-            .translationX(0f).translationY(0f)
-            .setDuration(280)
-            .setInterpolator(new DecelerateInterpolator(1.5f))
-            .setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animOverlayView.setVisibility(View.GONE);
-                    viewPager.setVisibility(View.VISIBLE);
-                    // Keep instanceEnterThumbnail alive for use in exit animation
-                }
-            })
-            .start();
+                .scaleX(1f).scaleY(1f)
+                .translationX(0f).translationY(0f)
+                .setDuration(280)
+                .setInterpolator(new DecelerateInterpolator(1.5f))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        animOverlayView.setVisibility(View.GONE);
+                        viewPager.setVisibility(View.VISIBLE);
+                        // Keep instanceEnterThumbnail alive for use in exit animation
+                    }
+                })
+                .start();
 
         ValueAnimator bgAnim = ValueAnimator.ofFloat(0f, 1f);
         bgAnim.setDuration(280);
@@ -705,19 +706,19 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         float targetScaleY = targetRect.height() / screenH;
 
         animOverlayView.animate()
-            .scaleX(targetScaleX).scaleY(targetScaleY)
-            .translationX(tgtCenterX - screenCenterX)
-            .translationY(tgtCenterY - screenCenterY)
-            .setDuration(250)
-            .setInterpolator(new DecelerateInterpolator())
-            .setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    finish();
-                    overridePendingTransition(0, 0);
-                }
-            })
-            .start();
+                .scaleX(targetScaleX).scaleY(targetScaleY)
+                .translationX(tgtCenterX - screenCenterX)
+                .translationY(tgtCenterY - screenCenterY)
+                .setDuration(250)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        finish();
+                        overridePendingTransition(0, 0);
+                    }
+                })
+                .start();
 
         ValueAnimator bgAnim = ValueAnimator.ofFloat(currentBgAlpha, 0f);
         bgAnim.setDuration(250);
@@ -754,15 +755,15 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         }
 
         new MaterialDialog.Builder(this)
-            .items(menuItems)
-            .itemsCallback((dialog, view, which, text) -> {
-                if (which == 0) {
-                    handleForward();
-                } else if (which == 1) {
-                    handleQRCodeRecognition();
-                }
-            })
-            .show();
+                .items(menuItems)
+                .itemsCallback((dialog, view, which, text) -> {
+                    if (which == 0) {
+                        handleForward();
+                    } else if (which == 1) {
+                        handleQRCodeRecognition();
+                    }
+                })
+                .show();
     }
 
     /**
@@ -834,10 +835,10 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
 
                 // 显示加载对话框
                 MaterialDialog loadingDialog = new MaterialDialog.Builder(MMPreviewActivity.this)
-                    .content(R.string.recognizing_qrcode)
-                    .progress(true, 0)
-                    .cancelable(true)
-                    .build();
+                        .content(R.string.recognizing_qrcode)
+                        .progress(true, 0)
+                        .cancelable(true)
+                        .build();
                 loadingDialog.show();
 
                 // 后台线程识别二维码
@@ -853,7 +854,7 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
                         }
 
                         if (result != null && !TextUtils.isEmpty(result.getText())) {
-                            WfcScheme.handleQRCodeResult(MMPreviewActivity.this,result.getText());
+                            WfcScheme.handleQRCodeResult(MMPreviewActivity.this, result.getText());
                         } else {
                             Toast.makeText(MMPreviewActivity.this, R.string.qr_code_recognition_failed, Toast.LENGTH_SHORT).show();
                         }
@@ -864,24 +865,30 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         });
     }
 
-    public static void previewMedia(Context context, List<MediaEntry> entries, int current) {
-        previewMedia(context, entries, current, false);
-    }
-
     public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret) {
         previewMedia(context, entries, current, secret, null, null);
     }
 
     public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret,
-                                    Rect sourceRect, Bitmap thumbnail) {
-        previewMedia(context, entries, current, secret, sourceRect, thumbnail, null);
-    }
-
-    public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret,
-                                    Rect sourceRect, Bitmap thumbnail, SourceRectProvider provider) {
+                                    ImageView sourceView, SourceRectProvider provider) {
         if (entries == null || entries.isEmpty()) {
             Log.w(MMPreviewActivity.class.getSimpleName(), "message is null or empty");
             return;
+        }
+        android.graphics.Rect sourceRect = null;
+        android.graphics.Bitmap thumbnail = null;
+        if (sourceView != null) {
+            int[] location = new int[2];
+            sourceView.getLocationOnScreen(location);
+            sourceRect = new android.graphics.Rect(
+                    location[0], location[1],
+                    location[0] + sourceView.getWidth(),
+                    location[1] + sourceView.getHeight()
+            );
+            android.graphics.drawable.Drawable d = sourceView.getDrawable();
+            if (d instanceof android.graphics.drawable.BitmapDrawable) {
+                thumbnail = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
+            }
         }
         MMPreviewActivity.entries = entries;
         MMPreviewActivity.currentPosition = current;

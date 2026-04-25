@@ -38,9 +38,8 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private static final float MIN_ZOOM = 1.0f;
     private static final float MAX_ZOOM = 4.0f;
 
-    private boolean touchListener = false;
     private boolean enableZoom = false;
-    private boolean enableDrag = false;
+    private boolean enableDragToFinish = true;
     private Mode mode = Mode.NONE;
     private float scale = 1.0f;
     private float lastScaleFactor = 0f;
@@ -88,7 +87,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                 if (child() == null) {
                     return false;
                 }
-                if (!enableZoom && !enableDrag) {
+                if (!enableZoom && !enableDragToFinish) {
                     return false;
                 }
                 int y = (int) motionEvent.getY();
@@ -107,36 +106,36 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                             mode = Mode.DRAG_ZOOM;
                             startX = motionEvent.getX() - prevDx;
                             startY = motionEvent.getY() - prevDy;
-                        } else {
+                        } else if (enableDragToFinish) {
                             mode = Mode.DRAG;
+                        } else {
+                            mode = Mode.NONE;
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (enableDrag) {
-                            if (mode == Mode.DRAG_ZOOM) {
-                                dx = motionEvent.getX() - startX;
-                                dy = motionEvent.getY() - startY;
-                            } else if (mode == Mode.DRAG) {
-                                float deltaX = motionEvent.getX() - lastX;
-                                float deltaY = motionEvent.getY() - lastY;
-                                float dragScale = Math.max(1f - Math.abs(deltaY) / getViewHeight(), 0.4f);
-                                currentDragScale = dragScale;
-                                currentDragDeltaX = deltaX;
-                                currentDragDeltaY = deltaY;
-                                // Pivot must be in child-local coordinates so scaling follows the finger
-                                float pivotX = lastX - child().getLeft();
-                                float pivotY = lastY - child().getTop();
-                                currentDragPivotX = pivotX;
-                                currentDragPivotY = pivotY;
-                                child().setPivotX(pivotX);
-                                child().setPivotY(pivotY);
-                                child().setScaleX(dragScale);
-                                child().setScaleY(dragScale);
-                                child().setTranslationX(deltaX);
-                                child().setTranslationY(deltaY);
-                                if (dragListener != null) {
-                                    dragListener.onDragOffset(Math.abs(deltaY), getViewHeight() / 6f);
-                                }
+                        if (mode == Mode.DRAG_ZOOM) {
+                            dx = motionEvent.getX() - startX;
+                            dy = motionEvent.getY() - startY;
+                        } else if (enableDragToFinish && mode == Mode.DRAG) {
+                            float deltaX = motionEvent.getX() - lastX;
+                            float deltaY = motionEvent.getY() - lastY;
+                            float dragScale = Math.max(1f - Math.abs(deltaY) / getViewHeight(), 0.4f);
+                            currentDragScale = dragScale;
+                            currentDragDeltaX = deltaX;
+                            currentDragDeltaY = deltaY;
+                            // Pivot must be in child-local coordinates so scaling follows the finger
+                            float pivotX = lastX - child().getLeft();
+                            float pivotY = lastY - child().getTop();
+                            currentDragPivotX = pivotX;
+                            currentDragPivotY = pivotY;
+                            child().setPivotX(pivotX);
+                            child().setPivotY(pivotY);
+                            child().setScaleX(dragScale);
+                            child().setScaleY(dragScale);
+                            child().setTranslationX(deltaX);
+                            child().setTranslationY(deltaY);
+                            if (dragListener != null) {
+                                dragListener.onDragOffset(Math.abs(deltaY), getViewHeight() / 6f);
                             }
                         }
                         break;
@@ -148,7 +147,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         break;
                     case MotionEvent.ACTION_UP:
                         Log.i(TAG, "UP");
-                        if (enableDrag && mode == Mode.DRAG) {
+                        if (enableDragToFinish && mode == Mode.DRAG) {
                             boolean shouldDismiss = scale <= 1 && Math.abs(currentDragDeltaY) >= getViewHeight() / 6f;
                             if (!shouldDismiss) {
                                 // Snap back: animate translation and scale back to neutral
@@ -272,8 +271,8 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         this.enableZoom = enable;
     }
 
-    public void setEnableDrag(boolean enable) {
-        this.enableDrag = enable;
+    public void setEnableDragToFinish(boolean enable) {
+        this.enableDragToFinish = enable;
     }
 
     public void reset() {
