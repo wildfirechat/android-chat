@@ -191,7 +191,7 @@ public class MeFragment extends Fragment {
 
     void theme() {
         SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
-        boolean darkTheme = sp.getBoolean("darkTheme", true);
+        boolean darkTheme = sp.getBoolean("darkTheme", false);
         new MaterialDialog.Builder(getContext()).items(R.array.themes).itemsCallback(new MaterialDialog.ListCallback() {
             @Override
             public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {

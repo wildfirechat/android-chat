@@ -132,7 +132,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
 
     protected boolean isDarkTheme() {
         SharedPreferences sp = getSharedPreferences("wfc_kit_config", MODE_PRIVATE);
-        return sp.getBoolean("darkTheme", true);
+        return sp.getBoolean("darkTheme", false);
     }
 
     @Override
