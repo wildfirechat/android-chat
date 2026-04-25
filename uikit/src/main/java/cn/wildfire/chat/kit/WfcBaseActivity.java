@@ -52,7 +52,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         updateActivityTitle();
 
         SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
-        if (sp.getBoolean("darkTheme", true)) {
+        if (sp.getBoolean("darkTheme", false)) {
             // dark
             toolbar.getContext().setTheme(R.style.AppTheme_DarkAppbar);
             customToolbarAndStatusBarBackgroundColor(true);

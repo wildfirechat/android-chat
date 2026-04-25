@@ -37,7 +37,7 @@
                 android:hint="@string/login_phone_hint"
                 android:inputType="number"
                 android:maxLines="1"
-                android:paddingLeft="87dp"
+                android:paddingLeft="60dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/gray13"
                 android:textSize="16sp" />
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/mobile_number"
+                android:text="@string/login_phone_label"
                 android:textColor="@color/black3"
                 android:textSize="17sp" />
 
@@ -70,7 +70,7 @@
                 android:hint="@string/verify_code_hint"
                 android:inputType="number"
                 android:maxLines="1"
-                android:paddingLeft="87dp"
+                android:paddingLeft="60dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/gray13"
                 android:textSize="15sp" />

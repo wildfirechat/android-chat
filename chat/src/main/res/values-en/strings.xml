@@ -56,7 +56,7 @@
     <!-- Login Activity Password Strings -->
     <string name="login_password_title">Password Login</string>
     <string name="login_phone_label">Phone</string>
-    <string name="login_phone_hint">Enter phone number (China mainland only)</string>
+    <string name="login_phone_hint">Enter phone number(China mainland only)</string>
     <string name="login_password_label">Password</string>
     <string name="login_password_hint">Enter password</string>
     <string name="login_use_auth_code">Login with verification code</string>
