@@ -77,7 +77,7 @@
     <View
         android:id="@+id/dividerLine"
         style="@style/Line"
-        android:layout_marginLeft="72dp"
+        android:layout_marginLeft="68dp"
         android:visibility="visible" />
 
 </LinearLayout>

@@ -13,6 +13,8 @@
         android:id="@+id/quickIndexBar"
         android:layout_width="20dp"
         android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="60dp"
         android:layout_alignParentRight="true" />
 
     <!--字母对话框-->
