@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 
 import androidx.annotation.Nullable;
 
@@ -102,32 +103,57 @@ public class QuickIndexBar extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int index = -1;
-        switch (event.getAction()) {
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+                requestParentDisallowInterceptTouchEvent(true);
+                updateLetterByTouchY(event.getY());
+                break;
             case MotionEvent.ACTION_MOVE:
-                index = (int) (event.getY() / mCellHeight);//   y值/每个单元格的高度 = 当前单元格的索引
-                if (index >= 0 && index < LETTERS.length) {
-                    if (index != mTouchIndex) {
-                        if (mListener != null) {
-                            mListener.onLetterUpdate(LETTERS[index]);
-                            mTouchIndex = index;
-                        }
-                    }
-                }
-//                setBackgroundColor(getResources().getColor(R.color.side_bar_pressed));
+                requestParentDisallowInterceptTouchEvent(true);
+                updateLetterByTouchY(event.getY());
                 break;
             case MotionEvent.ACTION_UP:
-                mTouchIndex = -1;
-                if (mListener != null) {
-                    mListener.onLetterCancel();
-                }
-                setBackgroundColor(Color.TRANSPARENT);
+            case MotionEvent.ACTION_CANCEL:
+                endTouchTracking();
+                requestParentDisallowInterceptTouchEvent(false);
                 break;
             default:
                 break;
         }
 //        invalidate();//重新调用onDraw方法实现选中的字母更改颜色
         return true;
+    }
+
+    private void updateLetterByTouchY(float touchY) {
+        if (mCellHeight <= 0f) {
+            return;
+        }
+        int index = (int) (touchY / mCellHeight);
+        if (index < 0) {
+            index = 0;
+        } else if (index >= LETTERS.length) {
+            index = LETTERS.length - 1;
+        }
+        if (index != mTouchIndex) {
+            mTouchIndex = index;
+            if (mListener != null) {
+                mListener.onLetterUpdate(LETTERS[index]);
+            }
+        }
+    }
+
+    private void endTouchTracking() {
+        mTouchIndex = -1;
+        if (mListener != null) {
+            mListener.onLetterCancel();
+        }
+        setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    private void requestParentDisallowInterceptTouchEvent(boolean disallow) {
+        ViewParent parent = getParent();
+        if (parent != null) {
+            parent.requestDisallowInterceptTouchEvent(disallow);
+        }
     }
 }

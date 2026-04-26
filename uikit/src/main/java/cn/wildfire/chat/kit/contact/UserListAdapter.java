@@ -246,11 +246,11 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return users == null ? 0 : users.size();
     }
 
-    private int favUserCount() {
+    public int favUserCount() {
         return favUsers == null ? 0 : favUsers.size();
     }
 
-    private int aiRobotUserCount() {
+    public int aiRobotUserCount() {
         return aiRobotUsers == null ? 0 : aiRobotUsers.size();
     }
 

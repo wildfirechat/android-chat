@@ -156,7 +156,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
             for (int i = 0; i < data.size(); i++) {
                 UIUserInfo friend = data.get(i);
                 if (friend.getCategory().compareTo(letter) >= 0) {
-                    linearLayoutManager.scrollToPositionWithOffset(i + userListAdapter.headerCount(), 0);
+                    linearLayoutManager.scrollToPositionWithOffset(userListAdapter.headerCount() + userListAdapter.favUserCount() + userListAdapter.aiRobotUserCount() + i, 0);
                     break;
                 }
             }
@@ -166,6 +166,14 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     @Override
     public void onLetterCancel() {
         indexLetterTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (indexLetterTextView != null) {
+            indexLetterTextView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -179,6 +187,9 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
             quickIndexBar.setVisibility(show ? View.VISIBLE : View.GONE);
             quickIndexBar.setOnLetterUpdateListener(this);
             quickIndexBar.invalidate();
+        }
+        if (!show && indexLetterTextView != null) {
+            indexLetterTextView.setVisibility(View.GONE);
         }
     }
 
