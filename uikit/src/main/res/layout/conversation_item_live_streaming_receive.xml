@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_receive">
+
+    <RelativeLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true">
+
+        <ImageView
+            android:id="@+id/hostPortraitImageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="6dp"
+            android:src="@mipmap/avatar_def" />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/hostPortraitImageView"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="4dp"
+            android:layout_toEndOf="@id/hostPortraitImageView"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/live_streaming"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/statusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/hostPortraitImageView"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toEndOf="@id/hostPortraitImageView"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/live_streaming_tap_to_watch"
+            android:textColor="#FF4D4D"
+            android:textSize="12sp" />
+
+        <View
+            android:id="@+id/dividerLine"
+            android:layout_width="match_parent"
+            android:layout_height="0.5px"
+            android:layout_below="@id/hostPortraitImageView"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="4dp"
+            android:background="#DDDDDD" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dividerLine"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="6dp"
+            android:maxLines="1"
+            android:text="@string/live_streaming_invitation"
+            android:textSize="12sp"
+            android:textColor="#888888" />
+
+    </RelativeLayout>
+</LinearLayout>

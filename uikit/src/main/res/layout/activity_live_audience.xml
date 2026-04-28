@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:clipChildren="true">
+
+    <!-- HLS video player — FullScreenVideoView overrides onMeasure to center-crop (fill+preserve ratio) -->
+    <cn.wildfire.chat.kit.live.FullScreenVideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <!-- Loading spinner -->
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateTint="@android:color/white"
+        android:visibility="gone" />
+
+    <!-- Top gradient scrim -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_gravity="top"
+        android:background="@drawable/live_top_gradient" />
+
+    <!-- Bottom gradient scrim -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/live_bottom_gradient" />
+
+    <!-- ══ TOP BAR ══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="44dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
+
+        <!-- Host info: avatar + name -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/hostAvatarImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/live_avatar_placeholder"
+                android:scaleType="centerCrop"
+                android:clipToOutline="true" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:id="@+id/hostNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_streaming"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:maxWidth="140dp"
+                    android:ellipsize="end" />
+
+                <!-- LIVE badge -->
+                <TextView
+                    android:id="@+id/liveTagTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/live_badge_bg"
+                    android:text="LIVE"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    android:layout_marginTop="2dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Right action buttons: share, float, close -->
+        <ImageButton
+            android:id="@+id/shareButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/round_bg_30_half_transparent"
+            android:src="@drawable/ic_share_white"
+            android:padding="8dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/live_share" />
+
+        <ImageButton
+            android:id="@+id/floatButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/round_bg_30_half_transparent"
+            android:src="@drawable/ic_pip"
+            android:padding="8dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/live_float" />
+
+        <ImageButton
+            android:id="@+id/closeButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/round_bg_30_half_transparent"
+            android:src="@drawable/ic_close_white"
+            android:padding="8dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/live_close" />
+
+    </LinearLayout>
+
+    <!-- ══ BOTTOM BAR ══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="56dp">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/messageFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Input + controls row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- "Say something" tap area -->
+            <TextView
+                android:id="@+id/sayingSomethingView"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:background="@drawable/live_input_bg"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="@string/live_say_something"
+                android:textColor="#99FFFFFF"
+                android:textSize="14sp" />
+
+            <!-- Co-stream request button -->
+            <ImageButton
+                android:id="@+id/requestCoStreamButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/round_bg_30_half_transparent"
+                android:src="@drawable/ic_co_stream"
+                android:padding="10dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/live_co_stream_request_btn" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <!-- ══ CO-STREAM OVERLAY ══ shown when audience is actively co-streaming -->
+    <FrameLayout
+        android:id="@+id/coStreamOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:visibility="gone">
+
+        <!-- Host's video (full screen) -->
+        <FrameLayout
+            android:id="@+id/remoteVideoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Self PiP (top-left) -->
+        <FrameLayout
+            android:id="@+id/localVideoContainer"
+            android:layout_width="100dp"
+            android:layout_height="140dp"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="120dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/live_pip_bg"
+            android:clipToOutline="true"
+            android:elevation="4dp" />
+
+        <!-- End co-stream button -->
+        <ImageButton
+            android:id="@+id/endCoStreamButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/av_hangup_selector"
+            android:src="@drawable/av_conference_hangup"
+            android:padding="14dp"
+            android:contentDescription="@string/live_co_stream_end" />
+
+    </FrameLayout>
+
+</FrameLayout>

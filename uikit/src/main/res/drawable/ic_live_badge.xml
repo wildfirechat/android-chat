@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="16dp"
+    android:viewportWidth="48"
+    android:viewportHeight="20">
+    <!-- Red background pill -->
+    <path
+        android:fillColor="#FF4040"
+        android:pathData="M4,0 H44 Q48,0 48,10 Q48,20 44,20 H4 Q0,20 0,10 Q0,0 4,0 Z" />
+    <!-- "LIVE" text represented as shapes -->
+    <!-- L -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M7,5 h2 v8 h5 v2 h-7 z" />
+    <!-- I -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17,5 h2 v10 h-2 z" />
+    <!-- V -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M22,5 l3,10 l3,-10 h2 l-4,10 h-2 l-4,-10 z" />
+    <!-- E -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,5 h7 v2 h-5 v2 h4 v2 h-4 v2 h5 v2 h-7 z" />
+</vector>

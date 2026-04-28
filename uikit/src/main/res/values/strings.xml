@@ -959,4 +959,58 @@
     <!-- 投票详情 Section 标题 -->
     <string name="poll_options_title">选项</string>
     <string name="poll_options_with_type">选项 (%s)</string>
+
+    <!-- Live Streaming -->
+    <string name="live_streaming">直播</string>
+    <string name="live_streaming_not_supported">本版本不支持直播功能</string>
+    <string name="live_streaming_start_failed">开始直播失败</string>
+    <string name="live_streaming_starting">直播准备中...</string>
+    <string name="live_streaming_default_title">直播</string>
+    <string name="live_streaming_end">结束直播</string>
+    <string name="live_streaming_mute">麦克风</string>
+    <string name="live_streaming_switch_camera">切换摄像头</string>
+    <string name="live_streaming_load_failed">直播加载失败，请稍后重试</string>
+    <string name="live_streaming_ended">直播已结束</string>
+    <string name="live_streaming_error">直播出错: %s</string>
+    <string name="live_streaming_invitation">直播邀请</string>
+    <string name="live_streaming_tap_to_watch">点击观看直播</string>
+    <string name="live_streaming_activity_label">直播</string>
+    <string name="live_audience_activity_label">观看直播</string>
+    <string name="back">返回</string>
+    <!-- Co-streaming (连麦) strings -->
+    <string name="live_co_stream_title">连麦中</string>
+    <string name="live_co_stream_end">结束连麦</string>
+    <string name="live_co_stream_invite_title">连麦邀请</string>
+    <string name="live_co_stream_invite_message">主播邀请你连麦，是否接受？</string>
+    <string name="live_co_stream_request_title">连麦请求</string>
+    <string name="live_co_stream_request_message">%s 申请连麦</string>
+    <string name="live_co_stream_accept">同意</string>
+    <string name="live_co_stream_reject">拒绝</string>
+    <string name="live_co_stream_invite_sent">已发送连麦邀请</string>
+    <string name="live_co_stream_no_members">暂无可邀请的成员</string>
+    <string name="live_co_stream_request_sent">已发送连麦申请</string>
+    <string name="live_co_stream_rejected">连麦请求被拒绝</string>
+    <string name="live_co_stream_request_btn">申请连麦</string>
+    <string name="live_co_stream_already_requested">已发送连麦申请，请等待主播确认</string>
+    <string name="live_co_stream_join_failed">连麦加入失败，请重试</string>
+    <!-- Live UI (new) -->
+    <string name="live_share">分享</string>
+    <string name="live_float">悬浮</string>
+    <string name="live_close">关闭</string>
+    <string name="live_say_something">说点什么…</string>
+    <string name="live_co_stream_manage">连麦管理</string>
+    <string name="live_co_stream_video">视频连麦</string>
+    <string name="live_co_stream_audio">语音连麦</string>
+    <string name="live_co_stream_active_section">连麦中</string>
+    <string name="live_co_stream_requesting_section">申请连麦</string>
+    <string name="live_co_stream_invitable_section">可邀请观众</string>
+    <string name="live_co_stream_end_for_user">结束连麦</string>
+    <string name="live_co_stream_invite">邀请连麦</string>
+    <string name="live_float_tip">直播中 · 点击返回</string>
+    <string name="live_co_stream_select_mode">选择连麦方式</string>
+    <string name="live_permission_float_required">需要悬浮窗权限才能使用此功能</string>
+    <string name="live_co_stream_new_request">有观众申请连麦</string>
+    <!-- Live chat (chatroom) strings -->
+    <string name="live_chat_input_hint">说点什么...</string>
+    <string name="live_chat_send_title">发送消息</string>
 </resources>

@@ -17,6 +17,7 @@ import cn.wildfire.chat.kit.conversation.ext.PollExt;
 import cn.wildfire.chat.kit.conversation.ext.ShootExt;
 import cn.wildfire.chat.kit.conversation.ext.UserCardExt;
 import cn.wildfire.chat.kit.conversation.ext.VoipExt;
+import cn.wildfire.chat.kit.live.LiveStreamingExt;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationExtManager {
@@ -38,6 +39,7 @@ public class ConversationExtManager {
     private void init() {
         registerExt(ImageExt.class);
         registerExt(VoipExt.class);
+        registerExt(LiveStreamingExt.class);
         registerExt(ShootExt.class);
         registerExt(FileExt.class);
         registerExt(LocationExt.class);

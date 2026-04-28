@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- Full-screen: host's remote video -->
+    <FrameLayout
+        android:id="@+id/remoteVideoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- PiP: local (self) video in top-right corner -->
+    <FrameLayout
+        android:id="@+id/localVideoContainer"
+        android:layout_width="90dp"
+        android:layout_height="120dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="12dp"
+        android:background="@android:color/black" />
+
+    <!-- Top bar: title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="36dp"
+        android:paddingHorizontal="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/live_co_stream_title"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Bottom controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingBottom="48dp"
+        android:paddingHorizontal="24dp">
+
+        <!-- Mute mic -->
+        <ImageButton
+            android:id="@+id/micButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/round_bg_30_half_transparent"
+            android:src="@drawable/av_mute_selector"
+            android:padding="16dp"
+            android:contentDescription="@string/live_streaming_mute" />
+
+        <!-- End co-stream -->
+        <ImageButton
+            android:id="@+id/endButton"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/av_hangup_selector"
+            android:src="@drawable/av_conference_hangup"
+            android:padding="18dp"
+            android:contentDescription="@string/live_co_stream_end" />
+
+        <!-- Switch camera -->
+        <ImageButton
+            android:id="@+id/cameraButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/round_bg_30_half_transparent"
+            android:src="@drawable/av_switch_camera_selector"
+            android:padding="16dp"
+            android:contentDescription="@string/live_streaming_switch_camera" />
+
+    </LinearLayout>
+
+</FrameLayout>

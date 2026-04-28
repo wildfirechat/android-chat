@@ -55,6 +55,8 @@ import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfire.chat.kit.voip.VoipCallService;
+import cn.wildfire.chat.kit.live.LiveCoStreamContent;
+import cn.wildfire.chat.kit.live.LiveStreamingKit;
 import cn.wildfire.chat.kit.voip.conference.ConferenceManager;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
@@ -143,6 +145,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         viewModelProvider = new ViewModelProvider(viewModelStore, factory);
         OKHttpHelper.init(application.getApplicationContext());
         ConferenceManager.init(application);
+        LiveStreamingKit.init(application);
 
         application.registerActivityLifecycleCallbacks(this);
 
@@ -212,6 +215,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
+            ChatManager.Instance().registerMessageContent(LiveCoStreamContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
             if (Config.ICE_SERVERS != null) {
                 for (String[] server : Config.ICE_SERVERS) {

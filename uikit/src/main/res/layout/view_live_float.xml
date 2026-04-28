@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Root uses a drawable background so no Material theme is needed (Service context). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/live_float_bg"
+    android:padding="4dp"
+    android:elevation="8dp">
+
+    <FrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="80dp"
+        android:layout_height="120dp"
+        android:background="@color/white"
+        android:visibility="gone">
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <!-- LIVE red dot -->
+        <View
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:background="@drawable/live_badge_bg"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:id="@+id/floatTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/live_float_tip"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:maxWidth="100dp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+</LinearLayout>

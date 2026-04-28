@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="16dp">
+
+    <!-- Avatar -->
+    <ImageView
+        android:id="@+id/userAvatarImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/live_avatar_placeholder"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true" />
+
+    <!-- Name -->
+    <TextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:textSize="15sp"
+        android:textColor="#1A1A1A"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <!-- Secondary action (e.g., 拒绝) -->
+    <TextView
+        android:id="@+id/secondaryActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:background="@drawable/live_secondary_btn_bg"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="13sp"
+        android:textColor="#666666"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone" />
+
+    <!-- Primary action (e.g., 同意 / 结束) -->
+    <TextView
+        android:id="@+id/primaryActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:background="@drawable/live_primary_btn_bg"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="13sp"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
+

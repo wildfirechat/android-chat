@@ -116,6 +116,8 @@ import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.JoinCallRequestMessageContent;
 import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
+import cn.wildfirechat.message.LiveStreamingEndMessageContent;
+import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
@@ -11210,6 +11212,8 @@ public class ChatManager {
         registerMessageContent(RestoreRequestNotificationContent.class);
         registerMessageContent(RestoreResponseNotificationContent.class);
         registerMessageContent(CollectionMessageContent.class);
+        registerMessageContent(LiveStreamingStartMessageContent.class);
+        registerMessageContent(LiveStreamingEndMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
