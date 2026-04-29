@@ -134,92 +134,26 @@
 
     </LinearLayout>
 
-    <!-- ══ BOTTOM BAR ══ -->
-    <LinearLayout
+    <!-- Chat messages floating overlay — grows up from above the input bar, overlaps the video -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/messageFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:paddingBottom="56dp">
+        android:layout_height="220dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="60dp" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/messageFragmentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Input + controls row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <!-- "Say something" tap area -->
-            <TextView
-                android:id="@+id/sayingSomethingView"
-                android:layout_width="0dp"
-                android:layout_height="38dp"
-                android:layout_weight="1"
-                android:background="@drawable/live_input_bg"
-                android:gravity="center_vertical"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:text="@string/live_say_something"
-                android:textColor="#99FFFFFF"
-                android:textSize="14sp" />
-
-            <!-- Co-stream request button -->
-            <ImageButton
-                android:id="@+id/requestCoStreamButton"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/round_bg_30_half_transparent"
-                android:src="@drawable/ic_co_stream"
-                android:padding="10dp"
-                android:layout_marginStart="8dp"
-                android:contentDescription="@string/live_co_stream_request_btn" />
-
-        </LinearLayout>
-    </LinearLayout>
-    <!-- ══ CO-STREAM OVERLAY ══ shown when audience is actively co-streaming -->
-    <FrameLayout
-        android:id="@+id/coStreamOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/black"
-        android:visibility="gone">
-
-        <!-- Host's video (full screen) -->
-        <FrameLayout
-            android:id="@+id/remoteVideoContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- Self PiP (top-left) -->
-        <FrameLayout
-            android:id="@+id/localVideoContainer"
-            android:layout_width="100dp"
-            android:layout_height="140dp"
-            android:layout_gravity="top|start"
-            android:layout_marginTop="120dp"
-            android:layout_marginStart="12dp"
-            android:background="@drawable/live_pip_bg"
-            android:clipToOutline="true"
-            android:elevation="4dp" />
-
-        <!-- End co-stream button -->
-        <ImageButton
-            android:id="@+id/endCoStreamButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="60dp"
-            android:background="@drawable/av_hangup_selector"
-            android:src="@drawable/av_conference_hangup"
-            android:padding="14dp"
-            android:contentDescription="@string/live_co_stream_end" />
-
-    </FrameLayout>
+    <!-- Co-stream request button (bottom-right, beside message overlay) -->
+    <ImageButton
+        android:id="@+id/requestCoStreamButton"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="68dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/round_bg_30_half_transparent"
+        android:src="@drawable/ic_co_stream"
+        android:padding="10dp"
+        android:contentDescription="@string/live_co_stream_request_btn" />
 
 </FrameLayout>

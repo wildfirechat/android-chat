@@ -13,13 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
@@ -132,7 +131,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
         @Override
         public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_live_co_stream_user, parent, false);
+                    .inflate(R.layout.item_live_co_stream_user, parent, false);
             return new UserViewHolder(v);
         }
 
@@ -168,7 +167,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
         @Override
         public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_live_co_stream_user, parent, false);
+                    .inflate(R.layout.item_live_co_stream_user, parent, false);
             return new UserViewHolder(v);
         }
 
@@ -179,15 +178,15 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
             holder.primaryAction.setText(R.string.live_co_stream_accept);
             holder.primaryAction.setOnClickListener(v -> {
                 LiveStreamingKit.getInstance().acceptCoStreamRequest(uid);
-                userIds.remove(position);
-                notifyItemRemoved(position);
+//                userIds.remove(position);
+//                notifyItemRemoved(position);
             });
             holder.secondaryAction.setVisibility(View.VISIBLE);
             holder.secondaryAction.setText(R.string.live_co_stream_reject);
             holder.secondaryAction.setOnClickListener(v -> {
                 LiveStreamingKit.getInstance().rejectCoStreamRequest(uid);
-                userIds.remove(position);
-                notifyItemRemoved(position);
+//                userIds.remove(position);
+//                notifyItemRemoved(position);
             });
         }
 
@@ -210,7 +209,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
         @Override
         public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_live_co_stream_user, parent, false);
+                    .inflate(R.layout.item_live_co_stream_user, parent, false);
             return new UserViewHolder(v);
         }
 
@@ -222,8 +221,9 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
             holder.primaryAction.setOnClickListener(v -> {
                 LiveStreamingKit.getInstance().inviteCoStream(uid);
                 Toast.makeText(requireContext(), R.string.live_co_stream_invite_sent, Toast.LENGTH_SHORT).show();
-                userIds.remove(position);
-                notifyItemRemoved(position);
+//                userIds.remove(position);
+//                notifyItemRemoved(position);
+                holder.primaryAction.setText(R.string.live_co_stream_invite_sent);
             });
             holder.secondaryAction.setVisibility(View.GONE);
         }
@@ -256,13 +256,13 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
     private void bindUser(UserViewHolder holder, String userId) {
         UserInfo info = ChatManager.Instance().getUserInfo(userId, false);
         holder.nameView.setText((info != null && !TextUtils.isEmpty(info.displayName))
-            ? info.displayName : userId);
+                ? info.displayName : userId);
         if (info != null && !TextUtils.isEmpty(info.portrait) && isAdded()) {
             Glide.with(this)
-                .load(info.portrait)
-                .circleCrop()
-                .placeholder(R.drawable.live_avatar_placeholder)
-                .into(holder.avatarView);
+                    .load(info.portrait)
+                    .circleCrop()
+                    .placeholder(R.drawable.live_avatar_placeholder)
+                    .into(holder.avatarView);
         }
     }
 

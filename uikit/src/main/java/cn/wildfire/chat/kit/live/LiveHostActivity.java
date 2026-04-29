@@ -4,21 +4,27 @@
 
 package cn.wildfire.chat.kit.live;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -30,6 +36,8 @@ import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
@@ -59,7 +67,14 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private static final RendererCommon.ScalingType SCALING_TYPE = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
 
     private FrameLayout videoContainer;
-    private FrameLayout coStreamVideoContainer;
+    /** ScrollView wrapper — shown/hidden as co-streamers join/leave */
+    private ScrollView coStreamScrollView;
+    /** Vertical strip container; tiles added dynamically per co-streamer */
+    private LinearLayout coStreamStrip;
+    /** Maps userId → its video tile FrameLayout */
+    private final Map<String, FrameLayout> coStreamerTiles = new LinkedHashMap<>();
+    /** Maps userId → avatar ImageView inside their tile (shown when no video / audio-only) */
+    private final Map<String, ImageView> coStreamerAvatars = new LinkedHashMap<>();
     private ImageView hostAvatarImageView;
     private TextView hostNameTextView;
     private TextView liveIndicatorTextView;
@@ -68,13 +83,14 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private ImageButton floatButton;
     private ImageButton closeButton;
     private TextView sayingSomethingView;
-    private TextView cameraButton;
+    private ImageButton cameraButton;
     private TextView coStreamButton;
     private View loadingView;
 
     private AVEngineKit engineKit;
     private Conversation conversation;
     private String callId;
+    private boolean audioOnly;
     private String pin;
     private String hostUserId;
     private boolean sessionStarted = false;
@@ -82,7 +98,14 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private Observer<Object> coStreamRequestObserver;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    protected PowerManager.WakeLock wakeLock;
+    private final ActivityResultLauncher<Intent> screenCaptureLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+            AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
+            if (session != null) {
+                session.startRecordSystemAudio(result.getData());
+            }
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,14 +132,14 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         AVEngineKit.CallSession session = engineKit.getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             callId = session.getCallId();
+            audioOnly = session.isAudioOnly();
             pin = session.getPin();
             session.setCallback(this);
             if (session.getState() == AVEngineKit.CallState.Connected) {
                 onSessionConnected();
-                // 恢复预览
-                videoContainer.post(() -> {
-                    session.setupLocalVideoView(videoContainer, SCALING_TYPE);
-                });
+                // Re-attach local video + restore all co-streamer tiles
+                videoContainer.post(() -> session.setupLocalVideoView(videoContainer, SCALING_TYPE));
+                restoreCoStreamerTiles(session);
             }
         } else {
             startLive();
@@ -127,14 +150,15 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         if (callId == null) return;
         if (getSupportFragmentManager().findFragmentById(R.id.messageFragmentContainer) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.messageFragmentContainer, LiveMessageFragment.newInstance(callId))
+                    .replace(R.id.messageFragmentContainer, LiveMessageFragment.newInstance(callId, false))
                     .commitAllowingStateLoss();
         }
     }
 
     private void bindViews() {
         videoContainer = findViewById(R.id.videoContainer);
-        coStreamVideoContainer = findViewById(R.id.coStreamVideoContainer);
+        coStreamScrollView = findViewById(R.id.coStreamScrollView);
+        coStreamStrip = findViewById(R.id.coStreamStrip);
         hostAvatarImageView = findViewById(R.id.hostAvatarImageView);
         hostNameTextView = findViewById(R.id.hostNameTextView);
         liveIndicatorTextView = findViewById(R.id.liveIndicatorTextView);
@@ -150,6 +174,12 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
     private void bindEvents() {
         closeButton.setOnClickListener(v -> endLive());
+        sayingSomethingView.setOnClickListener(v -> {
+            if (callId != null) {
+                LiveMessageInputDialogFragment.newInstance(callId)
+                        .show(getSupportFragmentManager(), "liveInput");
+            }
+        });
         cameraButton.setOnClickListener(v -> switchCamera());
         coStreamButton.setOnClickListener(v -> {
             if (callId == null) return;
@@ -158,12 +188,6 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         });
         shareButton.setOnClickListener(v -> shareLive());
         floatButton.setOnClickListener(v -> goFloat());
-        sayingSomethingView.setOnClickListener(v -> {
-            if (callId != null) {
-                LiveMessageInputDialogFragment.newInstance(callId)
-                        .show(getSupportFragmentManager(), "liveInput");
-            }
-        });
     }
 
     private void subscribeCoStreamEvents() {
@@ -184,7 +208,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private void startLive() {
         try {
             engineKit = AVEngineKit.Instance();
-            engineKit.setVideoProfile(VideoProfile.VP720P, false);
+            engineKit.setVideoProfile(VideoProfile.VP480P_9, false);
 
         } catch (Exception e) {
             Toast.makeText(this, R.string.live_streaming_start_failed, Toast.LENGTH_SHORT).show();
@@ -208,9 +232,12 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             Toast.makeText(this, R.string.live_streaming_start_failed, Toast.LENGTH_SHORT).show();
             loadingView.setVisibility(View.GONE);
             finish();
+        } else {
+            // 下面是开始录制系统音频的示例代码
+            MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+            screenCaptureLauncher.launch(mediaProjectionManager.createScreenCaptureIntent());
         }
     }
-
     private void onSessionConnected() {
         if (sessionStarted) return;
         sessionStarted = true;
@@ -233,12 +260,93 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
         String title = getString(R.string.live_streaming_default_title);
         LiveStreamingKit kit = LiveStreamingKit.getInstance();
-        kit.onHostSessionConnected(callId, pin, hostUserId, title);
+        kit.onHostSessionConnected(callId, audioOnly, pin, hostUserId, title);
         kit.sendLiveStartNotification(conversation, title);
 
         attachMessageFragment();
     }
 
+
+    // ---------- Share live ----------
+
+    // ── Co-stream tile management (multi-person) ──────────────────────────────
+
+    /**
+     * Restores co-streamer tiles for all current participants when Activity
+     * comes back from background (float window). The session is not destroyed
+     * in that flow, but SurfaceView renderers must be re-attached.
+     */
+    private void restoreCoStreamerTiles(AVEngineKit.CallSession session) {
+        for (String userId : session.getParticipantIds()) {
+            if (userId.equals(hostUserId) || Config.LIVE_STREAMING_ROBOT.equals(userId)) continue;
+            if (!coStreamerTiles.containsKey(userId)) {
+                addCoStreamerTile(userId, session);
+            } else {
+                session.setupRemoteVideoView(userId, coStreamerTiles.get(userId), SCALING_TYPE);
+            }
+        }
+    }
+
+    /** Creates a 90×120dp rounded tile for a co-streamer and attaches it to the strip. */
+    private void addCoStreamerTile(String userId, AVEngineKit.CallSession session) {
+        if (coStreamerTiles.containsKey(userId)) return;
+
+        int tileH = dp2px(120);
+        int stripW = dp2px(90);
+        int gapPx = coStreamerTiles.isEmpty() ? 0 : dp2px(8);
+
+        FrameLayout tile = new FrameLayout(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(stripW, tileH);
+        lp.topMargin = gapPx;
+        tile.setLayoutParams(lp);
+        tile.setBackground(getDrawable(R.drawable.live_pip_bg));
+        tile.setClipToOutline(true);
+
+        // Avatar placeholder — visible until the co-streamer’s video track arrives
+        ImageView avatarView = new ImageView(this);
+        FrameLayout.LayoutParams avatarLp = new FrameLayout.LayoutParams(dp2px(48), dp2px(48));
+        avatarLp.gravity = android.view.Gravity.CENTER;
+        avatarView.setLayoutParams(avatarLp);
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, false);
+        if (userInfo != null && !TextUtils.isEmpty(userInfo.portrait)) {
+            Glide.with(this).load(userInfo.portrait).circleCrop().into(avatarView);
+        } else {
+            avatarView.setImageResource(R.drawable.live_avatar_placeholder);
+        }
+        tile.addView(avatarView);
+
+        coStreamStrip.addView(tile);
+        coStreamerTiles.put(userId, tile);
+        coStreamerAvatars.put(userId, avatarView);
+        coStreamScrollView.setVisibility(View.VISIBLE);
+
+        if (session != null) {
+            session.setupRemoteVideoView(userId, tile, SCALING_TYPE);
+        }
+    }
+
+    /** Detaches the renderer and removes the tile for a departing co-streamer. */
+    private void removeCoStreamerTile(String userId) {
+        FrameLayout tile = coStreamerTiles.remove(userId);
+        coStreamerAvatars.remove(userId);
+        if (tile == null) return;
+        AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
+        if (session != null) {
+            try {
+                session.setupRemoteVideoView(userId, null, SCALING_TYPE);
+            } catch (Exception ignored) {
+            }
+        }
+        coStreamStrip.removeView(tile);
+        if (coStreamerTiles.isEmpty()) {
+            coStreamScrollView.setVisibility(View.GONE);
+        }
+    }
+
+    private int dp2px(int dp) {
+        return Math.round(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics()));
+    }
 
     // ---------- Share live ----------
 
@@ -310,6 +418,11 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             session.setCallback(this);
+            // Re-render surfaces that may have been released while backgrounded
+            session.setupLocalVideoView(videoContainer, SCALING_TYPE);
+            for (Map.Entry<String, FrameLayout> e : coStreamerTiles.entrySet()) {
+                session.setupRemoteVideoView(e.getKey(), e.getValue(), SCALING_TYPE);
+            }
         }
         LiveStreamingFloatService.stop(this);
     }
@@ -368,8 +481,12 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     @Override
     public void didParticipantJoined(String userId, boolean screenSharing) {
         if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
-        // Participant actually connected — sync kit state (no extra signal sent)
         LiveStreamingKit.getInstance().onParticipantActuallyJoined(userId);
+        // Create the tile early so it is ready when didReceiveRemoteVideoTrack fires
+        runOnUiThread(() -> {
+            AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
+            addCoStreamerTile(userId, session);
+        });
     }
 
     @Override
@@ -381,48 +498,32 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
         if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
         runOnUiThread(() -> {
-            try {
-                AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
-                if (session != null) {
-                    session.setupRemoteVideoView(userId, null, SCALING_TYPE);
-                }
-            } catch (Exception ignored) {
-            }
-            if (coStreamVideoContainer != null) {
-                coStreamVideoContainer.removeAllViews();
-                coStreamVideoContainer.setVisibility(View.GONE);
-            }
+            removeCoStreamerTile(userId);
             LiveStreamingKit.getInstance().onParticipantLeft(userId);
         });
     }
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
-        // Skip the streaming robot and screen sharing tracks
         if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
         runOnUiThread(() -> {
-            AVEngineKit.CallSession session = engineKit.getCurrentSession();
-            if (session != null && coStreamVideoContainer != null) {
-                coStreamVideoContainer.setVisibility(View.VISIBLE);
-                session.setupRemoteVideoView(userId, coStreamVideoContainer, SCALING_TYPE);
+            AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
+            if (session == null) return;
+            if (!coStreamerTiles.containsKey(userId)) {
+                // Fallback: tile not created in didParticipantJoined yet
+                addCoStreamerTile(userId, session);
+            } else {
+                // Re-attach renderer and hide avatar (video track now available)
+                session.setupRemoteVideoView(userId, coStreamerTiles.get(userId), SCALING_TYPE);
+                ImageView avatar = coStreamerAvatars.get(userId);
+                if (avatar != null) avatar.setVisibility(View.GONE);
             }
         });
     }
 
     @Override
     public void didRemoveRemoteVideoTrack(String userId) {
-        if (Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
-        runOnUiThread(() -> {
-            AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
-            if (session != null) {
-                // Detach the renderer from this user so the SurfaceView is released
-                session.setupRemoteVideoView(userId, null, SCALING_TYPE);
-            }
-            if (coStreamVideoContainer != null) {
-                coStreamVideoContainer.removeAllViews();
-                coStreamVideoContainer.setVisibility(View.GONE);
-            }
-        });
+        // Tile stays; didParticipantLeft will clean up if the user actually left.
     }
 
     @Override
@@ -439,6 +540,10 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
     @Override
     public void didVideoMuted(String userId, boolean muted) {
+        runOnUiThread(() -> {
+            ImageView avatar = coStreamerAvatars.get(userId);
+            if (avatar != null) avatar.setVisibility(muted ? View.VISIBLE : View.GONE);
+        });
     }
 
     @Override

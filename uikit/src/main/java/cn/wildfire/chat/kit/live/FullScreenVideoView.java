@@ -49,7 +49,7 @@ public class FullScreenVideoView extends VideoView {
             float scaleY = (float) parentH / mVideoHeight;
             float scale = Math.max(scaleX, scaleY);   // "cover"
 
-            int measuredW = Math.round(mVideoWidth  * scale);
+            int measuredW = Math.round(mVideoWidth * scale);
             int measuredH = Math.round(mVideoHeight * scale);
             setMeasuredDimension(measuredW, measuredH);
         } else {

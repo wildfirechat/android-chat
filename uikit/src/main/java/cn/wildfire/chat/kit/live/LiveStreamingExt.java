@@ -35,14 +35,14 @@ public class LiveStreamingExt extends ConversationExt {
         String[] permissions;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions = new String[]{
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA,
-                Manifest.permission.BLUETOOTH_CONNECT
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.BLUETOOTH_CONNECT
             };
         } else {
             permissions = new String[]{
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.CAMERA
             };
         }
         PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);

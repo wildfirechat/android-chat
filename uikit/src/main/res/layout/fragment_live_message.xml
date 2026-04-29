@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="4dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/inputTextView"
+        android:layout_marginBottom="6dp"
         android:overScrollMode="never"
-        android:clipToPadding="false"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp" />
+        android:clipToPadding="false" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/inputTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/live_input_bg"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:minWidth="140dp"
+        android:text="@string/live_say_something"
+        android:textColor="#99FFFFFF"
+        android:textSize="14sp"
+        android:clickable="true"
+        android:focusable="true" />
+
+</RelativeLayout>

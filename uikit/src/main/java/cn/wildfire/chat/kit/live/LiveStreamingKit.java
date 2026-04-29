@@ -10,7 +10,9 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -63,9 +65,9 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     // ── Events ──────────────────────────────────────────────────────────────
 
     /** 主播收到观众连麦请求 */
-    public static final String EVENT_CO_STREAM_REQUEST  = "kLiveCoStreamRequest";
+    public static final String EVENT_CO_STREAM_REQUEST = "kLiveCoStreamRequest";
     /** 观众收到主播连麦邀请 */
-    public static final String EVENT_CO_STREAM_INVITE   = "kLiveCoStreamInvite";
+    public static final String EVENT_CO_STREAM_INVITE = "kLiveCoStreamInvite";
     /** 连麦被对端接受 */
     public static final String EVENT_CO_STREAM_ACCEPTED = "kLiveCoStreamAccepted";
     /** 连麦被对端拒绝 */
@@ -76,6 +78,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     /** 获取直播观众列表回调（过滤了主播自身和推流机器人） */
     public interface GetViewersCallback {
         void onSuccess(List<String> userIds);
+
         void onFailure();
     }
 
@@ -83,7 +86,8 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     private static LiveStreamingKit instance;
 
-    private LiveStreamingKit() {}
+    private LiveStreamingKit() {
+    }
 
     public static void init(Application application) {
         if (instance == null) {
@@ -103,8 +107,11 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable chatroomKeepaliveRunnable;
 
-    /** 待处理的连麦请求 userId 列表（主播侧） */
-    private final List<String> coStreamRequests = new ArrayList<>();
+    /**
+     * 待处理的连麦请求（主播侧）：userId → 原始请求内容（保留 audioOnly 等参数，accept 时回传给观众）。
+     * 使用 LinkedHashMap 保证顺序，便于 UI 按请求先后排序。
+     */
+    private final Map<String, LiveCoStreamContent> coStreamRequestMap = new LinkedHashMap<>();
     /** 当前连麦中的 userId 列表（主播侧） */
     private final List<String> activeCoStreamers = new ArrayList<>();
 
@@ -115,7 +122,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     /** 待处理的连麦申请列表（主播侧） */
     public List<String> getCoStreamRequests() {
-        return new ArrayList<>(coStreamRequests);
+        return new ArrayList<>(coStreamRequestMap.keySet());
     }
 
     /** 当前连麦中的观众列表（主播侧） */
@@ -150,8 +157,8 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
      * @param hostUserId 主播 userId
      * @param title      直播标题
      */
-    public void onHostSessionConnected(String callId, String pin, String hostUserId, String title) {
-        this.currentSession = new LiveSession(callId, pin, hostUserId, title);
+    public void onHostSessionConnected(String callId, boolean audioOnly, String pin, String hostUserId, String title) {
+        this.currentSession = new LiveSession(callId, audioOnly, pin, hostUserId, title);
         joinChatRoom(callId);
         startChatroomKeepalive();
     }
@@ -162,7 +169,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     public void onSessionEnded() {
         stopChatroomKeepalive();
         currentSession = null;
-        coStreamRequests.clear();
+        coStreamRequestMap.clear();
         activeCoStreamers.clear();
     }
 
@@ -177,13 +184,13 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     public void sendLiveStartNotification(Conversation conversation, String title) {
         if (currentSession == null) return;
         LiveStreamingStartMessageContent content = new LiveStreamingStartMessageContent(
-            currentSession.callId, currentSession.hostUserId, title,
-            "", System.currentTimeMillis() / 1000,
-            false, false, false, currentSession.pin, "");
+                currentSession.callId, currentSession.hostUserId, title,
+                "", System.currentTimeMillis() / 1000,
+                false, false, false, currentSession.pin, "");
 
         if (!TextUtils.isEmpty(Config.LIVE_STREAMING_ROBOT)) {
             Conversation robotConv = new Conversation(
-                Conversation.ConversationType.Single, Config.LIVE_STREAMING_ROBOT, 1);
+                    Conversation.ConversationType.Single, Config.LIVE_STREAMING_ROBOT, 1);
             ChatManager.Instance().sendMessage(robotConv, content, null, 0, null);
         }
         ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
@@ -197,11 +204,11 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     public void sendLiveEndNotification(Conversation conversation) {
         if (currentSession == null) return;
         LiveStreamingEndMessageContent endContent =
-            new LiveStreamingEndMessageContent(currentSession.callId);
+                new LiveStreamingEndMessageContent(currentSession.callId);
 
         if (!TextUtils.isEmpty(Config.LIVE_STREAMING_ROBOT)) {
             Conversation robotConv = new Conversation(
-                Conversation.ConversationType.Single, Config.LIVE_STREAMING_ROBOT, 1);
+                    Conversation.ConversationType.Single, Config.LIVE_STREAMING_ROBOT, 1);
             ChatManager.Instance().sendMessage(robotConv, endContent, null, 0, null);
         }
         ChatManager.Instance().sendMessage(conversation, endContent, null, 0, null);
@@ -218,52 +225,57 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
      */
     public void getViewers(String callId, GetViewersCallback callback) {
         String hostId = currentSession != null
-            ? currentSession.hostUserId
-            : ChatManager.Instance().getUserId();
+                ? currentSession.hostUserId
+                : ChatManager.Instance().getUserId();
 
         ChatManager.Instance().getChatRoomMembersInfo(callId, 200,
-            new GetChatRoomMembersInfoCallback() {
-                @Override
-                public void onSuccess(ChatRoomMembersInfo info) {
-                    List<String> viewers = new ArrayList<>();
-                    if (info != null && info.members != null) {
-                        for (String uid : info.members) {
-                            if (!uid.equals(hostId)
-                                && !uid.equals(Config.LIVE_STREAMING_ROBOT)) {
-                                viewers.add(uid);
+                new GetChatRoomMembersInfoCallback() {
+                    @Override
+                    public void onSuccess(ChatRoomMembersInfo info) {
+                        List<String> viewers = new ArrayList<>();
+                        if (info != null && info.members != null) {
+                            for (String uid : info.members) {
+                                if (!uid.equals(hostId)
+                                        && !uid.equals(Config.LIVE_STREAMING_ROBOT)) {
+                                    viewers.add(uid);
+                                }
                             }
                         }
+                        callback.onSuccess(viewers);
                     }
-                    callback.onSuccess(viewers);
-                }
 
-                @Override
-                public void onFail(int errorCode) {
-                    callback.onFailure();
-                }
+                    @Override
+                    public void onFail(int errorCode) {
+                        callback.onFailure();
+                    }
 
-            });
+                });
     }
 
-    /** 主播邀请观众连麦 */
+    /** 主播邀请观众视频连麦（主播侧默认发起视频邀请，audioOnly=false） */
     public void inviteCoStream(String targetUserId) {
         if (currentSession == null) return;
-        sendSignal(targetUserId, LiveCoStreamContent.ACTION_INVITE, targetUserId);
+        sendSignal(targetUserId, LiveCoStreamContent.ACTION_INVITE, targetUserId, false);
     }
 
-    /** 主播接受观众的连麦请求 */
+    /**
+     * 主播接受观众的连麦请求。
+     * 将原始请求中的 audioOnly 标志回传给观众，观众据此决定以音频还是视频模式加入会议。
+     */
     public void acceptCoStreamRequest(String requesterId) {
         if (currentSession == null) return;
-        sendSignal(requesterId, LiveCoStreamContent.ACTION_ACCEPT, requesterId);
-        coStreamRequests.remove(requesterId);
+        LiveCoStreamContent original = coStreamRequestMap.get(requesterId);
+        boolean audioOnly = original != null && original.isAudioOnlyRequest();
+        sendSignal(requesterId, LiveCoStreamContent.ACTION_ACCEPT, requesterId, audioOnly);
+        coStreamRequestMap.remove(requesterId);
         if (!activeCoStreamers.contains(requesterId)) activeCoStreamers.add(requesterId);
     }
 
     /** 主播拒绝观众的连麦请求 */
     public void rejectCoStreamRequest(String requesterId) {
         if (currentSession == null) return;
-        sendSignal(requesterId, LiveCoStreamContent.ACTION_REJECT, requesterId);
-        coStreamRequests.remove(requesterId);
+        sendSignal(requesterId, LiveCoStreamContent.ACTION_REJECT, requesterId, false);
+        coStreamRequestMap.remove(requesterId);
     }
 
     /**
@@ -276,7 +288,8 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
             if (session != null) {
                 session.kickoffParticipant(userId, null);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -284,7 +297,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
      */
     public void onParticipantActuallyJoined(String userId) {
         if (!activeCoStreamers.contains(userId)) {
-            coStreamRequests.remove(userId);
+            coStreamRequestMap.remove(userId);
             activeCoStreamers.add(userId);
         }
     }
@@ -307,19 +320,23 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     public Message buildHostShareMessage() {
         if (currentSession == null) return null;
         LiveStreamingStartMessageContent content = new LiveStreamingStartMessageContent(
-            currentSession.callId, currentSession.hostUserId, currentSession.title, "",
-            System.currentTimeMillis() / 1000, false, false, false, currentSession.pin, "");
+                currentSession.callId, currentSession.hostUserId, currentSession.title, "",
+                System.currentTimeMillis() / 1000, false, false, false, currentSession.pin, "");
         Message msg = new Message();
         msg.content = content;
         return msg;
     }
 
-    /** 观众向主播发起连麦申请 */
-    public void requestCoStream(String hostUserId, String callId, String pin,
-                                String host, String title) {
+    /**
+     * 观众向主播发起连麦申请。
+     *
+     * @param audioOnlyRequest true=音频连麦，false=视频连麦
+     */
+    public void requestCoStream(String hostUserId, String callId, boolean audioOnly, String pin,
+                                String host, String title, boolean audioOnlyRequest) {
         String myUserId = ChatManager.Instance().getUserId();
         LiveCoStreamContent content = new LiveCoStreamContent(
-            callId, pin, host, title, LiveCoStreamContent.ACTION_REQUEST, myUserId);
+                callId, audioOnly, pin, host, title, LiveCoStreamContent.ACTION_REQUEST, myUserId, audioOnlyRequest);
         Conversation conv = new Conversation(Conversation.ConversationType.Single, hostUserId, 0);
         ChatManager.Instance().sendMessage(conv, content, null, 0, null);
     }
@@ -328,29 +345,32 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     public void rejectCoStreamInvite(LiveCoStreamContent invite) {
         String myUserId = ChatManager.Instance().getUserId();
         LiveCoStreamContent reject = new LiveCoStreamContent(
-            invite.getCallId(), invite.getPin(), invite.getHost(),
-            invite.getTitle(), LiveCoStreamContent.ACTION_REJECT, myUserId);
+                invite.getCallId(), invite.isAudioOnly(), invite.getPin(), invite.getHost(),
+                invite.getTitle(), LiveCoStreamContent.ACTION_REJECT, myUserId, invite.isAudioOnlyRequest());
         Conversation conv = new Conversation(
-            Conversation.ConversationType.Single, invite.getHost(), 0);
+                Conversation.ConversationType.Single, invite.getHost(), 0);
         ChatManager.Instance().sendMessage(conv, reject, null, 0, null);
     }
 
     /**
      * 观众加入 WebRTC 连麦会议（同意连麦后调用）。
+     * audioOnly 由信令内容中的字段决定（主播 accept 时回传观众的原始选择）。
      *
-     * @param content 连麦信令内容（含 callId/pin/host/title）
+     * @param content 连麦信令内容（含 callId/pin/host/title/audioOnly）
      * @return 成功返回 CallSession，会话创建失败返回 null
      */
     public AVEngineKit.CallSession joinConferenceForCoStream(LiveCoStreamContent content, AVEngineKit.CallSessionCallback callback) {
+        // audioOnly=false regardless of coStream mode: we always want to receive the host's video.
+        // muteVideo controls whether WE send video (true = audio-only co-stream, we mute our camera).
         return AVEngineKit.Instance().joinConference(
-            content.getCallId(), false, content.getPin(), content.getHost(),
-            content.getTitle(), "",
-            false,   // audience=false：成为活跃连麦参与者
-            false,   // advanced
-            false,   // muteAudio
-            false,   // muteVideo
-            false,   // screenSharing
-            callback);
+                content.getCallId(), content.isAudioOnly(), content.getPin(), content.getHost(),
+                content.getTitle(), "",
+                false,                    // audience=false：成为活跃连麦参与者
+                false,                    // advanced
+                false,                    // muteAudio
+                content.isAudioOnlyRequest(),                    // muteVideo
+                false,                    // webCamera
+                callback);
     }
 
     // ── OnReceiveMessageListener ──────────────────────────────────────────────
@@ -368,19 +388,20 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
         String uid = content.getTargetUserId();
         switch (content.getAction()) {
             case LiveCoStreamContent.ACTION_REQUEST:
-                if (!coStreamRequests.contains(uid)) coStreamRequests.add(uid);
+                // 保存完整内容，accept 时回传 audioOnly 给观众
+                coStreamRequestMap.put(uid, content);
                 LiveDataBus.setValue(EVENT_CO_STREAM_REQUEST, content);
                 break;
             case LiveCoStreamContent.ACTION_INVITE:
                 LiveDataBus.setValue(EVENT_CO_STREAM_INVITE, content);
                 break;
             case LiveCoStreamContent.ACTION_ACCEPT:
-                coStreamRequests.remove(uid);
+                coStreamRequestMap.remove(uid);
                 if (!activeCoStreamers.contains(uid)) activeCoStreamers.add(uid);
                 LiveDataBus.setValue(EVENT_CO_STREAM_ACCEPTED, content);
                 break;
             case LiveCoStreamContent.ACTION_REJECT:
-                coStreamRequests.remove(uid);
+                coStreamRequestMap.remove(uid);
                 activeCoStreamers.remove(uid);
                 LiveDataBus.setValue(EVENT_CO_STREAM_REJECTED, content);
                 break;
@@ -389,10 +410,10 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
-    private void sendSignal(String toUserId, int action, String targetUserId) {
+    private void sendSignal(String toUserId, int action, String targetUserId, boolean audioOnlyRequest) {
         LiveSession s = currentSession;
         LiveCoStreamContent content = new LiveCoStreamContent(
-            s.callId, s.pin, s.hostUserId, s.title, action, targetUserId);
+                s.callId, s.audioOnly, s.pin, s.hostUserId, s.title, action, targetUserId, audioOnlyRequest);
         Conversation conv = new Conversation(Conversation.ConversationType.Single, toUserId, 0);
         ChatManager.Instance().sendMessage(conv, content, null, 0, null);
     }

@@ -25,12 +25,14 @@ import cn.wildfirechat.uikit.permission.PermissionKit;
  */
 public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
 
-    private static final String ARG_CALL_ID    = "callId";
-    private static final String ARG_PIN        = "pin";
-    private static final String ARG_HOST       = "host";
-    private static final String ARG_TITLE      = "title";
+    private static final String ARG_CALL_ID = "callId";
+    private static final String ARG_AUDIO_ONLY = "audioOnly";
+    private static final String ARG_PIN = "pin";
+    private static final String ARG_HOST = "host";
+    private static final String ARG_TITLE = "title";
 
     private String callId;
+    private boolean audioonly;
     private String pin;
     private String host;
     private String title;
@@ -39,6 +41,7 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
         LiveCoStreamOptionsFragment f = new LiveCoStreamOptionsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CALL_ID, content.getCallId());
+        args.putBoolean(ARG_AUDIO_ONLY, content.isAudioOnly());
         args.putString(ARG_PIN, content.getPin());
         args.putString(ARG_HOST, content.getHost());
         args.putString(ARG_TITLE, content.getTitle());
@@ -51,9 +54,10 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             callId = getArguments().getString(ARG_CALL_ID);
-            pin    = getArguments().getString(ARG_PIN);
-            host   = getArguments().getString(ARG_HOST);
-            title  = getArguments().getString(ARG_TITLE);
+            audioonly = getArguments().getBoolean(ARG_AUDIO_ONLY);
+            pin = getArguments().getString(ARG_PIN);
+            host = getArguments().getString(ARG_HOST);
+            title = getArguments().getString(ARG_TITLE);
         }
     }
 
@@ -72,19 +76,19 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
         view.findViewById(R.id.audioCoStreamOption).setOnClickListener(v -> onCoStreamSelected(true));
     }
 
-    private void onCoStreamSelected(boolean audioOnly) {
-        String[] perms = audioOnly
-            ? new String[]{Manifest.permission.RECORD_AUDIO}
-            : new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+    private void onCoStreamSelected(boolean audioOnlyCoStream) {
+        String[] perms = audioOnlyCoStream
+                ? new String[]{Manifest.permission.RECORD_AUDIO}
+                : new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
 
         PermissionKit.PermissionReqTuple[] tuples =
-            PermissionKit.buildRequestPermissionTuples(requireActivity(), perms);
+                PermissionKit.buildRequestPermissionTuples(requireActivity(), perms);
         PermissionKit.checkThenRequestPermission(requireActivity(),
-            getChildFragmentManager(), tuples, allGranted -> {
-                if (Boolean.TRUE.equals(allGranted)) {
-                    LiveStreamingKit.getInstance().requestCoStream(host, callId, pin, host, title);
-                    dismiss();
-                }
-            });
+                getChildFragmentManager(), tuples, allGranted -> {
+                    if (Boolean.TRUE.equals(allGranted)) {
+                        LiveStreamingKit.getInstance().requestCoStream(host, callId, audioonly, pin, host, title, audioOnlyCoStream);
+                        dismiss();
+                    }
+                });
     }
 }

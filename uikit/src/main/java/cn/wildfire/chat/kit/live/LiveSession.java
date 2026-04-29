@@ -12,12 +12,14 @@ import cn.wildfire.chat.kit.Config;
  */
 public class LiveSession {
     public final String callId;
+    public final boolean audioOnly;
     public final String pin;
     public final String hostUserId;
     public final String title;
 
-    public LiveSession(String callId, String pin, String hostUserId, String title) {
+    public LiveSession(String callId, boolean audioOnly, String pin, String hostUserId, String title) {
         this.callId = callId;
+        this.audioOnly = audioOnly;
         this.pin = pin;
         this.hostUserId = hostUserId;
         this.title = title;

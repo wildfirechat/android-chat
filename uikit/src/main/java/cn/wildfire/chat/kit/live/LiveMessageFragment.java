@@ -38,12 +38,15 @@ import cn.wildfirechat.remote.ChatManager;
 public class LiveMessageFragment extends Fragment {
 
     private static final String ARG_CALL_ID = "callId";
+    private static final String ARG_SHOW_INPUT = "showInput";
     private static final long KEEP_ALIVE_INTERVAL = 3 * 60 * 1000L;
     private static final long MSG_TIMEOUT = 30 * 1000L;
 
     private RecyclerView messageRecyclerView;
+    private TextView inputTextView;
 
     private String callId;
+    private boolean showInput = true;
     private MessageViewModel messageViewModel;
     private final List<UiMessage> messages = new ArrayList<>();
     private MessageAdapter messageAdapter;
@@ -53,9 +56,14 @@ public class LiveMessageFragment extends Fragment {
     private Runnable timeoutRunnable;
 
     public static LiveMessageFragment newInstance(String callId) {
+        return newInstance(callId, true);
+    }
+
+    public static LiveMessageFragment newInstance(String callId, boolean showInput) {
         LiveMessageFragment fragment = new LiveMessageFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CALL_ID, callId);
+        args.putBoolean(ARG_SHOW_INPUT, showInput);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,6 +72,7 @@ public class LiveMessageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         callId = getArguments() != null ? getArguments().getString(ARG_CALL_ID) : null;
+        showInput = getArguments() == null || getArguments().getBoolean(ARG_SHOW_INPUT, true);
     }
 
     @Nullable
@@ -72,6 +81,7 @@ public class LiveMessageFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_live_message, container, false);
         messageRecyclerView = view.findViewById(R.id.messageRecyclerView);
+        inputTextView = view.findViewById(R.id.inputTextView);
         return view;
     }
 
@@ -90,8 +100,8 @@ public class LiveMessageFragment extends Fragment {
                 if (uiMessage.message.messageId == 0 || uiMessage.message.content.notLoaded > 0) continue;
                 Conversation conv = uiMessage.message.conversation;
                 if (conv.type == Conversation.ConversationType.ChatRoom
-                    && conv.line == 0
-                    && conv.target.equals(callId)) {
+                        && conv.line == 0
+                        && conv.target.equals(callId)) {
                     if (!contains(uiMessage)) {
                         messages.add(uiMessage);
                         messageAdapter.notifyItemInserted(messages.size() - 1);
@@ -100,6 +110,11 @@ public class LiveMessageFragment extends Fragment {
                 }
             }
         });
+
+        if (inputTextView != null) {
+            inputTextView.setVisibility(showInput ? View.VISIBLE : View.GONE);
+            inputTextView.setOnClickListener(v -> showInputDialog());
+        }
 
         joinChatRoom();
         startKeepAlive();
@@ -194,7 +209,7 @@ public class LiveMessageFragment extends Fragment {
         @Override
         public TextMessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.live_message_item, parent, false);
+                    .inflate(R.layout.live_message_item, parent, false);
             return new TextMessageViewHolder(v);
         }
 

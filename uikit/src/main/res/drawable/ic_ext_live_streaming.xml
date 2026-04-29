@@ -3,8 +3,15 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Camera body -->
+
+    <path
+        android:strokeColor="#585858"
+        android:strokeWidth="1.0"
+        android:fillColor="#00000000"
+        android:pathData="M12,8c-2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4S14.21,8 12,8zM12,15.2c-1.77,0 -3.2,-1.43 -3.2,-3.2s1.43,-3.2 3.2,-3.2 3.2,1.43 3.2,3.2S13.77,15.2 12,15.2z" />
+
     <path
         android:fillColor="#585858"
-        android:pathData="M17,10.5V7c0,-0.55 -0.45,-1 -1,-1H4C3.45,6 3,6.45 3,7v10c0,0.55 0.45,1 1,1h12c0.55,0 1,-0.45 1,-1v-3.5l4,4v-11l-4,4z" />
+        android:pathData="M12,12m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0" />
+
 </vector>

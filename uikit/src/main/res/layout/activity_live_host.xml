@@ -10,18 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Co-streamer PiP (top-right, rounded) -->
-    <FrameLayout
-        android:id="@+id/coStreamVideoContainer"
+    <!-- Co-streamer strip (top-right, multiple tiles stacked vertically, scrollable) -->
+    <ScrollView
+        android:id="@+id/coStreamScrollView"
         android:layout_width="90dp"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_marginTop="120dp"
         android:layout_marginEnd="12dp"
-        android:background="@drawable/live_pip_bg"
-        android:clipToOutline="true"
         android:elevation="4dp"
-        android:visibility="gone" />
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/coStreamStrip"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
 
     <!-- Top gradient scrim -->
     <View
@@ -161,14 +168,16 @@
             android:layout_height="180dp"
             android:layout_marginBottom="8dp" />
 
-        <!-- Input + controls row -->
+        <!-- Controls row: say-something + camera switch + co-stream management -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
 
-            <!-- "Say something" tap area -->
+            <!-- "说点什么..." input pill -->
             <TextView
                 android:id="@+id/sayingSomethingView"
                 android:layout_width="0dp"
@@ -176,24 +185,22 @@
                 android:layout_weight="1"
                 android:background="@drawable/live_input_bg"
                 android:gravity="center_vertical"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:text="@string/live_say_something"
-                android:textColor="#99FFFFFF"
-                android:textSize="14sp" />
+                android:textColor="#CCFFFFFF"
+                android:textSize="13sp" />
 
             <!-- Camera switch -->
-            <TextView
+            <ImageButton
                 android:id="@+id/cameraButton"
-                android:layout_width="44dp"
-                android:layout_height="38dp"
-                android:background="@drawable/live_input_bg"
-                android:gravity="center"
-                android:text="翻转"
-                android:textColor="#CCFFFFFF"
-                android:textSize="13sp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/round_bg_30_half_transparent"
+                android:src="@drawable/av_camera"
+                android:padding="8dp"
                 android:layout_marginStart="8dp"
-                android:contentDescription="@string/live_streaming_switch_camera" />
+                android:contentDescription="@string/live_float" />
 
             <!-- Co-stream management -->
             <TextView

@@ -32,7 +32,7 @@ import cn.wildfirechat.remote.ChatManager;
  * </p>
  */
 @MessageContentType(value = {
-    LiveStreamingStartMessageContent.class,
+        LiveStreamingStartMessageContent.class,
 })
 public class LiveStreamingMessageContentViewHolder extends NormalMessageContentViewHolder {
 
@@ -67,10 +67,10 @@ public class LiveStreamingMessageContentViewHolder extends NormalMessageContentV
         UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
         if (hostInfo != null) {
             Glide.with(fragment)
-                .load(hostInfo.portrait)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
-                .placeholder(R.mipmap.avatar_def)
-                .into(hostPortraitImageView);
+                    .load(hostInfo.portrait)
+                    .transforms(new CenterCrop(), new RoundedCorners(10))
+                    .placeholder(R.mipmap.avatar_def)
+                    .into(hostPortraitImageView);
         }
     }
 

@@ -31,6 +31,7 @@ import androidx.core.app.NotificationCompat;
 
 import org.webrtc.RendererCommon;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
@@ -45,18 +46,23 @@ public class LiveStreamingFloatService extends Service {
     private static final String CHANNEL_ID = "live_float_channel";
     private static final int NOTIFICATION_ID = 9001;
 
-    public static final String EXTRA_TITLE     = "live_title";
-    public static final String EXTRA_IS_HOST   = "live_is_host";
-    public static final String EXTRA_PORTRAIT  = "live_portrait";
-    public static final String EXTRA_HLS_URL   = "live_hls_url";
+    public static final String EXTRA_TITLE = "live_title";
+    public static final String EXTRA_IS_HOST = "live_is_host";
+    public static final String EXTRA_IS_CO_STREAM = "live_is_co_stream";
+    public static final String EXTRA_HOST_USER_ID = "live_host_user_id";
+    public static final String EXTRA_PORTRAIT = "live_portrait";
+    public static final String EXTRA_HLS_URL = "live_hls_url";
     public static final String EXTRA_ORIGINAL_INTENT = "live_original_intent";
-    public static final String ACTION_STOP     = "cn.wildfire.live.STOP_FLOAT";
+    public static final String ACTION_STOP = "cn.wildfire.live.STOP_FLOAT";
 
     private WindowManager wm;
     private View floatView;
     private WindowManager.LayoutParams params;
     private Intent mOriginalIntent;
     private String mHlsUrl;
+    private boolean mIsCoStream;
+    private boolean mIsHost;
+    private String mHostUserId;
 
     // Touch drag
     private float touchStartX, touchStartY;
@@ -66,12 +72,20 @@ public class LiveStreamingFloatService extends Service {
 
     /** Start floating window (called from Activity). */
     public static void start(Context ctx, String title, boolean isHost, String portrait, String hlsUrl, Intent originalIntent) {
+        start(ctx, title, isHost, false, "", portrait, hlsUrl, originalIntent);
+    }
+
+    /** Start floating window for a co-stream session (audience side). */
+    public static void start(Context ctx, String title, boolean isHost, boolean isCoStream,
+                             String hostUserId, String portrait, String hlsUrl, Intent originalIntent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ctx)) {
-            return; // Caller should check permission before calling
+            return;
         }
         Intent intent = new Intent(ctx, LiveStreamingFloatService.class);
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_IS_HOST, isHost);
+        intent.putExtra(EXTRA_IS_CO_STREAM, isCoStream);
+        intent.putExtra(EXTRA_HOST_USER_ID, hostUserId);
         intent.putExtra(EXTRA_PORTRAIT, portrait);
         intent.putExtra(EXTRA_HLS_URL, hlsUrl);
         intent.putExtra(EXTRA_ORIGINAL_INTENT, originalIntent);
@@ -97,14 +111,16 @@ public class LiveStreamingFloatService extends Service {
         }
 
         String title = intent != null
-            ? intent.getStringExtra(EXTRA_TITLE) : getString(R.string.live_streaming);
-        boolean isHost = intent != null && intent.getBooleanExtra(EXTRA_IS_HOST, false);
+                ? intent.getStringExtra(EXTRA_TITLE) : getString(R.string.live_streaming);
+        mIsHost = intent != null && intent.getBooleanExtra(EXTRA_IS_HOST, false);
+        mIsCoStream = intent != null && intent.getBooleanExtra(EXTRA_IS_CO_STREAM, false);
+        mHostUserId = intent != null ? intent.getStringExtra(EXTRA_HOST_USER_ID) : null;
         String portrait = intent != null ? intent.getStringExtra(EXTRA_PORTRAIT) : null;
         mHlsUrl = intent != null ? intent.getStringExtra(EXTRA_HLS_URL) : null;
         mOriginalIntent = intent != null ? intent.getParcelableExtra(EXTRA_ORIGINAL_INTENT) : null;
 
-        startForegroundWithNotification(title, isHost);
-        showFloatView(title, isHost, portrait);
+        startForegroundWithNotification(title, mIsHost);
+        showFloatView(title, mIsHost, portrait);
         return START_NOT_STICKY;
     }
 
@@ -116,34 +132,37 @@ public class LiveStreamingFloatService extends Service {
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) { return null; }
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     // ── Foreground notification ───────────────────────────────────────────────
 
     private void startForegroundWithNotification(String title, boolean isHost) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID, getString(R.string.live_streaming), NotificationManager.IMPORTANCE_LOW);
+                    CHANNEL_ID, getString(R.string.live_streaming), NotificationManager.IMPORTANCE_LOW);
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null) nm.createNotificationChannel(channel);
         }
 
-        Intent resumeIntent = new Intent(this, isHost ? LiveHostActivity.class : LiveAudienceActivity.class);
+        Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
+                : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class));
         if (mOriginalIntent != null) {
             resumeIntent.putExtras(mOriginalIntent);
         }
         resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            ? PendingIntent.FLAG_IMMUTABLE : 0;
+                ? PendingIntent.FLAG_IMMUTABLE : 0;
         PendingIntent pi = PendingIntent.getActivity(this, 0, resumeIntent, piFlags);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(getString(R.string.live_streaming))
-            .setContentText(title)
-            .setSmallIcon(R.drawable.ic_live_badge)
-            .setContentIntent(pi)
-            .setOngoing(true)
-            .build();
+                .setContentTitle(getString(R.string.live_streaming))
+                .setContentText(title)
+                .setSmallIcon(R.drawable.ic_live_badge)
+                .setContentIntent(pi)
+                .setOngoing(true)
+                .build();
         startForeground(NOTIFICATION_ID, notification);
     }
 
@@ -156,12 +175,12 @@ public class LiveStreamingFloatService extends Service {
         params = new WindowManager.LayoutParams();
 
         int type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            : WindowManager.LayoutParams.TYPE_PHONE;
+                ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                : WindowManager.LayoutParams.TYPE_PHONE;
         params.type = type;
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
         params.format = PixelFormat.TRANSLUCENT;
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -179,11 +198,16 @@ public class LiveStreamingFloatService extends Service {
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             videoContainer.setVisibility(View.VISIBLE);
             if (isHost) {
+                // Host: show local camera
                 session.setupLocalVideoView(videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+            } else if (mIsCoStream && !TextUtils.isEmpty(mHostUserId)) {
+                // Co-stream audience: always show the host's video
+                session.setupRemoteVideoView(mHostUserId, videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
             } else {
-                // Find host or the first co-streamer to show in float
+                // Fallback: first non-self, non-robot participant
                 for (String userId : session.getParticipantIds()) {
-                    if (!userId.equals(ChatManager.Instance().getUserId())) {
+                    if (!userId.equals(ChatManager.Instance().getUserId())
+                            && !Config.LIVE_STREAMING_ROBOT.equals(userId)) {
                         session.setupRemoteVideoView(userId, videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
                         break;
                     }
@@ -249,10 +273,17 @@ public class LiveStreamingFloatService extends Service {
         if (wm != null && floatView != null) {
             AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (session != null) {
-                // Clear video views before removing from window
-                FrameLayout videoContainer = floatView.findViewById(R.id.videoContainer);
-                if (videoContainer != null) {
-                    session.setupLocalVideoView(null, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+                // Detach whichever renderer was attached to the float container
+                if (mIsHost) {
+                    try {
+                        session.setupLocalVideoView(null, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+                    } catch (Exception ignored) {
+                    }
+                } else if (!TextUtils.isEmpty(mHostUserId)) {
+                    try {
+                        session.setupRemoteVideoView(mHostUserId, null, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+                    } catch (Exception ignored) {
+                    }
                 }
             }
             wm.removeView(floatView);
@@ -262,7 +293,8 @@ public class LiveStreamingFloatService extends Service {
     }
 
     private void resumeActivity(boolean isHost) {
-        Class<?> cls = isHost ? LiveHostActivity.class : LiveAudienceActivity.class;
+        Class<?> cls = mIsCoStream ? LiveCoStreamActivity.class
+                : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class);
         Intent intent = new Intent(this, cls);
         if (mOriginalIntent != null) {
             intent.putExtras(mOriginalIntent);

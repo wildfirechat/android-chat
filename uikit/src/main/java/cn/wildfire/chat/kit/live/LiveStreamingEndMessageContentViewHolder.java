@@ -15,7 +15,7 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContent
 import cn.wildfirechat.message.LiveStreamingEndMessageContent;
 
 @MessageContentType(value = {
-    LiveStreamingEndMessageContent.class,
+        LiveStreamingEndMessageContent.class,
 })
 public class LiveStreamingEndMessageContentViewHolder extends NormalMessageContentViewHolder {
 

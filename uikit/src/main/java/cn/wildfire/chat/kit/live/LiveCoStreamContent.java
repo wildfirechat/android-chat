@@ -36,22 +36,28 @@ public class LiveCoStreamContent extends MessageContent {
     public static final int ACTION_REJECT = 3;
 
     private String callId;
+    // 是否是 语音直播
+    private boolean audioOnly;
     private String pin;
     private String host;
     private String title;
     private int action;
     private String targetUserId;
+    // 是否是 语音连麦
+    private boolean audioOnlyRequest;
 
     public LiveCoStreamContent() {
     }
 
-    public LiveCoStreamContent(String callId, String pin, String host, String title, int action, String targetUserId) {
+    public LiveCoStreamContent(String callId, boolean audioOnly, String pin, String host, String title, int action, String targetUserId, boolean audioOnlyRequest) {
         this.callId = callId;
+        this.audioOnly = audioOnly;
         this.pin = pin;
         this.host = host;
         this.title = title;
         this.action = action;
         this.targetUserId = targetUserId;
+        this.audioOnlyRequest = audioOnlyRequest;
     }
 
     @Override
@@ -62,9 +68,11 @@ public class LiveCoStreamContent extends MessageContent {
         try {
             json.put("a", action);
             json.putOpt("p", pin);
+            json.putOpt("au", audioOnly);
             json.putOpt("h", host);
             json.putOpt("ti", title);
             json.putOpt("u", targetUserId);
+            json.putOpt("aur", audioOnlyRequest);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -80,10 +88,12 @@ public class LiveCoStreamContent extends MessageContent {
             try {
                 JSONObject json = new JSONObject(new String(payload.binaryContent));
                 this.action = json.optInt("a");
+                this.audioOnly = json.optBoolean("au");
                 this.pin = json.optString("p");
                 this.host = json.optString("h");
                 this.title = json.optString("ti");
                 this.targetUserId = json.optString("u");
+                this.audioOnlyRequest = json.optBoolean("aur", audioOnlyRequest);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -95,35 +105,66 @@ public class LiveCoStreamContent extends MessageContent {
         return null;
     }
 
-    public String getCallId() { return callId; }
-    public String getPin() { return pin; }
-    public String getHost() { return host; }
-    public String getTitle() { return title; }
-    public int getAction() { return action; }
-    public String getTargetUserId() { return targetUserId; }
+    public String getCallId() {
+        return callId;
+    }
+
+    public boolean isAudioOnly() {
+        return audioOnly;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public String getTargetUserId() {
+        return targetUserId;
+    }
+
+    public boolean isAudioOnlyRequest() {
+        return audioOnlyRequest;
+    }
 
     @Override
-    public int describeContents() { return 0; }
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(callId);
+        dest.writeInt(audioOnly ? 1 : 0);
         dest.writeString(pin);
         dest.writeString(host);
         dest.writeString(title);
         dest.writeInt(action);
         dest.writeString(targetUserId);
+        dest.writeInt(audioOnlyRequest ? 1 : 0);
     }
 
     protected LiveCoStreamContent(Parcel in) {
         super(in);
         callId = in.readString();
+        audioOnly = in.readInt() == 1;
         pin = in.readString();
         host = in.readString();
         title = in.readString();
         action = in.readInt();
         targetUserId = in.readString();
+        audioOnlyRequest = in.readInt() == 1;
     }
 
     public static final Creator<LiveCoStreamContent> CREATOR = new Creator<LiveCoStreamContent>() {
