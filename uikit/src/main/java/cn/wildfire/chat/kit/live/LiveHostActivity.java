@@ -84,6 +84,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private ImageButton closeButton;
     private TextView sayingSomethingView;
     private ImageButton cameraButton;
+    private ImageButton recordAudioButton;
     private TextView coStreamButton;
     private View loadingView;
 
@@ -97,15 +98,24 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
     private Observer<Object> coStreamRequestObserver;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    /** True while the MediaProjection permission dialog is open.
+     *  Prevents onStop() from starting the float service (which would kill the launcher callback). */
+    private boolean isWaitingForMediaProjectionPermission = false;
 
-    private final ActivityResultLauncher<Intent> screenCaptureLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-            AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
-            if (session != null) {
-                session.startRecordSystemAudio(result.getData());
-            }
-        }
-    });
+    /**
+     * Saved from the launcher callback (fires in onStart()) so we can start the capture service
+     * in onResume(), AFTER stop() has run. This avoids stop() immediately killing the new service.
+     */
+    private Intent pendingProjectionData = null;
+
+    private final ActivityResultLauncher<Intent> screenCaptureLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                isWaitingForMediaProjectionPermission = false;
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    // Defer to onResume() — stop() must run first to avoid killing the new service.
+                    pendingProjectionData = result.getData();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +178,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         closeButton = findViewById(R.id.closeButton);
         sayingSomethingView = findViewById(R.id.sayingSomethingView);
         cameraButton = findViewById(R.id.cameraButton);
+        recordAudioButton = findViewById(R.id.recordAudioButton);
         coStreamButton = findViewById(R.id.coStreamButton);
         loadingView = findViewById(R.id.loadingView);
     }
@@ -181,6 +192,12 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             }
         });
         cameraButton.setOnClickListener(v -> switchCamera());
+        recordAudioButton.setOnClickListener(v -> {
+            MediaProjectionManager mgr =
+                    (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+            isWaitingForMediaProjectionPermission = true;
+            screenCaptureLauncher.launch(mgr.createScreenCaptureIntent());
+        });
         coStreamButton.setOnClickListener(v -> {
             if (callId == null) return;
             LiveCoStreamManagerFragment.newInstance(callId)
@@ -232,10 +249,6 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             Toast.makeText(this, R.string.live_streaming_start_failed, Toast.LENGTH_SHORT).show();
             loadingView.setVisibility(View.GONE);
             finish();
-        } else {
-            // 下面是开始录制系统音频的示例代码
-            MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-            screenCaptureLauncher.launch(mediaProjectionManager.createScreenCaptureIntent());
         }
     }
     private void onSessionConnected() {
@@ -376,7 +389,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
         String title = getString(R.string.live_streaming_default_title);
         UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-        LiveStreamingFloatService.start(this, title, true, hostInfo != null ? hostInfo.portrait : null, null, getIntent());
+        LiveStreamingFloatService.start(this, title, true, hostInfo != null ? hostInfo.portrait : null, null);
         finish();
     }
 
@@ -395,8 +408,10 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
         AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
         if (session != null) {
+            session.stopRecordSystemAudio();
             session.leaveConference(true);
         }
+        LiveStreamingFloatService.stop(this);
         finish();
     }
 
@@ -425,17 +440,26 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             }
         }
         LiveStreamingFloatService.stop(this);
+        if (pendingProjectionData != null) {
+            Intent data = pendingProjectionData;
+            pendingProjectionData = null;
+            LiveStreamingFloatService.startSystemAudioCapture(this, data);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        // Do NOT go to float mode while the MediaProjection permission dialog is open.
+        // That dialog causes onStop() even though the user hasn't explicitly minimised;
+        // finishing here would kill the ActivityResultLauncher callback.
+        if (isWaitingForMediaProjectionPermission) return;
         AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             if (!isFinishing() && !isChangingConfigurations()) {
                 String title = getString(R.string.live_streaming_default_title);
                 UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-                LiveStreamingFloatService.start(this, title, true, hostInfo != null ? hostInfo.portrait : null, null, getIntent());
+                LiveStreamingFloatService.start(this, title, true, hostInfo != null ? hostInfo.portrait : null, null);
                 finish();
             }
         }

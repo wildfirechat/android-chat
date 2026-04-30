@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.live;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,6 +12,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
@@ -28,6 +31,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.ServiceCompat;
+import androidx.core.content.ContextCompat;
 
 import org.webrtc.RendererCommon;
 
@@ -46,23 +51,23 @@ public class LiveStreamingFloatService extends Service {
     private static final String CHANNEL_ID = "live_float_channel";
     private static final int NOTIFICATION_ID = 9001;
 
-    public static final String EXTRA_TITLE = "live_title";
-    public static final String EXTRA_IS_HOST = "live_is_host";
-    public static final String EXTRA_IS_CO_STREAM = "live_is_co_stream";
-    public static final String EXTRA_HOST_USER_ID = "live_host_user_id";
-    public static final String EXTRA_PORTRAIT = "live_portrait";
-    public static final String EXTRA_HLS_URL = "live_hls_url";
-    public static final String EXTRA_ORIGINAL_INTENT = "live_original_intent";
-    public static final String ACTION_STOP = "cn.wildfire.live.STOP_FLOAT";
+    public static final String EXTRA_TITLE            = "live_title";
+    public static final String EXTRA_IS_HOST          = "live_is_host";
+    public static final String EXTRA_IS_CO_STREAM     = "live_is_co_stream";
+    public static final String EXTRA_HOST_USER_ID     = "live_host_user_id";
+    public static final String EXTRA_PORTRAIT         = "live_portrait";
+    public static final String EXTRA_HLS_URL          = "live_hls_url";
+    public static final String EXTRA_MEDIA_PROJECTION_DATA = "live_media_projection_data";
 
     private WindowManager wm;
     private View floatView;
     private WindowManager.LayoutParams params;
-    private Intent mOriginalIntent;
     private String mHlsUrl;
     private boolean mIsCoStream;
     private boolean mIsHost;
     private String mHostUserId;
+
+    private Intent mProjectionData;
 
     // Touch drag
     private float touchStartX, touchStartY;
@@ -71,13 +76,24 @@ public class LiveStreamingFloatService extends Service {
     // ── Public static helpers ────────────────────────────────────────────────
 
     /** Start floating window (called from Activity). */
-    public static void start(Context ctx, String title, boolean isHost, String portrait, String hlsUrl, Intent originalIntent) {
-        start(ctx, title, isHost, false, "", portrait, hlsUrl, originalIntent);
+    public static void start(Context ctx, String title, boolean isHost, String portrait, String hlsUrl) {
+        start(ctx, title, isHost, false, "", portrait, hlsUrl);
+    }
+
+    /** Start system audio capture. Must be called after MediaProjection permission is granted. */
+    public static void startSystemAudioCapture(Context ctx, Intent projectionData) {
+        Intent intent = new Intent(ctx, LiveStreamingFloatService.class);
+        intent.putExtra(EXTRA_MEDIA_PROJECTION_DATA, projectionData);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ctx.startForegroundService(intent);
+        } else {
+            ctx.startService(intent);
+        }
     }
 
     /** Start floating window for a co-stream session (audience side). */
     public static void start(Context ctx, String title, boolean isHost, boolean isCoStream,
-                             String hostUserId, String portrait, String hlsUrl, Intent originalIntent) {
+                             String hostUserId, String portrait, String hlsUrl) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ctx)) {
             return;
         }
@@ -88,7 +104,6 @@ public class LiveStreamingFloatService extends Service {
         intent.putExtra(EXTRA_HOST_USER_ID, hostUserId);
         intent.putExtra(EXTRA_PORTRAIT, portrait);
         intent.putExtra(EXTRA_HLS_URL, hlsUrl);
-        intent.putExtra(EXTRA_ORIGINAL_INTENT, originalIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ctx.startForegroundService(intent);
         } else {
@@ -104,10 +119,19 @@ public class LiveStreamingFloatService extends Service {
     // ── Service lifecycle ────────────────────────────────────────────────────
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        // startForeground() is deferred to onStartCommand() so that we know whether
+        // FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION is needed before the first call.
+        // Android 14 validates the type on the first startForeground(), not subsequent ones.
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && ACTION_STOP.equals(intent.getAction())) {
-            stopSelf();
-            return START_NOT_STICKY;
+        Intent projectionData = intent != null
+                ? intent.getParcelableExtra(EXTRA_MEDIA_PROJECTION_DATA) : null;
+        if (projectionData != null) {
+            mProjectionData = projectionData;
         }
 
         String title = intent != null
@@ -117,10 +141,24 @@ public class LiveStreamingFloatService extends Service {
         mHostUserId = intent != null ? intent.getStringExtra(EXTRA_HOST_USER_ID) : null;
         String portrait = intent != null ? intent.getStringExtra(EXTRA_PORTRAIT) : null;
         mHlsUrl = intent != null ? intent.getStringExtra(EXTRA_HLS_URL) : null;
-        mOriginalIntent = intent != null ? intent.getParcelableExtra(EXTRA_ORIGINAL_INTENT) : null;
 
-        startForegroundWithNotification(title, mIsHost);
-        showFloatView(title, mIsHost, portrait);
+        updateForeground(title, mIsHost);
+
+        if (projectionData != null) {
+            try {
+                AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+                if (session != null) {
+                    session.startRecordSystemAudio(projectionData);
+                }
+            } catch (Exception e) {
+                android.util.Log.e("LiveFloatService", "startRecordSystemAudio failed", e);
+            }
+            return START_NOT_STICKY;
+        }
+
+        if (intent != null && intent.hasExtra(EXTRA_TITLE)) {
+            showFloatView(title, mIsHost, portrait);
+        }
         return START_NOT_STICKY;
     }
 
@@ -138,7 +176,7 @@ public class LiveStreamingFloatService extends Service {
 
     // ── Foreground notification ───────────────────────────────────────────────
 
-    private void startForegroundWithNotification(String title, boolean isHost) {
+    private void updateForeground(String title, boolean isHost) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID, getString(R.string.live_streaming), NotificationManager.IMPORTANCE_LOW);
@@ -148,9 +186,6 @@ public class LiveStreamingFloatService extends Service {
 
         Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
                 : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class));
-        if (mOriginalIntent != null) {
-            resumeIntent.putExtras(mOriginalIntent);
-        }
         resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 ? PendingIntent.FLAG_IMMUTABLE : 0;
@@ -163,7 +198,33 @@ public class LiveStreamingFloatService extends Service {
                 .setContentIntent(pi)
                 .setOngoing(true)
                 .build();
-        startForeground(NOTIFICATION_ID, notification);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int foregroundType = ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
+            if (mProjectionData != null) {
+                foregroundType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Requesting MICROPHONE/CAMERA types without permissions on Android 14+ causes a crash.
+                // We only request them if we are host or co-streaming and have permissions.
+                if (isHost || mIsCoStream) {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        foregroundType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+                    }
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        foregroundType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA;
+                    }
+                }
+            }
+            if (Build.VERSION.SDK_INT >= 34 /* Build.VERSION_CODES.UPSIDE_DOWN_CAKE */) {
+                // On Android 14+, use the platform method directly to be safe
+                startForeground(NOTIFICATION_ID, notification, foregroundType);
+            } else {
+                ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, foregroundType);
+            }
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     // ── Float view ───────────────────────────────────────────────────────────
@@ -296,9 +357,6 @@ public class LiveStreamingFloatService extends Service {
         Class<?> cls = mIsCoStream ? LiveCoStreamActivity.class
                 : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class);
         Intent intent = new Intent(this, cls);
-        if (mOriginalIntent != null) {
-            intent.putExtras(mOriginalIntent);
-        }
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         stopSelf();

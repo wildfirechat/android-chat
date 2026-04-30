@@ -227,7 +227,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
                         ? coStreamContent.getTitle() : getString(R.string.live_streaming);
                 UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
                 LiveStreamingFloatService.start(this, title, false, true, hostUserId,
-                        hostInfo != null ? hostInfo.portrait : null, null, getIntent());
+                        hostInfo != null ? hostInfo.portrait : null, null);
                 finish();
             }
         }

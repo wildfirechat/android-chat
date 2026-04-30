@@ -200,7 +200,18 @@
                 android:src="@drawable/av_camera"
                 android:padding="8dp"
                 android:layout_marginStart="8dp"
-                android:contentDescription="@string/live_float" />
+                android:contentDescription="@string/live_streaming_switch_camera" />
+
+            <!-- Record system audio -->
+            <ImageButton
+                android:id="@+id/recordAudioButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/round_bg_30_half_transparent"
+                android:src="@drawable/av_handfree"
+                android:padding="8dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="录制系统音频" />
 
             <!-- Co-stream management -->
             <TextView

@@ -118,7 +118,7 @@ public class LiveAudienceActivity extends FragmentActivity {
                     : getString(R.string.live_streaming);
             UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
             String hlsUrl = LiveStreamingKit.getHlsUrl(liveContent.getCallId());
-            LiveStreamingFloatService.start(this, title, false, hostInfo != null ? hostInfo.portrait : null, hlsUrl, getIntent());
+            LiveStreamingFloatService.start(this, title, false, hostInfo != null ? hostInfo.portrait : null, hlsUrl);
             finish();
         });
     }
@@ -255,7 +255,7 @@ public class LiveAudienceActivity extends FragmentActivity {
                     : getString(R.string.live_streaming);
             UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
             String hlsUrl = LiveStreamingKit.getHlsUrl(liveContent.getCallId());
-            LiveStreamingFloatService.start(this, title, false, hostInfo != null ? hostInfo.portrait : null, hlsUrl, getIntent());
+            LiveStreamingFloatService.start(this, title, false, hostInfo != null ? hostInfo.portrait : null, hlsUrl);
             finish();
         }
     }
