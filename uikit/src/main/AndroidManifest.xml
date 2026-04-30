@@ -272,7 +272,7 @@
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name="cn.wildfire.chat.kit.live.LiveStreamingFloatService"
+            android:name="cn.wildfire.chat.kit.live.LiveStreamingService"
             android:foregroundServiceType="mediaPlayback|mediaProjection|microphone|camera" />
 
         <activity

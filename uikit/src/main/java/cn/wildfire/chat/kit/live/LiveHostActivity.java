@@ -126,10 +126,6 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         conversation = getIntent().getParcelableExtra("conversation");
-        if (conversation == null) {
-            finish();
-            return;
-        }
 
         hostUserId = ChatManager.Instance().getUserId();
         setContentView(R.layout.activity_live_host);
@@ -225,7 +221,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private void startLive() {
         try {
             engineKit = AVEngineKit.Instance();
-            engineKit.setVideoProfile(VideoProfile.VP480P_9, false);
+            engineKit.setVideoProfile(VideoProfile.VP720P_3, false);
 
         } catch (Exception e) {
             Toast.makeText(this, R.string.live_streaming_start_failed, Toast.LENGTH_SHORT).show();
@@ -251,6 +247,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             finish();
         }
     }
+
     private void onSessionConnected() {
         if (sessionStarted) return;
         sessionStarted = true;
@@ -274,7 +271,12 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         String title = getString(R.string.live_streaming_default_title);
         LiveStreamingKit kit = LiveStreamingKit.getInstance();
         kit.onHostSessionConnected(callId, audioOnly, pin, hostUserId, title);
-        kit.sendLiveStartNotification(conversation, title);
+        if (conversation != null) {
+            kit.sendLiveStartNotification(conversation, title);
+        }
+
+        // Start the float service early (without showing the float view) so it's ready for Android 14 FGS requirements
+        LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, false);
 
         attachMessageFragment();
     }
@@ -389,7 +391,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
         String title = getString(R.string.live_streaming_default_title);
         UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-        LiveStreamingFloatService.start(this, title, true, hostInfo != null ? hostInfo.portrait : null, null);
+        LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, true);
         finish();
     }
 
@@ -403,7 +405,9 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private void endLive() {
         if (sessionStarted) {
             LiveStreamingKit kit = LiveStreamingKit.getInstance();
-            kit.sendLiveEndNotification(conversation);
+            if (conversation != null) {
+                kit.sendLiveEndNotification(conversation);
+            }
             kit.onSessionEnded();
         }
         AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
@@ -411,7 +415,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             session.stopRecordSystemAudio();
             session.leaveConference(true);
         }
-        LiveStreamingFloatService.stop(this);
+        LiveStreamingService.stop(this);
         finish();
     }
 
@@ -439,11 +443,15 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
                 session.setupRemoteVideoView(e.getKey(), e.getValue(), SCALING_TYPE);
             }
         }
-        LiveStreamingFloatService.stop(this);
+        // Hide float view but keep service running
+        String title = getString(R.string.live_streaming_default_title);
+        UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
+        LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, false);
+
         if (pendingProjectionData != null) {
             Intent data = pendingProjectionData;
             pendingProjectionData = null;
-            LiveStreamingFloatService.startSystemAudioCapture(this, data);
+            LiveStreamingService.startSystemAudioCapture(this, data);
         }
     }
 
@@ -459,7 +467,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             if (!isFinishing() && !isChangingConfigurations()) {
                 String title = getString(R.string.live_streaming_default_title);
                 UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-                LiveStreamingFloatService.start(this, title, true, hostInfo != null ? hostInfo.portrait : null, null);
+                LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, true);
                 finish();
             }
         }

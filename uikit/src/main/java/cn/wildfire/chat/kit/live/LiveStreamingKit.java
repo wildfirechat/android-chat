@@ -22,9 +22,11 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.LiveStreamingEndMessageContent;
 import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetChatRoomInfoCallback;
 import cn.wildfirechat.remote.GetChatRoomMembersInfoCallback;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
@@ -420,6 +422,17 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     private void joinChatRoom(String callId) {
         ChatManager.Instance().joinChatRoom(callId, null);
+        ChatManager.Instance().getChatRoomInfo(callId, 0, new GetChatRoomInfoCallback(){
+            @Override
+            public void onSuccess(ChatRoomInfo chatRoomInfo) {
+
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
     }
 
     private void startChatroomKeepalive() {

@@ -5,8 +5,8 @@
     android:background="@android:color/black"
     android:clipChildren="true">
 
-    <!-- HLS video player — FullScreenVideoView overrides onMeasure to center-crop (fill+preserve ratio) -->
-    <cn.wildfire.chat.kit.live.FullScreenVideoView
+    <!-- HLS video player — optimized for low latency -->
+    <cn.wildfire.chat.kit.live.LowLatencyHlsPlayerView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

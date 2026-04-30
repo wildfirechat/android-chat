@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
@@ -39,6 +40,7 @@ import org.webrtc.RendererCommon;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
@@ -46,17 +48,21 @@ import cn.wildfirechat.remote.ChatManager;
  * <p>用户点击"悬浮"按钮时启动此 Service，显示一个可拖拽的小悬浮窗。
  * 点击悬浮窗时带回原直播 Activity。</p>
  */
-public class LiveStreamingFloatService extends Service {
+@androidx.media3.common.util.UnstableApi
+public class LiveStreamingService extends Service {
 
-    private static final String CHANNEL_ID = "live_float_channel";
+    private static final String CHANNEL_ID = "live_streaming_channel";
     private static final int NOTIFICATION_ID = 9001;
 
-    public static final String EXTRA_TITLE            = "live_title";
-    public static final String EXTRA_IS_HOST          = "live_is_host";
-    public static final String EXTRA_IS_CO_STREAM     = "live_is_co_stream";
-    public static final String EXTRA_HOST_USER_ID     = "live_host_user_id";
-    public static final String EXTRA_PORTRAIT         = "live_portrait";
-    public static final String EXTRA_HLS_URL          = "live_hls_url";
+    public static final String EXTRA_TITLE = "live_title";
+    public static final String EXTRA_IS_HOST = "live_is_host";
+    public static final String EXTRA_IS_CO_STREAM = "live_is_co_stream";
+    public static final String EXTRA_HOST_USER_ID = "live_host_user_id";
+    public static final String EXTRA_PORTRAIT = "live_portrait";
+    public static final String EXTRA_HLS_URL = "live_hls_url";
+    public static final String EXTRA_SHOW_FLOAT = "live_show_float";
+    public static final String EXTRA_LIVE_CONTENT = "live_content";
+    public static final String EXTRA_CO_STREAM_CONTENT = "co_stream_content";
     public static final String EXTRA_MEDIA_PROJECTION_DATA = "live_media_projection_data";
 
     private WindowManager wm;
@@ -66,6 +72,8 @@ public class LiveStreamingFloatService extends Service {
     private boolean mIsCoStream;
     private boolean mIsHost;
     private String mHostUserId;
+    private android.os.Parcelable mLiveContent;
+    private android.os.Parcelable mCoStreamContent;
 
     private Intent mProjectionData;
 
@@ -75,35 +83,37 @@ public class LiveStreamingFloatService extends Service {
 
     // ── Public static helpers ────────────────────────────────────────────────
 
-    /** Start floating window (called from Activity). */
-    public static void start(Context ctx, String title, boolean isHost, String portrait, String hlsUrl) {
-        start(ctx, title, isHost, false, "", portrait, hlsUrl);
+    public static void startForHost(Context ctx, String title, String portrait, boolean showFloat) {
+        startInternal(ctx, title, true, false, null, portrait, null, null, null, showFloat);
     }
 
-    /** Start system audio capture. Must be called after MediaProjection permission is granted. */
-    public static void startSystemAudioCapture(Context ctx, Intent projectionData) {
-        Intent intent = new Intent(ctx, LiveStreamingFloatService.class);
-        intent.putExtra(EXTRA_MEDIA_PROJECTION_DATA, projectionData);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ctx.startForegroundService(intent);
-        } else {
-            ctx.startService(intent);
-        }
+    public static void startForAudience(Context ctx, String title, String portrait, String hlsUrl, LiveStreamingStartMessageContent liveContent, boolean showFloat) {
+        startInternal(ctx, title, false, false, null, portrait, hlsUrl, liveContent, null, showFloat);
     }
 
-    /** Start floating window for a co-stream session (audience side). */
-    public static void start(Context ctx, String title, boolean isHost, boolean isCoStream,
-                             String hostUserId, String portrait, String hlsUrl) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ctx)) {
-            return;
-        }
-        Intent intent = new Intent(ctx, LiveStreamingFloatService.class);
+    public static void startForCoStream(Context ctx, String title, String portrait, String hostUserId,
+                                        LiveStreamingStartMessageContent liveContent, LiveCoStreamContent coStreamContent, boolean showFloat) {
+        startInternal(ctx, title, false, true, hostUserId, portrait, null, liveContent, coStreamContent, showFloat);
+    }
+
+    private static void startInternal(Context ctx, String title, boolean isHost, boolean isCoStream,
+                                      String hostUserId, String portrait, String hlsUrl,
+                                      LiveStreamingStartMessageContent liveContent, LiveCoStreamContent coStreamContent,
+                                      boolean showFloat) {
+        Intent intent = new Intent(ctx, LiveStreamingService.class);
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_IS_HOST, isHost);
         intent.putExtra(EXTRA_IS_CO_STREAM, isCoStream);
         intent.putExtra(EXTRA_HOST_USER_ID, hostUserId);
         intent.putExtra(EXTRA_PORTRAIT, portrait);
         intent.putExtra(EXTRA_HLS_URL, hlsUrl);
+        intent.putExtra(EXTRA_LIVE_CONTENT, liveContent);
+        intent.putExtra(EXTRA_CO_STREAM_CONTENT, coStreamContent);
+        intent.putExtra(EXTRA_SHOW_FLOAT, showFloat);
+        startServiceInternal(ctx, intent);
+    }
+
+    private static void startServiceInternal(Context ctx, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ctx.startForegroundService(intent);
         } else {
@@ -113,7 +123,18 @@ public class LiveStreamingFloatService extends Service {
 
     /** Stop floating window (called when Activity comes back to foreground). */
     public static void stop(Context ctx) {
-        ctx.stopService(new Intent(ctx, LiveStreamingFloatService.class));
+        ctx.stopService(new Intent(ctx, LiveStreamingService.class));
+    }
+
+    /** Start system audio capture. Must be called after MediaProjection permission is granted. */
+    public static void startSystemAudioCapture(Context ctx, Intent projectionData) {
+        Intent intent = new Intent(ctx, LiveStreamingService.class);
+        intent.putExtra(EXTRA_MEDIA_PROJECTION_DATA, projectionData);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ctx.startForegroundService(intent);
+        } else {
+            ctx.startService(intent);
+        }
     }
 
     // ── Service lifecycle ────────────────────────────────────────────────────
@@ -141,6 +162,9 @@ public class LiveStreamingFloatService extends Service {
         mHostUserId = intent != null ? intent.getStringExtra(EXTRA_HOST_USER_ID) : null;
         String portrait = intent != null ? intent.getStringExtra(EXTRA_PORTRAIT) : null;
         mHlsUrl = intent != null ? intent.getStringExtra(EXTRA_HLS_URL) : null;
+        mLiveContent = intent != null ? intent.getParcelableExtra(EXTRA_LIVE_CONTENT) : null;
+        mCoStreamContent = intent != null ? intent.getParcelableExtra(EXTRA_CO_STREAM_CONTENT) : null;
+        boolean showFloat = intent != null && intent.getBooleanExtra(EXTRA_SHOW_FLOAT, false);
 
         updateForeground(title, mIsHost);
 
@@ -156,8 +180,10 @@ public class LiveStreamingFloatService extends Service {
             return START_NOT_STICKY;
         }
 
-        if (intent != null && intent.hasExtra(EXTRA_TITLE)) {
+        if (showFloat) {
             showFloatView(title, mIsHost, portrait);
+        } else {
+            hideFloatView();
         }
         return START_NOT_STICKY;
     }
@@ -193,7 +219,7 @@ public class LiveStreamingFloatService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(getString(R.string.live_streaming))
-                .setContentText(title)
+                .setContentText(TextUtils.isEmpty(title) ? getString(R.string.live_streaming) : title)
                 .setSmallIcon(R.drawable.ic_live_badge)
                 .setContentIntent(pi)
                 .setOngoing(true)
@@ -231,6 +257,9 @@ public class LiveStreamingFloatService extends Service {
 
     private void showFloatView(String title, boolean isHost, String portrait) {
         if (wm != null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            return;
+        }
 
         wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         params = new WindowManager.LayoutParams();
@@ -276,14 +305,11 @@ public class LiveStreamingFloatService extends Service {
             }
         } else if (!isHost && !TextUtils.isEmpty(mHlsUrl)) {
             videoContainer.setVisibility(View.VISIBLE);
-            android.widget.VideoView videoView = new android.widget.VideoView(this);
-            videoContainer.addView(videoView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            videoView.setVideoPath(mHlsUrl);
-            videoView.setOnPreparedListener(mp -> {
-                mp.setLooping(false);
-                videoView.start();
-            });
-            videoView.setOnErrorListener((mp, what, extra) -> true);
+            LowLatencyHlsPlayerView lowLatencyHlsPlayerView = new LowLatencyHlsPlayerView(this);
+            videoContainer.addView(lowLatencyHlsPlayerView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            lowLatencyHlsPlayerView.setVideoURI(Uri.parse(mHlsUrl));
+            lowLatencyHlsPlayerView.setOnPreparedListener(lowLatencyHlsPlayerView::start);
+            lowLatencyHlsPlayerView.setOnErrorListener(e -> {});
         } else if (!TextUtils.isEmpty(portrait)) {
             videoContainer.setVisibility(View.VISIBLE);
             ImageView portraitImageView = new ImageView(this);
@@ -332,6 +358,15 @@ public class LiveStreamingFloatService extends Service {
 
     private void hideFloatView() {
         if (wm != null && floatView != null) {
+            FrameLayout videoContainer = floatView.findViewById(R.id.videoContainer);
+            if (videoContainer != null) {
+                for (int i = 0; i < videoContainer.getChildCount(); i++) {
+                    View child = videoContainer.getChildAt(i);
+                    if (child instanceof LowLatencyHlsPlayerView) {
+                        ((LowLatencyHlsPlayerView) child).release();
+                    }
+                }
+            }
             AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (session != null) {
                 // Detach whichever renderer was attached to the float container
@@ -357,6 +392,8 @@ public class LiveStreamingFloatService extends Service {
         Class<?> cls = mIsCoStream ? LiveCoStreamActivity.class
                 : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class);
         Intent intent = new Intent(this, cls);
+        intent.putExtra("liveContent", mLiveContent);
+        intent.putExtra("coStreamContent", mCoStreamContent);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         stopSelf();

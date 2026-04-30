@@ -39,8 +39,9 @@ import cn.wildfirechat.remote.ChatManager;
 /**
  * 观众观看直播页面（仅 HLS 播放，连麦跳转到 LiveCoStreamActivity）
  */
+@androidx.media3.common.util.UnstableApi
 public class LiveAudienceActivity extends FragmentActivity {
-    private FullScreenVideoView videoView;
+    private LowLatencyHlsPlayerView videoView;
     private ProgressBar loadingProgressBar;
     private ImageView hostAvatarImageView;
     private TextView hostNameTextView;
@@ -118,7 +119,8 @@ public class LiveAudienceActivity extends FragmentActivity {
                     : getString(R.string.live_streaming);
             UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
             String hlsUrl = LiveStreamingKit.getHlsUrl(liveContent.getCallId());
-            LiveStreamingFloatService.start(this, title, false, hostInfo != null ? hostInfo.portrait : null, hlsUrl);
+            LiveStreamingService.startForAudience(this, title,
+                    hostInfo != null ? hostInfo.portrait : null, hlsUrl, liveContent, true);
             finish();
         });
     }
@@ -168,23 +170,19 @@ public class LiveAudienceActivity extends FragmentActivity {
         liveTagTextView.setVisibility(View.GONE);
 
         videoView.setVideoURI(Uri.parse(streamUrl));
-        videoView.setOnPreparedListener(mp -> {
+        videoView.setOnPreparedListener(() -> {
             loadingProgressBar.setVisibility(View.GONE);
             liveTagTextView.setVisibility(View.VISIBLE);
-            mp.setLooping(false);
-            videoView.setVideoSize(mp.getVideoWidth(), mp.getVideoHeight());
             videoView.start();
         });
-        videoView.setOnErrorListener((mp, what, extra) -> {
+        videoView.setOnErrorListener((e) -> {
             loadingProgressBar.setVisibility(View.GONE);
             Toast.makeText(this, R.string.live_streaming_load_failed, Toast.LENGTH_SHORT).show();
-            return true;
         });
-        videoView.setOnCompletionListener(mp -> {
+        videoView.setOnCompletionListener(() -> {
             Toast.makeText(this, R.string.live_streaming_ended, Toast.LENGTH_SHORT).show();
             finish();
         });
-        videoView.requestFocus();
         videoView.start();
     }
 
@@ -239,7 +237,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        LiveStreamingFloatService.stop(this);
+        LiveStreamingService.stop(this);
     }
 
     @Override
@@ -255,7 +253,8 @@ public class LiveAudienceActivity extends FragmentActivity {
                     : getString(R.string.live_streaming);
             UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
             String hlsUrl = LiveStreamingKit.getHlsUrl(liveContent.getCallId());
-            LiveStreamingFloatService.start(this, title, false, hostInfo != null ? hostInfo.portrait : null, hlsUrl);
+            LiveStreamingService.startForAudience(this, title,
+                    hostInfo != null ? hostInfo.portrait : null, hlsUrl, liveContent, true);
             finish();
         }
     }
@@ -268,6 +267,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_REJECTED, coStreamRejectedObserver);
         if (videoView != null) {
             videoView.stopPlayback();
+            videoView.release();
         }
     }
 }

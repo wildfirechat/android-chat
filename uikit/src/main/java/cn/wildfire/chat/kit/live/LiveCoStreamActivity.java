@@ -38,6 +38,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -142,11 +143,20 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
             }
         } else {
             // Join the conference fresh
+            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP720P_3, false);
             AVEngineKit.CallSession session = LiveStreamingKit.getInstance()
                     .joinConferenceForCoStream(coStreamContent, this);
             if (session == null) {
                 Toast.makeText(this, R.string.live_co_stream_join_failed, Toast.LENGTH_SHORT).show();
                 finish();
+            } else {
+                // Start the float service early (without showing the float view) so it's ready for Android 14 FGS requirements
+                UserInfo info = ChatManager.Instance().getUserInfo(hostUserId, false);
+                String title = coStreamContent.getTitle() != null
+                        ? coStreamContent.getTitle() : getString(R.string.live_streaming);
+                LiveStreamingService.startForCoStream(this, title,
+                        info != null ? info.portrait : null, hostUserId,
+                        liveContent, coStreamContent, false);
             }
         }
     }
@@ -197,7 +207,14 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
     @Override
     protected void onResume() {
         super.onResume();
-        LiveStreamingFloatService.stop(this);
+        // Hide float view but keep service running
+        UserInfo info = ChatManager.Instance().getUserInfo(hostUserId, false);
+        String title = coStreamContent.getTitle() != null
+                ? coStreamContent.getTitle() : getString(R.string.live_streaming);
+        LiveStreamingService.startForCoStream(this, title,
+                info != null ? info.portrait : null, hostUserId,
+                liveContent, coStreamContent, false);
+
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             session.setCallback(this);
@@ -226,8 +243,9 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
                 String title = coStreamContent.getTitle() != null
                         ? coStreamContent.getTitle() : getString(R.string.live_streaming);
                 UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-                LiveStreamingFloatService.start(this, title, false, true, hostUserId,
-                        hostInfo != null ? hostInfo.portrait : null, null);
+                LiveStreamingService.startForCoStream(this, title,
+                        hostInfo != null ? hostInfo.portrait : null, hostUserId,
+                        liveContent, coStreamContent, true);
                 finish();
             }
         }
