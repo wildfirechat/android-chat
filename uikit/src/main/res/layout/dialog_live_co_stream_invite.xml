@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/live_dialog_bg"
+    android:paddingBottom="0dp">
+
+    <!-- Red header with icon -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#FF4757"
+        android:clipToOutline="true">
+
+        <!-- Decorative circle -->
+        <View
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="-30dp"
+            android:layout_marginBottom="-40dp"
+            android:background="@drawable/live_icon_circle_bg" />
+
+        <!-- Mic/video icon center -->
+        <ImageView
+            android:id="@+id/dialogIconView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_live_video_option"
+            android:scaleType="centerInside" />
+
+    </FrameLayout>
+
+    <!-- Body -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/dialogTitleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/live_co_stream_invite_title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/dialogMessageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/live_co_stream_invite_message"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.3" />
+
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F0F0" />
+
+    <!-- Action buttons row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogRejectButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/live_co_stream_reject"
+            android:textSize="16sp"
+            android:textColor="#999999"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#F0F0F0" />
+
+        <TextView
+            android:id="@+id/dialogAcceptButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/live_co_stream_accept"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FF4757"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+</LinearLayout>

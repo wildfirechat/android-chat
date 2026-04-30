@@ -1013,4 +1013,20 @@
     <!-- Live chat (chatroom) strings -->
     <string name="live_chat_input_hint">说点什么...</string>
     <string name="live_chat_send_title">发送消息</string>
+    <!-- Confirmation dialogs -->
+    <string name="live_end_confirm_title">结束直播</string>
+    <string name="live_end_confirm_message">确定要结束本次直播吗？</string>
+    <string name="live_exit_confirm_title">退出直播间</string>
+    <string name="live_exit_confirm_message">确定退出直播吗？</string>
+    <string name="live_end_costream_confirm_title">结束连麦</string>
+    <string name="live_end_costream_confirm_message">确定退出连麦并返回直播间？</string>
+    <string name="live_confirm_ok">确定</string>
+    <!-- Float window notifications -->
+    <string name="live_float_co_stream_invite">收到连麦邀请，点击查看</string>
+    <string name="live_float_co_stream_request">有新连麦申请，点击处理</string>
+    <string name="live_notification_co_stream_invite_title">连麦邀请</string>
+    <string name="live_notification_co_stream_request_title">连麦申请</string>
+    <string name="live_notification_accept">接受</string>
+    <string name="live_notification_reject">拒绝</string>
+    <string name="live_notification_view">查看</string>
 </resources>

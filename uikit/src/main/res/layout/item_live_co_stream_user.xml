@@ -1,42 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="68dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingStart="20dp"
     android:paddingEnd="16dp">
 
-    <!-- Avatar -->
-    <ImageView
-        android:id="@+id/userAvatarImageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/live_avatar_placeholder"
-        android:scaleType="centerCrop"
-        android:clipToOutline="true" />
+    <!-- Avatar with online indicator -->
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp">
 
-    <!-- Name -->
-    <TextView
-        android:id="@+id/userNameTextView"
+        <ImageView
+            android:id="@+id/userAvatarImageView"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/live_avatar_placeholder"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true" />
+
+    </FrameLayout>
+
+    <!-- Name + subtitle -->
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="12dp"
-        android:textSize="15sp"
-        android:textColor="#1A1A1A"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        android:orientation="vertical"
+        android:layout_marginStart="12dp">
+
+        <TextView
+            android:id="@+id/userNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="#1A1A1A"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/userStatusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <!-- Secondary action (e.g., 拒绝) -->
     <TextView
         android:id="@+id/secondaryActionButton"
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:background="@drawable/live_secondary_btn_bg"
+        android:layout_height="34dp"
+        android:background="@drawable/live_btn_outline"
         android:gravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:textSize="13sp"
         android:textColor="#666666"
         android:layout_marginEnd="8dp"
@@ -46,11 +69,11 @@
     <TextView
         android:id="@+id/primaryActionButton"
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:background="@drawable/live_primary_btn_bg"
+        android:layout_height="34dp"
+        android:background="@drawable/live_btn_primary"
         android:gravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:textSize="13sp"
         android:textColor="@android:color/white" />
 

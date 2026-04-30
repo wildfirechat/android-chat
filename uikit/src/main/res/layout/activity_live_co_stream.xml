@@ -22,6 +22,97 @@
 
     </FrameLayout>
 
+    <!-- Top gradient scrim -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_gravity="top"
+        android:background="@drawable/live_top_gradient" />
+
+    <!-- Bottom gradient scrim -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/live_bottom_gradient" />
+
+    <!-- ══ TOP BAR ══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="44dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
+
+        <!-- Host info: avatar + name + LIVE badge -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/hostAvatarImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/live_avatar_placeholder"
+                android:scaleType="centerCrop"
+                android:clipToOutline="true" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:id="@+id/hostNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:maxWidth="140dp"
+                    android:ellipsize="end" />
+
+                <!-- LIVE badge -->
+                <TextView
+                    android:id="@+id/liveTagTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/live_badge_bg"
+                    android:text="LIVE"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    android:layout_marginTop="2dp" />
+
+                <!-- "连麦中" indicator -->
+                <TextView
+                    android:id="@+id/coStreamIndicatorView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_co_stream_title"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="10sp"
+                    android:layout_marginTop="1dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
     <!-- PiP strip (top-right): self tile first, then other co-streamers -->
     <ScrollView
         android:id="@+id/pipScrollView"
@@ -41,26 +132,57 @@
 
     </ScrollView>
 
-    <!-- Chat message overlay — bottom-left, beside end button -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/messageFragmentContainer"
+    <!-- ══ BOTTOM BAR ══ -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:layout_gravity="bottom|start"
-        android:layout_marginBottom="60dp"
-        android:layout_marginEnd="60dp" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="40dp">
 
-    <!-- End co-stream button (bottom-right) -->
-    <ImageButton
-        android:id="@+id/endCoStreamButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="68dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/av_hangup_selector"
-        android:src="@drawable/av_conference_hangup"
-        android:padding="14dp"
-        android:contentDescription="@string/live_co_stream_end" />
+        <!-- Chat message overlay -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/messageFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="60dp" />
+
+        <!-- Input + end button row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- "说点什么..." pill -->
+            <TextView
+                android:id="@+id/sayingSomethingView"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/live_input_bg"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="@string/live_say_something"
+                android:textColor="#CCFFFFFF"
+                android:textSize="13sp" />
+
+            <!-- End co-stream button (red circle) -->
+            <ImageButton
+                android:id="@+id/endCoStreamButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/live_end_btn_bg"
+                android:src="@drawable/ic_live_end_costream"
+                android:padding="11dp"
+                android:contentDescription="@string/live_co_stream_end" />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

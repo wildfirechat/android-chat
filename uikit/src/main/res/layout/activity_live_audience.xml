@@ -134,26 +134,57 @@
 
     </LinearLayout>
 
-    <!-- Chat messages floating overlay — grows up from above the input bar, overlaps the video -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/messageFragmentContainer"
+    <!-- ══ BOTTOM BAR ══ -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:layout_gravity="bottom|start"
-        android:layout_marginBottom="60dp"
-        android:layout_marginEnd="60dp" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="40dp">
 
-    <!-- Co-stream request button (bottom-right, beside message overlay) -->
-    <ImageButton
-        android:id="@+id/requestCoStreamButton"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="68dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/round_bg_30_half_transparent"
-        android:src="@drawable/ic_co_stream"
-        android:padding="10dp"
-        android:contentDescription="@string/live_co_stream_request_btn" />
+        <!-- Chat messages floating overlay -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/messageFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="60dp" />
+
+        <!-- Input row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- "说点什么..." pill -->
+            <TextView
+                android:id="@+id/sayingSomethingView"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/live_input_bg"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="@string/live_say_something"
+                android:textColor="#CCFFFFFF"
+                android:textSize="13sp" />
+
+            <!-- Co-stream request button -->
+            <ImageButton
+                android:id="@+id/requestCoStreamButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/round_bg_30_half_transparent"
+                android:src="@drawable/ic_live_request_costream"
+                android:padding="10dp"
+                android:contentDescription="@string/live_co_stream_request_btn" />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

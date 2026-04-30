@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -18,8 +19,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -65,6 +68,11 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
     private LinearLayout pipStrip;
     /** End co-stream button */
     private ImageButton endCoStreamButton;
+    /** Host info views (top bar) */
+    private ImageView hostAvatarImageView;
+    private TextView hostNameTextView;
+    /** Say something input pill */
+    private TextView sayingSomethingView;
 
     /** Self video tile — always first in pipStrip */
     private FrameLayout localTile;
@@ -111,11 +119,18 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
         if (hostInfo != null && !TextUtils.isEmpty(hostInfo.portrait)) {
             Glide.with(this).load(hostInfo.portrait).circleCrop().into(focusAvatarView);
         }
+        // Populate top bar host info
+        if (hostAvatarImageView != null && hostInfo != null && !TextUtils.isEmpty(hostInfo.portrait)) {
+            Glide.with(this).load(hostInfo.portrait).circleCrop().into(hostAvatarImageView);
+        }
+        if (hostNameTextView != null && hostInfo != null && !TextUtils.isEmpty(hostInfo.displayName)) {
+            hostNameTextView.setText(hostInfo.displayName);
+        }
 
         // Add chat overlay
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.messageFragmentContainer,
-                        LiveMessageFragment.newInstance(coStreamContent.getCallId()))
+                        LiveMessageFragment.newInstance(coStreamContent.getCallId(), false))
                 .commitAllowingStateLoss();
 
         // Create the local self tile
@@ -167,10 +182,44 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
         pipScrollView = findViewById(R.id.pipScrollView);
         pipStrip = findViewById(R.id.pipStrip);
         endCoStreamButton = findViewById(R.id.endCoStreamButton);
+        hostAvatarImageView = findViewById(R.id.hostAvatarImageView);
+        hostNameTextView = findViewById(R.id.hostNameTextView);
+        sayingSomethingView = findViewById(R.id.sayingSomethingView);
     }
 
     private void bindEvents() {
-        endCoStreamButton.setOnClickListener(v -> endCoStream());
+        endCoStreamButton.setOnClickListener(v -> showEndCoStreamConfirmDialog());
+        if (sayingSomethingView != null) {
+            sayingSomethingView.setOnClickListener(v -> {
+                String cid = coStreamContent.getCallId();
+                if (cid != null) {
+                    LiveMessageInputDialogFragment.newInstance(cid)
+                            .show(getSupportFragmentManager(), "liveInput");
+                }
+            });
+        }
+    }
+
+    private void showEndCoStreamConfirmDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_live_confirm, null);
+        ((TextView) dialogView.findViewById(R.id.confirmTitleView)).setText(R.string.live_end_costream_confirm_title);
+        ((TextView) dialogView.findViewById(R.id.confirmMessageView)).setText(R.string.live_end_costream_confirm_message);
+        ((TextView) dialogView.findViewById(R.id.confirmOkButton)).setText(R.string.live_confirm_ok);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.getWindow().setGravity(android.view.Gravity.BOTTOM);
+            dialog.getWindow().getAttributes().width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
+        }
+        dialogView.findViewById(R.id.confirmCancelButton).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.confirmOkButton).setOnClickListener(v -> {
+            dialog.dismiss();
+            endCoStream();
+        });
+        dialog.show();
     }
 
     private void endCoStream() {

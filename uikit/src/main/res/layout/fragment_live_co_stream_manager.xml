@@ -3,87 +3,184 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/white"
-    android:paddingBottom="32dp">
+    android:background="@drawable/live_sheet_bg"
+    android:paddingBottom="40dp">
 
     <!-- Handle bar -->
     <View
         android:layout_width="36dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
-        android:background="#DDDDDD"
-        android:layout_margin="4dp" />
+        android:layout_marginTop="12dp"
+        android:background="#20000000" />
 
-    <!-- Title -->
-    <TextView
+    <!-- Title row -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="@string/live_co_stream_manage"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:textColor="#1A1A1A"
-        android:gravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp" />
-
-    <!-- Section: Active co-streamers -->
-    <TextView
-        android:id="@+id/activeSection"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:text="@string/live_co_stream_active_section"
-        android:textSize="12sp"
-        android:textColor="#999999"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:background="#F7F7F7" />
+        android:paddingEnd="20dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/activeCoStreamersRecycler"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/live_co_stream_manage"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A" />
+
+        <TextView
+            android:id="@+id/refreshHintView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="刷新"
+            android:textSize="13sp"
+            android:textColor="#FF4757"
+            android:padding="4dp" />
+
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F0F0"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <!-- Nested ScrollView -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+        android:overScrollMode="never"
+        android:scrollbars="none">
 
-    <!-- Section: Pending requests -->
-    <TextView
-        android:id="@+id/requestingSection"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:text="@string/live_co_stream_requesting_section"
-        android:textSize="12sp"
-        android:textColor="#999999"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:background="#F7F7F7" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/requestingRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+            <!-- Section: Active co-streamers -->
+            <LinearLayout
+                android:id="@+id/activeSectionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-    <!-- Section: Invitable viewers -->
-    <TextView
-        android:id="@+id/invitableSection"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:text="@string/live_co_stream_invitable_section"
-        android:textSize="12sp"
-        android:textColor="#999999"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:background="#F7F7F7" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="@string/live_co_stream_active_section"
+                    android:textSize="13sp"
+                    android:textColor="#999999"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:layout_marginTop="8dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/invitableRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/activeCoStreamersRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+
+            <!-- Divider between active and requesting (shown only when active visible) -->
+            <View
+                android:id="@+id/activeDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#F0F0F0"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
+
+            <!-- Section: Pending requests -->
+            <LinearLayout
+                android:id="@+id/requestingSectionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="@string/live_co_stream_requesting_section"
+                    android:textSize="13sp"
+                    android:textColor="#999999"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:layout_marginTop="4dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/requestingRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+
+            <!-- Divider between requesting and invitable -->
+            <View
+                android:id="@+id/requestingDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#F0F0F0"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
+
+            <!-- Section: Invitable viewers -->
+            <LinearLayout
+                android:id="@+id/invitableSectionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="@string/live_co_stream_invitable_section"
+                    android:textSize="13sp"
+                    android:textColor="#999999"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:layout_marginTop="4dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/invitableRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+                <!-- Only shown when invitable list is empty -->
+                <TextView
+                    android:id="@+id/invitableEmptyView"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/live_co_stream_no_members"
+                    android:textSize="13sp"
+                    android:textColor="#BBBBBB"
+                    android:gravity="center"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
-

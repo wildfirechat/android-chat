@@ -74,6 +74,10 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
 
         view.findViewById(R.id.videoCoStreamOption).setOnClickListener(v -> onCoStreamSelected(false));
         view.findViewById(R.id.audioCoStreamOption).setOnClickListener(v -> onCoStreamSelected(true));
+        View cancelBtn = view.findViewById(R.id.cancelOption);
+        if (cancelBtn != null) {
+            cancelBtn.setOnClickListener(v -> dismiss());
+        }
     }
 
     private void onCoStreamSelected(boolean audioOnlyCoStream) {

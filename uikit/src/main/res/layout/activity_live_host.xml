@@ -160,7 +160,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:paddingBottom="56dp">
+        android:paddingBottom="40dp">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/messageFragmentContainer"
@@ -168,25 +168,25 @@
             android:layout_height="180dp"
             android:layout_marginBottom="8dp" />
 
-        <!-- Controls row: say-something + camera switch + co-stream management -->
+        <!-- Controls row: say-something + icon buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <!-- "说点什么..." input pill -->
             <TextView
                 android:id="@+id/sayingSomethingView"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@drawable/live_input_bg"
                 android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:text="@string/live_say_something"
                 android:textColor="#CCFFFFFF"
                 android:textSize="13sp" />
@@ -194,40 +194,57 @@
             <!-- Camera switch -->
             <ImageButton
                 android:id="@+id/cameraButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/round_bg_30_half_transparent"
-                android:src="@drawable/av_camera"
-                android:padding="8dp"
-                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_live_flip_camera"
+                android:padding="10dp"
+                android:layout_marginStart="10dp"
                 android:contentDescription="@string/live_streaming_switch_camera" />
 
             <!-- Record system audio -->
             <ImageButton
                 android:id="@+id/recordAudioButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/round_bg_30_half_transparent"
-                android:src="@drawable/av_handfree"
-                android:padding="8dp"
-                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_live_mic"
+                android:padding="10dp"
+                android:layout_marginStart="10dp"
                 android:contentDescription="录制系统音频" />
 
-            <!-- Co-stream management -->
-            <TextView
+            <!-- Co-stream management: icon + badge overlay -->
+            <FrameLayout
                 android:id="@+id/coStreamButton"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:background="@drawable/live_badge_bg"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/live_co_stream_manage"
-                android:textColor="@android:color/white"
-                android:textSize="13sp"
-                android:layout_marginStart="8dp"
-                android:visibility="gone"
-                android:contentDescription="@string/live_co_stream_manage" />
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="10dp"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/coStreamIconButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/round_bg_30_half_transparent"
+                    android:src="@drawable/ic_live_co_manage"
+                    android:padding="10dp"
+                    android:contentDescription="@string/live_co_stream_manage" />
+
+                <!-- Red badge for pending requests -->
+                <TextView
+                    android:id="@+id/coStreamBadgeView"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/live_badge_dot"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+            </FrameLayout>
 
         </LinearLayout>
     </LinearLayout>

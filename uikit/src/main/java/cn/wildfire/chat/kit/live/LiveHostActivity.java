@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -22,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -85,7 +88,11 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private TextView sayingSomethingView;
     private ImageButton cameraButton;
     private ImageButton recordAudioButton;
-    private TextView coStreamButton;
+    /** Container FrameLayout (id=coStreamButton) that wraps the icon + badge */
+    private View coStreamButton;
+    private TextView coStreamBadgeView;
+    /** Pending request count for badge display */
+    private int pendingRequestCount = 0;
     private View loadingView;
 
     private AVEngineKit engineKit;
@@ -176,11 +183,12 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         cameraButton = findViewById(R.id.cameraButton);
         recordAudioButton = findViewById(R.id.recordAudioButton);
         coStreamButton = findViewById(R.id.coStreamButton);
+        coStreamBadgeView = findViewById(R.id.coStreamBadgeView);
         loadingView = findViewById(R.id.loadingView);
     }
 
     private void bindEvents() {
-        closeButton.setOnClickListener(v -> endLive());
+        closeButton.setOnClickListener(v -> showEndLiveConfirmDialog());
         sayingSomethingView.setOnClickListener(v -> {
             if (callId != null) {
                 LiveMessageInputDialogFragment.newInstance(callId)
@@ -196,9 +204,16 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         });
         coStreamButton.setOnClickListener(v -> {
             if (callId == null) return;
+            // Clear the badge when user opens the manager
+            clearCoStreamBadge();
             LiveCoStreamManagerFragment.newInstance(callId)
                     .show(getSupportFragmentManager(), "coStreamManager");
         });
+        // Also make the inner icon button clickable
+        ImageButton coStreamIconBtn = findViewById(R.id.coStreamIconButton);
+        if (coStreamIconBtn != null) {
+            coStreamIconBtn.setOnClickListener(v -> coStreamButton.performClick());
+        }
         shareButton.setOnClickListener(v -> shareLive());
         floatButton.setOnClickListener(v -> goFloat());
     }
@@ -210,8 +225,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             if (o instanceof LiveCoStreamContent) {
                 LiveCoStreamContent content = (LiveCoStreamContent) o;
                 if (callId != null && callId.equals(content.getCallId())) {
-                    runOnUiThread(() -> Toast.makeText(this,
-                            R.string.live_co_stream_new_request, Toast.LENGTH_SHORT).show());
+                    runOnUiThread(this::onNewCoStreamRequestReceived);
                 }
             }
         };
@@ -279,6 +293,16 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, false);
 
         attachMessageFragment();
+
+        // Show badge for any pre-existing requests (e.g., when returning from float via notification tap).
+        // subscribeCoStreamEvents() runs before callId is set, so LiveDataBus replay is missed.
+        // Proactively sync badge count here instead.
+        java.util.List<String> existingRequests = LiveStreamingKit.getInstance().getCoStreamRequests();
+        if (existingRequests != null) {
+            for (int i = 0; i < existingRequests.size(); i++) {
+                onNewCoStreamRequestReceived();
+            }
+        }
     }
 
 
@@ -399,6 +423,45 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         AVEngineKit.CallSession session = engineKit.getCurrentSession();
         if (session != null) {
             session.switchCamera();
+        }
+    }
+
+    private void showEndLiveConfirmDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_live_confirm, null);
+        ((TextView) dialogView.findViewById(R.id.confirmTitleView)).setText(R.string.live_end_confirm_title);
+        ((TextView) dialogView.findViewById(R.id.confirmMessageView)).setText(R.string.live_end_confirm_message);
+        ((TextView) dialogView.findViewById(R.id.confirmOkButton)).setText(R.string.live_streaming_end);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.getWindow().setGravity(android.view.Gravity.BOTTOM);
+            dialog.getWindow().getAttributes().width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
+        }
+        dialogView.findViewById(R.id.confirmCancelButton).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.confirmOkButton).setOnClickListener(v -> {
+            dialog.dismiss();
+            endLive();
+        });
+        dialog.show();
+    }
+
+    private void onNewCoStreamRequestReceived() {
+        pendingRequestCount++;
+        if (coStreamBadgeView != null) {
+            coStreamBadgeView.setVisibility(View.VISIBLE);
+            coStreamBadgeView.setText(pendingRequestCount > 9 ? "9+" : String.valueOf(pendingRequestCount));
+        }
+        // Brief toast so the host knows without looking at the badge
+        Toast.makeText(this, R.string.live_co_stream_new_request, Toast.LENGTH_SHORT).show();
+    }
+
+    private void clearCoStreamBadge() {
+        pendingRequestCount = 0;
+        if (coStreamBadgeView != null) {
+            coStreamBadgeView.setVisibility(View.GONE);
         }
     }
 

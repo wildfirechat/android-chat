@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -50,6 +51,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     private ImageButton floatButton;
     private ImageButton closeButton;
     private ImageButton requestCoStreamButton;
+    private TextView sayingSomethingView;
 
     private LiveStreamingStartMessageContent liveContent;
 
@@ -90,6 +92,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         floatButton = findViewById(R.id.floatButton);
         closeButton = findViewById(R.id.closeButton);
         requestCoStreamButton = findViewById(R.id.requestCoStreamButton);
+        sayingSomethingView = findViewById(R.id.sayingSomethingView);
 
         String hostUserId = liveContent.getHost();
         if (!TextUtils.isEmpty(hostUserId)) {
@@ -106,8 +109,17 @@ public class LiveAudienceActivity extends FragmentActivity {
     }
 
     private void bindEvents() {
-        closeButton.setOnClickListener(v -> finish());
+        closeButton.setOnClickListener(v -> showExitConfirmDialog());
         requestCoStreamButton.setOnClickListener(v -> showCoStreamOptions());
+        if (sayingSomethingView != null) {
+            sayingSomethingView.setOnClickListener(v -> {
+                String cid = liveContent.getCallId();
+                if (cid != null) {
+                    LiveMessageInputDialogFragment.newInstance(cid)
+                            .show(getSupportFragmentManager(), "liveInput");
+                }
+            });
+        }
         shareButton.setOnClickListener(v -> shareLive());
         floatButton.setOnClickListener(v -> {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M
@@ -162,7 +174,7 @@ public class LiveAudienceActivity extends FragmentActivity {
 
         if (getSupportFragmentManager().findFragmentById(R.id.messageFragmentContainer) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.messageFragmentContainer, LiveMessageFragment.newInstance(callId))
+                    .replace(R.id.messageFragmentContainer, LiveMessageFragment.newInstance(callId, false))
                     .commitAllowingStateLoss();
         }
 
@@ -202,14 +214,45 @@ public class LiveAudienceActivity extends FragmentActivity {
     }
 
     private void showCoStreamInviteDialog(LiveCoStreamContent content) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.live_co_stream_invite_title)
-                .setMessage(R.string.live_co_stream_invite_message)
-                .setPositiveButton(R.string.live_co_stream_accept, (d, w) -> launchCoStreamActivity(content))
-                .setNegativeButton(R.string.live_co_stream_reject, (d, w) ->
-                        LiveStreamingKit.getInstance().rejectCoStreamInvite(content))
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_live_co_stream_invite, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
                 .setCancelable(false)
-                .show();
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialogView.findViewById(R.id.dialogRejectButton).setOnClickListener(v -> {
+            dialog.dismiss();
+            LiveStreamingKit.getInstance().rejectCoStreamInvite(content);
+        });
+        dialogView.findViewById(R.id.dialogAcceptButton).setOnClickListener(v -> {
+            dialog.dismiss();
+            launchCoStreamActivity(content);
+        });
+        dialog.show();
+    }
+
+    private void showExitConfirmDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_live_confirm, null);
+        ((TextView) dialogView.findViewById(R.id.confirmTitleView)).setText(R.string.live_exit_confirm_title);
+        ((TextView) dialogView.findViewById(R.id.confirmMessageView)).setText(R.string.live_exit_confirm_message);
+        ((TextView) dialogView.findViewById(R.id.confirmOkButton)).setText(R.string.live_confirm_ok);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.getWindow().setGravity(android.view.Gravity.BOTTOM);
+            dialog.getWindow().getAttributes().width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
+        }
+        dialogView.findViewById(R.id.confirmCancelButton).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.confirmOkButton).setOnClickListener(v -> {
+            dialog.dismiss();
+            finish();
+        });
+        dialog.show();
     }
 
     /** Stop HLS and open LiveCoStreamActivity to handle the WebRTC conference. */

@@ -34,11 +34,13 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.remote.ChatManager;
@@ -52,7 +54,9 @@ import cn.wildfirechat.remote.ChatManager;
 public class LiveStreamingService extends Service {
 
     private static final String CHANNEL_ID = "live_streaming_channel";
+    private static final String CHANNEL_ALERT_ID = "live_co_stream_alert";
     private static final int NOTIFICATION_ID = 9001;
+    private static final int NOTIFICATION_CO_STREAM_ID = 9002;
 
     public static final String EXTRA_TITLE = "live_title";
     public static final String EXTRA_IS_HOST = "live_is_host";
@@ -80,6 +84,10 @@ public class LiveStreamingService extends Service {
     // Touch drag
     private float touchStartX, touchStartY;
     private int layoutStartX, layoutStartY;
+
+    // Co-stream event observers (active only while float is showing)
+    private Observer<Object> floatCoStreamInviteObserver;
+    private Observer<Object> floatCoStreamRequestObserver;
 
     // ── Public static helpers ────────────────────────────────────────────────
 
@@ -191,6 +199,7 @@ public class LiveStreamingService extends Service {
     @Override
     public void onDestroy() {
         hideFloatView();
+        unsubscribeCoStreamEvents();
         super.onDestroy();
     }
 
@@ -198,6 +207,91 @@ public class LiveStreamingService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    // ── Co-stream event subscriptions (float mode) ───────────────────────────────
+
+    private void subscribeCoStreamEvents() {
+        if (!mIsHost) {
+            // Audience / co-streamer: listen for invite events
+            floatCoStreamInviteObserver = o -> {
+                if (o instanceof LiveCoStreamContent) {
+                    LiveCoStreamContent content = (LiveCoStreamContent) o;
+                    if (mLiveContent instanceof LiveStreamingStartMessageContent) {
+                        String callId = ((LiveStreamingStartMessageContent) mLiveContent).getCallId();
+                        if (!callId.equals(content.getCallId())) return;
+                    }
+                    postCoStreamAlertNotification(
+                            getString(R.string.live_notification_co_stream_invite_title),
+                            getString(R.string.live_float_co_stream_invite),
+                            true);
+                }
+            };
+            LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
+        } else {
+            // Host: listen for request events.
+            // Guard: check LiveStreamingKit for actual pending requests before notifying,
+            // because LiveDataBus may replay the last event immediately on subscribeForever.
+            floatCoStreamRequestObserver = o -> {
+                if (o instanceof LiveCoStreamContent) {
+                    java.util.List<String> pending = LiveStreamingKit.getInstance().getCoStreamRequests();
+                    if (pending == null || pending.isEmpty()) return;
+                    postCoStreamAlertNotification(
+                            getString(R.string.live_notification_co_stream_request_title),
+                            getString(R.string.live_float_co_stream_request),
+                            false);
+                }
+            };
+            LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
+        }
+    }
+
+    private void unsubscribeCoStreamEvents() {
+        if (floatCoStreamInviteObserver != null) {
+            LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
+            floatCoStreamInviteObserver = null;
+        }
+        if (floatCoStreamRequestObserver != null) {
+            LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
+            floatCoStreamRequestObserver = null;
+        }
+    }
+
+    private void postCoStreamAlertNotification(String title, String message, boolean isInvite) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ALERT_ID,
+                    getString(R.string.live_streaming),
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.enableVibration(true);
+            NotificationManager nm = getSystemService(NotificationManager.class);
+            if (nm != null) nm.createNotificationChannel(channel);
+        }
+
+        // Tap to resume the activity (which will then show the appropriate UI)
+        Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
+                : (mIsHost ? LiveHostActivity.class : LiveAudienceActivity.class));
+        resumeIntent.putExtra("liveContent", mLiveContent);
+        resumeIntent.putExtra("coStreamContent", mCoStreamContent);
+        resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+        int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                ? PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+                : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent tapPi = PendingIntent.getActivity(this, 1, resumeIntent, piFlags);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ALERT_ID)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setSmallIcon(R.drawable.ic_live_badge)
+                .setContentIntent(tapPi)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .addAction(R.drawable.ic_live_badge,
+                        getString(R.string.live_notification_view), tapPi);
+
+        NotificationManager nm = getSystemService(NotificationManager.class);
+        if (nm != null) nm.notify(NOTIFICATION_CO_STREAM_ID, builder.build());
     }
 
     // ── Foreground notification ───────────────────────────────────────────────
@@ -354,9 +448,13 @@ public class LiveStreamingService extends Service {
         });
 
         wm.addView(floatView, params);
+
+        // Subscribe to co-stream events while float is visible
+        subscribeCoStreamEvents();
     }
 
     private void hideFloatView() {
+        unsubscribeCoStreamEvents();
         if (wm != null && floatView != null) {
             FrameLayout videoContainer = floatView.findViewById(R.id.videoContainer);
             if (videoContainer != null) {

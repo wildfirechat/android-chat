@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Confirm sheet \u2014 displayed as a bottom sheet anchored to the window bottom -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/live_sheet_bg"
+    android:paddingBottom="32dp">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:background="#20000000" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/confirmTitleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="6dp"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A1A"
+        android:gravity="center" />
+
+    <!-- Message -->
+    <TextView
+        android:id="@+id/confirmMessageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingBottom="24dp"
+        android:textSize="14sp"
+        android:textColor="#999999"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.4" />
+
+    <!-- Confirm button \u2014 full width, red pill -->
+    <TextView
+        android:id="@+id/confirmOkButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/live_btn_primary"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <!-- Cancel button \u2014 plain text -->
+    <TextView
+        android:id="@+id/confirmCancelButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="\u53d6\u6d88"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="#888888"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground" />
+
+</LinearLayout>

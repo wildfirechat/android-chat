@@ -3,86 +3,162 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@drawable/live_sheet_bg"
     android:paddingBottom="32dp">
 
-    <!-- Title bar -->
+    <!-- Drag handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="#20000000" />
+
+    <!-- Title -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/live_co_stream_select_mode"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#333333"
+        android:textColor="#1A1A1A"
         android:gravity="center"
-        android:paddingTop="16dp"
-        android:paddingBottom="12dp" />
+        android:paddingTop="4dp"
+        android:paddingBottom="16dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#EEEEEE" />
-
-    <!-- Video co-stream option -->
+    <!-- Video option row -->
     <LinearLayout
         android:id="@+id/videoCoStreamOption"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:background="?android:attr/selectableItemBackground">
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/av_conference_video_selector"
-            android:scaleType="centerInside" />
+        <FrameLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/live_option_icon_bg_red">
 
-        <TextView
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_live_video_option"
+                android:scaleType="centerInside" />
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:text="@string/live_co_stream_video"
-            android:textSize="15sp"
-            android:textColor="#333333" />
+            android:orientation="vertical"
+            android:layout_marginStart="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/live_co_stream_video"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="视频 + 语音"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_marginTop="1dp" />
+        </LinearLayout>
 
     </LinearLayout>
 
+    <!-- Thin divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginStart="24dp"
-        android:background="#EEEEEE" />
+        android:layout_marginStart="74dp"
+        android:layout_marginEnd="20dp"
+        android:background="#F2F2F2" />
 
-    <!-- Audio-only co-stream option -->
+    <!-- Audio option row -->
     <LinearLayout
         android:id="@+id/audioCoStreamOption"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:background="?android:attr/selectableItemBackground">
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/av_conference_audio_selector"
-            android:scaleType="centerInside" />
+        <FrameLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/live_option_icon_bg_blue">
 
-        <TextView
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_live_audio_option"
+                android:scaleType="centerInside" />
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:text="@string/live_co_stream_audio"
-            android:textSize="15sp"
-            android:textColor="#333333" />
+            android:orientation="vertical"
+            android:layout_marginStart="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/live_co_stream_audio"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="仅语音"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_marginTop="1dp" />
+        </LinearLayout>
 
     </LinearLayout>
 
+    <!-- Thick separator -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_marginTop="8dp"
+        android:background="#F5F5F5" />
+
+    <!-- Cancel -->
+    <TextView
+        android:id="@+id/cancelOption"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:text="取消"
+        android:textSize="16sp"
+        android:textColor="#999999"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true" />
+
 </LinearLayout>
+
+
