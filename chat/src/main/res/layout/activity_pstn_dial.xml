@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <!-- 号码显示区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp">
+
+        <TextView
+            android:id="@+id/numberTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="输入号码"
+            android:maxLines="1"
+            android:textColor="@color/black1"
+            android:textSize="38sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/gray8" />
+    </LinearLayout>
+
+    <!-- 数字键盘 -->
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnCount="3"
+        android:rowCount="4">
+
+        <TextView
+            android:id="@+id/btn1"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn2"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn3"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn4"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="4"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn5"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="5"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn6"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="6"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn7"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="7"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn8"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="8"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn9"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="9"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btnStar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="*"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btn0"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/btnHash"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:gravity="center"
+            android:text="#"
+            android:textColor="@color/black1"
+            android:textSize="30sp" />
+    </GridLayout>
+
+    <!-- 底部操作区 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnDelete"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginEnd="60dp"
+            android:background="@drawable/pstn_dial_key_bg"
+            android:enabled="false"
+            android:gravity="center"
+            android:text="⌫"
+            android:textColor="@color/pstn_dial_key_text_color"
+            android:textSize="28sp" />
+
+        <ImageView
+            android:id="@+id/btnCall"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginStart="60dp"
+            android:background="@drawable/pstn_call_button_bg"
+            android:contentDescription="拨打"
+            android:padding="16dp"
+            android:src="@drawable/av_phone" />
+    </LinearLayout>
+</LinearLayout>

@@ -393,6 +393,16 @@ public class MainActivity extends WfcBaseActivity {
         if (conversationListFragment == null) {
             conversationListFragment = new ConversationListFragment();
         }
+        conversationListFragment.setOnClickConversationItemListener(conversationInfo -> {
+            if (Config.PSTN_ASSISTANT_ID.equals(conversationInfo.conversation.target)) {
+                Intent intent = new Intent(this, cn.wildfire.chat.app.voip.PstnDialActivity.class);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, ConversationActivity.class);
+                intent.putExtra("conversation", conversationInfo.conversation);
+                startActivity(intent);
+            }
+        });
         if (contactListFragment == null) {
             contactListFragment = new ContactListFragment();
         }

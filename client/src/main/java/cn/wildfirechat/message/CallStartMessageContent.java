@@ -80,6 +80,16 @@ public class CallStartMessageContent extends MessageContent {
      */
     private int type;
 
+    /**
+     * 0 voip对voip电话；1 voip打PSTN电话；2 PSTN打voip电话。
+     */
+    private int pstnType;
+
+    /**
+     * 当pstnType为1或者2时，PSTN电话号码。
+     */
+    private String pstnNumber;
+
     public CallStartMessageContent() {
     }
 
@@ -153,6 +163,22 @@ public class CallStartMessageContent extends MessageContent {
         this.type = type;
     }
 
+    public int getPstnType() {
+        return pstnType;
+    }
+
+    public void setPstnType(int pstnType) {
+        this.pstnType = pstnType;
+    }
+
+    public String getPstnNumber() {
+        return pstnNumber;
+    }
+
+    public void setPstnNumber(String pstnNumber) {
+        this.pstnNumber = pstnNumber;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -180,6 +206,11 @@ public class CallStartMessageContent extends MessageContent {
             objWrite.put("p", pin);
             if (this.type > 0) {
                 objWrite.put("ty", this.type);
+            }
+
+            if (this.pstnType > 0) {
+                objWrite.put("pstnty", this.pstnType);
+                objWrite.put("pstnn", this.pstnNumber);
             }
 
             payload.binaryContent = objWrite.toString().getBytes();
@@ -212,6 +243,8 @@ public class CallStartMessageContent extends MessageContent {
                 status = jsonObject.optInt("s", 0);
                 pin = jsonObject.optString("p");
                 type = jsonObject.optInt("ty", 0);
+                pstnType = jsonObject.optInt("pstnty", 0);
+                pstnNumber = jsonObject.optString("pstnn");
                 JSONArray array = jsonObject.optJSONArray("ts");
                 targetIds = new ArrayList<>();
                 if (array == null) {
@@ -252,6 +285,8 @@ public class CallStartMessageContent extends MessageContent {
         dest.writeInt(this.status);
         dest.writeString(this.pin);
         dest.writeInt(this.type);
+        dest.writeInt(this.pstnType);
+        dest.writeString(this.pstnNumber);
     }
 
     protected CallStartMessageContent(Parcel in) {
@@ -265,6 +300,8 @@ public class CallStartMessageContent extends MessageContent {
         this.status = in.readInt();
         this.pin = in.readString();
         this.type = in.readInt();
+        this.pstnType = in.readInt();
+        this.pstnNumber = in.readString();
     }
 
     public static final Creator<CallStartMessageContent> CREATOR = new Creator<CallStartMessageContent>() {
