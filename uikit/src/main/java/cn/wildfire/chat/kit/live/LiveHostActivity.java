@@ -24,6 +24,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -32,6 +33,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
+import androidx.media3.common.util.UnstableApi;
 
 import com.bumptech.glide.Glide;
 
@@ -494,6 +496,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onResume() {
         super.onResume();
