@@ -394,14 +394,9 @@ public class MainActivity extends WfcBaseActivity {
             conversationListFragment = new ConversationListFragment();
         }
         conversationListFragment.setOnClickConversationItemListener(conversationInfo -> {
-            if (Config.PSTN_ASSISTANT_ID.equals(conversationInfo.conversation.target)) {
-                Intent intent = new Intent(this, cn.wildfire.chat.app.voip.PstnDialActivity.class);
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(this, ConversationActivity.class);
-                intent.putExtra("conversation", conversationInfo.conversation);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(this, ConversationActivity.class);
+            intent.putExtra("conversation", conversationInfo.conversation);
+            startActivity(intent);
         });
         if (contactListFragment == null) {
             contactListFragment = new ContactListFragment();
@@ -481,31 +476,31 @@ public class MainActivity extends WfcBaseActivity {
         menuItems.add(new Pair<>(R.mipmap.ic_start_chat, getString(R.string.start_group_chat)));
         menuItems.add(new Pair<>(R.mipmap.ic_start_chat, getString(R.string.start_secret_chat)));
         menuItems.add(new Pair<>(R.mipmap.ic_add_friend, getString(R.string.add_friend)));
+        if (!TextUtils.isEmpty(Config.PSTN_ASSISTANT_ID)) {
+            menuItems.add(new Pair<>(R.mipmap.ic_start_chat, "落地电话"));
+        }
         menuItems.add(new Pair<>(R.mipmap.ic_qr_code, getString(R.string.scan_qrcode)));
         PopupMenu moreActionsMenu = new PopupMenu(this, menuItems, position -> {
-            switch (position) {
-                case 0:
-                    createConversation();
-                    break;
-                case 1:
-                    boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
-                    if (isEnableSecretChat) {
-                        pickContactToCreateSecretConversation();
-                    } else {
-                        Toast.makeText(this, R.string.e2e_not_enable, Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case 2:
-                    searchUser();
-                    break;
-                case 3:
-                    String[] permissions = new String[]{Manifest.permission.CAMERA};
-                    PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
-                    PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
-                        startActivityForResult(new Intent(MainActivity.this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
-                    });
-                default:
-                    break;
+            if (position == 0) {
+                createConversation();
+            } else if (position == 1) {
+                boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
+                if (isEnableSecretChat) {
+                    pickContactToCreateSecretConversation();
+                } else {
+                    Toast.makeText(this, R.string.e2e_not_enable, Toast.LENGTH_SHORT).show();
+                }
+            } else if (position == 2) {
+                searchUser();
+            } else if (!TextUtils.isEmpty(Config.PSTN_ASSISTANT_ID) && position == 3) {
+                Intent intent = new Intent(MainActivity.this, cn.wildfire.chat.app.voip.PstnDialActivity.class);
+                startActivity(intent);
+            } else if ((!TextUtils.isEmpty(Config.PSTN_ASSISTANT_ID) && position == 4) || (TextUtils.isEmpty(Config.PSTN_ASSISTANT_ID) && position == 3)) {
+                String[] permissions = new String[]{Manifest.permission.CAMERA};
+                PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+                PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+                    startActivityForResult(new Intent(MainActivity.this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
+                });
             }
         });
         View view = findViewById(R.id.more);

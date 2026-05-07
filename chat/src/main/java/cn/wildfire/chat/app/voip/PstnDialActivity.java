@@ -7,8 +7,14 @@ package cn.wildfire.chat.app.voip;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,7 +33,11 @@ public class PstnDialActivity extends WfcBaseActivity {
 
     private TextView numberTextView;
     private TextView btnDelete;
+    private View btnCall;
     private StringBuilder numberBuilder = new StringBuilder();
+    private Handler deleteHandler = new Handler(Looper.getMainLooper());
+    private Runnable deleteRunnable;
+    private Vibrator vibrator;
 
     @Override
     protected int contentLayout() {
@@ -36,9 +46,11 @@ public class PstnDialActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        setTitle("电话助手");
+        setTitle("落地电话");
         numberTextView = findViewById(R.id.numberTextView);
         btnDelete = findViewById(R.id.btnDelete);
+        btnCall = findViewById(R.id.btnCall);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         int[] buttonIds = new int[]{
             R.id.btn1, R.id.btn2, R.id.btn3,
@@ -50,11 +62,44 @@ public class PstnDialActivity extends WfcBaseActivity {
 
         for (int i = 0; i < buttonIds.length; i++) {
             final String digit = digits[i];
-            findViewById(buttonIds[i]).setOnClickListener(v -> appendDigit(digit));
+            findViewById(buttonIds[i]).setOnClickListener(v -> {
+                performHapticFeedback();
+                appendDigit(digit);
+            });
         }
 
-        findViewById(R.id.btnDelete).setOnClickListener(v -> deleteDigit());
-        findViewById(R.id.btnCall).setOnClickListener(v -> startPstnCall());
+        View deleteBtn = findViewById(R.id.btnDelete);
+        deleteBtn.setOnClickListener(v -> deleteDigit());
+        deleteBtn.setOnLongClickListener(v -> {
+            deleteDigit();
+            deleteRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    deleteDigit();
+                    deleteHandler.postDelayed(this, 100);
+                }
+            };
+            deleteHandler.postDelayed(deleteRunnable, 100);
+            return true;
+        });
+        deleteBtn.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                deleteHandler.removeCallbacks(deleteRunnable);
+            }
+            return false;
+        });
+        btnCall.setOnClickListener(v -> startPstnCall());
+        updateCallButtonState();
+    }
+
+    private void performHapticFeedback() {
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(30, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                vibrator.vibrate(30);
+            }
+        }
     }
 
     private void appendDigit(String digit) {
@@ -62,6 +107,7 @@ public class PstnDialActivity extends WfcBaseActivity {
             numberBuilder.append(digit);
             numberTextView.setText(numberBuilder.toString());
             btnDelete.setEnabled(true);
+            updateCallButtonState();
         }
     }
 
@@ -72,7 +118,14 @@ public class PstnDialActivity extends WfcBaseActivity {
             if (numberBuilder.length() == 0) {
                 btnDelete.setEnabled(false);
             }
+            updateCallButtonState();
         }
+    }
+
+    private void updateCallButtonState() {
+        boolean hasNumber = numberBuilder.length() > 0;
+        btnCall.setEnabled(hasNumber);
+        btnCall.setAlpha(hasNumber ? 1.0f : 0.4f);
     }
 
     private void startPstnCall() {
