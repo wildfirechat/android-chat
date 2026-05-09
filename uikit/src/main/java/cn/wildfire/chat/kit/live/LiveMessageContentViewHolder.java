@@ -8,8 +8,9 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -21,7 +22,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
-import cn.wildfirechat.message.LiveStreamingStartMessageContent;
+import cn.wildfirechat.message.LiveMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -32,17 +33,17 @@ import cn.wildfirechat.remote.ChatManager;
  * </p>
  */
 @MessageContentType(value = {
-        LiveStreamingStartMessageContent.class,
+        LiveMessageContent.class,
 })
-public class LiveStreamingMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class LiveMessageContentViewHolder extends NormalMessageContentViewHolder {
 
     ImageView hostPortraitImageView;
     TextView titleTextView;
     TextView statusTextView;
 
-    private LiveStreamingStartMessageContent liveContent;
+    private LiveMessageContent liveContent;
 
-    public LiveStreamingMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public LiveMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         bindViews(itemView);
         bindEvents(itemView);
@@ -60,7 +61,7 @@ public class LiveStreamingMessageContentViewHolder extends NormalMessageContentV
 
     @Override
     protected void onBind(UiMessage message) {
-        liveContent = (LiveStreamingStartMessageContent) message.message.content;
+        liveContent = (LiveMessageContent) message.message.content;
         String title = liveContent.getTitle();
         titleTextView.setText(title != null && !title.isEmpty() ? title : fragment.getString(R.string.live_streaming));
 
@@ -74,9 +75,10 @@ public class LiveStreamingMessageContentViewHolder extends NormalMessageContentV
         }
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void watchLive() {
-        Intent intent = new Intent(fragment.getActivity(), LiveAudienceActivity.class);
-        intent.putExtra("liveContent", liveContent);
+        Intent intent = new Intent(fragment.getActivity(), LiveInfoActivity.class);
+        intent.putExtra("liveId", liveContent.getLiveId());
         fragment.startActivity(intent);
     }
 }

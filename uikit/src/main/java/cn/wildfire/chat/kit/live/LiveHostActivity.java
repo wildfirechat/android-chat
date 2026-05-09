@@ -24,11 +24,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.OptIn;
-import androidx.appcompat.app.AlertDialog;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.OptIn;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -44,16 +43,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
-import cn.wildfirechat.message.LiveStreamingStartMessageContent;
+import cn.wildfirechat.message.LiveMessageContent;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -67,6 +65,7 @@ import cn.wildfirechat.remote.ChatManager;
  * 3. 向当前会话发送 LiveStreamingStartMessageContent，会话成员点击后可观看直播
  * </p>
  */
+@OptIn(markerClass = UnstableApi.class)
 public class LiveHostActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
 
     private static final RendererCommon.ScalingType SCALING_TYPE = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
@@ -98,11 +97,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private View loadingView;
 
     private AVEngineKit engineKit;
-    private Conversation conversation;
-    private String callId;
-    private boolean audioOnly;
-    private String pin;
-    private String hostUserId;
+    private LiveInfo liveInfo;
     private boolean sessionStarted = false;
 
     private Observer<Object> coStreamRequestObserver;
@@ -134,9 +129,8 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        conversation = getIntent().getParcelableExtra("conversation");
+        liveInfo = getIntent().getParcelableExtra("liveInfo");
 
-        hostUserId = ChatManager.Instance().getUserId();
         setContentView(R.layout.activity_live_host);
 
         bindViews();
@@ -146,9 +140,6 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         engineKit = AVEngineKit.Instance();
         AVEngineKit.CallSession session = engineKit.getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
-            callId = session.getCallId();
-            audioOnly = session.isAudioOnly();
-            pin = session.getPin();
             session.setCallback(this);
             if (session.getState() == AVEngineKit.CallState.Connected) {
                 onSessionConnected();
@@ -157,15 +148,14 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
                 restoreCoStreamerTiles(session);
             }
         } else {
-            startLive();
+            engineKit.joinConference(liveInfo.getLiveId(), liveInfo.isAudioOnly(), liveInfo.getPin(), liveInfo.getHost(), liveInfo.getTitle(), liveInfo.getDescription(), false, false, false, false, false, this);
         }
     }
 
     private void attachMessageFragment() {
-        if (callId == null) return;
         if (getSupportFragmentManager().findFragmentById(R.id.messageFragmentContainer) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.messageFragmentContainer, LiveMessageFragment.newInstance(callId, false))
+                    .replace(R.id.messageFragmentContainer, LiveMessageFragment.newInstance(liveInfo.getLiveId(), false))
                     .commitAllowingStateLoss();
         }
     }
@@ -192,8 +182,8 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     private void bindEvents() {
         closeButton.setOnClickListener(v -> showEndLiveConfirmDialog());
         sayingSomethingView.setOnClickListener(v -> {
-            if (callId != null) {
-                LiveMessageInputDialogFragment.newInstance(callId)
+            if (liveInfo.getLiveId() != null) {
+                LiveMessageInputDialogFragment.newInstance(liveInfo.getLiveId())
                         .show(getSupportFragmentManager(), "liveInput");
             }
         });
@@ -205,10 +195,9 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             screenCaptureLauncher.launch(mgr.createScreenCaptureIntent());
         });
         coStreamButton.setOnClickListener(v -> {
-            if (callId == null) return;
             // Clear the badge when user opens the manager
             clearCoStreamBadge();
-            LiveCoStreamManagerFragment.newInstance(callId)
+            LiveCoStreamManagerFragment.newInstance(liveInfo)
                     .show(getSupportFragmentManager(), "coStreamManager");
         });
         // Also make the inner icon button clickable
@@ -226,7 +215,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         coStreamRequestObserver = o -> {
             if (o instanceof LiveCoStreamContent) {
                 LiveCoStreamContent content = (LiveCoStreamContent) o;
-                if (callId != null && callId.equals(content.getCallId())) {
+                if (liveInfo.getLiveId().equals(content.getCallId())) {
                     runOnUiThread(this::onNewCoStreamRequestReceived);
                 }
             }
@@ -234,39 +223,19 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_REQUEST, coStreamRequestObserver);
     }
 
-    private void startLive() {
-        try {
-            engineKit = AVEngineKit.Instance();
-            engineKit.setVideoProfile(VideoProfile.VP720P_3, false);
+    private void startLive(String liveId) {
+        engineKit = AVEngineKit.Instance();
+        engineKit.setVideoProfile(VideoProfile.VP360P, false);
 
-        } catch (Exception e) {
-            Toast.makeText(this, R.string.live_streaming_start_failed, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        // Generate callId and pin via SDK
-        callId = LiveStreamingKit.generateCallId();
-        pin = LiveStreamingKit.generatePin();
-
-        String host = hostUserId;
-        String title = getString(R.string.live_streaming_default_title);
 
         loadingView.setVisibility(View.VISIBLE);
-
-        AVEngineKit.CallSession session = engineKit.startConference(
-                callId, false, pin, host, title, "", false, false, false, this);
-
-        if (session == null) {
-            Toast.makeText(this, R.string.live_streaming_start_failed, Toast.LENGTH_SHORT).show();
-            loadingView.setVisibility(View.GONE);
-            finish();
-        }
     }
 
     private void onSessionConnected() {
         if (sessionStarted) return;
         sessionStarted = true;
+
+        LiveStreamingKit.getInstance().onHostSessionConnected(liveInfo);
 
         loadingView.setVisibility(View.GONE);
         liveIndicatorTextView.setVisibility(View.VISIBLE);
@@ -274,7 +243,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         coStreamButton.setVisibility(View.VISIBLE);
 
         // Load host info
-        UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
+        UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveInfo.getHost(), false);
         if (hostInfo != null) {
             if (!TextUtils.isEmpty(hostInfo.displayName)) {
                 hostNameTextView.setText(hostInfo.displayName);
@@ -285,14 +254,9 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
 
         String title = getString(R.string.live_streaming_default_title);
-        LiveStreamingKit kit = LiveStreamingKit.getInstance();
-        kit.onHostSessionConnected(callId, audioOnly, pin, hostUserId, title);
-        if (conversation != null) {
-            kit.sendLiveStartNotification(conversation, title);
-        }
 
         // Start the float service early (without showing the float view) so it's ready for Android 14 FGS requirements
-        LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, false);
+        LiveStreamingService.startForHost(this, liveInfo, false);
 
         attachMessageFragment();
 
@@ -319,7 +283,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
      */
     private void restoreCoStreamerTiles(AVEngineKit.CallSession session) {
         for (String userId : session.getParticipantIds()) {
-            if (userId.equals(hostUserId) || Config.LIVE_STREAMING_ROBOT.equals(userId)) continue;
+            if (userId.equals(liveInfo.getHost()) || TextUtils.equals(this.liveInfo.getLiveBotId(), userId)) continue;
             if (!coStreamerTiles.containsKey(userId)) {
                 addCoStreamerTile(userId, session);
             } else {
@@ -392,12 +356,10 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     // ---------- Share live ----------
 
     private void shareLive() {
-        LiveStreamingKit kit = LiveStreamingKit.getInstance();
-        LiveSession liveSession = kit.getCurrentSession();
-        if (liveSession == null) return;
-        LiveStreamingStartMessageContent content = new LiveStreamingStartMessageContent(
-                liveSession.callId, liveSession.hostUserId, liveSession.title, "",
-                System.currentTimeMillis() / 1000, false, false, false, liveSession.pin, "");
+        if (liveInfo == null) return;
+        LiveMessageContent content = new LiveMessageContent(
+                liveInfo.getLiveId(), liveInfo.getHost(), liveInfo.getTitle(), liveInfo.getDescription(),
+                liveInfo.getStartTimestamp(), liveInfo.isAudioOnly(), liveInfo.isAudience());
         Message message = new Message();
         message.content = content;
         ArrayList<Message> messages = new ArrayList<>();
@@ -416,8 +378,8 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
             return;
         }
         String title = getString(R.string.live_streaming_default_title);
-        UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-        LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, true);
+        UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveInfo.getHost(), false);
+        LiveStreamingService.startForHost(this, liveInfo, true);
         finish();
     }
 
@@ -468,13 +430,6 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
     }
 
     private void endLive() {
-        if (sessionStarted) {
-            LiveStreamingKit kit = LiveStreamingKit.getInstance();
-            if (conversation != null) {
-                kit.sendLiveEndNotification(conversation);
-            }
-            kit.onSessionEnded();
-        }
         AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
         if (session != null) {
             session.stopRecordSystemAudio();
@@ -496,7 +451,6 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
     }
 
-    @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onResume() {
         super.onResume();
@@ -511,8 +465,8 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         }
         // Hide float view but keep service running
         String title = getString(R.string.live_streaming_default_title);
-        UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-        LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, false);
+        UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveInfo.getHost(), false);
+        LiveStreamingService.startForHost(this, liveInfo, false);
 
         if (pendingProjectionData != null) {
             Intent data = pendingProjectionData;
@@ -532,8 +486,8 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             if (!isFinishing() && !isChangingConfigurations()) {
                 String title = getString(R.string.live_streaming_default_title);
-                UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-                LiveStreamingService.startForHost(this, title, hostInfo != null ? hostInfo.portrait : null, true);
+                UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveInfo.getHost(), false);
+                LiveStreamingService.startForHost(this, liveInfo, true);
                 finish();
             }
         }
@@ -545,8 +499,8 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
         handler.removeCallbacksAndMessages(null);
         LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_REQUEST, coStreamRequestObserver);
         // endLive() already called; only clean up if activity is destroyed without proper endLive
-        if (sessionStarted && LiveStreamingKit.getInstance().getCurrentSession() == null) {
-            LiveStreamingKit.getInstance().onSessionEnded();
+        if (sessionStarted && LiveStreamingKit.getInstance().getCurrentLiveInfo() == null) {
+            LiveStreamingKit.getInstance().reset();
         }
     }
 
@@ -578,7 +532,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
     @Override
     public void didParticipantJoined(String userId, boolean screenSharing) {
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || TextUtils.equals(this.liveInfo.getLiveBotId(), userId)) return;
         LiveStreamingKit.getInstance().onParticipantActuallyJoined(userId);
         // Create the tile early so it is ready when didReceiveRemoteVideoTrack fires
         runOnUiThread(() -> {
@@ -594,7 +548,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || TextUtils.equals(this.liveInfo.getLiveBotId(), userId)) return;
         runOnUiThread(() -> {
             removeCoStreamerTile(userId);
             LiveStreamingKit.getInstance().onParticipantLeft(userId);
@@ -603,7 +557,7 @@ public class LiveHostActivity extends FragmentActivity implements AVEngineKit.Ca
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || TextUtils.equals(this.liveInfo.getLiveBotId(), userId)) return;
         runOnUiThread(() -> {
             AVEngineKit.CallSession session = engineKit != null ? engineKit.getCurrentSession() : null;
             if (session == null) return;

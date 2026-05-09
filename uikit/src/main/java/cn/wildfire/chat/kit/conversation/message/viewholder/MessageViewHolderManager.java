@@ -9,8 +9,7 @@ import android.util.SparseArray;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
-import cn.wildfire.chat.kit.live.LiveStreamingEndMessageContentViewHolder;
-import cn.wildfire.chat.kit.live.LiveStreamingMessageContentViewHolder;
+import cn.wildfire.chat.kit.live.LiveMessageContentViewHolder;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 
@@ -46,8 +45,7 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(StreamingTextMessageContentViewHolder.class, R.layout.conversation_item_streaming_text_receive, R.layout.conversation_item_streaming_text_receive);
         registerMessageViewHolder(PollMessageContentViewHolder.class, R.layout.conversation_item_poll_send, R.layout.conversation_item_poll_receive);
         registerMessageViewHolder(PollResultMessageContentViewHolder.class, R.layout.conversation_item_poll_result_send, R.layout.conversation_item_poll_result_receive);
-        registerMessageViewHolder(LiveStreamingMessageContentViewHolder.class, R.layout.conversation_item_live_streaming_send, R.layout.conversation_item_live_streaming_receive);
-        registerMessageViewHolder(LiveStreamingEndMessageContentViewHolder.class, R.layout.conversation_item_live_streaming_end_send, R.layout.conversation_item_live_streaming_end_receive);
+        registerMessageViewHolder(LiveMessageContentViewHolder.class, R.layout.conversation_item_live_streaming_send, R.layout.conversation_item_live_streaming_receive);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();

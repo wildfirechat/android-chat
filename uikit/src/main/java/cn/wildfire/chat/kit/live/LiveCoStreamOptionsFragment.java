@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.message.LiveStreamingStartMessageContent;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfirechat.uikit.permission.PermissionKit;
 
 /**
@@ -25,26 +25,13 @@ import cn.wildfirechat.uikit.permission.PermissionKit;
  */
 public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
 
-    private static final String ARG_CALL_ID = "callId";
-    private static final String ARG_AUDIO_ONLY = "audioOnly";
-    private static final String ARG_PIN = "pin";
-    private static final String ARG_HOST = "host";
-    private static final String ARG_TITLE = "title";
+    private static final String ARG_LIVE_INFO = "liveInfo";
+    private LiveInfo liveInfo;
 
-    private String callId;
-    private boolean audioonly;
-    private String pin;
-    private String host;
-    private String title;
-
-    public static LiveCoStreamOptionsFragment newInstance(LiveStreamingStartMessageContent content) {
+    public static LiveCoStreamOptionsFragment newInstance(LiveInfo info) {
         LiveCoStreamOptionsFragment f = new LiveCoStreamOptionsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_CALL_ID, content.getCallId());
-        args.putBoolean(ARG_AUDIO_ONLY, content.isAudioOnly());
-        args.putString(ARG_PIN, content.getPin());
-        args.putString(ARG_HOST, content.getHost());
-        args.putString(ARG_TITLE, content.getTitle());
+        args.putParcelable(ARG_LIVE_INFO, info);
         f.setArguments(args);
         return f;
     }
@@ -53,11 +40,7 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            callId = getArguments().getString(ARG_CALL_ID);
-            audioonly = getArguments().getBoolean(ARG_AUDIO_ONLY);
-            pin = getArguments().getString(ARG_PIN);
-            host = getArguments().getString(ARG_HOST);
-            title = getArguments().getString(ARG_TITLE);
+            liveInfo = getArguments().getParcelable(ARG_LIVE_INFO);
         }
     }
 
@@ -90,7 +73,7 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
         PermissionKit.checkThenRequestPermission(requireActivity(),
                 getChildFragmentManager(), tuples, allGranted -> {
                     if (Boolean.TRUE.equals(allGranted)) {
-                        LiveStreamingKit.getInstance().requestCoStream(host, callId, audioonly, pin, host, title, audioOnlyCoStream);
+                        LiveStreamingKit.getInstance().requestCoStream(liveInfo.getHost(), liveInfo.getLiveId(), liveInfo.isAudioOnly(), liveInfo.getPin(), liveInfo.getTitle(), audioOnlyCoStream);
                         dismiss();
                     }
                 });

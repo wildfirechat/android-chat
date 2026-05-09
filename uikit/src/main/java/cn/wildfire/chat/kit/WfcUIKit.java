@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
+import cn.wildfire.chat.kit.live.LiveCoStreamContent;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -55,8 +56,6 @@ import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfire.chat.kit.voip.VoipCallService;
-import cn.wildfire.chat.kit.live.LiveCoStreamContent;
-import cn.wildfire.chat.kit.live.LiveStreamingKit;
 import cn.wildfire.chat.kit.voip.conference.ConferenceManager;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
@@ -145,7 +144,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         viewModelProvider = new ViewModelProvider(viewModelStore, factory);
         OKHttpHelper.init(application.getApplicationContext());
         ConferenceManager.init(application);
-        LiveStreamingKit.init(application);
 
         application.registerActivityLifecycleCallbacks(this);
 

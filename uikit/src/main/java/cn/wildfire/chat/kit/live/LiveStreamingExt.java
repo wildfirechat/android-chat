@@ -48,8 +48,8 @@ public class LiveStreamingExt extends ConversationExt {
         PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
         PermissionKit.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, granted -> {
             if (granted) {
-                Intent intent = new Intent(activity, LiveHostActivity.class);
-                intent.putExtra("conversation", conversation);
+                Intent intent = new Intent(activity, CreateLiveActivity.class);
+                intent.putExtra("groupId", conversation.type == Conversation.ConversationType.Group ? conversation.target : null);
                 startActivity(intent);
             } else {
                 Toast.makeText(activity, R.string.voip_permission_required, Toast.LENGTH_SHORT).show();

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -37,9 +38,9 @@ import cn.wildfirechat.remote.ChatManager;
  */
 public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
 
-    private static final String ARG_CALL_ID = "callId";
+    private static final String ARG_LIVE_INFO = "callId";
 
-    private String callId;
+    private LiveInfo liveInfo;
 
     // Active section
     private View activeSectionLayout;
@@ -58,10 +59,10 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
     private RecyclerView invitableRecycler;
     private TextView invitableEmptyView;
 
-    public static LiveCoStreamManagerFragment newInstance(String callId) {
+    public static LiveCoStreamManagerFragment newInstance(LiveInfo liveInfo) {
         LiveCoStreamManagerFragment f = new LiveCoStreamManagerFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_CALL_ID, callId);
+        args.putParcelable(ARG_LIVE_INFO, liveInfo);
         f.setArguments(args);
         return f;
     }
@@ -70,7 +71,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            callId = getArguments().getString(ARG_CALL_ID);
+            liveInfo = getArguments().getParcelable(ARG_LIVE_INFO);
         }
     }
 
@@ -122,7 +123,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
         setSectionVisible(requestingSectionLayout, null, requestingVisible);
 
         // Invitable (async)
-        kit.getViewers(callId, new LiveStreamingKit.GetViewersCallback() {
+        kit.getViewers(liveInfo, new LiveStreamingKit.GetViewersCallback() {
             @Override
             public void onSuccess(List<String> viewers) {
                 if (!isAdded()) return;

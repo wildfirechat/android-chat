@@ -251,6 +251,12 @@
 
         <!-- Live Streaming -->
         <activity
+            android:name=".live.CreateLiveActivity"
+            android:label="创建直播" />
+        <activity
+            android:name=".live.LiveInfoActivity"
+            android:label="直播详情" />
+        <activity
             android:name=".live.LiveHostActivity"
             android:label="@string/live_streaming_activity_label"
             android:launchMode="singleTask"

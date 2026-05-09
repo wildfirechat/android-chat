@@ -16,9 +16,9 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * 直播邀请消息内容
+ * 直播消息内容
  * <p>
- * 用于发送直播邀请，包含直播的详细信息如主题、描述、时间等。
+ * 用于发送直播消息，包含直播的详细信息如主题、描述、时间等。
  * 支持音频直播、视频直播、观众模式等多种直播类型。
  * </p>
  *
@@ -26,11 +26,11 @@ import cn.wildfirechat.message.core.PersistFlag;
  * @since 2020
  */
 @ContentTag(type = ContentType_Live_Streaming_Start, flag = PersistFlag.Persist_And_Count)
-public class LiveStreamingStartMessageContent extends MessageContent {
+public class LiveMessageContent extends MessageContent {
     /**
      * 直播唯一标识
      */
-    private String callId;
+    private String liveId;
 
     /**
      * 直播主持人ID
@@ -62,43 +62,26 @@ public class LiveStreamingStartMessageContent extends MessageContent {
      */
     private boolean audience;
 
-    /**
-     * 直播PIN码，加入直播时使用
-     */
-    private String pin;
 
-    /**
-     * 直播密码，查询直播时使用
-     */
-    private String password;
-
-    /**
-     * 直播扩展信息
-     */
-    private String callExtra;
-
-
-    public LiveStreamingStartMessageContent() {
+    public LiveMessageContent() {
     }
 
-    public LiveStreamingStartMessageContent(String callId, String host, String title, String desc, long startTime, boolean audioOnly, boolean audience, boolean advanced, String pin, String password) {
-        this.callId = callId;
+    public LiveMessageContent(String liveId, String host, String title, String desc, long startTime, boolean audioOnly, boolean audience) {
+        this.liveId = liveId;
         this.host = host;
         this.title = title;
         this.desc = desc;
         this.startTime = startTime;
         this.audioOnly = audioOnly;
         this.audience = audience;
-        this.pin = pin;
-        this.password = password;
     }
 
-    public String getCallId() {
-        return callId;
+    public String getLiveId() {
+        return liveId;
     }
 
-    public void setCallId(String callId) {
-        this.callId = callId;
+    public void setLiveId(String liveId) {
+        this.liveId = liveId;
     }
 
 
@@ -108,14 +91,6 @@ public class LiveStreamingStartMessageContent extends MessageContent {
 
     public void setAudioOnly(boolean audioOnly) {
         this.audioOnly = audioOnly;
-    }
-
-    public String getPin() {
-        return pin;
-    }
-
-    public void setPin(String pin) {
-        this.pin = pin;
     }
 
     public String getHost() {
@@ -158,27 +133,10 @@ public class LiveStreamingStartMessageContent extends MessageContent {
         this.audience = audience;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getCallExtra() {
-        return callExtra;
-    }
-
-    public void setCallExtra(String callExtra) {
-        this.callExtra = callExtra;
-    }
-
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
-        payload.content = callId;
-        payload.pushContent = "直播邀请";
+        payload.content = liveId;
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -198,23 +156,16 @@ public class LiveStreamingStartMessageContent extends MessageContent {
             if (desc != null) {
                 objWrite.put("d", desc);
             }
-            if (password != null) {
-                objWrite.put("pwd", password);
-            }
-            if (callExtra != null) {
-                objWrite.put("ce", callExtra);
-            }
 
             objWrite.put("audience", audience ? 1 : 0);
 
             objWrite.put("a", audioOnly ? 1 : 0);
-            objWrite.put("p", pin);
 
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        payload.pushContent = "直播邀请";
+        payload.pushContent = "直播";
         return payload;
     }
 
@@ -222,7 +173,7 @@ public class LiveStreamingStartMessageContent extends MessageContent {
     @Override
     public void decode(MessagePayload payload) {
         super.decode(payload);
-        callId = payload.content;
+        liveId = payload.content;
         pushContent = payload.pushContent;
 
         try {
@@ -231,9 +182,6 @@ public class LiveStreamingStartMessageContent extends MessageContent {
                 host = jsonObject.optString("h");
                 title = jsonObject.optString("t");
                 desc = jsonObject.optString("d");
-                pin = jsonObject.optString("p");
-                password = jsonObject.optString("pwd");
-                callExtra = jsonObject.optString("ce");
                 startTime = jsonObject.optLong("s");
                 audience = jsonObject.optInt("audience") > 0;
                 audioOnly = jsonObject.optInt("a") > 0;
@@ -257,21 +205,18 @@ public class LiveStreamingStartMessageContent extends MessageContent {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(callId);
+        dest.writeString(liveId);
         dest.writeString(host != null ? host : "");
         dest.writeString(title != null ? title : "");
         dest.writeString(desc != null ? desc : "");
         dest.writeLong(startTime);
         dest.writeByte(audioOnly ? (byte) 1 : (byte) 0);
         dest.writeByte(audience ? (byte) 1 : (byte) 0);
-        dest.writeString(pin != null ? pin : "");
-        dest.writeString(password != null ? password : "");
-        dest.writeString(callExtra != null ? callExtra : "");
     }
 
-    protected LiveStreamingStartMessageContent(Parcel in) {
+    protected LiveMessageContent(Parcel in) {
         super(in);
-        callId = in.readString();
+        liveId = in.readString();
         host = in.readString();
         title = in.readString();
         desc = in.readString();
@@ -279,20 +224,17 @@ public class LiveStreamingStartMessageContent extends MessageContent {
         startTime = in.readLong();
         audioOnly = in.readByte() != 0;
         audience = in.readByte() != 0;
-        pin = in.readString();
-        password = in.readString();
-        callExtra = in.readString();
     }
 
-    public static final Creator<LiveStreamingStartMessageContent> CREATOR = new Creator<LiveStreamingStartMessageContent>() {
+    public static final Creator<LiveMessageContent> CREATOR = new Creator<LiveMessageContent>() {
         @Override
-        public LiveStreamingStartMessageContent createFromParcel(Parcel source) {
-            return new LiveStreamingStartMessageContent(source);
+        public LiveMessageContent createFromParcel(Parcel source) {
+            return new LiveMessageContent(source);
         }
 
         @Override
-        public LiveStreamingStartMessageContent[] newArray(int size) {
-            return new LiveStreamingStartMessageContent[size];
+        public LiveMessageContent[] newArray(int size) {
+            return new LiveMessageContent[size];
         }
     };
 }

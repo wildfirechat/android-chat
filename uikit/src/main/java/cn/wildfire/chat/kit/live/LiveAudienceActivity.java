@@ -31,8 +31,9 @@ import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
-import cn.wildfirechat.message.LiveStreamingStartMessageContent;
+import cn.wildfirechat.message.LiveMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -53,7 +54,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     private ImageButton requestCoStreamButton;
     private TextView sayingSomethingView;
 
-    private LiveStreamingStartMessageContent liveContent;
+    private LiveInfo liveInfo;
 
     private Observer<Object> coStreamInviteObserver;
     private Observer<Object> coStreamAcceptedObserver;
@@ -70,8 +71,9 @@ public class LiveAudienceActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_live_audience);
 
-        liveContent = getIntent().getParcelableExtra("liveContent");
-        if (liveContent == null) {
+        liveInfo = getIntent().getParcelableExtra("liveInfo");
+
+        if (liveInfo == null) {
             finish();
             return;
         }
@@ -80,6 +82,9 @@ public class LiveAudienceActivity extends FragmentActivity {
         bindEvents();
         subscribeCoStreamEvents();
         startWatching();
+
+        LiveStreamingKit.getInstance().setCurrentLiveInfo(liveInfo);
+        LiveStreamingKit.getInstance().joinLiveChatRoom();
     }
 
     private void bindViews() {
@@ -94,7 +99,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         requestCoStreamButton = findViewById(R.id.requestCoStreamButton);
         sayingSomethingView = findViewById(R.id.sayingSomethingView);
 
-        String hostUserId = liveContent.getHost();
+        String hostUserId = liveInfo.getHost();
         if (!TextUtils.isEmpty(hostUserId)) {
             UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
             if (hostInfo != null) {
@@ -113,7 +118,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         requestCoStreamButton.setOnClickListener(v -> showCoStreamOptions());
         if (sayingSomethingView != null) {
             sayingSomethingView.setOnClickListener(v -> {
-                String cid = liveContent.getCallId();
+                String cid = liveInfo.getLiveId();
                 if (cid != null) {
                     LiveMessageInputDialogFragment.newInstance(cid)
                             .show(getSupportFragmentManager(), "liveInput");
@@ -127,12 +132,7 @@ public class LiveAudienceActivity extends FragmentActivity {
                 Toast.makeText(this, R.string.live_permission_float_required, Toast.LENGTH_SHORT).show();
                 return;
             }
-            String title = liveContent.getTitle() != null ? liveContent.getTitle()
-                    : getString(R.string.live_streaming);
-            UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
-            String hlsUrl = LiveStreamingKit.getHlsUrl(liveContent.getCallId());
-            LiveStreamingService.startForAudience(this, title,
-                    hostInfo != null ? hostInfo.portrait : null, hlsUrl, liveContent, true);
+            LiveStreamingService.startForAudience(this, this.liveInfo, true);
             finish();
         });
     }
@@ -141,7 +141,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         coStreamInviteObserver = o -> {
             if (o instanceof LiveCoStreamContent) {
                 LiveCoStreamContent content = (LiveCoStreamContent) o;
-                if (liveContent.getCallId().equals(content.getCallId())) {
+                if (liveInfo.getLiveId().equals(content.getCallId())) {
                     runOnUiThread(() -> showCoStreamInviteDialog(content));
                 }
             }
@@ -149,7 +149,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         coStreamAcceptedObserver = o -> {
             if (o instanceof LiveCoStreamContent) {
                 LiveCoStreamContent content = (LiveCoStreamContent) o;
-                if (liveContent.getCallId().equals(content.getCallId())) {
+                if (liveInfo.getLiveId().equals(content.getCallId())) {
                     runOnUiThread(() -> launchCoStreamActivity(content));
                 }
             }
@@ -157,7 +157,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         coStreamRejectedObserver = o -> {
             if (o instanceof LiveCoStreamContent) {
                 LiveCoStreamContent content = (LiveCoStreamContent) o;
-                if (liveContent.getCallId().equals(content.getCallId())) {
+                if (liveInfo.getLiveId().equals(content.getCallId())) {
                     runOnUiThread(() -> Toast.makeText(this,
                             R.string.live_co_stream_rejected, Toast.LENGTH_SHORT).show());
                 }
@@ -169,8 +169,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     }
 
     private void startWatching() {
-        String callId = liveContent.getCallId();
-        String streamUrl = LiveStreamingKit.getHlsUrl(callId);
+        String callId = liveInfo.getLiveId();
 
         if (getSupportFragmentManager().findFragmentById(R.id.messageFragmentContainer) == null) {
             getSupportFragmentManager().beginTransaction()
@@ -181,7 +180,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         loadingProgressBar.setVisibility(View.VISIBLE);
         liveTagTextView.setVisibility(View.GONE);
 
-        videoView.setVideoURI(Uri.parse(streamUrl));
+        videoView.setVideoURI(Uri.parse(liveInfo.getHlsUrl()));
         videoView.setOnPreparedListener(() -> {
             loadingProgressBar.setVisibility(View.GONE);
             liveTagTextView.setVisibility(View.VISIBLE);
@@ -200,7 +199,9 @@ public class LiveAudienceActivity extends FragmentActivity {
 
     private void shareLive() {
         Message message = new Message();
-        message.content = liveContent;
+        message.content = new LiveMessageContent(
+                liveInfo.getLiveId(), liveInfo.getHost(), liveInfo.getTitle(), liveInfo.getDescription(),
+                liveInfo.getStartTimestamp(), liveInfo.isAudioOnly(), liveInfo.isAudience());
         ArrayList<Message> messages = new ArrayList<>();
         messages.add(message);
         Intent intent = new Intent(this, ForwardActivity.class);
@@ -209,7 +210,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     }
 
     private void showCoStreamOptions() {
-        LiveCoStreamOptionsFragment.newInstance(liveContent)
+        LiveCoStreamOptionsFragment.newInstance(liveInfo)
                 .show(getSupportFragmentManager(), "coStreamOptions");
     }
 
@@ -259,8 +260,8 @@ public class LiveAudienceActivity extends FragmentActivity {
     private void launchCoStreamActivity(LiveCoStreamContent content) {
         if (videoView != null) videoView.stopPlayback();
         Intent intent = new Intent(this, LiveCoStreamActivity.class);
+        intent.putExtra("liveInfo", liveInfo);
         intent.putExtra("coStreamContent", content);
-        intent.putExtra("liveContent", liveContent);
         startActivity(intent);
         finish();
     }
@@ -292,12 +293,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     protected void onStop() {
         super.onStop();
         if (!isFinishing() && !isChangingConfigurations()) {
-            String title = liveContent.getTitle() != null ? liveContent.getTitle()
-                    : getString(R.string.live_streaming);
-            UserInfo hostInfo = ChatManager.Instance().getUserInfo(liveContent.getHost(), false);
-            String hlsUrl = LiveStreamingKit.getHlsUrl(liveContent.getCallId());
-            LiveStreamingService.startForAudience(this, title,
-                    hostInfo != null ? hostInfo.portrait : null, hlsUrl, liveContent, true);
+            LiveStreamingService.startForAudience(this, this.liveInfo, true);
             finish();
         }
     }
@@ -308,6 +304,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_INVITE, coStreamInviteObserver);
         LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_ACCEPTED, coStreamAcceptedObserver);
         LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_REJECTED, coStreamRejectedObserver);
+        LiveStreamingKit.getInstance().reset();
         if (videoView != null) {
             videoView.stopPlayback();
             videoView.release();

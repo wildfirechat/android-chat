@@ -8,51 +8,31 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.live.model.CreateLiveRequest;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.LiveStreamingEndMessageContent;
-import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetChatRoomInfoCallback;
+import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetChatRoomMembersInfoCallback;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 /**
  * 直播流媒体 SDK 唯一入口
- *
- * <p>面向开发者提供直播全链路封装。上层 UI 只需调用此类方法，
- * 无需关心 WebRTC 信令、聊天室保活、消息编解码等底层细节。</p>
- *
- * <h2>主播流程</h2>
- * <ol>
- *   <li>用 {@link #generateCallId()} / {@link #generatePin()} 生成直播参数</li>
- *   <li>调用 AVEngineKit.startConference() 开启 WebRTC 会议</li>
- *   <li>会话 Connected 后调用 {@link #onHostSessionConnected} — SDK 接管聊天室生命周期</li>
- *   <li>调用 {@link #sendLiveStartNotification} 通知机器人推流和会话成员</li>
- *   <li>调用 {@link #getViewers} 获取聊天室实时观众列表（用于连麦邀请）</li>
- *   <li>结束时调用 {@link #sendLiveEndNotification} + {@link #onSessionEnded}</li>
- * </ol>
- *
- * <h2>观众流程</h2>
- * <ol>
- *   <li>调用 {@link #getHlsUrl} 获取播放地址</li>
- *   <li>订阅 {@link #EVENT_CO_STREAM_INVITE} 监听主播邀请</li>
- *   <li>调用 {@link #requestCoStream} 发起连麦申请</li>
- *   <li>调用 {@link #joinConferenceForCoStream} 加入 WebRTC 连麦</li>
- * </ol>
  *
  * <h2>LiveDataBus 事件</h2>
  * <ul>
@@ -63,6 +43,8 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
  * </ul>
  */
 public class LiveStreamingKit implements OnReceiveMessageListener {
+
+    private boolean isServiceAvailable;
 
     // ── Events ──────────────────────────────────────────────────────────────
 
@@ -94,6 +76,33 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     public static void init(Application application) {
         if (instance == null) {
             instance = new LiveStreamingKit();
+
+            String host = extractHost(Config.LIVE_STREAMING_ADDRESS);
+            ChatManager.Instance().getAuthCode("admin", 2, host, new GeneralCallback2() {
+                @Override
+                public void onSuccess(String result) {
+
+                    Map<String, Object> params = new HashMap<>(1);
+                    params.put("authCode", result);
+                    String url = Config.LIVE_STREAMING_ADDRESS + "/api/user_login";
+                    OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
+                        @Override
+                        public void onUiSuccess(Void r) {
+                            instance.isServiceAvailable = true;
+                        }
+
+                        @Override
+                        public void onUiFailure(int code, String msg) {
+                            Toast.makeText(application, "直播服务初始化失败" + msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    Toast.makeText(application, "直播服务初始化失败" + errorCode, Toast.LENGTH_SHORT).show();
+                }
+            });
             ChatManager.Instance().addOnReceiveMessageListener(instance);
         }
     }
@@ -103,9 +112,40 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
         return instance;
     }
 
+    public boolean isServiceAvailable() {
+        return isServiceAvailable;
+    }
+
+    public void createLive(CreateLiveRequest request, SimpleCallback<LiveInfo> callback) {
+        if (!isServiceAvailable) {
+            callback.onUiFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        String url = Config.LIVE_STREAMING_ADDRESS + "/api/live";
+        OKHttpHelper.post(url, request, callback);
+    }
+
+    public void getLiveInfo(String liveId, SimpleCallback<LiveInfo> callback) {
+        if (!isServiceAvailable) {
+            callback.onUiFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        String url = Config.LIVE_STREAMING_ADDRESS + "/api/live/" + liveId;
+        OKHttpHelper.get(url, null, callback);
+    }
+
+    public void startLiveStream(String liveId, SimpleCallback<Void> callback) {
+        if (!isServiceAvailable) {
+            callback.onUiFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        String url = Config.LIVE_STREAMING_ADDRESS + "/api/live/" + liveId;
+        OKHttpHelper.put(url, null, callback);
+    }
+
     // ── State ────────────────────────────────────────────────────────────────
 
-    private LiveSession currentSession;
+    private LiveInfo currentLiveInfo;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable chatroomKeepaliveRunnable;
 
@@ -117,9 +157,13 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     /** 当前连麦中的 userId 列表（主播侧） */
     private final List<String> activeCoStreamers = new ArrayList<>();
 
-    /** 当前主播侧直播会话，未开播时为 null */
-    public LiveSession getCurrentSession() {
-        return currentSession;
+    /** 当前主播侧直播信息，未开播时为 null */
+    public LiveInfo getCurrentLiveInfo() {
+        return currentLiveInfo;
+    }
+
+    public void setCurrentLiveInfo(LiveInfo liveInfo) {
+        this.currentLiveInfo = liveInfo;
     }
 
     /** 待处理的连麦申请列表（主播侧） */
@@ -132,88 +176,27 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
         return new ArrayList<>(activeCoStreamers);
     }
 
-    // ── Factory helpers ──────────────────────────────────────────────────────
-
-    /** 生成 16 位 callId */
-    public static String generateCallId() {
-        return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
-    }
-
-    /** 生成 4 位 PIN */
-    public static String generatePin() {
-        return String.format("%04d", new Random().nextInt(10000));
-    }
-
-    /** 根据 callId 拼接 HLS 观看地址 */
-    public static String getHlsUrl(String callId) {
-        return Config.LIVE_STREAMING_ADDRESS + callId + "/stream.m3u8";
-    }
-
     // ── Host session lifecycle ────────────────────────────────────────────────
 
     /**
      * AVEngineKit 会话 Connected 后调用，SDK 初始化会话状态并开始聊天室保活。
      *
-     * @param callId     直播/聊天室 ID
-     * @param pin        连麦 PIN
-     * @param hostUserId 主播 userId
-     * @param title      直播标题
+     * @param liveInfo 直播信息
      */
-    public void onHostSessionConnected(String callId, boolean audioOnly, String pin, String hostUserId, String title) {
-        this.currentSession = new LiveSession(callId, audioOnly, pin, hostUserId, title);
-        joinChatRoom(callId);
-        startChatroomKeepalive();
+    public void onHostSessionConnected(LiveInfo liveInfo) {
+        this.currentLiveInfo = liveInfo;
+        joinLiveChatRoom();
     }
 
     /**
      * 直播结束时调用（endCall 之后），SDK 停止聊天室保活并清理状态。
      */
-    public void onSessionEnded() {
-        stopChatroomKeepalive();
-        currentSession = null;
+    public void reset() {
+        ChatManager.Instance().quitChatRoom(currentLiveInfo.getLiveId(), null);
+        stopLiveChatroomKeepalive();
+        currentLiveInfo = null;
         coStreamRequestMap.clear();
         activeCoStreamers.clear();
-    }
-
-    /**
-     * 向推流机器人（line=1）及当前会话发送开播消息。
-     * 推流机器人收到后自动加入会议并推 HLS 流；
-     * 会话成员收到后可点击消息进入观看页面。
-     *
-     * @param conversation 当前会话（群聊或单聊）
-     * @param title        直播标题
-     */
-    public void sendLiveStartNotification(Conversation conversation, String title) {
-        if (currentSession == null) return;
-        LiveStreamingStartMessageContent content = new LiveStreamingStartMessageContent(
-                currentSession.callId, currentSession.hostUserId, title,
-                "", System.currentTimeMillis() / 1000,
-                false, false, false, currentSession.pin, "");
-
-        if (!TextUtils.isEmpty(Config.LIVE_STREAMING_ROBOT)) {
-            Conversation robotConv = new Conversation(
-                    Conversation.ConversationType.Single, Config.LIVE_STREAMING_ROBOT, 1);
-            ChatManager.Instance().sendMessage(robotConv, content, null, 0, null);
-        }
-        ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
-    }
-
-    /**
-     * 向推流机器人及当前会话发送结束直播消息。
-     *
-     * @param conversation 当前会话
-     */
-    public void sendLiveEndNotification(Conversation conversation) {
-        if (currentSession == null) return;
-        LiveStreamingEndMessageContent endContent =
-                new LiveStreamingEndMessageContent(currentSession.callId);
-
-        if (!TextUtils.isEmpty(Config.LIVE_STREAMING_ROBOT)) {
-            Conversation robotConv = new Conversation(
-                    Conversation.ConversationType.Single, Config.LIVE_STREAMING_ROBOT, 1);
-            ChatManager.Instance().sendMessage(robotConv, endContent, null, 0, null);
-        }
-        ChatManager.Instance().sendMessage(conversation, endContent, null, 0, null);
     }
 
     // ── Host: co-stream management ────────────────────────────────────────────
@@ -222,15 +205,15 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
      * 获取当前聊天室（直播实时观众）的成员列表，用于主播发起连麦邀请。
      * 已自动过滤主播自身和推流机器人。
      *
-     * @param callId   直播间 ID（即聊天室 ID）
+     * @param liveInfo
      * @param callback 成功返回 userId 列表；失败调用 onFailure()
      */
-    public void getViewers(String callId, GetViewersCallback callback) {
-        String hostId = currentSession != null
-                ? currentSession.hostUserId
+    public void getViewers(LiveInfo liveInfo, GetViewersCallback callback) {
+        String hostId = currentLiveInfo != null
+                ? currentLiveInfo.getHost()
                 : ChatManager.Instance().getUserId();
 
-        ChatManager.Instance().getChatRoomMembersInfo(callId, 200,
+        ChatManager.Instance().getChatRoomMembersInfo(liveInfo.getLiveId(), 200,
                 new GetChatRoomMembersInfoCallback() {
                     @Override
                     public void onSuccess(ChatRoomMembersInfo info) {
@@ -238,7 +221,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
                         if (info != null && info.members != null) {
                             for (String uid : info.members) {
                                 if (!uid.equals(hostId)
-                                        && !uid.equals(Config.LIVE_STREAMING_ROBOT)) {
+                                        && !uid.equals(liveInfo.getLiveBotId())) {
                                     viewers.add(uid);
                                 }
                             }
@@ -256,7 +239,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     /** 主播邀请观众视频连麦（主播侧默认发起视频邀请，audioOnly=false） */
     public void inviteCoStream(String targetUserId) {
-        if (currentSession == null) return;
+        if (currentLiveInfo == null) return;
         sendSignal(targetUserId, LiveCoStreamContent.ACTION_INVITE, targetUserId, false);
     }
 
@@ -265,7 +248,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
      * 将原始请求中的 audioOnly 标志回传给观众，观众据此决定以音频还是视频模式加入会议。
      */
     public void acceptCoStreamRequest(String requesterId) {
-        if (currentSession == null) return;
+        if (currentLiveInfo == null) return;
         LiveCoStreamContent original = coStreamRequestMap.get(requesterId);
         boolean audioOnly = original != null && original.isAudioOnlyRequest();
         sendSignal(requesterId, LiveCoStreamContent.ACTION_ACCEPT, requesterId, audioOnly);
@@ -275,7 +258,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     /** 主播拒绝观众的连麦请求 */
     public void rejectCoStreamRequest(String requesterId) {
-        if (currentSession == null) return;
+        if (currentLiveInfo == null) return;
         sendSignal(requesterId, LiveCoStreamContent.ACTION_REJECT, requesterId, false);
         coStreamRequestMap.remove(requesterId);
     }
@@ -314,32 +297,16 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     // ── Audience: co-stream ───────────────────────────────────────────────────
 
     /**
-     * 构建可通过 ForwardActivity 分享的直播消息（主播侧）。
-     * 将内容构建逻辑集中在 Kit 内，避免 Activity 知道 LiveStreamingStartMessageContent 的细节。
-     *
-     * @return 包含 LiveStreamingStartMessageContent 的 Message，未开播时返回 null
-     */
-    public Message buildHostShareMessage() {
-        if (currentSession == null) return null;
-        LiveStreamingStartMessageContent content = new LiveStreamingStartMessageContent(
-                currentSession.callId, currentSession.hostUserId, currentSession.title, "",
-                System.currentTimeMillis() / 1000, false, false, false, currentSession.pin, "");
-        Message msg = new Message();
-        msg.content = content;
-        return msg;
-    }
-
-    /**
      * 观众向主播发起连麦申请。
      *
      * @param audioOnlyRequest true=音频连麦，false=视频连麦
      */
-    public void requestCoStream(String hostUserId, String callId, boolean audioOnly, String pin,
-                                String host, String title, boolean audioOnlyRequest) {
+    public void requestCoStream(String host, String callId, boolean audioOnly, String pin,
+                                String title, boolean audioOnlyRequest) {
         String myUserId = ChatManager.Instance().getUserId();
         LiveCoStreamContent content = new LiveCoStreamContent(
                 callId, audioOnly, pin, host, title, LiveCoStreamContent.ACTION_REQUEST, myUserId, audioOnlyRequest);
-        Conversation conv = new Conversation(Conversation.ConversationType.Single, hostUserId, 0);
+        Conversation conv = new Conversation(Conversation.ConversationType.Single, host, 0);
         ChatManager.Instance().sendMessage(conv, content, null, 0, null);
     }
 
@@ -413,35 +380,26 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
     // ── Private helpers ───────────────────────────────────────────────────────
 
     private void sendSignal(String toUserId, int action, String targetUserId, boolean audioOnlyRequest) {
-        LiveSession s = currentSession;
+        LiveInfo info = currentLiveInfo;
+        if (info == null) return;
         LiveCoStreamContent content = new LiveCoStreamContent(
-                s.callId, s.audioOnly, s.pin, s.hostUserId, s.title, action, targetUserId, audioOnlyRequest);
+                info.getLiveId(), info.isAudioOnly(), info.getPin(), info.getHost(), info.getTitle(), action, targetUserId, audioOnlyRequest);
         Conversation conv = new Conversation(Conversation.ConversationType.Single, toUserId, 0);
         ChatManager.Instance().sendMessage(conv, content, null, 0, null);
     }
 
-    private void joinChatRoom(String callId) {
-        ChatManager.Instance().joinChatRoom(callId, null);
-        ChatManager.Instance().getChatRoomInfo(callId, 0, new GetChatRoomInfoCallback(){
-            @Override
-            public void onSuccess(ChatRoomInfo chatRoomInfo) {
-
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-
-            }
-        });
+    public void joinLiveChatRoom() {
+        ChatManager.Instance().joinChatRoom(currentLiveInfo.getLiveId(), null);
+        startChatroomKeepalive();
     }
 
     private void startChatroomKeepalive() {
-        stopChatroomKeepalive();
+        stopLiveChatroomKeepalive();
         chatroomKeepaliveRunnable = new Runnable() {
             @Override
             public void run() {
-                if (currentSession != null) {
-                    joinChatRoom(currentSession.callId);
+                if (currentLiveInfo != null) {
+                    ChatManager.Instance().joinChatRoom(currentLiveInfo.getLiveId(), null);
                     handler.postDelayed(this, 3 * 60 * 1000L);
                 }
             }
@@ -449,10 +407,32 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
         handler.postDelayed(chatroomKeepaliveRunnable, 3 * 60 * 1000L);
     }
 
-    private void stopChatroomKeepalive() {
+    private void stopLiveChatroomKeepalive() {
         if (chatroomKeepaliveRunnable != null) {
             handler.removeCallbacks(chatroomKeepaliveRunnable);
             chatroomKeepaliveRunnable = null;
         }
+    }
+
+    /**
+     * 从URL中提取host
+     */
+    private static String extractHost(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return "";
+        }
+        String host = url;
+        // 去除协议前缀
+        if (host.startsWith("https://")) {
+            host = host.substring(8);
+        } else if (host.startsWith("http://")) {
+            host = host.substring(7);
+        }
+        // 去除路径部分
+        int slashIndex = host.indexOf('/');
+        if (slashIndex > 0) {
+            host = host.substring(0, slashIndex);
+        }
+        return host;
     }
 }

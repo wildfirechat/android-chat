@@ -22,11 +22,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.media3.common.util.UnstableApi;
 
 import com.bumptech.glide.Glide;
 
@@ -37,12 +39,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
-import cn.wildfirechat.message.LiveStreamingStartMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -54,6 +55,7 @@ import cn.wildfirechat.remote.ChatManager;
  * 连麦结束后 finish()，返回 LiveAudienceActivity 继续观看 HLS。
  * </p>
  */
+@OptIn(markerClass = UnstableApi.class)
 public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
 
     private static final RendererCommon.ScalingType SCALING_TYPE = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
@@ -84,7 +86,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
     private final Map<String, ImageView> remoteAvatars = new LinkedHashMap<>();
 
     private LiveCoStreamContent coStreamContent;
-    private LiveStreamingStartMessageContent liveContent;
+    private LiveInfo liveInfo;
     private String hostUserId;
     /** True when the audience chose audio-only co-stream — we never show a local camera feed. */
     private boolean audioOnlyMode;
@@ -101,7 +103,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
         setContentView(R.layout.activity_live_co_stream);
 
         coStreamContent = getIntent().getParcelableExtra("coStreamContent");
-        liveContent = getIntent().getParcelableExtra("liveContent");
+        liveInfo = getIntent().getParcelableExtra("liveInfo");
 
         if (coStreamContent == null) {
             finish();
@@ -150,7 +152,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
             for (String uid : existing.getParticipantIds()) {
                 if (uid.equals(hostUserId)
                         || uid.equals(ChatManager.Instance().getUserId())
-                        || Config.LIVE_STREAMING_ROBOT.equals(uid)) continue;
+                        || liveInfo.getLiveBotId().equals(uid)) continue;
                 if (!remoteThumbnails.containsKey(uid)) {
                     addRemoteThumbnail(uid);
                     existing.setupRemoteVideoView(uid, remoteThumbnails.get(uid), SCALING_TYPE);
@@ -167,11 +169,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
             } else {
                 // Start the float service early (without showing the float view) so it's ready for Android 14 FGS requirements
                 UserInfo info = ChatManager.Instance().getUserInfo(hostUserId, false);
-                String title = coStreamContent.getTitle() != null
-                        ? coStreamContent.getTitle() : getString(R.string.live_streaming);
-                LiveStreamingService.startForCoStream(this, title,
-                        info != null ? info.portrait : null, hostUserId,
-                        liveContent, coStreamContent, false);
+            LiveStreamingService.startForCoStream(this, this.liveInfo, coStreamContent, false);
             }
         }
     }
@@ -232,9 +230,9 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
 
     /** After co-stream ends, relaunch the HLS audience view. */
     private void returnToAudienceActivity() {
-        if (liveContent != null) {
+        if (liveInfo != null) {
             Intent intent = new Intent(this, LiveAudienceActivity.class);
-            intent.putExtra("liveContent", liveContent);
+            intent.putExtra("liveInfo", liveInfo);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         }
@@ -258,11 +256,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
         super.onResume();
         // Hide float view but keep service running
         UserInfo info = ChatManager.Instance().getUserInfo(hostUserId, false);
-        String title = coStreamContent.getTitle() != null
-                ? coStreamContent.getTitle() : getString(R.string.live_streaming);
-        LiveStreamingService.startForCoStream(this, title,
-                info != null ? info.portrait : null, hostUserId,
-                liveContent, coStreamContent, false);
+        LiveStreamingService.startForCoStream(this, this.liveInfo, coStreamContent, false);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
@@ -289,12 +283,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
                     // No overlay permission — just let the session run in background
                     return;
                 }
-                String title = coStreamContent.getTitle() != null
-                        ? coStreamContent.getTitle() : getString(R.string.live_streaming);
-                UserInfo hostInfo = ChatManager.Instance().getUserInfo(hostUserId, false);
-                LiveStreamingService.startForCoStream(this, title,
-                        hostInfo != null ? hostInfo.portrait : null, hostUserId,
-                        liveContent, coStreamContent, true);
+                LiveStreamingService.startForCoStream(this, this.liveInfo, coStreamContent, true);
                 finish();
             }
         }
@@ -336,7 +325,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
 
     @Override
     public void didParticipantJoined(String userId, boolean screenSharing) {
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || liveInfo.getLiveBotId().equals(userId)) return;
         if (userId.equals(ChatManager.Instance().getUserId())) return;
         if (userId.equals(hostUserId)) {
             // Host is already in the conference — attach renderer now so it's ready for the video track
@@ -356,7 +345,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
 
     @Override
     public void didParticipantConnected(String userId, boolean screenSharing) {
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || liveInfo.getLiveBotId().equals(userId)) return;
         // Attach host renderer early so it's ready when video track arrives
         if (userId.equals(hostUserId)) {
             runOnUiThread(() -> {
@@ -370,7 +359,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
 
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || liveInfo.getLiveBotId().equals(userId)) return;
         if (userId.equals(hostUserId)) {
             // Host left — end the co-stream
             runOnUiThread(this::finish);
@@ -382,7 +371,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
     @Override
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
         Log.d("jyj", "didReceiveRemoteVideoTrack " + userId + " " + screenSharing);
-        if (screenSharing || Config.LIVE_STREAMING_ROBOT.equals(userId)) return;
+        if (screenSharing || liveInfo.getLiveBotId().equals(userId)) return;
         runOnUiThread(() -> {
             AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (session == null) return;
