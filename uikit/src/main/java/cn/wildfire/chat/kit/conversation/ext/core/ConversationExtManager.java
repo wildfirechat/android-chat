@@ -4,10 +4,13 @@
 
 package cn.wildfire.chat.kit.conversation.ext.core;
 
+import android.text.TextUtils;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.conversation.ext.CollectionExt;
 import cn.wildfire.chat.kit.conversation.ext.FileExt;
 import cn.wildfire.chat.kit.conversation.ext.ImageExt;
@@ -16,7 +19,7 @@ import cn.wildfire.chat.kit.conversation.ext.PollExt;
 import cn.wildfire.chat.kit.conversation.ext.ShootExt;
 import cn.wildfire.chat.kit.conversation.ext.UserCardExt;
 import cn.wildfire.chat.kit.conversation.ext.VoipExt;
-import cn.wildfire.chat.kit.live.LiveStreamingExt;
+import cn.wildfire.chat.kit.live.LiveExt;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationExtManager {
@@ -45,7 +48,9 @@ public class ConversationExtManager {
         registerExt(UserCardExt.class);
         registerExt(CollectionExt.class);
         registerExt(PollExt.class);
-        registerExt(LiveStreamingExt.class);
+        if (!TextUtils.isEmpty(Config.LIVE_ADDRESS)) {
+            registerExt(LiveExt.class);
+        }
     }
 
     public void registerExt(Class<? extends ConversationExt> clazz) {

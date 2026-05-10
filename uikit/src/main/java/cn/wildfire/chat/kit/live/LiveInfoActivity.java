@@ -63,7 +63,7 @@ public class LiveInfoActivity extends WfcBaseActivity {
     }
 
     private void loadLiveInfo() {
-        LiveStreamingKit.getInstance().getLiveInfo(liveId, new SimpleCallback<LiveInfo>() {
+        LiveKit.getInstance().getLiveInfo(liveId, new SimpleCallback<LiveInfo>() {
             @Override
             public void onUiSuccess(LiveInfo info) {
                 liveInfo = info;
@@ -106,7 +106,7 @@ public class LiveInfoActivity extends WfcBaseActivity {
         if (liveInfo == null) return;
 
         if (ChatManager.Instance().getUserId().equals(liveInfo.getHost())) {
-            Intent intent = new Intent(this, LiveHostActivity.class);
+            Intent intent = new Intent(this, LiveHostStreamActivity.class);
             intent.putExtra("liveInfo", liveInfo);
             startActivity(intent);
         } else {

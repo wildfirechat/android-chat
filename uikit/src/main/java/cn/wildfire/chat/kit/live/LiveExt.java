@@ -24,7 +24,7 @@ import cn.wildfirechat.uikit.permission.PermissionKit;
  * 在输入栏插件面板添加直播按钮，点击后跳转到直播主播页面，开始直播。
  * </p>
  */
-public class LiveStreamingExt extends ConversationExt {
+public class LiveExt extends ConversationExt {
 
     @ExtContextMenuItem
     public void startLive(View containerView, Conversation conversation) {

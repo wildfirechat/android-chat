@@ -61,7 +61,7 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
-import cn.wildfire.chat.kit.live.LiveStreamingKit;
+import cn.wildfire.chat.kit.live.LiveKit;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
@@ -194,7 +194,9 @@ public class MainActivity extends WfcBaseActivity {
                     secretChatMenuItem.setEnabled(isEnableSecretChat);
                 }
 
-                LiveStreamingKit.init(getApplication());
+                if(TextUtils.isEmpty(Config.LIVE_ADDRESS)){
+                    LiveKit.init(getApplication());
+                }
             }
         });
         MessageViewModel messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);

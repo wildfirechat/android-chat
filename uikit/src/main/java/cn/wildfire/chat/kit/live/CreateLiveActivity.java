@@ -86,13 +86,13 @@ public class CreateLiveActivity extends WfcBaseActivity {
         request.setDescription(descEditText.getText() != null ? descEditText.getText().toString() : "");
         request.setAudience(audienceSwitch.isChecked());
         request.setAudioOnly(audioOnlySwitch.isChecked());
-        request.setGroupId(groupLiveSwitch.isChecked() ? groupId : null);
+        request.setGroupId(groupLiveSwitch.isChecked() ? null : groupId);
         request.setRecord(recordSwitch.isChecked());
         request.setMaxParticipantCount(8);
         request.setStartTime(0);
 
         Toast.makeText(this, "正在创建直播...", Toast.LENGTH_SHORT).show();
-        LiveStreamingKit.getInstance().createLive(request, new SimpleCallback<LiveInfo>() {
+        LiveKit.getInstance().createLive(request, new SimpleCallback<LiveInfo>() {
             @Override
             public void onUiSuccess(LiveInfo liveInfo) {
                 startLiveStream(liveInfo);
@@ -107,11 +107,11 @@ public class CreateLiveActivity extends WfcBaseActivity {
     }
 
     private void startLiveStream(LiveInfo liveInfo) {
-        LiveStreamingKit.getInstance().startLiveStream(liveInfo.getLiveId(), new SimpleCallback<Void>() {
+        LiveKit.getInstance().startLiveStream(liveInfo.getLiveId(), new SimpleCallback<Void>() {
 
             @Override
             public void onUiSuccess(Void unused) {
-                Intent intent = new Intent(CreateLiveActivity.this, LiveHostActivity.class);
+                Intent intent = new Intent(CreateLiveActivity.this, LiveHostStreamActivity.class);
                 intent.putExtra("liveInfo", liveInfo);
                 startActivity(intent);
                 finish();

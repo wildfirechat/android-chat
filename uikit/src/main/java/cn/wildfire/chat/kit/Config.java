@@ -160,11 +160,9 @@ public class Config {
     // AI机器人ID
     public static String AI_ROBOT = "FireRobot";
 
-    // 直播机器人ID
-    public static String LIVE_STREAMING_ROBOT = "FireRobot";
-
     //  直播服务Base地址
-    public static String LIVE_STREAMING_ADDRESS = "http://192.168.1.134:8883/hls/";
+    //public static String LIVE_ADDRESS = "https://live.wildfirechat.net/live/";
+    public static String LIVE_ADDRESS = "http://192.168.1.211:8893";
 
     // 用户协议地址
     public final static String USER_AGREEMENT_URL = "https://example.com/user_agreement.html";

@@ -257,7 +257,7 @@
             android:name=".live.LiveInfoActivity"
             android:label="直播详情" />
         <activity
-            android:name=".live.LiveHostActivity"
+            android:name=".live.LiveHostStreamActivity"
             android:label="@string/live_streaming_activity_label"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.TransparentFullScreen"
@@ -278,7 +278,7 @@
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name="cn.wildfire.chat.kit.live.LiveStreamingService"
+            android:name="cn.wildfire.chat.kit.live.LiveService"
             android:foregroundServiceType="mediaPlayback|mediaProjection|microphone|camera" />
 
         <activity

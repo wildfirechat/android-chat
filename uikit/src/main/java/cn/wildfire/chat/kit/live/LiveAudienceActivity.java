@@ -83,8 +83,8 @@ public class LiveAudienceActivity extends FragmentActivity {
         subscribeCoStreamEvents();
         startWatching();
 
-        LiveStreamingKit.getInstance().setCurrentLiveInfo(liveInfo);
-        LiveStreamingKit.getInstance().joinLiveChatRoom();
+        LiveKit.getInstance().setCurrentLiveInfo(liveInfo);
+        LiveKit.getInstance().joinLiveChatRoom();
     }
 
     private void bindViews() {
@@ -132,7 +132,7 @@ public class LiveAudienceActivity extends FragmentActivity {
                 Toast.makeText(this, R.string.live_permission_float_required, Toast.LENGTH_SHORT).show();
                 return;
             }
-            LiveStreamingService.startForAudience(this, this.liveInfo, true);
+            LiveService.startForAudience(this, this.liveInfo, true);
             finish();
         });
     }
@@ -163,9 +163,9 @@ public class LiveAudienceActivity extends FragmentActivity {
                 }
             }
         };
-        LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_INVITE, coStreamInviteObserver);
-        LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_ACCEPTED, coStreamAcceptedObserver);
-        LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_REJECTED, coStreamRejectedObserver);
+        LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_INVITE, coStreamInviteObserver);
+        LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_ACCEPTED, coStreamAcceptedObserver);
+        LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_REJECTED, coStreamRejectedObserver);
     }
 
     private void startWatching() {
@@ -225,7 +225,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         }
         dialogView.findViewById(R.id.dialogRejectButton).setOnClickListener(v -> {
             dialog.dismiss();
-            LiveStreamingKit.getInstance().rejectCoStreamInvite(content);
+            LiveKit.getInstance().rejectCoStreamInvite(content);
         });
         dialogView.findViewById(R.id.dialogAcceptButton).setOnClickListener(v -> {
             dialog.dismiss();
@@ -281,7 +281,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        LiveStreamingService.stop(this);
+        LiveService.stop(this);
     }
 
     @Override
@@ -293,7 +293,7 @@ public class LiveAudienceActivity extends FragmentActivity {
     protected void onStop() {
         super.onStop();
         if (!isFinishing() && !isChangingConfigurations()) {
-            LiveStreamingService.startForAudience(this, this.liveInfo, true);
+            LiveService.startForAudience(this, this.liveInfo, true);
             finish();
         }
     }
@@ -301,10 +301,10 @@ public class LiveAudienceActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_INVITE, coStreamInviteObserver);
-        LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_ACCEPTED, coStreamAcceptedObserver);
-        LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_REJECTED, coStreamRejectedObserver);
-        LiveStreamingKit.getInstance().reset();
+        LiveDataBus.unsubscribe(LiveKit.EVENT_CO_STREAM_INVITE, coStreamInviteObserver);
+        LiveDataBus.unsubscribe(LiveKit.EVENT_CO_STREAM_ACCEPTED, coStreamAcceptedObserver);
+        LiveDataBus.unsubscribe(LiveKit.EVENT_CO_STREAM_REJECTED, coStreamRejectedObserver);
+        LiveKit.getInstance().reset();
         if (videoView != null) {
             videoView.stopPlayback();
             videoView.release();

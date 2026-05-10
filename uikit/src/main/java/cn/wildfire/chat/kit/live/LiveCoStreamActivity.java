@@ -161,7 +161,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
         } else {
             // Join the conference fresh
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP720P_3, false);
-            AVEngineKit.CallSession session = LiveStreamingKit.getInstance()
+            AVEngineKit.CallSession session = LiveKit.getInstance()
                     .joinConferenceForCoStream(coStreamContent, this);
             if (session == null) {
                 Toast.makeText(this, R.string.live_co_stream_join_failed, Toast.LENGTH_SHORT).show();
@@ -169,7 +169,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
             } else {
                 // Start the float service early (without showing the float view) so it's ready for Android 14 FGS requirements
                 UserInfo info = ChatManager.Instance().getUserInfo(hostUserId, false);
-            LiveStreamingService.startForCoStream(this, this.liveInfo, coStreamContent, false);
+            LiveService.startForCoStream(this, this.liveInfo, coStreamContent, false);
             }
         }
     }
@@ -256,7 +256,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
         super.onResume();
         // Hide float view but keep service running
         UserInfo info = ChatManager.Instance().getUserInfo(hostUserId, false);
-        LiveStreamingService.startForCoStream(this, this.liveInfo, coStreamContent, false);
+        LiveService.startForCoStream(this, this.liveInfo, coStreamContent, false);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
@@ -283,7 +283,7 @@ public class LiveCoStreamActivity extends FragmentActivity implements AVEngineKi
                     // No overlay permission — just let the session run in background
                     return;
                 }
-                LiveStreamingService.startForCoStream(this, this.liveInfo, coStreamContent, true);
+                LiveService.startForCoStream(this, this.liveInfo, coStreamContent, true);
                 finish();
             }
         }

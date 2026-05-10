@@ -42,7 +42,7 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
  *   <li>{@link #EVENT_CO_STREAM_REJECTED} 连麦被对端拒绝，value = {@link LiveCoStreamContent}</li>
  * </ul>
  */
-public class LiveStreamingKit implements OnReceiveMessageListener {
+public class LiveKit implements OnReceiveMessageListener {
 
     private boolean isServiceAvailable;
 
@@ -68,23 +68,23 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
 
     // ── Singleton ────────────────────────────────────────────────────────────
 
-    private static LiveStreamingKit instance;
+    private static LiveKit instance;
 
-    private LiveStreamingKit() {
+    private LiveKit() {
     }
 
     public static void init(Application application) {
         if (instance == null) {
-            instance = new LiveStreamingKit();
+            instance = new LiveKit();
 
-            String host = extractHost(Config.LIVE_STREAMING_ADDRESS);
+            String host = extractHost(Config.LIVE_ADDRESS);
             ChatManager.Instance().getAuthCode("admin", 2, host, new GeneralCallback2() {
                 @Override
                 public void onSuccess(String result) {
 
                     Map<String, Object> params = new HashMap<>(1);
                     params.put("authCode", result);
-                    String url = Config.LIVE_STREAMING_ADDRESS + "/api/user_login";
+                    String url = Config.LIVE_ADDRESS + "/api/user_login";
                     OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
                         @Override
                         public void onUiSuccess(Void r) {
@@ -107,7 +107,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
         }
     }
 
-    public static LiveStreamingKit getInstance() {
+    public static LiveKit getInstance() {
         if (instance == null) throw new IllegalStateException("LiveStreamingKit.init() not called");
         return instance;
     }
@@ -121,7 +121,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
             callback.onUiFailure(-1, "未登录，或服务不可用");
             return;
         }
-        String url = Config.LIVE_STREAMING_ADDRESS + "/api/live";
+        String url = Config.LIVE_ADDRESS + "/api/live";
         OKHttpHelper.post(url, request, callback);
     }
 
@@ -130,7 +130,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
             callback.onUiFailure(-1, "未登录，或服务不可用");
             return;
         }
-        String url = Config.LIVE_STREAMING_ADDRESS + "/api/live/" + liveId;
+        String url = Config.LIVE_ADDRESS + "/api/live/" + liveId;
         OKHttpHelper.get(url, null, callback);
     }
 
@@ -139,7 +139,7 @@ public class LiveStreamingKit implements OnReceiveMessageListener {
             callback.onUiFailure(-1, "未登录，或服务不可用");
             return;
         }
-        String url = Config.LIVE_STREAMING_ADDRESS + "/api/live/" + liveId;
+        String url = Config.LIVE_ADDRESS + "/api/live/" + liveId;
         OKHttpHelper.put(url, null, callback);
     }
 

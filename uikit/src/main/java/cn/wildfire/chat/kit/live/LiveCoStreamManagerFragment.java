@@ -108,7 +108,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
     }
 
     private void loadData() {
-        LiveStreamingKit kit = LiveStreamingKit.getInstance();
+        LiveKit kit = LiveKit.getInstance();
 
         // Active
         activeUserIds = new ArrayList<>(kit.getActiveCoStreamers());
@@ -123,7 +123,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
         setSectionVisible(requestingSectionLayout, null, requestingVisible);
 
         // Invitable (async)
-        kit.getViewers(liveInfo, new LiveStreamingKit.GetViewersCallback() {
+        kit.getViewers(liveInfo, new LiveKit.GetViewersCallback() {
             @Override
             public void onSuccess(List<String> viewers) {
                 if (!isAdded()) return;
@@ -188,7 +188,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
                 int pos = holder.getAdapterPosition();
                 if (pos == RecyclerView.NO_POSITION) return;
                 holder.primaryAction.setEnabled(false);
-                LiveStreamingKit.getInstance().endCoStreamForUser(uid);
+                LiveKit.getInstance().endCoStreamForUser(uid);
                 userIds.remove(pos);
                 notifyItemRemoved(pos);
                 if (userIds.isEmpty()) setSectionVisible(activeSectionLayout, activeDivider, false);
@@ -228,7 +228,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
                 if (pos == RecyclerView.NO_POSITION) return;
                 holder.primaryAction.setEnabled(false);
                 holder.secondaryAction.setEnabled(false);
-                LiveStreamingKit.getInstance().acceptCoStreamRequest(uid);
+                LiveKit.getInstance().acceptCoStreamRequest(uid);
                 userIds.remove(pos);
                 notifyItemRemoved(pos);
                 onRequestHandled();
@@ -239,7 +239,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
                 if (pos == RecyclerView.NO_POSITION) return;
                 holder.primaryAction.setEnabled(false);
                 holder.secondaryAction.setEnabled(false);
-                LiveStreamingKit.getInstance().rejectCoStreamRequest(uid);
+                LiveKit.getInstance().rejectCoStreamRequest(uid);
                 userIds.remove(pos);
                 notifyItemRemoved(pos);
                 onRequestHandled();
@@ -275,7 +275,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
                 if (pos == RecyclerView.NO_POSITION) return;
                 holder.primaryAction.setEnabled(false);
                 holder.primaryAction.setText(R.string.live_co_stream_invite_sent);
-                LiveStreamingKit.getInstance().inviteCoStream(uid);
+                LiveKit.getInstance().inviteCoStream(uid);
                 Toast.makeText(requireContext(), R.string.live_co_stream_invite_sent, Toast.LENGTH_SHORT).show();
             });
         }

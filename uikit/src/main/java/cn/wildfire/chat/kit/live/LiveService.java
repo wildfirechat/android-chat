@@ -39,6 +39,7 @@ import androidx.lifecycle.Observer;
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
@@ -49,24 +50,24 @@ import cn.wildfirechat.remote.ChatManager;
  * 点击悬浮窗时带回原直播 Activity。</p>
  */
 @androidx.media3.common.util.UnstableApi
-public class LiveStreamingService extends Service {
+public class LiveService extends Service {
 
     private static final String CHANNEL_ID = "live_streaming_channel";
     private static final String CHANNEL_ALERT_ID = "live_co_stream_alert";
+    
     private static final int NOTIFICATION_ID = 9001;
     private static final int NOTIFICATION_CO_STREAM_ID = 9002;
 
     public static final String EXTRA_LIVE_INFO = "live_info";
     public static final String EXTRA_SHOW_FLOAT = "live_show_float";
-    public static final String EXTRA_LIVE_CONTENT = "live_content";
     public static final String EXTRA_CO_STREAM_CONTENT = "co_stream_content";
     public static final String EXTRA_MEDIA_PROJECTION_DATA = "live_media_projection_data";
 
     private WindowManager wm;
     private View floatView;
     private WindowManager.LayoutParams params;
-    
-    private cn.wildfire.chat.kit.live.model.LiveInfo mLiveInfo;
+
+    private LiveInfo mLiveInfo;
     private android.os.Parcelable mCoStreamContent;
 
     private Intent mProjectionData;
@@ -81,26 +82,24 @@ public class LiveStreamingService extends Service {
 
     // ── Public static helpers ────────────────────────────────────────────────
 
-    public static void startForHost(Context ctx, cn.wildfire.chat.kit.live.model.LiveInfo liveInfo, boolean showFloat) {
-        startInternal(ctx, liveInfo, null, null, showFloat);
+    public static void startForHost(Context ctx, LiveInfo liveInfo, boolean showFloat) {
+        startInternal(ctx, liveInfo, null, showFloat);
     }
 
-    public static void startForAudience(Context ctx, cn.wildfire.chat.kit.live.model.LiveInfo liveInfo, boolean showFloat) {
-        startInternal(ctx, liveInfo, null, null, showFloat);
+    public static void startForAudience(Context ctx, LiveInfo liveInfo, boolean showFloat) {
+        startInternal(ctx, liveInfo, null, showFloat);
     }
 
-    public static void startForCoStream(Context ctx, cn.wildfire.chat.kit.live.model.LiveInfo liveInfo,
+    public static void startForCoStream(Context ctx, LiveInfo liveInfo,
                                         LiveCoStreamContent coStreamContent, boolean showFloat) {
-        startInternal(ctx, liveInfo, null, coStreamContent, showFloat);
+        startInternal(ctx, liveInfo, coStreamContent, showFloat);
     }
 
-    private static void startInternal(Context ctx, cn.wildfire.chat.kit.live.model.LiveInfo liveInfo,
-                                      android.os.Parcelable liveContent,
+    private static void startInternal(Context ctx, LiveInfo liveInfo,
                                       LiveCoStreamContent coStreamContent,
                                       boolean showFloat) {
-        Intent intent = new Intent(ctx, LiveStreamingService.class);
+        Intent intent = new Intent(ctx, LiveService.class);
         intent.putExtra(EXTRA_LIVE_INFO, liveInfo);
-        intent.putExtra(EXTRA_LIVE_CONTENT, liveContent);
         intent.putExtra(EXTRA_CO_STREAM_CONTENT, coStreamContent);
         intent.putExtra(EXTRA_SHOW_FLOAT, showFloat);
         startServiceInternal(ctx, intent);
@@ -116,12 +115,12 @@ public class LiveStreamingService extends Service {
 
     /** Stop floating window (called when Activity comes back to foreground). */
     public static void stop(Context ctx) {
-        ctx.stopService(new Intent(ctx, LiveStreamingService.class));
+        ctx.stopService(new Intent(ctx, LiveService.class));
     }
 
     /** Start system audio capture. Must be called after MediaProjection permission is granted. */
     public static void startSystemAudioCapture(Context ctx, Intent projectionData) {
-        Intent intent = new Intent(ctx, LiveStreamingService.class);
+        Intent intent = new Intent(ctx, LiveService.class);
         intent.putExtra(EXTRA_MEDIA_PROJECTION_DATA, projectionData);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ctx.startForegroundService(intent);
@@ -170,7 +169,7 @@ public class LiveStreamingService extends Service {
                 portrait = hostInfo.portrait;
             }
         }
-        
+
         boolean showFloat = intent != null && intent.getBooleanExtra(EXTRA_SHOW_FLOAT, false);
 
         updateForeground(title, mIsHost);
@@ -216,22 +215,22 @@ public class LiveStreamingService extends Service {
             floatCoStreamInviteObserver = o -> {
                 if (o instanceof LiveCoStreamContent) {
                     LiveCoStreamContent content = (LiveCoStreamContent) o;
-                        String currentLiveId = mLiveInfo != null ? mLiveInfo.getLiveId() : "";
-                        if (!currentLiveId.equals(content.getCallId())) return;
+                    String currentLiveId = mLiveInfo != null ? mLiveInfo.getLiveId() : "";
+                    if (!currentLiveId.equals(content.getCallId())) return;
                     postCoStreamAlertNotification(
                             getString(R.string.live_notification_co_stream_invite_title),
                             getString(R.string.live_float_co_stream_invite),
                             true);
                 }
             };
-            LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
+            LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
         } else {
             // Host: listen for request events.
             // Guard: check LiveStreamingKit for actual pending requests before notifying,
             // because LiveDataBus may replay the last event immediately on subscribeForever.
             floatCoStreamRequestObserver = o -> {
                 if (o instanceof LiveCoStreamContent) {
-                    java.util.List<String> pending = LiveStreamingKit.getInstance().getCoStreamRequests();
+                    java.util.List<String> pending = LiveKit.getInstance().getCoStreamRequests();
                     if (pending == null || pending.isEmpty()) return;
                     postCoStreamAlertNotification(
                             getString(R.string.live_notification_co_stream_request_title),
@@ -239,17 +238,17 @@ public class LiveStreamingService extends Service {
                             false);
                 }
             };
-            LiveDataBus.subscribeForever(LiveStreamingKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
+            LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
         }
     }
 
     private void unsubscribeCoStreamEvents() {
         if (floatCoStreamInviteObserver != null) {
-            LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
+            LiveDataBus.unsubscribe(LiveKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
             floatCoStreamInviteObserver = null;
         }
         if (floatCoStreamRequestObserver != null) {
-            LiveDataBus.unsubscribe(LiveStreamingKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
+            LiveDataBus.unsubscribe(LiveKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
             floatCoStreamRequestObserver = null;
         }
     }
@@ -267,7 +266,7 @@ public class LiveStreamingService extends Service {
 
         // Tap to resume the activity (which will then show the appropriate UI)
         Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
-                : (mIsHost ? LiveHostActivity.class : LiveAudienceActivity.class));
+                : (mIsHost ? LiveHostStreamActivity.class : LiveAudienceActivity.class));
         resumeIntent.putExtra("liveInfo", mLiveInfo);
         resumeIntent.putExtra("coStreamContent", mCoStreamContent);
         resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -305,7 +304,7 @@ public class LiveStreamingService extends Service {
         }
 
         Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
-                : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class));
+                : (isHost ? LiveHostStreamActivity.class : LiveAudienceActivity.class));
         resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 ? PendingIntent.FLAG_IMMUTABLE : 0;
@@ -403,7 +402,8 @@ public class LiveStreamingService extends Service {
             videoContainer.addView(lowLatencyHlsPlayerView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             lowLatencyHlsPlayerView.setVideoURI(Uri.parse(mLiveInfo.getHlsUrl()));
             lowLatencyHlsPlayerView.setOnPreparedListener(lowLatencyHlsPlayerView::start);
-            lowLatencyHlsPlayerView.setOnErrorListener(e -> {});
+            lowLatencyHlsPlayerView.setOnErrorListener(e -> {
+            });
         } else if (!TextUtils.isEmpty(portrait)) {
             videoContainer.setVisibility(View.VISIBLE);
             ImageView portraitImageView = new ImageView(this);
@@ -488,7 +488,7 @@ public class LiveStreamingService extends Service {
 
     private void resumeActivity(boolean isHost) {
         Class<?> cls = mIsCoStream ? LiveCoStreamActivity.class
-                : (isHost ? LiveHostActivity.class : LiveAudienceActivity.class);
+                : (isHost ? LiveHostStreamActivity.class : LiveAudienceActivity.class);
         Intent intent = new Intent(this, cls);
         intent.putExtra("liveInfo", mLiveInfo);
         intent.putExtra("coStreamContent", mCoStreamContent);
