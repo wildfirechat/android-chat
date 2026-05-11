@@ -189,6 +189,7 @@ public class LiveAudienceActivity extends FragmentActivity {
         videoView.setOnErrorListener((e) -> {
             loadingProgressBar.setVisibility(View.GONE);
             Toast.makeText(this, R.string.live_streaming_load_failed, Toast.LENGTH_SHORT).show();
+            finish();
         });
         videoView.setOnCompletionListener(() -> {
             Toast.makeText(this, R.string.live_streaming_ended, Toast.LENGTH_SHORT).show();

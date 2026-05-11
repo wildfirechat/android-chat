@@ -66,7 +66,7 @@ public class CreateLiveActivity extends WfcBaseActivity {
         UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
-            titleEditText.setText(getString(R.string.live_streaming_default_title)); // Using default string or custom
+            titleEditText.setText(getString(R.string.live_title_default, userInfo.displayName));
         } else {
             titleEditText.setText("直播");
         }

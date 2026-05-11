@@ -58,7 +58,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     private MenuItem createConferenceMenuItem;
 
     private String title;
-    private String conferenceId;
     private String password;
     private boolean enableVideo = false;
     private boolean enableAudio = true;

@@ -5,9 +5,11 @@
 package cn.wildfire.chat.kit.live;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
@@ -17,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -77,6 +80,10 @@ public class LiveMessageContentViewHolder extends NormalMessageContentViewHolder
 
     @OptIn(markerClass = UnstableApi.class)
     private void watchLive() {
+        if (TextUtils.isEmpty(Config.LIVE_ADDRESS)) {
+            Toast.makeText(fragment.getContext(), "未配置直播服务", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intent = new Intent(fragment.getActivity(), LiveInfoActivity.class);
         intent.putExtra("liveId", liveContent.getLiveId());
         fragment.startActivity(intent);

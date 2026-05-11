@@ -39,9 +39,8 @@
         </LinearLayout>
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
             android:layout_marginLeft="20dp"
+            style="@style/Line"
             android:background="@color/gray" />
 
         <LinearLayout
@@ -69,9 +68,8 @@
         </LinearLayout>
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
             android:layout_marginLeft="20dp"
+            style="@style/Line"
             android:background="@color/gray" />
 
         <LinearLayout
@@ -81,6 +79,7 @@
             android:paddingLeft="20dp"
             android:paddingTop="15dp"
             android:paddingRight="20dp"
+            android:visibility="gone"
             android:paddingBottom="15dp">
 
             <TextView

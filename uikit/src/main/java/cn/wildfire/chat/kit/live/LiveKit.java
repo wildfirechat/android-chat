@@ -22,6 +22,7 @@ import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -77,6 +78,7 @@ public class LiveKit implements OnReceiveMessageListener {
         if (instance == null) {
             instance = new LiveKit();
 
+            Config.LIVE_ADDRESS = Config.LIVE_ADDRESS.endsWith("/") ? Config.LIVE_ADDRESS.substring(0, Config.LIVE_ADDRESS.length() - 1) : Config.LIVE_ADDRESS;
             String host = extractHost(Config.LIVE_ADDRESS);
             ChatManager.Instance().getAuthCode("admin", 2, host, new GeneralCallback2() {
                 @Override
@@ -85,10 +87,14 @@ public class LiveKit implements OnReceiveMessageListener {
                     Map<String, Object> params = new HashMap<>(1);
                     params.put("authCode", result);
                     String url = Config.LIVE_ADDRESS + "/api/user_login";
-                    OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
+                    OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
                         @Override
-                        public void onUiSuccess(Void r) {
-                            instance.isServiceAvailable = true;
+                        public void onUiSuccess(StatusResult r) {
+                            if (r.isSuccess()) {
+                                instance.isServiceAvailable = true;
+                            } else {
+                                Toast.makeText(application, "登录直播服务失败 " + r.getCode(), Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override

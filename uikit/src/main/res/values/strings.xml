@@ -599,6 +599,8 @@
     <string name="conf_date_format">MM月dd日</string>
     <string name="conf_start_meeting">开始会议</string>
 
+    <string name="live_title_default">%s的直播</string>
+
     <!-- Conference Create Activity -->
     <string name="conference_title_default">%s的会议</string>
     <string name="conference_title_unnamed">会议</string>

@@ -194,7 +194,7 @@ public class MainActivity extends WfcBaseActivity {
                     secretChatMenuItem.setEnabled(isEnableSecretChat);
                 }
 
-                if(TextUtils.isEmpty(Config.LIVE_ADDRESS)){
+                if(!TextUtils.isEmpty(Config.LIVE_ADDRESS)){
                     LiveKit.init(getApplication());
                 }
             }
