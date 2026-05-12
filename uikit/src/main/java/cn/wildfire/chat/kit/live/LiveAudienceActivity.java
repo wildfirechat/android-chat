@@ -31,9 +31,10 @@ import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
+import cn.wildfire.chat.kit.live.message.LiveCoStreamContent;
 import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
-import cn.wildfirechat.message.LiveMessageContent;
+import cn.wildfire.chat.kit.live.message.LiveMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;

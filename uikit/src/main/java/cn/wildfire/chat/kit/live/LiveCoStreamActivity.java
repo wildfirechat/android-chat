@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.live.message.LiveCoStreamContent;
 import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;

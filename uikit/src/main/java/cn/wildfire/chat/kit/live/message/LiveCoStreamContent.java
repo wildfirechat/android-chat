@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2024 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.live;
+package cn.wildfire.chat.kit.live.message;
 
 import android.os.Parcel;
 

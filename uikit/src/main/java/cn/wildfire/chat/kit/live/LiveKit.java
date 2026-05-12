@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.live.message.LiveCoStreamContent;
 import cn.wildfire.chat.kit.live.model.CreateLiveRequest;
 import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;

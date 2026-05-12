@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message;
+package cn.wildfire.chat.kit.live.message;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Live_Streaming_Start;
 
@@ -11,6 +11,8 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;

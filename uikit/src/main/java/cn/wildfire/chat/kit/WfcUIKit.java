@@ -48,7 +48,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
-import cn.wildfire.chat.kit.live.LiveCoStreamContent;
+import cn.wildfire.chat.kit.live.message.LiveCoStreamContent;
+import cn.wildfire.chat.kit.live.message.LiveMessageContent;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -213,7 +214,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
+
+            ChatManager.Instance().registerMessageContent(LiveMessageContent.class);
             ChatManager.Instance().registerMessageContent(LiveCoStreamContent.class);
+
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
             if (Config.ICE_SERVERS != null) {
                 for (String[] server : Config.ICE_SERVERS) {

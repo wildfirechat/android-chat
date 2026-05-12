@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2024 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.live;
+package cn.wildfire.chat.kit.conversation.ext;
 
 import android.Manifest;
 import android.content.Context;
@@ -14,6 +14,7 @@ import android.widget.Toast;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
+import cn.wildfire.chat.kit.live.CreateLiveActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.uikit.permission.PermissionKit;

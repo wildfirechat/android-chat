@@ -39,6 +39,7 @@ import androidx.lifecycle.Observer;
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.live.message.LiveCoStreamContent;
 import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfirechat.avenginekit.AVEngineKit;

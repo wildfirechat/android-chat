@@ -19,7 +19,7 @@ import cn.wildfire.chat.kit.conversation.ext.PollExt;
 import cn.wildfire.chat.kit.conversation.ext.ShootExt;
 import cn.wildfire.chat.kit.conversation.ext.UserCardExt;
 import cn.wildfire.chat.kit.conversation.ext.VoipExt;
-import cn.wildfire.chat.kit.live.LiveExt;
+import cn.wildfire.chat.kit.conversation.ext.LiveExt;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationExtManager {
