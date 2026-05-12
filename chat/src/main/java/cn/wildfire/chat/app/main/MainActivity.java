@@ -193,10 +193,6 @@ public class MainActivity extends WfcBaseActivity {
                     boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
                     secretChatMenuItem.setEnabled(isEnableSecretChat);
                 }
-
-                if(!TextUtils.isEmpty(Config.LIVE_ADDRESS)){
-                    LiveKit.init(getApplication());
-                }
             }
         });
         MessageViewModel messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);

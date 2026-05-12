@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
+import cn.wildfire.chat.kit.live.LiveKit;
 import cn.wildfire.chat.kit.live.message.LiveCoStreamContent;
 import cn.wildfire.chat.kit.live.message.LiveMessageContent;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
@@ -225,6 +226,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 }
             }
 
+            if(!TextUtils.isEmpty(Config.LIVE_ADDRESS)){
+                LiveKit.init(getApplication());
+            }
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
         }

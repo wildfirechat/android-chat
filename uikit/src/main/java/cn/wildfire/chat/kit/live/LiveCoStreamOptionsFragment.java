@@ -72,7 +72,7 @@ public class LiveCoStreamOptionsFragment extends BottomSheetDialogFragment {
                 PermissionKit.buildRequestPermissionTuples(requireActivity(), perms);
         PermissionKit.checkThenRequestPermission(requireActivity(),
                 getChildFragmentManager(), tuples, allGranted -> {
-                    if (Boolean.TRUE.equals(allGranted)) {
+                    if (allGranted) {
                         LiveKit.getInstance().requestCoStream(liveInfo.getHost(), liveInfo.getLiveId(), liveInfo.isAudioOnly(), liveInfo.getPin(), liveInfo.getTitle(), audioOnlyCoStream);
                         dismiss();
                     }

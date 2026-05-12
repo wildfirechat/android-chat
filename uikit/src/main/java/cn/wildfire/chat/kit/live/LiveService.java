@@ -36,6 +36,8 @@ import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 
+import com.bumptech.glide.Glide;
+
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.R;
@@ -55,7 +57,7 @@ public class LiveService extends Service {
 
     private static final String CHANNEL_ID = "live_streaming_channel";
     private static final String CHANNEL_ALERT_ID = "live_co_stream_alert";
-    
+
     private static final int NOTIFICATION_ID = 9001;
     private static final int NOTIFICATION_CO_STREAM_ID = 9002;
 
@@ -76,6 +78,9 @@ public class LiveService extends Service {
     // Touch drag
     private float touchStartX, touchStartY;
     private int layoutStartX, layoutStartY;
+
+    private boolean mIsHost;
+    private boolean mIsCoStream;
 
     // Co-stream event observers (active only while float is showing)
     private Observer<Object> floatCoStreamInviteObserver;
@@ -114,7 +119,7 @@ public class LiveService extends Service {
         }
     }
 
-    /** Stop floating window (called when Activity comes back to foreground). */
+    /** Stop floating window (called when LiveAudienceActivity comes back to foreground). */
     public static void stop(Context ctx) {
         ctx.stopService(new Intent(ctx, LiveService.class));
     }
@@ -123,11 +128,7 @@ public class LiveService extends Service {
     public static void startSystemAudioCapture(Context ctx, Intent projectionData) {
         Intent intent = new Intent(ctx, LiveService.class);
         intent.putExtra(EXTRA_MEDIA_PROJECTION_DATA, projectionData);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ctx.startForegroundService(intent);
-        } else {
-            ctx.startService(intent);
-        }
+        startServiceInternal(ctx, intent);
     }
 
     // ── Service lifecycle ────────────────────────────────────────────────────
@@ -135,13 +136,7 @@ public class LiveService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        // startForeground() is deferred to onStartCommand() so that we know whether
-        // FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION is needed before the first call.
-        // Android 14 validates the type on the first startForeground(), not subsequent ones.
     }
-
-    private boolean mIsHost;
-    private boolean mIsCoStream;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -212,7 +207,6 @@ public class LiveService extends Service {
 
     private void subscribeCoStreamEvents() {
         if (!mIsHost) {
-            // Audience / co-streamer: listen for invite events
             floatCoStreamInviteObserver = o -> {
                 if (o instanceof LiveCoStreamContent) {
                     LiveCoStreamContent content = (LiveCoStreamContent) o;
@@ -221,22 +215,20 @@ public class LiveService extends Service {
                     postCoStreamAlertNotification(
                             getString(R.string.live_notification_co_stream_invite_title),
                             getString(R.string.live_float_co_stream_invite),
-                            true);
+                            content);
                 }
             };
             LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_INVITE, floatCoStreamInviteObserver);
         } else {
-            // Host: listen for request events.
-            // Guard: check LiveStreamingKit for actual pending requests before notifying,
-            // because LiveDataBus may replay the last event immediately on subscribeForever.
             floatCoStreamRequestObserver = o -> {
                 if (o instanceof LiveCoStreamContent) {
+                    LiveCoStreamContent content = (LiveCoStreamContent) o;
                     java.util.List<String> pending = LiveKit.getInstance().getCoStreamRequests();
                     if (pending == null || pending.isEmpty()) return;
                     postCoStreamAlertNotification(
                             getString(R.string.live_notification_co_stream_request_title),
                             getString(R.string.live_float_co_stream_request),
-                            false);
+                            content);
                 }
             };
             LiveDataBus.subscribeForever(LiveKit.EVENT_CO_STREAM_REQUEST, floatCoStreamRequestObserver);
@@ -254,22 +246,22 @@ public class LiveService extends Service {
         }
     }
 
-    private void postCoStreamAlertNotification(String title, String message, boolean isInvite) {
+    private void postCoStreamAlertNotification(String title, String message, LiveCoStreamContent content) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ALERT_ID,
                     getString(R.string.live_streaming),
                     NotificationManager.IMPORTANCE_HIGH);
             channel.enableVibration(true);
-            NotificationManager nm = getSystemService(NotificationManager.class);
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm != null) nm.createNotificationChannel(channel);
         }
 
-        // Tap to resume the activity (which will then show the appropriate UI)
-        Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
-                : (mIsHost ? LiveHostStreamActivity.class : LiveAudienceActivity.class));
+        Intent resumeIntent = new Intent(this, mIsHost ? LiveHostStreamActivity.class : LiveAudienceActivity.class);
         resumeIntent.putExtra("liveInfo", mLiveInfo);
-        resumeIntent.putExtra("coStreamContent", mCoStreamContent);
+        if (!mIsHost) {
+            resumeIntent.putExtra("coStreamContent", content);
+        }
         resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
         int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 ? PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
@@ -283,14 +275,9 @@ public class LiveService extends Service {
                 .setContentIntent(tapPi)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_CALL)
-                .addAction(R.drawable.ic_live_badge,
-                        getString(R.string.live_notification_view), tapPi);
+                .setCategory(NotificationCompat.CATEGORY_CALL);
 
-        NotificationManager nm = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            nm = getSystemService(NotificationManager.class);
-        }
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm != null) nm.notify(NOTIFICATION_CO_STREAM_ID, builder.build());
     }
 
@@ -300,13 +287,17 @@ public class LiveService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID, getString(R.string.live_streaming), NotificationManager.IMPORTANCE_LOW);
-            NotificationManager nm = getSystemService(NotificationManager.class);
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm != null) nm.createNotificationChannel(channel);
         }
 
         Intent resumeIntent = new Intent(this, mIsCoStream ? LiveCoStreamActivity.class
                 : (isHost ? LiveHostStreamActivity.class : LiveAudienceActivity.class));
-        resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        resumeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+        resumeIntent.putExtra("liveInfo", mLiveInfo);
+        if (!mIsHost) {
+            resumeIntent.putExtra("coStreamContent", mCoStreamContent);
+        }
         int piFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 ? PendingIntent.FLAG_IMMUTABLE : 0;
         PendingIntent pi = PendingIntent.getActivity(this, 0, resumeIntent, piFlags);
@@ -325,8 +316,6 @@ public class LiveService extends Service {
                 foregroundType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                // Requesting MICROPHONE/CAMERA types without permissions on Android 14+ causes a crash.
-                // We only request them if we are host or co-streaming and have permissions.
                 if (isHost || mIsCoStream) {
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
                         foregroundType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
@@ -336,8 +325,7 @@ public class LiveService extends Service {
                     }
                 }
             }
-            if (Build.VERSION.SDK_INT >= 34 /* Build.VERSION_CODES.UPSIDE_DOWN_CAKE */) {
-                // On Android 14+, use the platform method directly to be safe
+            if (Build.VERSION.SDK_INT >= 34) {
                 startForeground(NOTIFICATION_ID, notification, foregroundType);
             } else {
                 ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, foregroundType);
@@ -382,13 +370,10 @@ public class LiveService extends Service {
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             videoContainer.setVisibility(View.VISIBLE);
             if (isHost) {
-                // Host: show local camera
                 session.setupLocalVideoView(videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
             } else if (mIsCoStream && !TextUtils.isEmpty(mLiveInfo.getHost())) {
-                // Co-stream audience: always show the host's video
                 session.setupRemoteVideoView(mLiveInfo.getHost(), videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
             } else {
-                // Fallback: first non-self, non-robot participant
                 for (String userId : session.getParticipantIds()) {
                     if (!userId.equals(ChatManager.Instance().getUserId())
                             && !mLiveInfo.getLiveBotId().equals(userId)) {
@@ -410,10 +395,9 @@ public class LiveService extends Service {
             ImageView portraitImageView = new ImageView(this);
             portraitImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             videoContainer.addView(portraitImageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            com.bumptech.glide.Glide.with(this).load(portrait).placeholder(R.drawable.live_avatar_placeholder).into(portraitImageView);
+            Glide.with(this).load(portrait).placeholder(R.drawable.live_avatar_placeholder).into(portraitImageView);
         }
 
-        // Drag + click
         floatView.setOnTouchListener(new View.OnTouchListener() {
             private boolean moved = false;
 
@@ -431,7 +415,7 @@ public class LiveService extends Service {
                         float dx = event.getRawX() - touchStartX;
                         float dy = event.getRawY() - touchStartY;
                         if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
-                        params.x = (int) (layoutStartX - dx); // gravity=END, so invert x
+                        params.x = (int) (layoutStartX - dx);
                         params.y = (int) (layoutStartY + dy);
                         if (wm != null && floatView != null) {
                             wm.updateViewLayout(floatView, params);
@@ -439,7 +423,6 @@ public class LiveService extends Service {
                         return true;
                     case MotionEvent.ACTION_UP:
                         if (!moved) {
-                            // Tap → resume activity
                             resumeActivity(isHost);
                         }
                         return true;
@@ -449,8 +432,6 @@ public class LiveService extends Service {
         });
 
         wm.addView(floatView, params);
-
-        // Subscribe to co-stream events while float is visible
         subscribeCoStreamEvents();
     }
 
@@ -468,7 +449,6 @@ public class LiveService extends Service {
             }
             AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (session != null) {
-                // Detach whichever renderer was attached to the float container
                 if (mIsHost) {
                     try {
                         session.setupLocalVideoView(null, RendererCommon.ScalingType.SCALE_ASPECT_FILL);
@@ -495,6 +475,6 @@ public class LiveService extends Service {
         intent.putExtra("coStreamContent", mCoStreamContent);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        stopSelf();
+//        stopSelf();
     }
 }

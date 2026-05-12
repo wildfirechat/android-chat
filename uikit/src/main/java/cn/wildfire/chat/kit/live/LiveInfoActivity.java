@@ -1,9 +1,11 @@
 package cn.wildfire.chat.kit.live;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.media3.common.util.UnstableApi;
@@ -12,6 +14,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.live.model.LiveInfo;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -21,10 +24,10 @@ public class LiveInfoActivity extends WfcBaseActivity {
     private String liveId;
     private LiveInfo liveInfo;
 
-    private TextView titleTextView;
-    private TextView hostTextView;
-    private TextView liveIdTextView;
-    private TextView statusTextView;
+    private OptionItemView titleOptionItemView;
+    private OptionItemView hostOptionItemView;
+    private OptionItemView hlsUrlOptionItemView;
+    private OptionItemView statusOptionItemView;
     private Button joinLiveButton;
 
     @Override
@@ -35,10 +38,10 @@ public class LiveInfoActivity extends WfcBaseActivity {
     @Override
     protected void bindViews() {
         super.bindViews();
-        titleTextView = findViewById(R.id.titleTextView);
-        hostTextView = findViewById(R.id.hostTextView);
-        liveIdTextView = findViewById(R.id.liveIdTextView);
-        statusTextView = findViewById(R.id.statusTextView);
+        titleOptionItemView = findViewById(R.id.titleOptionItemView);
+        hostOptionItemView = findViewById(R.id.hostOptionItemView);
+        hlsUrlOptionItemView = findViewById(R.id.hlsUrlOptionItemView);
+        statusOptionItemView = findViewById(R.id.statusOptionItemView);
         joinLiveButton = findViewById(R.id.joinLiveButton);
     }
 
@@ -46,6 +49,7 @@ public class LiveInfoActivity extends WfcBaseActivity {
     protected void bindEvents() {
         super.bindEvents();
         joinLiveButton.setOnClickListener(v -> joinLive());
+        hlsUrlOptionItemView.setOnClickListener(v -> copyHlsUrl());
     }
 
     @Override
@@ -80,16 +84,17 @@ public class LiveInfoActivity extends WfcBaseActivity {
 
     private void updateUI() {
         if (liveInfo == null) return;
-        
-        titleTextView.setText(liveInfo.getTitle());
-        liveIdTextView.setText(liveInfo.getLiveId());
-        
+
+        titleOptionItemView.setDesc(liveInfo.getTitle());
+
         UserInfo hostUser = ChatManager.Instance().getUserInfo(liveInfo.getHost(), false);
         if (hostUser != null) {
-            hostTextView.setText(hostUser.displayName);
+            hostOptionItemView.setDesc(hostUser.displayName);
         } else {
-            hostTextView.setText(liveInfo.getHost());
+            hostOptionItemView.setDesc(liveInfo.getHost());
         }
+
+        hlsUrlOptionItemView.setDesc(liveInfo.getHlsUrl());
 
         String statusStr = "未开始";
         if (liveInfo.getStatus() == 1) {
@@ -99,7 +104,17 @@ public class LiveInfoActivity extends WfcBaseActivity {
             joinLiveButton.setEnabled(false);
             joinLiveButton.setText("直播已结束");
         }
-        statusTextView.setText(statusStr);
+        statusOptionItemView.setDesc(statusStr);
+    }
+
+    private void copyHlsUrl() {
+        if (liveInfo == null || TextUtils.isEmpty(liveInfo.getHlsUrl())) {
+            return;
+        }
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("hlsUrl", liveInfo.getHlsUrl());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(this, "直播地址已复制", Toast.LENGTH_SHORT).show();
     }
 
     private void joinLive() {

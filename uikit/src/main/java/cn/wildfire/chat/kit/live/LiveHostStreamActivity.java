@@ -149,7 +149,7 @@ public class LiveHostStreamActivity extends FragmentActivity implements AVEngine
                 restoreCoStreamerTiles(session);
             }
         } else {
-        AVEngineKit.Instance().setVideoProfile(VideoProfile.VP720P_3, false);
+            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP720P_3, false);
             engineKit.joinConference(liveInfo.getLiveId(), liveInfo.isAudioOnly(), liveInfo.getPin(), liveInfo.getHost(), liveInfo.getTitle(), liveInfo.getDescription(), false, false, false, false, false, this);
         }
     }
@@ -199,7 +199,7 @@ public class LiveHostStreamActivity extends FragmentActivity implements AVEngine
         coStreamButton.setOnClickListener(v -> {
             // Clear the badge when user opens the manager
             clearCoStreamBadge();
-            LiveCoStreamManagerFragment.newInstance(liveInfo)
+            LiveCoStreamManageFragment.newInstance(liveInfo)
                     .show(getSupportFragmentManager(), "coStreamManager");
         });
         // Also make the inner icon button clickable
@@ -246,8 +246,6 @@ public class LiveHostStreamActivity extends FragmentActivity implements AVEngine
                 Glide.with(this).load(hostInfo.portrait).circleCrop().into(hostAvatarImageView);
             }
         }
-
-        String title = getString(R.string.live_streaming_default_title);
 
         // Start the float service early (without showing the float view) so it's ready for Android 14 FGS requirements
         LiveService.startForHost(this, liveInfo, false);

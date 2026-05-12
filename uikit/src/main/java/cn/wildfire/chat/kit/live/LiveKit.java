@@ -4,10 +4,12 @@
 
 package cn.wildfire.chat.kit.live;
 
-import android.app.Application;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.Conversation;
@@ -46,6 +49,7 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
  */
 public class LiveKit implements OnReceiveMessageListener {
 
+    private static String TAG = "LiveKit";
     private boolean isServiceAvailable;
 
     // ── Events ──────────────────────────────────────────────────────────────
@@ -70,52 +74,35 @@ public class LiveKit implements OnReceiveMessageListener {
 
     // ── Singleton ────────────────────────────────────────────────────────────
 
+    @SuppressLint("StaticFieldLeak")
     private static LiveKit instance;
+    private Context context;
 
     private LiveKit() {
     }
 
-    public static void init(Application application) {
+    public static void init(Context applicationContext) {
+        Log.d(TAG, "init");
         if (instance == null) {
             instance = new LiveKit();
-
+            instance.context = applicationContext;
             Config.LIVE_ADDRESS = Config.LIVE_ADDRESS.endsWith("/") ? Config.LIVE_ADDRESS.substring(0, Config.LIVE_ADDRESS.length() - 1) : Config.LIVE_ADDRESS;
-            String host = extractHost(Config.LIVE_ADDRESS);
-            ChatManager.Instance().getAuthCode("admin", 2, host, new GeneralCallback2() {
-                @Override
-                public void onSuccess(String result) {
-
-                    Map<String, Object> params = new HashMap<>(1);
-                    params.put("authCode", result);
-                    String url = Config.LIVE_ADDRESS + "/api/user_login";
-                    OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
-                        @Override
-                        public void onUiSuccess(StatusResult r) {
-                            if (r.isSuccess()) {
-                                instance.isServiceAvailable = true;
-                            } else {
-                                Toast.makeText(application, "登录直播服务失败 " + r.getCode(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onUiFailure(int code, String msg) {
-                            Toast.makeText(application, "直播服务初始化失败" + msg, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-                    Toast.makeText(application, "直播服务初始化失败" + errorCode, Toast.LENGTH_SHORT).show();
+            ChatManager.Instance().addOnReceiveMessageListener(instance);
+            ChatManager.Instance().addConnectionChangeListener(status -> {
+                if (status == ConnectionStatus.ConnectionStatusConnected) {
+                    instance.login();
                 }
             });
-            ChatManager.Instance().addOnReceiveMessageListener(instance);
         }
     }
 
     public static LiveKit getInstance() {
         if (instance == null) throw new IllegalStateException("LiveStreamingKit.init() not called");
+        if (instance.isServiceAvailable()) {
+            return instance;
+        } else {
+            instance.login();
+        }
         return instance;
     }
 
@@ -146,8 +133,8 @@ public class LiveKit implements OnReceiveMessageListener {
             callback.onUiFailure(-1, "未登录，或服务不可用");
             return;
         }
-        String url = Config.LIVE_ADDRESS + "/api/live/" + liveId;
-        OKHttpHelper.put(url, null, callback);
+        String url = Config.LIVE_ADDRESS + "/api/live/start/" + liveId;
+        OKHttpHelper.post(url, null, callback);
     }
 
     // ── State ────────────────────────────────────────────────────────────────
@@ -441,5 +428,38 @@ public class LiveKit implements OnReceiveMessageListener {
             host = host.substring(0, slashIndex);
         }
         return host;
+    }
+
+    private void login() {
+        String host = extractHost(Config.LIVE_ADDRESS);
+        ChatManager.Instance().getAuthCode("admin", 2, host, new GeneralCallback2() {
+            @Override
+            public void onSuccess(String result) {
+
+                Map<String, Object> params = new HashMap<>(1);
+                params.put("authCode", result);
+                String url = Config.LIVE_ADDRESS + "/api/user_login";
+                OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+                    @Override
+                    public void onUiSuccess(StatusResult r) {
+                        if (r.isSuccess()) {
+                            instance.isServiceAvailable = true;
+                        } else {
+                            Toast.makeText(context, "登录直播服务失败 " + r.getCode(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onUiFailure(int code, String msg) {
+                        Toast.makeText(context, "直播服务初始化失败" + msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                Toast.makeText(context, "直播服务初始化失败" + errorCode, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -36,9 +36,9 @@ import cn.wildfirechat.remote.ChatManager;
  * 申请全部处理完后自动关闭。
  * </p>
  */
-public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
+public class LiveCoStreamManageFragment extends BottomSheetDialogFragment {
 
-    private static final String ARG_LIVE_INFO = "callId";
+    private static final String ARG_LIVE_INFO = "liveInfo";
 
     private LiveInfo liveInfo;
 
@@ -59,8 +59,8 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
     private RecyclerView invitableRecycler;
     private TextView invitableEmptyView;
 
-    public static LiveCoStreamManagerFragment newInstance(LiveInfo liveInfo) {
-        LiveCoStreamManagerFragment f = new LiveCoStreamManagerFragment();
+    public static LiveCoStreamManageFragment newInstance(LiveInfo liveInfo) {
+        LiveCoStreamManageFragment f = new LiveCoStreamManageFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_LIVE_INFO, liveInfo);
         f.setArguments(args);
@@ -229,6 +229,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
                 holder.primaryAction.setEnabled(false);
                 holder.secondaryAction.setEnabled(false);
                 LiveKit.getInstance().acceptCoStreamRequest(uid);
+                Toast.makeText(getContext(), "已同意连麦", Toast.LENGTH_SHORT).show();
                 userIds.remove(pos);
                 notifyItemRemoved(pos);
                 onRequestHandled();
@@ -240,6 +241,7 @@ public class LiveCoStreamManagerFragment extends BottomSheetDialogFragment {
                 holder.primaryAction.setEnabled(false);
                 holder.secondaryAction.setEnabled(false);
                 LiveKit.getInstance().rejectCoStreamRequest(uid);
+                Toast.makeText(getContext(), "已拒绝连麦", Toast.LENGTH_SHORT).show();
                 userIds.remove(pos);
                 notifyItemRemoved(pos);
                 onRequestHandled();
