@@ -48,15 +48,6 @@ public class LiveMessageInputDialogFragment extends KeyboardDialogFragment {
             Conversation conv = new Conversation(Conversation.ConversationType.ChatRoom, callId, 0);
             ChatManager.Instance().sendMessage(conv, new TextMessageContent(message), null, 0, null);
         }
-        hideKeyboard(null);
-    }
-
-    @Override
-    public void onKeyboardHidden() {
-        super.onKeyboardHidden();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            dialog.dismiss();
-        }
+        hideAndDismiss();
     }
 }
