@@ -22,9 +22,9 @@ import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 
 public abstract class KeyboardDialogFragment extends DialogFragment implements KeyboardAwareLinearLayout.OnKeyboardHiddenListener,
     KeyboardAwareLinearLayout.OnKeyboardShownListener {
-    private InputAwareLayout inputAwareLayout;
-    private InputPanel inputPanel;
-    private EditText editText;
+    protected InputAwareLayout inputAwareLayout;
+    protected InputPanel inputPanel;
+    protected EditText editText;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,10 +44,22 @@ public abstract class KeyboardDialogFragment extends DialogFragment implements K
         inputAwareLayout.addOnKeyboardShownListener(this);
         inputPanel = view.findViewById(R.id.inputPanel);
 
-        inputAwareLayout.setIsBubble(true);
-
         inputPanel.init(this, inputAwareLayout);
         editText = inputPanel.editText;
+
+        // Prevent clicks on the input bar from reaching the background and dismissing the dialog
+        inputAwareLayout.setOnClickListener(v -> {
+            // Do nothing, just consume the click
+        });
+
+        // Dismiss on the FIRST touch down on the background
+        view.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+                hideAndDismiss();
+                return true;
+            }
+            return false;
+        });
 
         return view;
     }
@@ -95,5 +107,25 @@ public abstract class KeyboardDialogFragment extends DialogFragment implements K
     @Override
     public void onKeyboardHidden() {
         inputPanel.onKeyboardHidden();
+        inputAwareLayout.post(() -> {
+            if (inputAwareLayout.getCurrentInput() == null && !inputAwareLayout.isSwitchingInput()) {
+                Dialog dialog = getDialog();
+                if (dialog != null && dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+            }
+        });
+    }
+
+    protected void hideAndDismiss() {
+        if (inputAwareLayout.getCurrentInput() != null) {
+            inputAwareLayout.hideAttachedInput(true);
+        }
+        // Always dismiss after trying to hide softkey (the callback handles the sequence)
+        inputAwareLayout.hideSoftkey(editText, () -> {
+            if (isResumed()) {
+                dismiss();
+            }
+        });
     }
 }
