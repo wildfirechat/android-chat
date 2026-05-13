@@ -15,6 +15,7 @@ import cn.wildfire.chat.kit.utils.ServiceUtil;
 
 public class InputAwareLayout extends KeyboardAwareLinearLayout implements KeyboardAwareLinearLayout.OnKeyboardShownListener {
     private InputView current;
+    private InputView pending;
 
     public InputAwareLayout(Context context) {
         this(context, null);
@@ -36,12 +37,14 @@ public class InputAwareLayout extends KeyboardAwareLinearLayout implements Keybo
 
     public void show(@NonNull final EditText imeTarget, @NonNull final InputView input) {
         if (isKeyboardOpen()) {
+            pending = input;
             hideSoftkey(imeTarget, new Runnable() {
                 @Override
                 public void run() {
                     hideAttachedInput(true);
                     input.show(getKeyboardHeight(), true);
                     current = input;
+                    pending = null;
                 }
             });
         } else {
@@ -53,6 +56,10 @@ public class InputAwareLayout extends KeyboardAwareLinearLayout implements Keybo
 
     public InputView getCurrentInput() {
         return current;
+    }
+
+    public boolean isSwitchingInput() {
+        return pending != null;
     }
 
     public void hideCurrentInput(EditText imeTarget) {

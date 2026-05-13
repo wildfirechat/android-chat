@@ -112,12 +112,44 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
     }
 
     private void updateKeyboardState() {
-        if (viewInset == 0 && Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) viewInset = getViewInset();
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsets insets = getRootWindowInsets();
+            if (insets != null) {
+                boolean isImeVisible = insets.isVisible(WindowInsets.Type.ime());
+                int imeHeight = insets.getInsets(WindowInsets.Type.ime()).bottom;
+                int navHeight = insets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+                
+                if (isImeVisible && imeHeight > minKeyboardSize) {
+                    int realKeyboardHeight = imeHeight - navHeight;
+                    if (realKeyboardHeight > minKeyboardSize) {
+                        if (getKeyboardHeight() != realKeyboardHeight) {
+                            if (isLandscape()) setKeyboardLandscapeHeight(realKeyboardHeight);
+                            else setKeyboardPortraitHeight(realKeyboardHeight);
+                        }
+                        if (!keyboardOpen) onKeyboardOpen(realKeyboardHeight);
+                        return;
+                    }
+                }
+            }
+        }
 
+        // Fallback to traditional measurement for older versions or if Insets fail
+        viewInset = getViewInset();
         getWindowVisibleDisplayFrame(rect);
 
-        final int availableHeight = getAvailableHeight();
-        final int keyboardHeight = availableHeight - rect.bottom;
+        View rootView = this.getRootView();
+        int rootViewHeight = rootView.getHeight();
+
+        if (rootViewHeight <= 0) {
+            if (Build.VERSION.SDK_INT >= 30) {
+                getContext().getDisplay().getRealMetrics(displayMetrics);
+            } else {
+                ServiceUtil.getWindowManager(getContext()).getDefaultDisplay().getRealMetrics(displayMetrics);
+            }
+            rootViewHeight = displayMetrics.heightPixels;
+        }
+
+        final int keyboardHeight = rootViewHeight - rect.bottom - viewInset;
 
         if (keyboardHeight > minKeyboardSize) {
             if (getKeyboardHeight() != keyboardHeight) {
@@ -156,6 +188,12 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
 
     @TargetApi(VERSION_CODES.LOLLIPOP)
     private int getViewInset() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsets insets = getRootWindowInsets();
+            if (insets != null) {
+                return insets.getInsets(WindowInsets.Type.systemBars()).bottom;
+            }
+        }
         try {
             Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
             attachInfoField.setAccessible(true);
@@ -171,19 +209,11 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             // Do nothing
         }
-        return statusBarHeight;
+        return 0;
     }
 
     private int getAvailableHeight() {
-        final int availableHeight = this.getRootView().getHeight() - viewInset;
-        final int availableWidth = this.getRootView().getWidth();
-
-        if (isLandscape() && availableHeight > availableWidth) {
-            //noinspection SuspiciousNameCombination
-            return availableWidth;
-        }
-
-        return availableHeight;
+        return 0; // Unused
     }
 
     protected void onKeyboardOpen(int keyboardHeight) {
@@ -234,7 +264,8 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
     private int getKeyboardPortraitHeight() {
         if (isBubble) {
             int height = getRootView().getHeight();
-            return height - (int) (height * 0.45);
+            // A more reasonable default for bubble/dialog: 40% of screen height
+            return (int) (height * 0.4);
         }
 
         int keyboardHeight = PreferenceManager.getDefaultSharedPreferences(getContext())
