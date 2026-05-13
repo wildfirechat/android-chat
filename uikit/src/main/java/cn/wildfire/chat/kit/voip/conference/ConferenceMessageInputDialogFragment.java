@@ -4,8 +4,6 @@
 
 package cn.wildfire.chat.kit.voip.conference;
 
-import android.app.Dialog;
-
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -22,14 +20,6 @@ public class ConferenceMessageInputDialogFragment extends KeyboardDialogFragment
         ChatManager.Instance().sendMessage(conversation, new TextMessageContent(message), null, 0, null);
 
         hideKeyboard(null);
-    }
-
-    @Override
-    public void onKeyboardHidden() {
-        super.onKeyboardHidden();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            dialog.dismiss();
-        }
+        hideAndDismiss();
     }
 }
