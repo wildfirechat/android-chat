@@ -54,6 +54,9 @@ public interface MessageContentType {
 
     int ContentType_Ptt_Voice = 23;
 
+    int ContentType_Meeting_Minutes = 25;
+    int ContentType_Transcription = 26;
+
     int ContentType_Mark_Unread_Sync = 31;
 
     int ContentType_Start_Secret_Chat = 40;

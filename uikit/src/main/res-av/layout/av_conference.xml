@@ -92,6 +92,16 @@
             android:textSize="14sp" />
     </LinearLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/transcriptionRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="76dp"
+        android:maxHeight="150dp"
+
+        android:padding="8dp" />
+
     <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
         android:id="@+id/dotsIndicator"
         android:layout_width="wrap_content"

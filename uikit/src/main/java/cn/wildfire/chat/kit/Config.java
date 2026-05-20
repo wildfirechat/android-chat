@@ -161,6 +161,11 @@ public class Config {
     public static String AI_ROBOT = "FireRobot";
     public static String PSTN_ASSISTANT_ID = "robotdialin";
 
+    // AI会议纪要机器人ID
+    public static String AI_MINUTES_ROBOT_ID = "robotminutes";
+    // 会议纪要页面地址
+    public static String MINUTES_URL = "http://101.42.4.222:8883/index.html";
+
     // 用户协议地址
     public final static String USER_AGREEMENT_URL = "https://example.com/user_agreement.html";
 
