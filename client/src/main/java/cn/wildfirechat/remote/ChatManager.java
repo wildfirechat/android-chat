@@ -118,6 +118,7 @@ import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
+import cn.wildfirechat.message.MeetingMinutesMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -131,6 +132,7 @@ import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
+import cn.wildfirechat.message.TranscriptionMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
@@ -11210,6 +11212,8 @@ public class ChatManager {
         registerMessageContent(RestoreRequestNotificationContent.class);
         registerMessageContent(RestoreResponseNotificationContent.class);
         registerMessageContent(CollectionMessageContent.class);
+        registerMessageContent(MeetingMinutesMessageContent.class);
+        registerMessageContent(TranscriptionMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

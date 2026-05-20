@@ -44,6 +44,7 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(StreamingTextMessageContentViewHolder.class, R.layout.conversation_item_streaming_text_receive, R.layout.conversation_item_streaming_text_receive);
         registerMessageViewHolder(PollMessageContentViewHolder.class, R.layout.conversation_item_poll_send, R.layout.conversation_item_poll_receive);
         registerMessageViewHolder(PollResultMessageContentViewHolder.class, R.layout.conversation_item_poll_result_send, R.layout.conversation_item_poll_result_receive);
+        registerMessageViewHolder(MeetingMinutesMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();

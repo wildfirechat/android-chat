@@ -37,6 +37,8 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 import androidx.transition.Visibility;
 import androidx.viewpager.widget.PagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -45,6 +47,7 @@ import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
 import org.webrtc.StatsReport;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -57,8 +60,12 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.ClickableViewPager;
+import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.TranscriptionMessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -104,6 +111,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     WormDotsIndicator dotsIndicator;
 
+    RecyclerView transcriptionRecyclerView;
+    private List<UiMessage> transcriptionMessages = new ArrayList<>();
+    private TranscriptionAdapter transcriptionAdapter;
+
     private SparseArray<View> conferencePages;
     private ViewPager viewPager;
     // 包含自己
@@ -128,6 +139,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         View view = inflater.inflate(R.layout.av_conference, container, false);
         bindViews(view);
         bindEvents(view);
+
+        transcriptionAdapter = new TranscriptionAdapter();
+        transcriptionRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        transcriptionRecyclerView.setAdapter(transcriptionAdapter);
 
         callSession = AVEngineKit.Instance().getCurrentSession();
         if (callSession == null || callSession.getState() == AVEngineKit.CallState.Idle) {
@@ -189,6 +204,39 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         return view;
     }
 
+    @Override
+    public void onReceiveMessage(List<Message> messages, boolean hasMore) {
+        super.onReceiveMessage(messages, hasMore);
+        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+        if (conferenceInfo == null) {
+            return;
+        }
+        for (Message msg : messages) {
+            if (msg.conversation.type == Conversation.ConversationType.ChatRoom
+                && msg.conversation.line == 0
+                && msg.conversation.target.equals(conferenceInfo.getConferenceId())
+                && msg.content instanceof TranscriptionMessageContent) {
+                UiMessage uiMessage = new UiMessage(msg);
+                if (!containsTranscription(uiMessage)) {
+                    transcriptionMessages.add(uiMessage);
+                    while (transcriptionMessages.size() > 5) {
+                        transcriptionMessages.remove(0);
+                    }
+                    transcriptionAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }
+
+    private boolean containsTranscription(UiMessage uiMessage) {
+        for (UiMessage message : transcriptionMessages) {
+            if (message.message.messageUid == uiMessage.message.messageUid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void bindEvents(View view) {
         view.findViewById(R.id.speakerImageView).setOnClickListener(_v -> switchSpeaker());
         view.findViewById(R.id.manageParticipantView).setOnClickListener(_v -> addParticipant());
@@ -216,6 +264,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         micLinearLayout = view.findViewById(R.id.micLinearLayout);
         micImageView = view.findViewById(R.id.micImageView);
         dotsIndicator = view.findViewById(R.id.dotsIndicator);
+        transcriptionRecyclerView = view.findViewById(R.id.transcriptionRecyclerView);
     }
 
     @Override
@@ -1155,5 +1204,42 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
         Log.d(TAG, "findFocusProfile " + (focusProfile != null ? focusProfile.getUserId() : "null"));
         return focusProfile;
+    }
+
+    static class TranscriptionViewHolder extends RecyclerView.ViewHolder {
+        TextView senderTextView;
+        TextView contentTextView;
+
+        public TranscriptionViewHolder(@NonNull View itemView) {
+            super(itemView);
+            senderTextView = itemView.findViewById(R.id.senderTextView);
+            contentTextView = itemView.findViewById(R.id.contentTextView);
+        }
+
+        public void onBind(UiMessage uiMessage) {
+            TranscriptionMessageContent content = (TranscriptionMessageContent) uiMessage.message.content;
+            senderTextView.setText(ChatManager.Instance().getUserDisplayName(content.getUserId()) + ":");
+            contentTextView.setText(content.getContent());
+        }
+    }
+
+    class TranscriptionAdapter extends RecyclerView.Adapter<TranscriptionViewHolder> {
+        @NonNull
+        @Override
+        public TranscriptionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View itemView = inflater.inflate(R.layout.av_conference_transcription_item, parent, false);
+            return new TranscriptionViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull TranscriptionViewHolder holder, int position) {
+            holder.onBind(transcriptionMessages.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return transcriptionMessages.size();
+        }
     }
 }
