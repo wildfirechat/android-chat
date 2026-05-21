@@ -105,6 +105,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
                 drawable.setTint(Color.WHITE);
             }
             toolbar.setTitleTextColor(Color.WHITE);
+            toolbar.setSubtitleTextColor(Color.parseColor("#F5F5F5"));
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 drawable.setTintList(null);
