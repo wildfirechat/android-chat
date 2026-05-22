@@ -299,6 +299,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 ProtoLogic.noUseFts();
             }
 
+            //启用TLS，需要专业版IM服务，且开启TLS功能.
+            //useTls(true, null);
+
             logined = true;
             accountInfo.userName = userName;
 
@@ -467,6 +470,17 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public int getConnectionStatus() throws RemoteException {
             return mConnectionStatus;
+        }
+
+        private void useTls(boolean skipVerifyCert, List<String> selfSignedCerts) {
+            String[] arr = null;
+            if(selfSignedCerts != null && selfSignedCerts.size() > 0) {
+                arr = new String[selfSignedCerts.size()];
+                for (int i = 0; i < selfSignedCerts.size(); i++) {
+                    arr[i] = selfSignedCerts.get(i);
+                }
+            }
+            ProtoLogic.useTls(skipVerifyCert, arr);
         }
 
         @Override
@@ -640,15 +654,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     callback.onFailure(-1);
                     return;
                 }
-                if (tcpShortLink) {
-                    if (!isSupportBigFilesUpload()) {
-                        Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                if(!ProtoLogic.isSupportBigFilesUpload()) {
+                    if(tcpShortLink || ProtoLogic.isUseKcp()) {
+                        if(tcpShortLink) {
+                            Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        } else {
+                            Log.e(TAG, "KCP连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        }
                         callback.onFailure(-1);
                         return;
                     }
                 }
+
                 if (isSupportBigFilesUpload() && TextUtils.isEmpty(remoteUrl)) {
-                    if (tcpShortLink || ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
+                    if (tcpShortLink || ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024 || ProtoLogic.isUseKcp()) {
                         uploadThenSend = true;
                     }
                 }
@@ -2359,15 +2378,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
-            if (tcpShortLink) {
-                if (callback != null) {
-                    Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+            if(!ProtoLogic.isSupportBigFilesUpload()) {
+                if(tcpShortLink || ProtoLogic.isUseKcp()) {
+                    if(tcpShortLink) {
+                        Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                    } else {
+                        Log.e(TAG, "KCP连接不支持内置对象存储，请把对象存储切换到其他类型");
+                    }
                     callback.onFailure(-1);
+                    return;
                 }
-                return;
             }
+
             Log.d(TAG, "uploadMedia " + fileName + " " + data.length + " " + mediaType);
-            if (ProtoLogic.forcePresignedUrlUpload() || isSupportBigFilesUpload()) {
+            if (ProtoLogic.forcePresignedUrlUpload() || isSupportBigFilesUpload() || ProtoLogic.isUseKcp() || tcpShortLink) {
                 Log.d(TAG, "uploadMedia");
                 String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
                 String contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
@@ -2454,10 +2478,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         largeMedia = true;
                     }
                 } else if (isSupportBigFilesUpload()) {
-                    if (ProtoLogic.forcePresignedUrlUpload()) {
+                    if (ProtoLogic.forcePresignedUrlUpload() || ProtoLogic.isUseKcp()) {
                         largeMedia = true;
                     } else {
                         largeMedia = file.length() > 100 * 1024 * 1024;
+                    }
+                } else {
+                    if(ProtoLogic.isUseKcp()) {
+                        Log.e(TAG, "KCP连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        callback.onFailure(-1);
+                        return;
                     }
                 }
 
@@ -4613,6 +4643,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         Mars.loadDefaultMarsLibrary();
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
+        //KCP需要专业版IM服务支持，并打开KCP端口。这个函数要在Mars.onCreate()之前调用，否则会无效.
+        //ProtoLogic.setUseKcp(88, true);
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
         // https://github.com/wildfirechat/android-chat/issues/872
