@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
@@ -263,6 +264,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void init() {
+        checkVersion();
         initView();
 
         conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
@@ -358,6 +360,70 @@ public class MainActivity extends WfcBaseActivity {
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
+    }
+
+    private void checkVersion() {
+        try {
+            String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            int buildNumber = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            AppService.Instance().checkVersion(currentVersion, buildNumber, new AppService.CheckVersionCallback() {
+                @Override
+                public void onUiSuccess(boolean needUpdate, boolean forceUpdate, String latestVersion, String title, String message, String url) {
+                    SharedPreferences sp = getSharedPreferences("version_info", Context.MODE_PRIVATE);
+                    sp.edit()
+                        .putBoolean("needUpdate", needUpdate)
+                        .putBoolean("forceUpdate", forceUpdate)
+                        .putString("latestVersion", latestVersion != null ? latestVersion : "")
+                        .putString("title", title != null ? title : "发现新版本")
+                        .putString("message", message != null ? message : "")
+                        .putString("url", url != null ? url : "")
+                        .apply();
+
+                    if (!needUpdate) {
+                        return;
+                    }
+                    runOnUiThread(() -> {
+                        String dialogTitle = title != null ? title : "发现新版本";
+                        String dialogMessage = message != null ? message : "";
+                        if (forceUpdate) {
+                            new MaterialDialog.Builder(MainActivity.this)
+                                .title(dialogTitle)
+                                .content(dialogMessage)
+                                .cancelable(false)
+                                .positiveText("立即更新")
+                                .onPositive((dialog, which) -> {
+                                    if (!TextUtils.isEmpty(url)) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                        startActivity(intent);
+                                    }
+                                    finish();
+                                })
+                                .show();
+                        } else {
+                            new MaterialDialog.Builder(MainActivity.this)
+                                .title(dialogTitle)
+                                .content(dialogMessage)
+                                .positiveText("立即更新")
+                                .negativeText("以后再说")
+                                .onPositive((dialog, which) -> {
+                                    if (!TextUtils.isEmpty(url)) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                        startActivity(intent);
+                                    }
+                                })
+                                .show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onUiFailure(int code, String msg) {
+                    // 静默处理，版本检查失败不影响使用
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initView() {

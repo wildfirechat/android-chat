@@ -4,8 +4,14 @@
 
 package cn.wildfire.chat.app.setting;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,24 +20,36 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.remote.ChatManager;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 public class AboutActivity extends WfcBaseActivity {
 
     TextView infoTextView;
+    OptionItemView currentVersionOptionItemView;
+    boolean needUpdate;
+    boolean forceUpdate;
+    String updateTitle;
+    String updateMessage;
+    String updateUrl;
 
     protected void bindEvents() {
         super.bindEvents();
         findViewById(R.id.introOptionItemView).setOnClickListener(v -> intro());
         findViewById(R.id.agreementOptionItemView).setOnClickListener(v -> agreement());
         findViewById(R.id.privacyOptionItemView).setOnClickListener(v -> privacy());
+        if (currentVersionOptionItemView != null) {
+            currentVersionOptionItemView.setOnClickListener(v -> showVersionUpdateDialog());
+        }
     }
 
     protected void bindViews() {
         super.bindViews();
         infoTextView = findViewById(R.id.infoTextView);
+        currentVersionOptionItemView = findViewById(R.id.currentVersionOptionItemView);
     }
 
     @Override
@@ -63,6 +81,64 @@ public class AboutActivity extends WfcBaseActivity {
 
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
+        }
+        loadVersionInfo();
+    }
+
+    private void loadVersionInfo() {
+        SharedPreferences sp = getSharedPreferences("version_info", Context.MODE_PRIVATE);
+        needUpdate = sp.getBoolean("needUpdate", false);
+        forceUpdate = sp.getBoolean("forceUpdate", false);
+        updateTitle = sp.getString("title", "发现新版本");
+        updateMessage = sp.getString("message", "");
+        updateUrl = sp.getString("url", "");
+        if (infoTextView != null && needUpdate) {
+            infoTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+        }
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            if (currentVersionOptionItemView != null) {
+                currentVersionOptionItemView.setDesc(packageInfo.versionName != null ? packageInfo.versionName : "");
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (currentVersionOptionItemView != null) {
+            currentVersionOptionItemView.setBadgeCount(needUpdate ? 1 : 0);
+        }
+    }
+
+    private void showVersionUpdateDialog() {
+        if (!needUpdate) {
+            return;
+        }
+        if (forceUpdate) {
+            new MaterialDialog.Builder(this)
+                .title(updateTitle)
+                .content(updateMessage)
+                .cancelable(false)
+                .positiveText("立即更新")
+                .onPositive((dialog, which) -> {
+                    if (!TextUtils.isEmpty(updateUrl)) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
+                        startActivity(intent);
+                    }
+                    finish();
+                })
+                .show();
+        } else {
+            new MaterialDialog.Builder(this)
+                .title(updateTitle)
+                .content(updateMessage)
+                .positiveText("立即更新")
+                .negativeText("以后再说")
+                .onPositive((dialog, which) -> {
+                    if (!TextUtils.isEmpty(updateUrl)) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
+                        startActivity(intent);
+                    }
+                })
+                .show();
         }
     }
 

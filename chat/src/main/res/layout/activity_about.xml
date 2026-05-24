@@ -47,6 +47,11 @@
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/currentVersionOptionItemView"
+            style="@style/OptionItem"
+            app:title="当前版本" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/introOptionItemView"
             style="@style/OptionItem"
             app:title="@string/function_introduction" />

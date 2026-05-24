@@ -34,6 +34,7 @@ import cn.wildfirechat.chat.R;
 
 public class SettingActivity extends WfcBaseActivity {
     private final int REQUEST_IGNORE_BATTERY_CODE = 100;
+    OptionItemView aboutOptionItemView;
     OptionItemView diagnoseOptionItemView;
 
 
@@ -44,7 +45,8 @@ public class SettingActivity extends WfcBaseActivity {
         findViewById(R.id.diagnoseOptionItemView).setOnClickListener(v -> diagnose());
         findViewById(R.id.uploadLogOptionItemView).setOnClickListener(v -> uploadLog());
         findViewById(R.id.batteryOptionItemView).setOnClickListener(v -> batteryOptimize());
-        findViewById(R.id.aboutOptionItemView).setOnClickListener(v -> about());
+        aboutOptionItemView = findViewById(R.id.aboutOptionItemView);
+        aboutOptionItemView.setOnClickListener(v -> about());
         findViewById(R.id.backupAndRestoreOptionItemView).setOnClickListener(v -> backupAndRestore());
     }
 
@@ -56,6 +58,50 @@ public class SettingActivity extends WfcBaseActivity {
     @Override
     protected int contentLayout() {
         return R.layout.setting_activity;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshVersionBadge();
+        checkVersionForRefresh();
+    }
+
+    private void refreshVersionBadge() {
+        SharedPreferences sp = getSharedPreferences("version_info", Context.MODE_PRIVATE);
+        boolean needUpdate = sp.getBoolean("needUpdate", false);
+        if (aboutOptionItemView != null) {
+            aboutOptionItemView.setBadgeCount(needUpdate ? 1 : 0);
+        }
+    }
+
+    private void checkVersionForRefresh() {
+        try {
+            String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            int buildNumber = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            AppService.Instance().checkVersion(currentVersion, buildNumber, new AppService.CheckVersionCallback() {
+                @Override
+                public void onUiSuccess(boolean needUpdate, boolean forceUpdate, String latestVersion, String title, String message, String url) {
+                    SharedPreferences sp = getSharedPreferences("version_info", Context.MODE_PRIVATE);
+                    sp.edit()
+                        .putBoolean("needUpdate", needUpdate)
+                        .putBoolean("forceUpdate", forceUpdate)
+                        .putString("latestVersion", latestVersion)
+                        .putString("title", title)
+                        .putString("message", message)
+                        .putString("url", url)
+                        .apply();
+                    runOnUiThread(() -> refreshVersionBadge());
+                }
+
+                @Override
+                public void onUiFailure(int code, String msg) {
+                    // 静默处理
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

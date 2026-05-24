@@ -66,8 +66,8 @@ public class AppService implements AppServiceProvider {
     // ipv6
     // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://[2409:8a00:32c0:1ee8:782d:fBc8:2e1b:4d10]:8888";
     // ipv4
-    // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
+     public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://192.168.1.81:8888";
+//    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
 
     private AppService() {
 
@@ -561,6 +561,36 @@ public class AppService implements AppServiceProvider {
     public void removeFavoriteItem(int favId, SimpleCallback<Void> callback) {
         String url = APP_SERVER_ADDRESS + "/fav/del/" + favId;
         OKHttpHelper.post(url, null, callback);
+    }
+
+    public interface CheckVersionCallback {
+        void onUiSuccess(boolean needUpdate, boolean forceUpdate, String latestVersion, String title, String message, String url);
+        void onUiFailure(int code, String msg);
+    }
+
+    public void checkVersion(String currentVersion, int buildNumber, CheckVersionCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/version/check?platform=2&currentVersion=" + currentVersion + "&buildNumber=" + buildNumber;
+        OKHttpHelper.get(url, null, new SimpleCallback<HashMap<String, Object>>() {
+            @Override
+            public void onUiSuccess(HashMap<String, Object> result) {
+                boolean needUpdate = Boolean.TRUE.equals(result.get("needUpdate"));
+                boolean forceUpdate = Boolean.TRUE.equals(result.get("forceUpdate"));
+                String latestVersion = (String) result.get("latestVersion");
+                String title = (String) result.get("title");
+                String message = (String) result.get("message");
+                String downloadUrl = (String) result.get("downloadUrl");
+                if (callback != null) {
+                    callback.onUiSuccess(needUpdate, forceUpdate, latestVersion, title, message, downloadUrl);
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onUiFailure(code, msg);
+                }
+            }
+        });
     }
 
     public static void validateConfig(Context context) {
