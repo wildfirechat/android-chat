@@ -4,11 +4,16 @@
 
 package cn.wildfire.chat.kit.organization.viewholder;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.organization.model.Organization;
@@ -26,5 +31,12 @@ public class OrganizationViewHolder extends OrganizationEntityViewHolder<Organiz
     @Override
     public void onBind(Organization organization) {
         this.nameTextView.setText(organization.name + "(" + organization.memberCount + ")");
+        if (!TextUtils.isEmpty(organization.portraitUrl) && organization.portraitUrl.startsWith("http")) {
+            Glide.with(portraitImageView).load(organization.portraitUrl).placeholder(R.mipmap.ic_deparment)
+                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .into(portraitImageView);
+        } else {
+            portraitImageView.setImageResource(R.mipmap.ic_deparment);
+        }
     }
 }

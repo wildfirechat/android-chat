@@ -4,6 +4,9 @@
 
 package cn.wildfire.chat.app;
 
+import android.net.Uri;
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +21,7 @@ import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
+import cn.wildfire.chat.kit.organization.model.PageResponse;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
@@ -95,6 +99,30 @@ public class OrganizationService implements OrganizationServiceProvider {
         return isServiceAvailable;
     }
 
+    private void fillDefaultPortrait(Employee employee) {
+        if (employee != null && (TextUtils.isEmpty(employee.portraitUrl) || !employee.portraitUrl.startsWith("http"))) {
+            employee.portraitUrl = AppService.APP_SERVER_ADDRESS + "/avatar?name=" + Uri.encode(employee.name);
+        }
+    }
+
+    private void fillDefaultPortrait(List<?> list) {
+        if (list == null) {
+            return;
+        }
+        for (Object obj : list) {
+            if (obj instanceof Employee) {
+                fillDefaultPortrait((Employee) obj);
+            }
+        }
+    }
+
+    private void fillDefaultPortrait(OrganizationEx organizationEx) {
+        if (organizationEx == null) {
+            return;
+        }
+        fillDefaultPortrait(organizationEx.employees);
+    }
+
     @Override
     public void getRelationship(String employeeId, SimpleCallback<List<OrganizationRelationship>> callback) {
         if (!isServiceAvailable) {
@@ -116,7 +144,18 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         String url = ORG_SERVER_ADDRESS + "/api/organization/root";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<List<Organization>>() {
+            @Override
+            public void onUiSuccess(List<Organization> organizations) {
+                fillDefaultPortrait(organizations);
+                callback.onUiSuccess(organizations);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     @Override
@@ -128,7 +167,18 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("id", orgId);
         String url = ORG_SERVER_ADDRESS + "/api/organization/query_ex";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<OrganizationEx>() {
+            @Override
+            public void onUiSuccess(OrganizationEx organizationEx) {
+                fillDefaultPortrait(organizationEx);
+                callback.onUiSuccess(organizationEx);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     @Override
@@ -140,7 +190,18 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("ids", orgIds);
         String url = ORG_SERVER_ADDRESS + "/api/organization/query_list";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<List<Organization>>() {
+            @Override
+            public void onUiSuccess(List<Organization> organizations) {
+                fillDefaultPortrait(organizations);
+                callback.onUiSuccess(organizations);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     @Override
@@ -200,7 +261,18 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeId", employeeId);
         String url = ORG_SERVER_ADDRESS + "/api/employee/query";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<Employee>() {
+            @Override
+            public void onUiSuccess(Employee employee) {
+                fillDefaultPortrait(employee);
+                callback.onUiSuccess(employee);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     @Override
@@ -212,7 +284,18 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeIds", employeeIds);
         String url = ORG_SERVER_ADDRESS + "/api/employee/query_list";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<List<Employee>>() {
+            @Override
+            public void onUiSuccess(List<Employee> employees) {
+                fillDefaultPortrait(employees);
+                callback.onUiSuccess(employees);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     @Override
@@ -224,7 +307,20 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeId", employeeId);
         String url = ORG_SERVER_ADDRESS + "/api/employee/query_ex";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<EmployeeEx>() {
+            @Override
+            public void onUiSuccess(EmployeeEx employeeEx) {
+                if (employeeEx != null && employeeEx.employee != null) {
+                    fillDefaultPortrait(employeeEx.employee);
+                }
+                callback.onUiSuccess(employeeEx);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     @Override
@@ -236,8 +332,21 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("organizationId", orgId);
         params.put("keyword", keyword);
+        params.put("count", 50);
+        params.put("page", 0);
         String url = ORG_SERVER_ADDRESS + "/api/employee/search";
-        OKHttpHelper.post(url, params, callback);
+        OKHttpHelper.post(url, params, new SimpleCallback<PageResponse<Employee>>() {
+            @Override
+            public void onUiSuccess(PageResponse<Employee> employees) {
+                fillDefaultPortrait(employees.contents);
+                callback.onUiSuccess(employees.contents);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
     }
 
     private static final String TAG = "OrgService";

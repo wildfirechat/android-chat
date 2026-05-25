@@ -215,6 +215,22 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         return liveData;
     }
 
+    public MutableLiveData<List<Employee>> searchEmployee(int organizationId, String keyword) {
+        MutableLiveData<List<Employee>> liveData = new MutableLiveData<>();
+        organizationServiceProvider.searchEmployee(organizationId, keyword, new SimpleCallback<List<Employee>>() {
+            @Override
+            public void onUiSuccess(List<Employee> employees) {
+                liveData.postValue(employees);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
+
     private void getOrganizationPathSync(int orgId, List<Organization> outPathList) {
         Organization org = getOrganizationSync(orgId);
         if (org != null) {

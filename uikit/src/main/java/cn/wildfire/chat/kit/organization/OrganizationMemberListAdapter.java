@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
@@ -23,6 +25,8 @@ import cn.wildfire.chat.kit.organization.viewholder.OrganizationViewHolder;
 public class OrganizationMemberListAdapter extends RecyclerView.Adapter<OrganizationEntityViewHolder> {
     private Fragment fragment;
     private OrganizationEx organizationEx;
+    private List<Employee> searchResults;
+    private boolean searchMode = false;
     private OnOrganizationMemberClickListener onOrganizationMemberClickListener;
 
     public OrganizationMemberListAdapter(Fragment fragment) {
@@ -31,6 +35,14 @@ public class OrganizationMemberListAdapter extends RecyclerView.Adapter<Organiza
 
     public void setOrganizationEx(OrganizationEx organizationEx) {
         this.organizationEx = organizationEx;
+    }
+
+    public void setSearchResults(List<Employee> searchResults) {
+        this.searchResults = searchResults;
+    }
+
+    public void setSearchMode(boolean searchMode) {
+        this.searchMode = searchMode;
     }
 
     public void setOnOrganizationMemberClickListener(OnOrganizationMemberClickListener onOrganizationMemberClickListener) {
@@ -53,12 +65,17 @@ public class OrganizationMemberListAdapter extends RecyclerView.Adapter<Organiza
         view.setOnClickListener(v -> {
             if (onOrganizationMemberClickListener != null) {
                 int position = holder.getAdapterPosition();
-                if (position < subOrganizationCount()) {
-                    Organization organization = organizationEx.subOrganizations.get(position);
-                    onOrganizationMemberClickListener.onOrganizationClick(organization);
-                } else {
-                    Employee employee = organizationEx.employees.get(position - subOrganizationCount());
+                if (searchMode) {
+                    Employee employee = searchResults.get(position);
                     onOrganizationMemberClickListener.onEmployeeClick(employee);
+                } else {
+                    if (position < subOrganizationCount()) {
+                        Organization organization = organizationEx.subOrganizations.get(position);
+                        onOrganizationMemberClickListener.onOrganizationClick(organization);
+                    } else {
+                        Employee employee = organizationEx.employees.get(position - subOrganizationCount());
+                        onOrganizationMemberClickListener.onEmployeeClick(employee);
+                    }
                 }
             }
         });
@@ -68,16 +85,23 @@ public class OrganizationMemberListAdapter extends RecyclerView.Adapter<Organiza
     @Override
     public void onBindViewHolder(@NonNull OrganizationEntityViewHolder holder, int position) {
         Object value;
-        if (position < subOrganizationCount()) {
-            value = organizationEx.subOrganizations.get(position);
+        if (searchMode) {
+            value = searchResults.get(position);
         } else {
-            value = organizationEx.employees.get(position - subOrganizationCount());
+            if (position < subOrganizationCount()) {
+                value = organizationEx.subOrganizations.get(position);
+            } else {
+                value = organizationEx.employees.get(position - subOrganizationCount());
+            }
         }
         holder.onBind(value);
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (searchMode) {
+            return R.layout.organization_item_employee;
+        }
         if (position < subOrganizationCount()) {
             return R.layout.organization_item_organization;
         } else {
@@ -87,6 +111,9 @@ public class OrganizationMemberListAdapter extends RecyclerView.Adapter<Organiza
 
     @Override
     public int getItemCount() {
+        if (searchMode) {
+            return searchResults == null ? 0 : searchResults.size();
+        }
         if (organizationEx == null) {
             return 0;
         }

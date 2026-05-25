@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,6 +38,9 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
     private OrganizationMemberListAdapter adapter;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
+    private OrganizationEx currentOrganizationEx;
+    private MutableLiveData<List<Employee>> searchLiveData;
+    private String currentSearchKeyword;
 
     private static final String TAG = "OrgMemberListFragment";
 
@@ -70,6 +74,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
 
     @Override
     public void onOrganizationClick(Organization organization) {
+        this.orgId = organization.id;
         loadAndShowOrganizationMemberList(organization.id);
         loadAndShowOrganizationPath(organization.id);
     }
@@ -90,11 +95,14 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
     }
 
     private void loadAndShowOrganizationMemberList(int orgId) {
+        this.orgId = orgId;
         organizationServiceViewModel.getOrganizationEx(orgId).observe(this, new Observer<OrganizationEx>() {
             @Override
             public void onChanged(OrganizationEx organizationEx) {
                 getActivity().setTitle(organizationEx.organization.name);
+                currentOrganizationEx = organizationEx;
                 adapter.setOrganizationEx(organizationEx);
+                adapter.setSearchMode(false);
                 adapter.notifyDataSetChanged();
                 showContent();
             }
@@ -119,6 +127,42 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
         });
     }
 
+    public void searchEmployees(String keyword) {
+        this.currentSearchKeyword = keyword;
+        breadCrumbsView.setVisibility(View.GONE);
+        if (searchLiveData != null) {
+            searchLiveData.removeObservers(this);
+        }
+        searchLiveData = organizationServiceViewModel.searchEmployee(orgId, keyword);
+        searchLiveData.observe(this, new Observer<List<Employee>>() {
+            @Override
+            public void onChanged(List<Employee> employees) {
+                if (!keyword.equals(currentSearchKeyword)) {
+                    return;
+                }
+                adapter.setSearchResults(employees);
+                adapter.setSearchMode(true);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void clearSearch() {
+        breadCrumbsView.setVisibility(View.GONE);
+        adapter.setSearchResults(null);
+        adapter.setSearchMode(true);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void cancelSearch() {
+        breadCrumbsView.setVisibility(View.VISIBLE);
+        if (currentOrganizationEx != null) {
+            adapter.setOrganizationEx(currentOrganizationEx);
+            adapter.setSearchMode(false);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onAdded(BreadCrumbsView.Tab tab) {
     }
@@ -127,6 +171,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
     public void onActivated(BreadCrumbsView.Tab tab) {
         Map<String, Object> param = tab.getValue();
         Organization org = (Organization) param.get("org");
+        this.orgId = org.id;
         loadAndShowOrganizationMemberList(org.id);
     }
 
