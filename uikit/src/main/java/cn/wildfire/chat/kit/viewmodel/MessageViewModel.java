@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
 import cn.wildfire.chat.kit.audio.IAudioPlayListener;
@@ -41,6 +42,8 @@ import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
+
+import java.util.Arrays;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
@@ -497,6 +500,16 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         MessageContent content = message.message.content;
         if (!(content instanceof MediaMessageContent)) {
             return;
+        }
+
+        // 检查禁止接收的文件类型
+        if (content instanceof FileMessageContent) {
+            String fileName = ((FileMessageContent) content).getName();
+            String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if (Arrays.asList(Config.DISABLED_RECEIVE_FILE_TYPES).contains(ext)) {
+                Log.d("MessageViewModel", "file type not allowed to receive: " + ext);
+                return;
+            }
         }
 
         if (message.isDownloading) {

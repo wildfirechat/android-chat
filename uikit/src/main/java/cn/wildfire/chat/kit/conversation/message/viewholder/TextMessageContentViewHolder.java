@@ -84,6 +84,7 @@ public class TextMessageContentViewHolder extends SelectableTextViewHolder {
         } else {
             contentTextView.setText(content);
         }
+        replaceUrlSpans(contentTextView);
 
         quoteInfo = textMessageContent.getQuoteInfo();
         if (quoteInfo != null && quoteInfo.getMessageUid() > 0) {

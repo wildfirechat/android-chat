@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
@@ -21,6 +22,8 @@ import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
+
+import java.util.Arrays;
 
 public class FileExt extends ConversationExt {
 
@@ -50,6 +53,13 @@ public class FileExt extends ConversationExt {
 
             String type = path.substring(path.lastIndexOf("."));
             File file = new File(path);
+
+            // 检查禁止发送的文件类型
+            String ext = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
+            if (Arrays.asList(Config.DISABLED_SEND_FILE_TYPES).contains(ext)) {
+                Toast.makeText(activity, R.string.send_file_forbidden, Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             switch (type) {
                 case ".png":

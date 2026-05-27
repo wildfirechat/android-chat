@@ -959,4 +959,10 @@
     <!-- 投票详情 Section 标题 -->
     <string name="poll_options_title">选项</string>
     <string name="poll_options_with_type">选项 (%s)</string>
+    <string name="send_file_forbidden">不能发送该类型文件</string>
+    <string name="open_file_forbidden">禁止打开此类型</string>
+    <string name="open_link_forbidden">禁止打开外部链接</string>
+    <string name="open_link_warning">谨防钓鱼网站或者带毒网站，只有确认已知安全的链接才可以打开。请确实该链接是否是已知安全的？</string>
+    <string name="confirm_safe">确认安全</string>
+    <string name="tip">提示</string>
 </resources>

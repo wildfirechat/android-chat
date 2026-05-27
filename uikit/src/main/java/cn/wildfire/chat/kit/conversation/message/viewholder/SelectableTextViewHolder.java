@@ -7,13 +7,15 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -55,14 +57,7 @@ public abstract class SelectableTextViewHolder extends NormalMessageContentViewH
 
             @Override
             public void onClickUrl(String url) {
-                if (url.startsWith("http")) {
-                    WfcWebViewActivity.loadUrl(fragment.getContext(), "", url);
-                } else {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    fragment.startActivity(intent);
-                }
+                handleUrlClick(fragment.getContext(), url);
             }
 
             @Override
@@ -78,5 +73,42 @@ public abstract class SelectableTextViewHolder extends NormalMessageContentViewH
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         return super.contextMenuItemFilter(uiMessage, tag);
         // TODO 根据是否是部分选中进行过滤
+    }
+
+    public static void handleUrlClick(android.content.Context context, String url) {
+        String lower = url.toLowerCase();
+        if (lower.startsWith("tel:") || lower.startsWith("mailto:") || lower.startsWith("geo:") || lower.startsWith("sms:") || lower.startsWith("smsto:")) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            context.startActivity(intent);
+        } else {
+            LinkMessageContentViewHolder.openLink(context, url);
+        }
+    }
+
+    protected void replaceUrlSpans(TextView textView) {
+        CharSequence text = textView.getText();
+        if (text instanceof Spannable) {
+            Spannable spannable = (Spannable) text;
+            URLSpan[] urlSpans = spannable.getSpans(0, text.length(), URLSpan.class);
+            for (URLSpan urlSpan : urlSpans) {
+                int start = spannable.getSpanStart(urlSpan);
+                int end = spannable.getSpanEnd(urlSpan);
+                spannable.removeSpan(urlSpan);
+                spannable.setSpan(new PolicyURLSpan(urlSpan.getURL()), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+    }
+
+    private static class PolicyURLSpan extends URLSpan {
+        public PolicyURLSpan(String url) {
+            super(url);
+        }
+
+        @Override
+        public void onClick(View widget) {
+            handleUrlClick(widget.getContext(), getURL());
+        }
     }
 }

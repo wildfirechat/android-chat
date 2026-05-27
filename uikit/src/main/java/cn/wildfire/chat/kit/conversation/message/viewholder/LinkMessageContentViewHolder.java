@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import android.app.AlertDialog;
+
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -58,6 +61,28 @@ public class LinkMessageContentViewHolder extends NormalMessageContentViewHolder
     }
 
     public void onClick(View view) {
-        WfcWebViewActivity.loadUrl(fragment.getContext(), linkMessageContent.getTitle(), linkMessageContent.getUrl());
+        openLink(fragment.getContext(), linkMessageContent.getUrl());
+    }
+
+    public static void openLink(android.content.Context context, String url) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        if (Config.OPEN_LINK_POLICY == 2) {
+            android.widget.Toast.makeText(context, R.string.open_link_forbidden, android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (Config.OPEN_LINK_POLICY == 1) {
+            new AlertDialog.Builder(context)
+                .setTitle(R.string.tip)
+                .setMessage(R.string.open_link_warning)
+                .setPositiveButton(R.string.confirm_safe, (dialog, which) -> {
+                    WfcWebViewActivity.loadUrl(context, "", url);
+                })
+                .setNegativeButton(R.string.close, null)
+                .show();
+            return;
+        }
+        WfcWebViewActivity.loadUrl(context, "", url);
     }
 }

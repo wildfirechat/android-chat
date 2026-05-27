@@ -161,6 +161,13 @@ public class Config {
     public static String AI_ROBOT = "FireRobot";
     public static String PSTN_ASSISTANT_ID = "robotdialin";
 
+    // 禁止发送的文件类型
+    public static String[] DISABLED_SEND_FILE_TYPES = new String[]{"exe", "bat", "apk"};
+    // 禁止接收/下载的文件类型
+    public static String[] DISABLED_RECEIVE_FILE_TYPES = new String[]{"exe", "bat", "apk"};
+    // 打开消息链接的策略，0=不限制, 1=提醒, 2=禁止
+    public static int OPEN_LINK_POLICY = 1;
+
     // AI会议纪要机器人ID
     public static String AI_MINUTES_ROBOT_ID = "robotminutes";
     // 会议纪要页面地址

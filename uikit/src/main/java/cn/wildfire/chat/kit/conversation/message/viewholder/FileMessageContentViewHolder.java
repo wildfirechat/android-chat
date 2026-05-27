@@ -16,7 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 
-import cn.wildfire.chat.kit.*;
+import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -25,6 +26,8 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.FileMessageContent;
+
+import java.util.Arrays;
 
 @MessageContentType(FileMessageContent.class)
 @EnableContextMenu
@@ -62,6 +65,11 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
 
     public void onClick(View view) {
         if (message.isDownloading) {
+            return;
+        }
+        String ext = fileMessageContent.getName().substring(fileMessageContent.getName().lastIndexOf(".") + 1).toLowerCase();
+        if (Arrays.asList(Config.DISABLED_RECEIVE_FILE_TYPES).contains(ext)) {
+            Toast.makeText(fragment.getContext(), R.string.open_file_forbidden, Toast.LENGTH_SHORT).show();
             return;
         }
         FileUtils.openFile(fragment.getContext(), message.message);

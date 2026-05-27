@@ -921,4 +921,10 @@
     <string name="group_only">Group Only</string>
     <string name="public_text">Public</string>
     <string name="publishing">Publishing...</string>
+    <string name="send_file_forbidden">Sending this file type is not allowed</string>
+    <string name="open_file_forbidden">Opening this file type is forbidden</string>
+    <string name="open_link_forbidden">Opening external links is forbidden</string>
+    <string name="open_link_warning">Beware of phishing or malicious websites. Only open links that are confirmed to be safe. Are you sure this link is safe?</string>
+    <string name="confirm_safe">Confirm Safe</string>
+    <string name="tip">Tip</string>
 </resources>

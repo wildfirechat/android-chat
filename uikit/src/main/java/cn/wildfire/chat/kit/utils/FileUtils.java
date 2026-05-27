@@ -51,6 +51,8 @@ import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.remote.ChatManager;
 import okhttp3.ResponseBody;
 
+import java.util.Arrays;
+
 public class FileUtils {
     public static final String DOCUMENTS_DIR = "documents";
     // configured android:authorities in AndroidManifest (https://developer.android.com/reference/android/support/v4/content/FileProvider)
@@ -948,6 +950,12 @@ public class FileUtils {
     public static void openFile(Context context, FileRecord fileRecord) {
         File file = DownloadManager.fileRecordFile(fileRecord);
 
+        String ext = fileRecord.name.substring(fileRecord.name.lastIndexOf(".") + 1).toLowerCase();
+        if (Arrays.asList(Config.DISABLED_RECEIVE_FILE_TYPES).contains(ext)) {
+            Toast.makeText(context, R.string.open_file_forbidden, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (file.exists()) {
             Intent intent = FileUtils.getViewIntent(context, file);
             try {
@@ -966,6 +974,13 @@ public class FileUtils {
             return;
         }
 
+        FileMessageContent fileMessageContent = (FileMessageContent) message.content;
+        String ext = fileMessageContent.getName().substring(fileMessageContent.getName().lastIndexOf(".") + 1).toLowerCase();
+        if (Arrays.asList(Config.DISABLED_RECEIVE_FILE_TYPES).contains(ext)) {
+            Toast.makeText(context, R.string.open_file_forbidden, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         File file = DownloadManager.mediaMessageContentFile(message);
         if (file == null) {
             return;
@@ -977,7 +992,6 @@ public class FileUtils {
             try {
                 context.startActivity(intent);
             } catch (Exception e) {
-                FileMessageContent fileMessageContent = (FileMessageContent) message.content;
                 onlinePreview(context, fileMessageContent.getName(), fileMessageContent.remoteUrl);
             }
         } else {

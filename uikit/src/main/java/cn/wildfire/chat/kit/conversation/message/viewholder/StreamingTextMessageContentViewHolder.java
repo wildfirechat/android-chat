@@ -62,6 +62,7 @@ public class StreamingTextMessageContentViewHolder extends SelectableTextViewHol
         }
         Markwon markwon = fragment.getMarkwon();
         markwon.setMarkdown(contentTextView, content);
+        replaceUrlSpans(contentTextView);
     }
 
     @Override
