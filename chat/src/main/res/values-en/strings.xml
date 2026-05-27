@@ -197,6 +197,11 @@
     <string name="diagnose">Diagnose</string>
     <string name="upload_log">Upload Log</string>
     <string name="battery_optimization">Battery Optimization</string>
+    <string name="keep_alive_notification">Background Keep-Alive</string>
+    <string name="keep_alive_notification_desc">When enabled, a persistent notification keeps showing</string>
+    <string name="keep_alive_channel_name">Keep-Alive Service</string>
+    <string name="keep_alive_channel_desc">Keeps the app alive in the background</string>
+    <string name="keep_alive_notification_text">Running in background to keep messages online</string>
     <string name="change_password">Change Password</string>
     <string name="set_new_password">Set New Password</string>
     <string name="account_and_security">Account and Password</string>

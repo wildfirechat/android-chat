@@ -61,13 +61,55 @@
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:title="@string/upload_log" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@color/white"
+        android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/batteryOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
-            app:show_divider="false"
+            app:show_divider="true"
             app:title="@string/battery_optimization" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/keep_alive_notification"
+                    android:textColor="@color/black1"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/keep_alive_notification_desc"
+                    android:textColor="@color/gray3"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchKeepAlive"
+                style="@style/defaultSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout

@@ -18,7 +18,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import cn.wildfire.chat.app.AppService;
+import cn.wildfire.chat.app.KeepAliveService;
 import cn.wildfire.chat.app.OrganizationService;
 import cn.wildfire.chat.app.main.SplashActivity;
 import cn.wildfire.chat.app.misc.DiagnoseActivity;
@@ -36,6 +39,7 @@ public class SettingActivity extends WfcBaseActivity {
     private final int REQUEST_IGNORE_BATTERY_CODE = 100;
     OptionItemView aboutOptionItemView;
     OptionItemView diagnoseOptionItemView;
+    SwitchMaterial switchKeepAlive;
 
 
     protected void bindEvents() {
@@ -53,6 +57,23 @@ public class SettingActivity extends WfcBaseActivity {
     protected void bindViews() {
         super.bindViews();
         diagnoseOptionItemView = findViewById(R.id.diagnoseOptionItemView);
+        switchKeepAlive = findViewById(R.id.switchKeepAlive);
+    }
+
+    @Override
+    protected void afterViews() {
+        super.afterViews();
+        SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean keepAliveEnabled = sp.getBoolean(KeepAliveService.PREF_KEY_KEEP_ALIVE, false);
+        switchKeepAlive.setChecked(keepAliveEnabled);
+        switchKeepAlive.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sp.edit().putBoolean(KeepAliveService.PREF_KEY_KEEP_ALIVE, isChecked).apply();
+            if (isChecked) {
+                KeepAliveService.start(this);
+            } else {
+                KeepAliveService.stop(this);
+            }
+        });
     }
 
     @Override
