@@ -40,8 +40,8 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
 
         if (organizationServiceProvider != null
-            && !organizationServiceProvider.isServiceAvailable()
-            && ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
+                && !organizationServiceProvider.isServiceAvailable()
+                && ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
             login();
         }
     }
@@ -65,6 +65,8 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         }
         if (organizationServiceProvider.isServiceAvailable()) {
             loadRootOrganizations();
+        } else {
+            rootOrganizationLiveData.setValue(new ArrayList<>());
         }
         return rootOrganizationLiveData;
     }
@@ -225,7 +227,7 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
 
             @Override
             public void onUiFailure(int code, String msg) {
-                liveData.postValue(null);
+                liveData.postValue(new ArrayList<>());
             }
         });
         return liveData;
@@ -298,7 +300,7 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
 
                 @Override
                 public void onUiFailure(int code, String msg) {
-
+                    rootOrganizationLiveData.setValue(new ArrayList<>());
                 }
             });
         });
@@ -324,16 +326,21 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
 
                             @Override
                             public void onUiFailure(int code, String msg) {
+                                myOrganizationLiveData.setValue(new ArrayList<>());
 
                             }
                         });
+                    } else {
+                        myOrganizationLiveData.setValue(new ArrayList<>());
                     }
+                } else {
+                    myOrganizationLiveData.setValue(new ArrayList<>());
                 }
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-
+                myOrganizationLiveData.setValue(new ArrayList<>());
             }
         });
     }

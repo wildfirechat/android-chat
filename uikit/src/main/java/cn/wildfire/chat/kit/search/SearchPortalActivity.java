@@ -9,6 +9,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.search.module.ChannelSearchModule;
 import cn.wildfire.chat.kit.search.module.ContactSearchModule;
 import cn.wildfire.chat.kit.search.module.ConversationSearchModule;
+import cn.wildfire.chat.kit.search.module.EmployeeSearchModule;
 import cn.wildfire.chat.kit.search.module.GroupSearchViewModule;
 
 public class SearchPortalActivity extends SearchActivity {
@@ -24,5 +25,8 @@ public class SearchPortalActivity extends SearchActivity {
         module = new ConversationSearchModule();
         modules.add(module);
         modules.add(new ChannelSearchModule());
+
+        module = new EmployeeSearchModule();
+        modules.add(module);
     }
 }
