@@ -18,6 +18,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import androidx.fragment.app.Fragment;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,12 +86,32 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
         updateConfirmStatus();
     }
 
-    private void updateConfirmStatus() {
+    private List<UIUserInfo> getAllCheckedUsers() {
+        List<UIUserInfo> checkedUsers = new ArrayList<>(pickUserViewModel.getCheckedUsers());
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (fragment instanceof AddGroupMemberFragment) {
+            for (UIUserInfo picked : ((AddGroupMemberFragment) fragment).getPickedUsers()) {
+                boolean exists = false;
+                for (UIUserInfo checked : checkedUsers) {
+                    if (checked.getUserInfo().uid.equals(picked.getUserInfo().uid)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    checkedUsers.add(picked);
+                }
+            }
+        }
+        return checkedUsers;
+    }
+
+    void updateConfirmStatus() {
         if (confirmTv == null || pickUserViewModel == null) {
             return;
         }
-        List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
-        if (list == null || list.isEmpty()) {
+        List<UIUserInfo> list = getAllCheckedUsers();
+        if (list.isEmpty()) {
             confirmTv.setText(R.string.complete);
             confirmTv.setEnabled(false);
         } else {
@@ -112,8 +134,8 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
             .cancelable(false)
             .build();
         dialog.show();
-        List<UIUserInfo> checkedUsers = pickUserViewModel.getCheckedUsers();
-        if (checkedUsers != null && !checkedUsers.isEmpty()) {
+        List<UIUserInfo> checkedUsers = getAllCheckedUsers();
+        if (!checkedUsers.isEmpty()) {
             ArrayList<String> checkedIds = new ArrayList<>(checkedUsers.size());
             for (UIUserInfo user : checkedUsers) {
                 checkedIds.add(user.getUserInfo().uid);

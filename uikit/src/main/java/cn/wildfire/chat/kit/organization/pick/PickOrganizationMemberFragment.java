@@ -13,10 +13,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
@@ -39,6 +42,7 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
 
     private List<Integer> initialCheckedOrganizationIds;
     private List<String> initialCheckedEmployeeIds;
+    private Set<String> disabledEmployeeIds;
 
     @Override
     protected int contentLayout() {
@@ -51,10 +55,17 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
         Bundle bundle = getArguments();
         if (bundle != null) {
             currentOrgId = bundle.getInt("organizationId");
+            ArrayList<String> disabledIds = bundle.getStringArrayList("disabledEmployeeIds");
+            if (disabledIds != null) {
+                disabledEmployeeIds = new HashSet<>(disabledIds);
+            }
         }
         recyclerView = view.findViewById(R.id.recyclerView);
         adapter = new CheckableOrganizationMemberListAdapter(this);
         adapter.setOnOrganizationMemberClickListener(this);
+        if (disabledEmployeeIds != null) {
+            adapter.setDisabledEmployeeIds(disabledEmployeeIds);
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 

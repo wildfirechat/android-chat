@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -26,10 +27,14 @@ public class PickOrganizationMemberActivity extends WfcBaseActivity implements C
     @Override
     protected void afterViews() {
         this.organizationId = getIntent().getIntExtra("organizationId", 0);
+        ArrayList<String> disabledEmployeeIds = getIntent().getStringArrayListExtra("disabledEmployeeIds");
         pickOrganizationMemberFragment = new PickOrganizationMemberFragment();
         pickOrganizationMemberFragment.setOnOrganizationMemberClickListener(this);
         Bundle args = new Bundle();
         args.putInt("organizationId", organizationId);
+        if (disabledEmployeeIds != null) {
+            args.putStringArrayList("disabledEmployeeIds", disabledEmployeeIds);
+        }
         pickOrganizationMemberFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, pickOrganizationMemberFragment)

@@ -75,6 +75,10 @@ public class PickedUserAdapter extends RecyclerView.Adapter {
         return getOrganizationCount() + users.size();
     }
 
+    public List<UIUserInfo> getPickedUsers() {
+        return users;
+    }
+
     public void setOrganizations(List<Organization> organizations) {
         this.organizations = organizations;
         notifyDataSetChanged();

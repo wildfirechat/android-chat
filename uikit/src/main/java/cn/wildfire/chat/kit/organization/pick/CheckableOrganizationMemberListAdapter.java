@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
@@ -34,11 +36,18 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
 
     private Map<String, Employee> checkedMembers;
     private Map<Integer, Organization> checkedOrganizations;
+    private Set<String> disabledEmployeeIds;
 
     public CheckableOrganizationMemberListAdapter(Fragment fragment) {
         this.fragment = fragment;
         this.checkedMembers = new HashMap<>();
         this.checkedOrganizations = new HashMap<>();
+        this.disabledEmployeeIds = new HashSet<>();
+    }
+
+    public void setDisabledEmployeeIds(Set<String> disabledEmployeeIds) {
+        this.disabledEmployeeIds = disabledEmployeeIds != null ? disabledEmployeeIds : new HashSet<>();
+        notifyDataSetChanged();
     }
 
     public void setOrganizationEx(OrganizationEx organizationEx) {
@@ -93,6 +102,11 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
                 if (!Config.ENABLE_SELECT_ORGANIZATION) {
                     return;
                 }
+            } else {
+                Employee employee = organizationEx.employees.get(position - subOrganizationCount());
+                if (disabledEmployeeIds.contains(employee.employeeId)) {
+                    return;
+                }
             }
             boolean toCheck = !checkBox.isChecked();
             checkBox.setChecked(toCheck);
@@ -131,10 +145,15 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
             value = organizationEx.subOrganizations.get(position);
             Organization org = (Organization) value;
             checkBox.setChecked(checkedOrganizations.containsKey(org.id));
+            checkBox.setEnabled(true);
+            holder.itemView.setAlpha(1.0f);
         } else {
             value = organizationEx.employees.get(position - subOrganizationCount());
             Employee employee = (Employee) value;
-            checkBox.setChecked(checkedMembers.containsKey(employee.employeeId));
+            boolean isDisabled = disabledEmployeeIds.contains(employee.employeeId);
+            checkBox.setChecked(isDisabled || checkedMembers.containsKey(employee.employeeId));
+            checkBox.setEnabled(!isDisabled);
+            holder.itemView.setAlpha(isDisabled ? 0.5f : 1.0f);
         }
 
         holder.onBind(value);
