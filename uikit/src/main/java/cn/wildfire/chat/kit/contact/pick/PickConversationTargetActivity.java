@@ -27,26 +27,26 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
 
     private boolean pickGroupForResult = true;
     private boolean multiGroupMode = false;
-    private MenuItem menuItem;
     private TextView confirmTv;
+    private List<UIUserInfo> checkUserInfos;
 
     protected PickUserViewModel pickUserViewModel;
     private PickConversationTargetFragment fragment;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
-            List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
-            updatePickStatus(list);
+            checkUserInfos = pickUserViewModel.getCheckedUsers();
+            updatePickStatus(checkUserInfos);
         }
     };
 
     protected void updatePickStatus(List<UIUserInfo> userInfos) {
         if (userInfos == null || userInfos.isEmpty()) {
             confirmTv.setText(R.string.pick_conversation_done);
-            menuItem.setEnabled(false);
+            confirmTv.setEnabled(false);
         } else {
             confirmTv.setText(getString(R.string.pick_conversation_done_with_count, userInfos.size()));
-            menuItem.setEnabled(true);
+            confirmTv.setEnabled(true);
         }
     }
 
@@ -75,33 +75,20 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
 
     @Override
     protected void afterMenus(Menu menu) {
-        menuItem = menu.findItem(R.id.confirm);
-        menuItem.setEnabled(false);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        View view = menuItem.getActionView();
+        MenuItem item = menu.findItem(R.id.confirm);
+        View view = item.getActionView();
         confirmTv = view.findViewById(R.id.confirm_tv);
-        confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-        return super.onPrepareOptionsMenu(menu);
-    }
+        confirmTv.setOnClickListener(v -> onConfirmClick());
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.confirm) {
-            onConfirmClick();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        updatePickStatus(this.checkUserInfos);
     }
 
     private void initView() {
         fragment = PickConversationTargetFragment.newInstance(pickGroupForResult, multiGroupMode);
         fragment.setOnGroupPickListener(this);
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.containerFrameLayout, fragment)
-            .commit();
+                .replace(R.id.containerFrameLayout, fragment)
+                .commit();
     }
 
     @Override

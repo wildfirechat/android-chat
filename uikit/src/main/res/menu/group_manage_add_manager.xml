@@ -5,5 +5,6 @@
     <item
         android:id="@+id/confirm"
         android:title="@string/confirm"
+        app:actionLayout="@layout/menu_confirm"
         app:showAsAction="always" />
 </menu>

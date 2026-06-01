@@ -33,7 +33,6 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class AddGroupMemberActivity extends WfcBaseActivity {
-    private MenuItem menuItem;
     private TextView confirmTv;
 
     private GroupInfo groupInfo;
@@ -45,14 +44,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
-            List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
-            if (list == null || list.isEmpty()) {
-                confirmTv.setText(R.string.complete);
-                menuItem.setEnabled(false);
-            } else {
-                confirmTv.setText(getString(R.string.complete_with_count, list.size()));
-                menuItem.setEnabled(true);
-            }
+            updateConfirmStatus();
         }
     };
 
@@ -84,26 +76,26 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
 
     @Override
     protected void afterMenus(Menu menu) {
-        menuItem = menu.findItem(R.id.add);
         super.afterMenus(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.add) {
-            addMember();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.add);
         View actionView = item.getActionView();
         confirmTv = actionView.findViewById(R.id.confirm_tv);
-        confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-        return super.onPrepareOptionsMenu(menu);
+        confirmTv.setOnClickListener(v -> addMember());
+        updateConfirmStatus();
+    }
+
+    private void updateConfirmStatus() {
+        if (confirmTv == null || pickUserViewModel == null) {
+            return;
+        }
+        List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
+        if (list == null || list.isEmpty()) {
+            confirmTv.setText(R.string.complete);
+            confirmTv.setEnabled(false);
+        } else {
+            confirmTv.setText(getString(R.string.complete_with_count, list.size()));
+            confirmTv.setEnabled(true);
+        }
     }
 
     @Override

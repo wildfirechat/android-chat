@@ -53,6 +53,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
                 memberIds.add(uiUserInfo.getUserInfo().uid);
             }
             pickUserViewModel.setUncheckableIds(memberIds);
+            pickUserViewModel.setInitialCheckedIds(memberIds);
             userListAdapter.notifyDataSetChanged();
         });
     }

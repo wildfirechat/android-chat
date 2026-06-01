@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 1. 禁用状态 (Disabled) -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <!-- 您可以根据需要修改为灰色或其他禁用颜色，这里以 #CCCCCC 为例 -->
+            <solid android:color="#CCCCCC" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="@color/blue2" />
+        </shape>
+    </item>
+
+</selector>

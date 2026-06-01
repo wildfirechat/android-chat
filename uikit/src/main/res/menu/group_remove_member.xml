@@ -4,6 +4,7 @@
         android:id="@+id/remove"
         android:enabled="false"
         android:title="删除"
+        app:actionLayout="@layout/menu_confirm"
         app:showAsAction="always" />
 
 </menu>

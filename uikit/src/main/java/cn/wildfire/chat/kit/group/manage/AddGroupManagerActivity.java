@@ -6,6 +6,8 @@ package cn.wildfire.chat.kit.group.manage;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -21,7 +23,7 @@ import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 
 public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
-    private MenuItem menuItem;
+    private TextView confirmTv;
     private List<UIUserInfo> checkedGroupMembers;
 
     @Override
@@ -35,19 +37,15 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
         return R.menu.group_manage_add_manager;
     }
 
-    @Override
-    protected void afterMenus(Menu menu) {
-        menuItem = menu.findItem(R.id.confirm);
-        this.updateMenuItemState();
-    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.confirm) {
-            setGroupManager();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected void afterMenus(Menu menu) {
+        MenuItem item = menu.findItem(R.id.confirm);
+        View actionView = item.getActionView();
+        confirmTv = actionView.findViewById(R.id.confirm_tv);
+        confirmTv.setEnabled(false);
+        confirmTv.setOnClickListener(v -> setGroupManager());
+        updateMenuItemState();
     }
 
     private void setGroupManager() {
@@ -74,15 +72,15 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
     }
 
     private void updateMenuItemState() {
-        if (menuItem == null) {
+        if (confirmTv == null) {
             return;
         }
         if (checkedGroupMembers == null || checkedGroupMembers.isEmpty()) {
-            menuItem.setTitle(R.string.contact_pick_confirm);
-            menuItem.setEnabled(false);
+            confirmTv.setText(R.string.contact_pick_confirm);
+            confirmTv.setEnabled(false);
         } else {
-            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedGroupMembers.size()));
-            menuItem.setEnabled(true);
+            confirmTv.setText(getString(R.string.contact_pick_confirm_with_count, checkedGroupMembers.size()));
+            confirmTv.setEnabled(true);
         }
     }
 }

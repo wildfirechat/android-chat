@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit.group;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -22,7 +24,7 @@ import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
 
 public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
-    private MenuItem menuItem;
+    private TextView confirmTv;
     public static final int RESULT_REMOVE_SUCCESS = 2;
     public static final int RESULT_REMOVE_FAIL = 3;
     private GroupViewModel groupViewModel;
@@ -31,13 +33,7 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
     @Override
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
-        if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle(R.string.delete);
-            menuItem.setEnabled(false);
-        } else {
-            menuItem.setTitle(getString(R.string.delete_with_count, checkedUserInfos.size()));
-            menuItem.setEnabled(true);
-        }
+        this.updateMenuStatus();
     }
 
     @Override
@@ -57,17 +53,23 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
 
     @Override
     protected void afterMenus(Menu menu) {
-        menuItem = menu.findItem(R.id.remove);
-        menuItem.setEnabled(false);
+        MenuItem item = menu.findItem(R.id.remove);
+        View actionView = item.getActionView();
+        confirmTv = actionView.findViewById(R.id.confirm_tv);
+        confirmTv.setEnabled(false);
+        confirmTv.setOnClickListener(v -> removeMember(checkedGroupMembers));
+        updateMenuStatus();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.remove) {
-            removeMember(checkedGroupMembers);
-            return true;
+
+    private void updateMenuStatus() {
+        if (checkedGroupMembers == null || checkedGroupMembers.isEmpty()) {
+            confirmTv.setText(R.string.delete);
+            confirmTv.setEnabled(false);
+        } else {
+            confirmTv.setText(getString(R.string.delete_with_count, checkedGroupMembers.size()));
+            confirmTv.setEnabled(true);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     void removeMember(List<UIUserInfo> checkedUsers) {

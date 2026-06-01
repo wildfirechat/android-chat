@@ -31,14 +31,8 @@ public class CheckableUserViewHolder extends UserViewHolder {
         super.onBind(userInfo);
 
         checkBox.setVisibility(View.VISIBLE);
-        if (!userInfo.isCheckable()) {
-            checkBox.setEnabled(false);
-            checkBox.setChecked(true);
-        } else {
-            checkBox.setEnabled(true);
-            checkBox.setChecked(userInfo.isChecked());
-        }
         checkBox.setEnabled(userInfo.isCheckable());
+        checkBox.setChecked(userInfo.isChecked());
     }
 
     public void setChecked(boolean checked){
