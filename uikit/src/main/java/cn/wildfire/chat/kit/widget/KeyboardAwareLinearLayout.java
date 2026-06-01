@@ -149,6 +149,11 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
             rootViewHeight = displayMetrics.heightPixels;
         }
 
+        if(rect.bottom < 100){
+            // 软键盘未弹出
+            return;
+        }
+
         final int keyboardHeight = rootViewHeight - rect.bottom - viewInset;
 
         if (keyboardHeight > minKeyboardSize) {
