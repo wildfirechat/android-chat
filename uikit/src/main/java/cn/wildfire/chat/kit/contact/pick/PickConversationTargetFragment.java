@@ -158,7 +158,7 @@ public class PickConversationTargetFragment extends PickUserFragment {
                     pickUserViewModel.checkUser(uiUserInfo, true);
                 }
             }
-            if (organizations != null) {
+            if (organizations != null && Config.ENABLE_SELECT_ORGANIZATION) {
                 pickedUserAdapter.setOrganizations(organizations);
 
                 // 没有的话，搜索提示框布局会错乱

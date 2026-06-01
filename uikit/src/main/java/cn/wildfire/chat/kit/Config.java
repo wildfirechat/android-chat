@@ -184,4 +184,10 @@ public class Config {
 
     // 是否开启滑动验证。如果关闭，需要在应用服务端也关闭滑动验证。
     public static boolean ENABLE_SLIDE_VERIFY = true;
+
+    /**
+     * 创建群组或添加群成员时，是否允许选择整个组织（部门）。
+     * false 时，组织通讯录中只能勾选单个成员，不能勾选整个组织。
+     */
+    public static boolean ENABLE_SELECT_ORGANIZATION = false;
 }

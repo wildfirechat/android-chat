@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
@@ -61,7 +62,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             userInfos.add(uiUserinfo.getUserInfo());
         }
 
-        if (organizations != null && !organizations.isEmpty()) {
+        if (organizations != null && !organizations.isEmpty() && Config.ENABLE_SELECT_ORGANIZATION) {
             OrganizationServiceViewModel organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
             List<Integer> orgIds = new ArrayList<>();
             for (Organization org : organizations) {

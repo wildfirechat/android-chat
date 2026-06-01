@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
@@ -66,6 +67,10 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         if (viewType == R.layout.organization_item_checkable_organization) {
             view = inflater.inflate(R.layout.organization_item_checkable_organization, parent, false);
             holder = new OrganizationViewHolder(view);
+            if (!Config.ENABLE_SELECT_ORGANIZATION) {
+                CheckBox orgCheckBox = view.findViewById(R.id.checkbox);
+                orgCheckBox.setVisibility(View.GONE);
+            }
 
             TextView childOrganizationTextView = view.findViewById(R.id.childOrganizationTextView);
             childOrganizationTextView.setOnClickListener(new View.OnClickListener() {
@@ -83,9 +88,14 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         }
         CheckBox checkBox = view.findViewById(R.id.checkbox);
         view.setOnClickListener(v -> {
+            int position = holder.getAdapterPosition();
+            if (position < subOrganizationCount()) {
+                if (!Config.ENABLE_SELECT_ORGANIZATION) {
+                    return;
+                }
+            }
             boolean toCheck = !checkBox.isChecked();
             checkBox.setChecked(toCheck);
-            int position = holder.getAdapterPosition();
             if (position < subOrganizationCount()) {
                 Organization organization = organizationEx.subOrganizations.get(position);
                 if (toCheck) {
