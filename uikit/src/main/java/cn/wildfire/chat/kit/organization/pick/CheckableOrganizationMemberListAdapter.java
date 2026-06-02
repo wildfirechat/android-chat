@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,24 +31,82 @@ import cn.wildfire.chat.kit.organization.viewholder.OrganizationEntityViewHolder
 import cn.wildfire.chat.kit.organization.viewholder.OrganizationViewHolder;
 
 public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter<OrganizationEntityViewHolder> {
-    private Fragment fragment;
     private OrganizationEx organizationEx;
     private OnOrganizationMemberClickListener onOrganizationMemberClickListener;
 
-    private Map<String, Employee> checkedMembers;
-    private Map<Integer, Organization> checkedOrganizations;
-    private Set<String> disabledEmployeeIds;
+    private final Map<String, Employee> checkedMembers;
+    private final Map<Integer, Organization> checkedOrganizations;
+    private Set<String> uncheckableEmployeeIds;
+    private int maxPickCount;
 
     public CheckableOrganizationMemberListAdapter(Fragment fragment) {
-        this.fragment = fragment;
         this.checkedMembers = new HashMap<>();
         this.checkedOrganizations = new HashMap<>();
-        this.disabledEmployeeIds = new HashSet<>();
+        this.uncheckableEmployeeIds = new HashSet<>();
+        this.maxPickCount = Integer.MAX_VALUE;
+    }
+
+    public void setInitialCheckedEmployees(List<Employee> employees) {
+        if (employees != null) {
+            for (Employee e : employees) {
+                checkedMembers.put(e.employeeId, e);
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setInitialCheckedOrganizations(List<Organization> organizations) {
+        if (organizations != null) {
+            for (Organization org : organizations) {
+                checkedOrganizations.put(org.id, org);
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setUncheckableEmployeeIds(Set<String> uncheckableEmployeeIds) {
+        this.uncheckableEmployeeIds = uncheckableEmployeeIds != null ? uncheckableEmployeeIds : new HashSet<>();
+        notifyDataSetChanged();
+    }
+
+    public void setMaxPickCount(int maxPickCount) {
+        if (maxPickCount <= 0) {
+            this.maxPickCount = Integer.MAX_VALUE;
+        } else {
+            this.maxPickCount = maxPickCount;
+        }
     }
 
     public void setDisabledEmployeeIds(Set<String> disabledEmployeeIds) {
-        this.disabledEmployeeIds = disabledEmployeeIds != null ? disabledEmployeeIds : new HashSet<>();
-        notifyDataSetChanged();
+        setUncheckableEmployeeIds(disabledEmployeeIds);
+    }
+
+    private int getPickedCount() {
+        int pickedCount = checkedMembers.size();
+        for (Organization organization : checkedOrganizations.values()) {
+            pickedCount += Math.max(organization.memberCount, 0);
+        }
+        return pickedCount;
+    }
+
+    private boolean canPickOrganization(Organization organization) {
+        if (maxPickCount == Integer.MAX_VALUE) {
+            return true;
+        }
+        return getPickedCount() + Math.max(organization.memberCount, 0) <= maxPickCount;
+    }
+
+    private boolean canPickEmployee() {
+        if (maxPickCount == Integer.MAX_VALUE) {
+            return true;
+        }
+        return getPickedCount() + 1 <= maxPickCount;
+    }
+
+    private void notifyPickLimitExceeded() {
+        if (onOrganizationMemberClickListener != null) {
+            onOrganizationMemberClickListener.onPickLimitExceeded();
+        }
     }
 
     public void setOrganizationEx(OrganizationEx organizationEx) {
@@ -98,20 +157,27 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         CheckBox checkBox = view.findViewById(R.id.checkbox);
         view.setOnClickListener(v -> {
             int position = holder.getAdapterPosition();
+            if (organizationEx == null || position == RecyclerView.NO_POSITION) {
+                return;
+            }
             if (position < subOrganizationCount()) {
                 if (!Config.ENABLE_SELECT_ORGANIZATION) {
                     return;
                 }
             } else {
                 Employee employee = organizationEx.employees.get(position - subOrganizationCount());
-                if (disabledEmployeeIds.contains(employee.employeeId)) {
+                if (uncheckableEmployeeIds.contains(employee.employeeId)) {
                     return;
                 }
             }
             boolean toCheck = !checkBox.isChecked();
-            checkBox.setChecked(toCheck);
             if (position < subOrganizationCount()) {
                 Organization organization = organizationEx.subOrganizations.get(position);
+                if (toCheck && !canPickOrganization(organization)) {
+                    notifyPickLimitExceeded();
+                    return;
+                }
+                checkBox.setChecked(toCheck);
                 if (toCheck) {
                     checkedOrganizations.put(organization.id, organization);
                 } else {
@@ -123,6 +189,11 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
 
             } else {
                 Employee employee = organizationEx.employees.get(position - subOrganizationCount());
+                if (toCheck && !canPickEmployee()) {
+                    notifyPickLimitExceeded();
+                    return;
+                }
+                checkBox.setChecked(toCheck);
 
                 if (toCheck) {
                     checkedMembers.put(employee.employeeId, employee);
@@ -150,10 +221,10 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         } else {
             value = organizationEx.employees.get(position - subOrganizationCount());
             Employee employee = (Employee) value;
-            boolean isDisabled = disabledEmployeeIds.contains(employee.employeeId);
-            checkBox.setChecked(isDisabled || checkedMembers.containsKey(employee.employeeId));
-            checkBox.setEnabled(!isDisabled);
-            holder.itemView.setAlpha(isDisabled ? 0.5f : 1.0f);
+            boolean isUncheckable = uncheckableEmployeeIds.contains(employee.employeeId);
+            checkBox.setChecked(checkedMembers.containsKey(employee.employeeId));
+            checkBox.setEnabled(!isUncheckable);
+            holder.itemView.setAlpha(isUncheckable ? 0.5f : 1.0f);
         }
 
         holder.onBind(value);
@@ -190,5 +261,7 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         void onOrganizationCheck(Organization organization, boolean checked);
 
         void onEmployeeCheck(Employee employee, boolean checked);
+
+        void onPickLimitExceeded();
     }
 }

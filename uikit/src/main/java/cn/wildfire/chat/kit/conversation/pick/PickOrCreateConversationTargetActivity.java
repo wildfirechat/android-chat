@@ -14,8 +14,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -37,11 +39,16 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
     private boolean singleMode = true;
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations) {
-        List<UserInfo> userInfos = new ArrayList<>();
+    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations, List<Employee> employees) {
+        Set<UserInfo> userInfos = new HashSet<>();
 
         for (UIUserInfo uiUserinfo : newlyCheckedUserInfos) {
             userInfos.add(uiUserinfo.getUserInfo());
+        }
+        if (employees != null) {
+            for (Employee e : employees) {
+                userInfos.add(e.toUserInfo());
+            }
         }
 
         if (organizations != null && !organizations.isEmpty()) {
@@ -50,17 +57,17 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
             for (Organization org : organizations) {
                 orgIds.add(org.id);
             }
-            List<UserInfo> finalUserInfos = userInfos;
-            organizationServiceViewModel.getOrganizationEmployees(orgIds, true).observe(this, employees -> {
-                if (employees != null) {
-                    for (Employee e : employees) {
+            Set<UserInfo> finalUserInfos = userInfos;
+            organizationServiceViewModel.getOrganizationEmployees(orgIds, true).observe(this, es -> {
+                if (es != null) {
+                    for (Employee e : es) {
                         finalUserInfos.add(e.toUserInfo());
                     }
                 }
-                forwardToConversation(finalUserInfos);
+                forwardToConversation(new ArrayList<>(finalUserInfos));
             });
         } else {
-            forwardToConversation(userInfos);
+            forwardToConversation(new ArrayList<>(userInfos));
         }
     }
 
@@ -75,9 +82,9 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
             finish();
         } else {
             MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content(R.string.creating)
-                .progress(true, 100)
-                .build();
+                    .content(R.string.creating)
+                    .progress(true, 100)
+                    .build();
             dialog.show();
 
             Map<String, UserInfo> userMap = new HashMap<>();

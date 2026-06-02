@@ -207,4 +207,8 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     public void onFooterClick(int index) {
 
     }
+
+    public void scrollToPosition(int position){
+        linearLayoutManager.scrollToPosition(position);
+    }
 }

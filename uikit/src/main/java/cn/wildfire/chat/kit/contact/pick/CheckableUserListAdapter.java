@@ -36,11 +36,25 @@ public class CheckableUserListAdapter extends UserListAdapter {
     }
 
 
-    public void updateUserStatus(UIUserInfo userInfo) {
-        if (users != null && userInfo != null) {
+    public void updateUserStatus(List<UIUserInfo> checkedUserInfo) {
+        if (users != null) {
+            UIUserInfo ui;
+            boolean found;
             for (int i = 0; i < users.size(); i++) {
-                if (users.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
-                    users.set(i, userInfo);
+                ui = users.get(i);
+                found = false;
+                for (UIUserInfo cu : checkedUserInfo) {
+                    if (ui.getUserInfo().uid.equals(cu.getUserInfo().uid)) {
+                        if (!ui.isChecked()) {
+                            ui.setChecked(true);
+                            notifyItemChanged(headerCount() + i);
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found && ui.isChecked()) {
+                    ui.setChecked(false);
                     notifyItemChanged(headerCount() + i);
                 }
             }
@@ -70,7 +84,6 @@ public class CheckableUserListAdapter extends UserListAdapter {
             UIUserInfo userInfo = viewHolder.getBindContact();
             if (onUserClickListener != null) {
                 onUserClickListener.onUserClick(userInfo);
-                viewHolder.setChecked(userInfo.isChecked());
             }
         });
         return viewHolder;

@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
 
-
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
     }
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations) {
+    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations, List<Employee> employees) {
         List<String> initialCheckedIds = pickUserViewModel.getInitialCheckedIds();
         List<UserInfo> userInfos = null;
         if (initialCheckedIds != null && !initialCheckedIds.isEmpty()) {
@@ -58,8 +57,15 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
         }
         userInfos = userInfos == null ? new ArrayList<>() : userInfos;
 
-        for (UIUserInfo uiUserinfo : newlyCheckedUserInfos) {
-            userInfos.add(uiUserinfo.getUserInfo());
+        if (newlyCheckedUserInfos != null) {
+            for (UIUserInfo uiUserinfo : newlyCheckedUserInfos) {
+                userInfos.add(uiUserinfo.getUserInfo());
+            }
+        }
+        if (employees != null) {
+            for (Employee e : employees) {
+                userInfos.add(e.toUserInfo());
+            }
         }
 
         if (organizations != null && !organizations.isEmpty() && Config.ENABLE_SELECT_ORGANIZATION) {
@@ -69,9 +75,9 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
                 orgIds.add(org.id);
             }
             List<UserInfo> finalUserInfos = userInfos;
-            organizationServiceViewModel.getOrganizationEmployees(orgIds, true).observe(this, employees -> {
-                if (employees != null) {
-                    for (Employee e : employees) {
+            organizationServiceViewModel.getOrganizationEmployees(orgIds, true).observe(this, es -> {
+                if (es != null) {
+                    for (Employee e : es) {
                         finalUserInfos.add(e.toUserInfo());
                     }
                 }
@@ -95,9 +101,9 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             finish();
         } else {
             MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content(R.string.creating_conversation)
-                .progress(true, 100)
-                .build();
+                    .content(R.string.creating_conversation)
+                    .progress(true, 100)
+                    .build();
             dialog.show();
 
             Map<String, UserInfo> userMap = new HashMap<>();

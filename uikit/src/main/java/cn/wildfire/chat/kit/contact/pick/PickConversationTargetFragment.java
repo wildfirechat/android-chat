@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.contact.pick;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -128,12 +129,17 @@ public class PickConversationTargetFragment extends PickUserFragment {
         } else if (holder instanceof OrganizationViewHolder) {
             Organization organization = ((OrganizationViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
-            intent.putExtra("organizationId", organization.id);
+            intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
+            intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
+            intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_ORANIZATIONS, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedOrganizations());
+
             startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         } else if (holder instanceof DepartViewHolder) {
             Organization organization = ((DepartViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
-            intent.putExtra("organizationId", organization.id);
+            intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
+            intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
+            intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_ORANIZATIONS, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedOrganizations());
             startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         }
     }
@@ -152,14 +158,9 @@ public class PickConversationTargetFragment extends PickUserFragment {
         } else if (requestCode == REQUEST_CODE_PICK_ORGANIZATION_MEMBER) {
             ArrayList<Organization> organizations = data.getParcelableArrayListExtra("organizations");
             ArrayList<Employee> employees = data.getParcelableArrayListExtra("employees");
-            if (employees != null) {
-                for (Employee employee : employees) {
-                    UIUserInfo uiUserInfo = new UIUserInfo(employee.toUserInfo());
-                    pickUserViewModel.checkUser(uiUserInfo, true);
-                }
-            }
-            if (organizations != null && Config.ENABLE_SELECT_ORGANIZATION) {
-                pickedUserAdapter.setOrganizations(organizations);
+            pickUserViewModel.setCheckedEmployees(employees);
+            if (Config.ENABLE_SELECT_ORGANIZATION) {
+                pickUserViewModel.setCheckedOrganizations(organizations);
 
                 // 没有的话，搜索提示框布局会错乱
                 handleHintView(false);
@@ -172,6 +173,10 @@ public class PickConversationTargetFragment extends PickUserFragment {
 
     public List<Organization> getCheckedOrganizations() {
         return pickedUserAdapter.organizations;
+    }
+
+    public List<Employee> getCheckedEmployees() {
+        return pickedUserAdapter.employees;
     }
 
     public List<UIUserInfo> getCheckedUserInfos() {

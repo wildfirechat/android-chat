@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.contact.pick;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,22 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.organization.model.Employee;
+import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class PickUserViewModel extends ViewModel {
+
+    // pick source users
     private List<UIUserInfo> users;
+
+    private final List<UIUserInfo> checkedUsers = new ArrayList<>();
+    private List<Employee> checkedEmployees = new ArrayList<>();
+    private List<Organization> checkedOrganizations = new ArrayList<>();
     private List<String> uncheckableIds;
     private List<String> initialCheckedIds;
-    private MutableLiveData<UIUserInfo> userCheckStatusUpdateLiveData;
+    private MutableLiveData<Object> userCheckStatusUpdateLiveData;
     private int maxPickCount = Integer.MAX_VALUE;
 
     public PickUserViewModel() {
         super();
     }
 
-    public MutableLiveData<UIUserInfo> userCheckStatusUpdateLiveData() {
+    public MutableLiveData<Object> userCheckStatusUpdateLiveData() {
         if (userCheckStatusUpdateLiveData == null) {
             userCheckStatusUpdateLiveData = new MutableLiveData<>();
         }
@@ -123,16 +133,37 @@ public class PickUserViewModel extends ViewModel {
      * @return
      */
     public @NonNull List<UIUserInfo> getCheckedUsers() {
-        List<UIUserInfo> checkedUsers = new ArrayList<>();
-        if (users == null) {
-            return checkedUsers;
+        return checkedUsers == null ? new ArrayList<>() : checkedUsers;
+    }
+
+    public @NonNull List<Employee> getCheckedEmployees() {
+        return checkedEmployees == null ? new ArrayList<>() : checkedEmployees;
+    }
+
+    public void setCheckedEmployees(List<Employee> employees) {
+        this.checkedEmployees = employees;
+        if (userCheckStatusUpdateLiveData != null) {
+            userCheckStatusUpdateLiveData.setValue(new Object());
         }
-        for (UIUserInfo info : users) {
-            if (info.isCheckable() && info.isChecked()) {
-                checkedUsers.add(info);
-            }
+    }
+
+    public List<Organization> getCheckedOrganizations() {
+        return checkedOrganizations == null ? new ArrayList<>() : checkedOrganizations;
+    }
+
+    public void setCheckedOrganizations(List<Organization> checkedOrganizations) {
+        this.checkedOrganizations = checkedOrganizations;
+        if (userCheckStatusUpdateLiveData != null) {
+            userCheckStatusUpdateLiveData.setValue(new Object());
         }
-        return checkedUsers;
+    }
+
+    private int getTotalCheckedCount() {
+        int count = getCheckedUsers().size() + getCheckedEmployees().size();
+        for (Organization org : getCheckedOrganizations()) {
+            count += org.memberCount;
+        }
+        return count;
     }
 
     /**
@@ -141,12 +172,58 @@ public class PickUserViewModel extends ViewModel {
      * @return 选择成功，则返回true；否则，失败
      */
     public boolean checkUser(UIUserInfo userInfo, boolean checked) {
-        if (checked && getCheckedUsers() != null && getCheckedUsers().size() >= maxPickCount) {
-            return false;
+        if (checked) {
+            if (getTotalCheckedCount() >= maxPickCount) {
+                return false;
+            }
         }
-        userInfo.setChecked(checked);
+        if (checked) {
+            if (!checkedUsers.stream().anyMatch(ui -> TextUtils.equals(userInfo.getUserInfo().uid, ui.getUserInfo().uid))) {
+                checkedUsers.add(userInfo);
+            }
+        } else {
+            checkedUsers.removeIf(e -> TextUtils.equals(e.getUserInfo().uid, userInfo.getUserInfo().uid));
+        }
         if (userCheckStatusUpdateLiveData != null) {
-            userCheckStatusUpdateLiveData.setValue(userInfo);
+            userCheckStatusUpdateLiveData.setValue(new Object());
+        }
+        return true;
+    }
+
+    public boolean checkEmployee(Employee employee, boolean checked) {
+        if (checked) {
+            if (getTotalCheckedCount() >= maxPickCount) {
+                return false;
+            }
+        }
+        if (checked) {
+            if (!checkedEmployees.stream().anyMatch(e -> TextUtils.equals(employee.employeeId, e.employeeId))) {
+                checkedEmployees.add(employee);
+            }
+        } else {
+            checkedEmployees.removeIf(e -> TextUtils.equals(e.employeeId, employee.employeeId));
+        }
+        if (userCheckStatusUpdateLiveData != null) {
+            userCheckStatusUpdateLiveData.setValue(new Object());
+        }
+        return true;
+    }
+
+    public boolean checkOrganization(Organization org, boolean checked) {
+        if (checked) {
+            if (getTotalCheckedCount() >= maxPickCount) {
+                return false;
+            }
+        }
+        if (checked) {
+            if (!checkedOrganizations.stream().anyMatch(o -> o.id == org.id)) {
+                checkedOrganizations.add(org);
+            }
+        } else {
+            checkedOrganizations.removeIf(o -> o.id == org.id);
+        }
+        if (userCheckStatusUpdateLiveData != null) {
+            userCheckStatusUpdateLiveData.setValue(new Object());
         }
         return true;
     }

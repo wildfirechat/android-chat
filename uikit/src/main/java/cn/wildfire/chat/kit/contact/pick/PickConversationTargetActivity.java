@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 
 public abstract class PickConversationTargetActivity extends WfcBaseActivity implements PickConversationTargetFragment.OnGroupPickListener {
@@ -28,24 +29,23 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     private boolean pickGroupForResult = true;
     private boolean multiGroupMode = false;
     private TextView confirmTv;
-    private List<UIUserInfo> checkUserInfos;
 
     protected PickUserViewModel pickUserViewModel;
     private PickConversationTargetFragment fragment;
-    private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
+    private Observer<Object> contactCheckStatusUpdateLiveDataObserver = new Observer<Object>() {
         @Override
-        public void onChanged(@Nullable UIUserInfo userInfo) {
-            checkUserInfos = pickUserViewModel.getCheckedUsers();
-            updatePickStatus(checkUserInfos);
+        public void onChanged(@Nullable Object obj) {
+            updateConfirmMenuItemStatus();
         }
     };
 
-    protected void updatePickStatus(List<UIUserInfo> userInfos) {
-        if (userInfos == null || userInfos.isEmpty()) {
+    protected void updateConfirmMenuItemStatus() {
+        int count = pickUserViewModel.getCheckedEmployees().size() + pickUserViewModel.getCheckedUsers().size() + pickUserViewModel.getCheckedOrganizations().size();
+        if (count == 0) {
             confirmTv.setText(R.string.pick_conversation_done);
             confirmTv.setEnabled(false);
         } else {
-            confirmTv.setText(getString(R.string.pick_conversation_done_with_count, userInfos.size()));
+            confirmTv.setText(getString(R.string.pick_conversation_done_with_count, count));
             confirmTv.setEnabled(true);
         }
     }
@@ -80,7 +80,7 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         confirmTv = view.findViewById(R.id.confirm_tv);
         confirmTv.setOnClickListener(v -> onConfirmClick());
 
-        updatePickStatus(this.checkUserInfos);
+        updateConfirmMenuItemStatus();
     }
 
     private void initView() {
@@ -97,10 +97,10 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
-    protected abstract void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations);
+    protected abstract void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations, List<Employee> employees);
 
     protected void onConfirmClick() {
         List<UIUserInfo> newlyCheckedUserInfos = fragment.getCheckedUserInfos().stream().filter(UIUserInfo::isCheckable).collect(Collectors.toList());
-        onContactPicked(newlyCheckedUserInfos, fragment.getCheckedOrganizations());
+        onContactPicked(newlyCheckedUserInfos, fragment.getCheckedOrganizations(), fragment.getCheckedEmployees());
     }
 }

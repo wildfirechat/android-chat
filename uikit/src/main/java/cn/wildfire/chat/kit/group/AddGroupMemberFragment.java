@@ -7,11 +7,11 @@ package cn.wildfire.chat.kit.group;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import cn.wildfirechat.model.GroupInfo;
 
 public class AddGroupMemberFragment extends PickContactFragment {
     private GroupInfo groupInfo;
-    private ArrayList<String> disabledEmployeeIds;
+    private ArrayList<String> groupMemberIds = new ArrayList<>();
     private static final int REQUEST_CODE_PICK_ORGANIZATION_MEMBER = 101;
 
     public static AddGroupMemberFragment newInstance(GroupInfo groupInfo) {
@@ -67,7 +67,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
             for (UIUserInfo uiUserInfo : uiUserInfos) {
                 memberIds.add(uiUserInfo.getUserInfo().uid);
             }
-            disabledEmployeeIds = new ArrayList<>(memberIds);
+            groupMemberIds = new ArrayList<>(memberIds);
             pickUserViewModel.setUncheckableIds(memberIds);
             pickUserViewModel.setInitialCheckedIds(memberIds);
             userListAdapter.notifyDataSetChanged();
@@ -84,6 +84,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
                         OrganizationValue value = new OrganizationValue();
                         value.setValue(org);
                         addHeaderViewHolder(OrganizationViewHolder.class, R.layout.contact_header_organization, value);
+                        scrollToPosition(0);
                     }
                 }
             });
@@ -93,6 +94,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
                         OrganizationValue value = new OrganizationValue();
                         value.setValue(org);
                         addHeaderViewHolder(DepartViewHolder.class, R.layout.contact_header_department, value);
+                        scrollToPosition(0);
                     }
                 }
             });
@@ -104,18 +106,16 @@ public class AddGroupMemberFragment extends PickContactFragment {
         if (holder instanceof OrganizationViewHolder) {
             Organization organization = ((OrganizationViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
-            intent.putExtra("organizationId", organization.id);
-            if (disabledEmployeeIds != null && !disabledEmployeeIds.isEmpty()) {
-                intent.putStringArrayListExtra("disabledEmployeeIds", disabledEmployeeIds);
-            }
+            intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
+            intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
+            intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
             startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         } else if (holder instanceof DepartViewHolder) {
             Organization organization = ((DepartViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
-            intent.putExtra("organizationId", organization.id);
-            if (disabledEmployeeIds != null && !disabledEmployeeIds.isEmpty()) {
-                intent.putStringArrayListExtra("disabledEmployeeIds", disabledEmployeeIds);
-            }
+            intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
+            intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
+            intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
             startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         }
     }
@@ -125,39 +125,24 @@ public class AddGroupMemberFragment extends PickContactFragment {
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PICK_ORGANIZATION_MEMBER && data != null) {
             ArrayList<Employee> employees = data.getParcelableArrayListExtra("employees");
             if (employees != null) {
-                for (Employee employee : employees) {
-                    checkOrganizationEmployee(employee);
-                }
-                List<UIUserInfo> currentUsers = userListAdapter.getUsers();
-                if (currentUsers != null) {
-                    userListAdapter.notifyDataSetChanged();
-                }
-            }
-            if (getActivity() instanceof AddGroupMemberActivity) {
-                ((AddGroupMemberActivity) getActivity()).updateConfirmStatus();
+                pickUserViewModel.setCheckedEmployees(employees);
             }
             if (Config.ENABLE_SELECT_ORGANIZATION) {
                 ArrayList<Organization> organizations = data.getParcelableArrayListExtra("organizations");
                 if (organizations != null && !organizations.isEmpty()) {
-                    OrganizationServiceViewModel orgViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
-                    List<Integer> orgIds = new ArrayList<>();
-                    for (Organization org : organizations) {
-                        orgIds.add(org.id);
-                    }
-                    orgViewModel.getOrganizationEmployees(orgIds, true).observe(this, orgEmployees -> {
-                        if (orgEmployees != null && isAdded()) {
-                            for (Employee e : orgEmployees) {
-                                checkOrganizationEmployee(e);
-                            }
-                            List<UIUserInfo> currentUsers = userListAdapter.getUsers();
-                            if (currentUsers != null) {
-                                userListAdapter.notifyDataSetChanged();
-                            }
-                            if (getActivity() instanceof AddGroupMemberActivity) {
-                                ((AddGroupMemberActivity) getActivity()).updateConfirmStatus();
-                            }
-                        }
-                    });
+                    pickUserViewModel.setCheckedOrganizations(organizations);
+//                    OrganizationServiceViewModel orgViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
+//                    List<Integer> orgIds = new ArrayList<>();
+//                    for (Organization org : organizations) {
+//                        orgIds.add(org.id);
+//                    }
+//                    orgViewModel.getOrganizationEmployees(orgIds, true).observe(this, orgEmployees -> {
+//                        if (orgEmployees != null && isAdded()) {
+//                            for (Employee e : orgEmployees) {
+//                                checkOrganizationEmployee(e);
+//                            }
+//                        }
+//                    });
                 }
             }
         } else {
@@ -173,33 +158,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
     }
 
     private void checkOrganizationEmployee(Employee employee) {
-        boolean alreadyPicked = false;
-        if (pickedUserAdapter.getPickedUsers() != null) {
-            for (UIUserInfo picked : pickedUserAdapter.getPickedUsers()) {
-                if (picked.getUserInfo().uid.equals(employee.employeeId)) {
-                    alreadyPicked = true;
-                    break;
-                }
-            }
-        }
-        if (!alreadyPicked) {
-            UIUserInfo uiUserInfo = new UIUserInfo(employee.toUserInfo());
-            List<UIUserInfo> currentUsers = userListAdapter.getUsers();
-            if (currentUsers != null) {
-                boolean exists = false;
-                for (UIUserInfo u : currentUsers) {
-                    if (u.getUserInfo().uid.equals(employee.employeeId)) {
-                        u.setChecked(true);
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists) {
-                    uiUserInfo.setChecked(true);
-                    currentUsers.add(uiUserInfo);
-                }
-            }
-            pickUserViewModel.checkUser(uiUserInfo, true);
-        }
+        UIUserInfo uiUserInfo = new UIUserInfo(employee.toUserInfo());
+        pickUserViewModel.checkUser(uiUserInfo, true);
     }
 }

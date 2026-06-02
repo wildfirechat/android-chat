@@ -35,7 +35,7 @@ public class PickGroupMemberFragment extends PickUserFragment {
     @Override
     protected void setupPickFromUsers() {
         PickUserViewModel pickUserViewModel = new ViewModelProvider(getActivity()).get(PickUserViewModel.class);
-        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
             showContent();
             pickUserViewModel.setUsers(uiUserInfos);

@@ -41,10 +41,10 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     private boolean isSearchFragmentShowing = false;
     protected PickedUserAdapter pickedUserAdapter;
 
-    private final Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = userInfo -> {
-        ((CheckableUserListAdapter) userListAdapter).updateUserStatus(userInfo);
+    private final Observer<Object> contactCheckStatusUpdateLiveDataObserver = obj -> {
+        ((CheckableUserListAdapter) userListAdapter).updateUserStatus(pickUserViewModel.getCheckedUsers());
         hideSearchContactFragment();
-        updatePickedUserView(userInfo);
+        updatePickedUserView();
     };
 
     @Override
@@ -151,8 +151,8 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         }
         searchUserFrameLayout.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction()
-            .replace(R.id.searchFrameLayout, searchAndPickUserFragment)
-            .commit();
+                .replace(R.id.searchFrameLayout, searchAndPickUserFragment)
+                .commit();
         isSearchFragmentShowing = true;
     }
 
@@ -185,12 +185,10 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         }
     }
 
-    private void updatePickedUserView(UIUserInfo userInfo) {
-        if (userInfo.isChecked()) {
-            pickedUserAdapter.addUser(userInfo);
-        } else {
-            pickedUserAdapter.removeUser(userInfo);
-        }
+    private void updatePickedUserView() {
+        pickedUserAdapter.setUsers(pickUserViewModel.getCheckedUsers());
+        pickedUserAdapter.setEmployees(pickUserViewModel.getCheckedEmployees());
+        pickedUserAdapter.setOrganizations(pickUserViewModel.getCheckedOrganizations());
         handleHintView(false);
         handleEditText();
     }

@@ -94,8 +94,6 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     public void onUserClick(UIUserInfo userInfo) {
         if (userInfo.isCheckable()) {
             pickUserViewModel.checkUser(userInfo, !userInfo.isChecked());
-            // the checked status has already changed by checkContact method
-            contactAdapter.updateUserStatus(userInfo);
         }
     }
 }

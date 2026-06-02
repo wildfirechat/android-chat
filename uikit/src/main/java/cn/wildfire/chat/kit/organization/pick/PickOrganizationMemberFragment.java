@@ -40,9 +40,10 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
 
     private static final String TAG = "PickOrgMemberFragment";
 
-    private List<Integer> initialCheckedOrganizationIds;
-    private List<String> initialCheckedEmployeeIds;
-    private Set<String> disabledEmployeeIds;
+    private int maxPickCount = Integer.MAX_VALUE;
+    private List<Employee> initialCheckedEmployees;
+    private List<Organization> initialCheckedOrganizations;
+    private Set<String> uncheckableUserIds;
 
     @Override
     protected int contentLayout() {
@@ -55,16 +56,25 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
         Bundle bundle = getArguments();
         if (bundle != null) {
             currentOrgId = bundle.getInt("organizationId");
-            ArrayList<String> disabledIds = bundle.getStringArrayList("disabledEmployeeIds");
-            if (disabledIds != null) {
-                disabledEmployeeIds = new HashSet<>(disabledIds);
+            maxPickCount = bundle.getInt("maxPickCount", Integer.MAX_VALUE);
+
+            initialCheckedEmployees = bundle.getParcelableArrayList("initialCheckedEmployees");
+            initialCheckedOrganizations = bundle.getParcelableArrayList("initialCheckedOrganizations");
+
+            ArrayList<String> uncheckableIds = bundle.getStringArrayList("uncheckableIds");
+            if (uncheckableIds != null) {
+                uncheckableUserIds = new HashSet<>(uncheckableIds);
             }
         }
         recyclerView = view.findViewById(R.id.recyclerView);
         adapter = new CheckableOrganizationMemberListAdapter(this);
         adapter.setOnOrganizationMemberClickListener(this);
-        if (disabledEmployeeIds != null) {
-            adapter.setDisabledEmployeeIds(disabledEmployeeIds);
+        adapter.setMaxPickCount(maxPickCount);
+        adapter.setInitialCheckedEmployees(initialCheckedEmployees);
+        adapter.setInitialCheckedOrganizations(initialCheckedOrganizations);
+
+        if (uncheckableUserIds != null) {
+            adapter.setUncheckableEmployeeIds(uncheckableUserIds);
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -102,6 +112,13 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
             this.onOrganizationMemberClickListener.onEmployeeCheck(employee, checked);
         }
 
+    }
+
+    @Override
+    public void onPickLimitExceeded() {
+        if (this.onOrganizationMemberClickListener != null) {
+            this.onOrganizationMemberClickListener.onPickLimitExceeded();
+        }
     }
 
     public void setOnOrganizationMemberClickListener(CheckableOrganizationMemberListAdapter.OnOrganizationMemberClickListener onOrganizationMemberClickListener) {

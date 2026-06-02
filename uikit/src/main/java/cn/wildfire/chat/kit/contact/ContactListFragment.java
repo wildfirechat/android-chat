@@ -171,8 +171,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                     if (isRootOrganizationLoaded) {
                         return;
                     }
-                    isRootOrganizationLoaded = true;
                     if (!organizations.isEmpty()) {
+                        isRootOrganizationLoaded = true;
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
                             value.setValue(org);

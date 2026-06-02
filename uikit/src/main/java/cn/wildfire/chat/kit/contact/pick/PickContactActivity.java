@@ -33,9 +33,9 @@ public class PickContactActivity extends WfcBaseActivity {
     private TextView confirmTv;
 
     private PickUserViewModel pickUserViewModel;
-    private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
+    private Observer<Object> contactCheckStatusUpdateLiveDataObserver = new Observer<Object>() {
         @Override
-        public void onChanged(@Nullable UIUserInfo userInfo) {
+        public void onChanged(@Nullable Object object) {
             List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             updatePickStatus(list);
         }

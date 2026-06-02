@@ -31,9 +31,9 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     public static final String MAX_COUNT = "maxCount";
 
     protected PickUserViewModel pickUserViewModel;
-    private Observer<UIUserInfo> userCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
+    private Observer<Object> userCheckStatusUpdateLiveDataObserver = new Observer<Object>() {
         @Override
-        public void onChanged(@Nullable UIUserInfo userInfo) {
+        public void onChanged(@Nullable Object object) {
             List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             onGroupMemberChecked(list);
         }
