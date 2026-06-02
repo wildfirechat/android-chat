@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,11 +19,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.organization.model.Employee;
 
 public class SearchAndPickUserFragment extends Fragment implements UserListAdapter.OnUserClickListener {
     private CheckableUserListAdapter contactAdapter;
@@ -72,16 +75,46 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
         if (TextUtils.isEmpty(keyword)) {
             return;
         }
-        List<UIUserInfo> result = pickUserViewModel.searchUser(keyword);
-        if (result == null || result.isEmpty()) {
-            contactRecyclerView.setVisibility(View.GONE);
-            tipTextView.setVisibility(View.VISIBLE);
-        } else {
-            contactRecyclerView.setVisibility(View.VISIBLE);
-            tipTextView.setVisibility(View.GONE);
-        }
-        contactAdapter.setUsers(result);
-        contactAdapter.notifyDataSetChanged();
+        Toast.makeText(getContext(), getString(R.string.search_user), Toast.LENGTH_SHORT).show();
+        pickUserViewModel.searchUser(keyword).observe(this, resulPair -> {
+            List<UIUserInfo> result = new ArrayList<>();
+            List<UIUserInfo> users = resulPair.first;
+            if (users != null) {
+                for (int i = 0; i < users.size(); i++) {
+                    UIUserInfo ui = new UIUserInfo(users.get(i).getUserInfo());
+                    if (i == 0) {
+                        ui.setCategory(getString(R.string.contact_category));
+                        ui.setShowCategory(true);
+                    } else {
+                        ui.setShowCategory(false);
+                    }
+                    result.add(ui);
+                }
+            }
+            if (resulPair.second != null) {
+                List<Employee> employees = resulPair.second;
+                for (int i = 0; i < employees.size(); i++) {
+                    UIUserInfo ui = new UIUserInfo(employees.get(i).toUserInfo());
+                    if (i == 0) {
+                        ui.setShowCategory(true);
+                        ui.setCategory(getString(R.string.organization_directory));
+
+                    } else {
+                        ui.setShowCategory(false);
+                    }
+                    result.add(ui);
+                }
+            }
+            if (result.isEmpty()) {
+                contactRecyclerView.setVisibility(View.GONE);
+                tipTextView.setVisibility(View.VISIBLE);
+            } else {
+                contactRecyclerView.setVisibility(View.VISIBLE);
+                tipTextView.setVisibility(View.GONE);
+            }
+            contactAdapter.setUsers(result);
+            contactAdapter.notifyDataSetChanged();
+        });
     }
 
     public void rest() {

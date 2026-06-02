@@ -23,10 +23,12 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfire.chat.kit.organization.model.Employee;
 
 public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CONTACT = 1024;
     private static final int TYPE_FOOTER_START_INDEX = 2048;
+    protected List<Employee> employees;
     protected List<UIUserInfo> users;
     protected List<UIUserInfo> favUsers;
     protected List<UIUserInfo> aiRobotUsers;

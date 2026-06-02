@@ -22,7 +22,6 @@ import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.EmployeeInfoActivity;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.organization.model.Employee;
-import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.viewholder.EmployeeViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfirechat.model.UserInfo;
@@ -74,44 +73,18 @@ public class EmployeeSearchModule extends SearchableModule<Employee, EmployeeVie
         if (!organizationServiceProvider.isServiceAvailable()) {
             return results;
         }
-
-        List<Organization> orgs = new ArrayList<>();
-        CountDownLatch finalLatch1 = latch;
-        organizationServiceProvider.getRootOrganization(new SimpleCallback<List<Organization>>() {
+        organizationServiceProvider.searchEmployee(keyword, new SimpleCallback<List<Employee>>() {
             @Override
-            public void onUiSuccess(List<Organization> organizations) {
-                orgs.addAll(organizations);
-                finalLatch1.countDown();
+            public void onUiSuccess(List<Employee> employees) {
+                results.addAll(employees);
+                latch.countDown();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                finalLatch1.countDown();
+                latch.countDown();
             }
         });
-        try {
-            latch.await();
-        } catch (InterruptedException ignored) {
-        }
-
-        if (!orgs.isEmpty()) {
-            latch = new CountDownLatch(orgs.size());
-            CountDownLatch finalLatch = latch;
-            for (Organization org : orgs) {
-                organizationServiceProvider.searchEmployee(org.id, keyword, new SimpleCallback<List<Employee>>() {
-                    @Override
-                    public void onUiSuccess(List<Employee> employees) {
-                        results.addAll(employees);
-                        finalLatch.countDown();
-                    }
-
-                    @Override
-                    public void onUiFailure(int code, String msg) {
-                        finalLatch.countDown();
-                    }
-                });
-            }
-        }
 
         try {
             latch.await();

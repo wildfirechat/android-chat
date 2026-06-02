@@ -6,13 +6,16 @@ package cn.wildfire.chat.app;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
@@ -345,6 +348,59 @@ public class OrganizationService implements OrganizationServiceProvider {
             @Override
             public void onUiFailure(int code, String msg) {
                 callback.onUiFailure(code, msg);
+            }
+        });
+    }
+
+    @Override
+    public void searchEmployee(String keyword, Callback<List<Employee>> callback) {
+        if (!isServiceAvailable) {
+            callback.onFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        Map<String, Object> params = new HashMap<>(1);
+        String url = ORG_SERVER_ADDRESS + "/api/organization/root";
+        OKHttpHelper.post(url, params, new Callback<List<Organization>>() {
+            @Override
+            public void onSuccess(List<Organization> organizations) {
+                List<Employee> ressults = new ArrayList<>();
+                if (organizations != null) {
+                    CountDownLatch latch = new CountDownLatch(organizations.size());
+                    for (Organization org : organizations) {
+                        Map<String, Object> params = new HashMap<>(1);
+                        params.put("organizationId", org.id);
+                        params.put("keyword", keyword);
+                        params.put("count", 50);
+                        params.put("page", 0);
+                        String url = ORG_SERVER_ADDRESS + "/api/employee/search";
+                        OKHttpHelper.post(url, params, new Callback<PageResponse<Employee>>() {
+                            @Override
+                            public void onSuccess(PageResponse<Employee> employees) {
+                                if (employees.contents != null) {
+                                    fillDefaultPortrait(employees.contents);
+                                    ressults.addAll(employees.contents);
+                                }
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onFailure(int code, String msg) {
+                                Log.e(TAG, "search employee error " + code + " " + msg);
+                                latch.countDown();
+                            }
+                        });
+                    }
+                    try {
+                        latch.await();
+                    } catch (InterruptedException ignored) {
+                    }
+                    callback.onSuccess(ressults);
+                }
+            }
+
+            @Override
+            public void onFailure(int code, String msg) {
+                callback.onFailure(code, msg);
             }
         });
     }

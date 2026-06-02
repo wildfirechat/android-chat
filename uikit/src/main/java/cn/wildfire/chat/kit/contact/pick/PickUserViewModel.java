@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.contact.pick;
 
 import android.text.TextUtils;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -13,7 +14,10 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.net.Callback;
+import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
@@ -99,32 +103,46 @@ public class PickUserViewModel extends ViewModel {
         }
     }
 
-    public List<UIUserInfo> searchUser(String keyword) {
-        if (users == null || users.isEmpty()) {
-            return null;
-        }
+    public MutableLiveData<Pair<List<UIUserInfo>, List<Employee>>> searchUser(String keyword) {
+        MutableLiveData<Pair<List<UIUserInfo>, List<Employee>>> result = new MutableLiveData<>();
 
-        List<UIUserInfo> resultList = new ArrayList<>();
-        for (UIUserInfo info : users) {
-            UserInfo userInfo = info.getUserInfo();
-            String name = ChatManager.Instance().getUserDisplayName(userInfo);
-            String pinyin = PinyinUtils.getPinyin(name);
-            if (name.contains(keyword) || pinyin.contains(keyword.toUpperCase())) {
-                resultList.add(info);
-                if (uncheckableIds != null && uncheckableIds.contains(userInfo.uid)) {
-                    info.setCheckable(false);
-                }
-                if (initialCheckedIds != null && initialCheckedIds.contains(userInfo.uid)) {
-                    info.setChecked(true);
+        List<UIUserInfo> userResult = new ArrayList<>();
+        List<Employee> employeeResult = new ArrayList<>();
+        if (users != null) {
+            for (UIUserInfo info : users) {
+                UserInfo userInfo = info.getUserInfo();
+                String name = ChatManager.Instance().getUserDisplayName(userInfo);
+                String pinyin = PinyinUtils.getPinyin(name);
+                if (name.contains(keyword) || pinyin.contains(keyword.toUpperCase())) {
+                    userResult.add(info);
+                    if (uncheckableIds != null && uncheckableIds.contains(userInfo.uid)) {
+                        info.setCheckable(false);
+                    }
+                    if (initialCheckedIds != null && initialCheckedIds.contains(userInfo.uid)) {
+                        info.setChecked(true);
+                    }
                 }
             }
         }
-        if (resultList.isEmpty()) {
-            return null;
+        OrganizationServiceProvider organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
+        if (organizationServiceProvider.isServiceAvailable()) {
+            organizationServiceProvider.searchEmployee(keyword, new Callback<List<Employee>>() {
+                @Override
+                public void onSuccess(List<Employee> employees) {
+                    employeeResult.addAll(employees);
+                    result.postValue(new Pair<>(userResult, employeeResult));
+                }
+
+                @Override
+                public void onFailure(int code, String msg) {
+                    result.postValue(new Pair<>(userResult, employeeResult));
+                }
+            });
+        } else {
+            result.postValue(new Pair<>(userResult, employeeResult));
         }
-        resultList.get(0).setShowCategory(true);
-//        resultList.get(0).setCategory("搜索结果");
-        return resultList;
+
+        return result;
     }
 
     /**

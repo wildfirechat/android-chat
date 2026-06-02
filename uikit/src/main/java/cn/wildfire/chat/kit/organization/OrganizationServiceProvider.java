@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.organization;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.EmployeeEx;
@@ -41,4 +42,6 @@ public interface OrganizationServiceProvider {
 
     void searchEmployee(int orgId, String keyword, SimpleCallback<List<Employee>> callback);
 
+    // callback on work thread
+    void searchEmployee(String keyword, Callback<List<Employee>> callback);
 }
