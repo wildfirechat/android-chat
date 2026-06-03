@@ -6,14 +6,11 @@ package cn.wildfire.chat.app.widget;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -88,7 +85,7 @@ public class SlideVerifyDialog extends Dialog {
     }
 
     public SlideVerifyDialog(@NonNull Context context, @Nullable OnVerifySuccessListener listener) {
-        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        super(context, cn.wildfirechat.chat.R.style.AppTheme_TransparentDialog);
         this.verifyListener = listener;
     }
 
@@ -103,6 +100,18 @@ public class SlideVerifyDialog extends Dialog {
         loadVerifyCode();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // onStart 在 setContentView 之后、窗口完全 attach 后调用，此时设置尺寸才能生效
+        // windowIsFloating=true 下 MATCH_PARENT 只填充内容区，必须用真实像素强制全屏
+        if (getWindow() != null) {
+            android.util.DisplayMetrics metrics = new android.util.DisplayMetrics();
+            getWindow().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            getWindow().setLayout(metrics.widthPixels, metrics.heightPixels);
+        }
+    }
+
     /**
      * 初始化窗口参数
      */
@@ -110,19 +119,11 @@ public class SlideVerifyDialog extends Dialog {
         if (getWindow() == null) {
             return;
         }
-        
+
         WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
         params.gravity = Gravity.CENTER;
-        
-        // 设置半透明背景（黑色 50% 透明度）
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#80000000")));
-        
-        // 设置状态栏颜色为半透明黑色
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         params.dimAmount = 0.5f;
-
         getWindow().setAttributes(params);
         setCanceledOnTouchOutside(true);
     }
