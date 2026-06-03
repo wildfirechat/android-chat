@@ -76,8 +76,8 @@ public class PickUserViewModel extends ViewModel {
         updateUserStatus();
     }
 
-    public List<String> getInitialCheckedIds() {
-        return initialCheckedIds;
+    public @NonNull List<String> getInitialCheckedIds() {
+        return initialCheckedIds == null ? new ArrayList<>() : initialCheckedIds;
     }
 
     public void setUsers(List<UIUserInfo> users) {
@@ -106,41 +106,43 @@ public class PickUserViewModel extends ViewModel {
     public MutableLiveData<Pair<List<UIUserInfo>, List<Employee>>> searchUser(String keyword) {
         MutableLiveData<Pair<List<UIUserInfo>, List<Employee>>> result = new MutableLiveData<>();
 
-        List<UIUserInfo> userResult = new ArrayList<>();
-        List<Employee> employeeResult = new ArrayList<>();
-        if (users != null) {
-            for (UIUserInfo info : users) {
-                UserInfo userInfo = info.getUserInfo();
-                String name = ChatManager.Instance().getUserDisplayName(userInfo);
-                String pinyin = PinyinUtils.getPinyin(name);
-                if (name.contains(keyword) || pinyin.contains(keyword.toUpperCase())) {
-                    userResult.add(info);
-                    if (uncheckableIds != null && uncheckableIds.contains(userInfo.uid)) {
-                        info.setCheckable(false);
-                    }
-                    if (initialCheckedIds != null && initialCheckedIds.contains(userInfo.uid)) {
-                        info.setChecked(true);
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<UIUserInfo> userResult = new ArrayList<>();
+            List<Employee> employeeResult = new ArrayList<>();
+            if (users != null) {
+                for (UIUserInfo info : users) {
+                    UserInfo userInfo = info.getUserInfo();
+                    String name = ChatManager.Instance().getUserDisplayName(userInfo);
+                    String pinyin = PinyinUtils.getPinyin(name);
+                    if (name.contains(keyword) || pinyin.contains(keyword.toUpperCase())) {
+                        userResult.add(info);
+                        if (uncheckableIds != null && uncheckableIds.contains(userInfo.uid)) {
+                            info.setCheckable(false);
+                        }
+                        if (initialCheckedIds != null && initialCheckedIds.contains(userInfo.uid)) {
+                            info.setChecked(true);
+                        }
                     }
                 }
             }
-        }
-        OrganizationServiceProvider organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
-        if (organizationServiceProvider.isServiceAvailable()) {
-            organizationServiceProvider.searchEmployee(keyword, new Callback<List<Employee>>() {
-                @Override
-                public void onSuccess(List<Employee> employees) {
-                    employeeResult.addAll(employees);
-                    result.postValue(new Pair<>(userResult, employeeResult));
-                }
+            OrganizationServiceProvider organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
+            if (organizationServiceProvider.isServiceAvailable()) {
+                organizationServiceProvider.searchEmployee(keyword, new Callback<List<Employee>>() {
+                    @Override
+                    public void onSuccess(List<Employee> employees) {
+                        employeeResult.addAll(employees);
+                        result.postValue(new Pair<>(userResult, employeeResult));
+                    }
 
-                @Override
-                public void onFailure(int code, String msg) {
-                    result.postValue(new Pair<>(userResult, employeeResult));
-                }
-            });
-        } else {
-            result.postValue(new Pair<>(userResult, employeeResult));
-        }
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        result.postValue(new Pair<>(userResult, employeeResult));
+                    }
+                });
+            } else {
+                result.postValue(new Pair<>(userResult, employeeResult));
+            }
+        });
 
         return result;
     }

@@ -9,8 +9,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +26,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.organization.model.Employee;
+import cn.wildfire.chat.kit.widget.RecyclerViewScrollToHideKeyboardListener;
 
 public class SearchAndPickUserFragment extends Fragment implements UserListAdapter.OnUserClickListener {
     private CheckableUserListAdapter contactAdapter;
@@ -34,6 +35,7 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
 
     RecyclerView contactRecyclerView;
     TextView tipTextView;
+    ProgressBar progressBar;
 
     @Nullable
     @Override
@@ -52,6 +54,7 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     private void bindViews(View view) {
         contactRecyclerView = view.findViewById(R.id.usersRecyclerView);
         tipTextView = view.findViewById(R.id.tipTextView);
+        progressBar = view.findViewById(R.id.progressBar);
     }
 
     public void setPickUserFragment(PickUserFragment pickUserFragment) {
@@ -69,16 +72,25 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
         contactAdapter.setOnUserClickListener(this);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         contactRecyclerView.setAdapter(contactAdapter);
+        contactRecyclerView.addOnScrollListener(new RecyclerViewScrollToHideKeyboardListener());
     }
 
     public void search(String keyword) {
         if (TextUtils.isEmpty(keyword)) {
             return;
         }
-        Toast.makeText(getContext(), getString(R.string.search_user), Toast.LENGTH_SHORT).show();
+
+        progressBar.setVisibility(View.VISIBLE);
+        contactRecyclerView.setVisibility(View.GONE);
+        tipTextView.setVisibility(View.GONE);
+
         pickUserViewModel.searchUser(keyword).observe(this, resulPair -> {
+            progressBar.setVisibility(View.GONE);
             List<UIUserInfo> result = new ArrayList<>();
             List<UIUserInfo> users = resulPair.first;
+            List<Employee> checkedEmployees = pickUserViewModel.getCheckedEmployees();
+            List<UIUserInfo> checkedUsers = pickUserViewModel.getCheckedUsers();
+            List<String> uncheckableIds = pickUserViewModel.getInitialCheckedIds();
             if (users != null) {
                 for (int i = 0; i < users.size(); i++) {
                     UIUserInfo ui = new UIUserInfo(users.get(i).getUserInfo());
@@ -88,6 +100,10 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
                     } else {
                         ui.setShowCategory(false);
                     }
+                    boolean checked = checkedUsers.stream().anyMatch(cui -> TextUtils.equals(cui.getUserInfo().uid, ui.getUserInfo().uid));
+                    boolean uncheckable = uncheckableIds.stream().anyMatch(uid -> TextUtils.equals(uid, ui.getUserInfo().uid));
+                    ui.setChecked(checked);
+                    ui.setCheckable(!uncheckable);
                     result.add(ui);
                 }
             }
@@ -102,6 +118,13 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
                     } else {
                         ui.setShowCategory(false);
                     }
+                    ui.setExtra(employees.get(i));
+
+                    boolean checked = checkedEmployees.stream().anyMatch(e -> TextUtils.equals(e.employeeId, ui.getUserInfo().uid));
+                    boolean uncheckable = uncheckableIds.stream().anyMatch(uid -> TextUtils.equals(uid, ui.getUserInfo().uid));
+                    ui.setChecked(checked);
+                    ui.setCheckable(!uncheckable);
+
                     result.add(ui);
                 }
             }
@@ -120,13 +143,19 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     public void rest() {
         tipTextView.setVisibility(View.VISIBLE);
         contactRecyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         contactAdapter.setUsers(null);
     }
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
         if (userInfo.isCheckable()) {
-            pickUserViewModel.checkUser(userInfo, !userInfo.isChecked());
+            Object extra = userInfo.getExtra();
+            if (extra instanceof Employee) {
+                pickUserViewModel.checkEmployee((Employee) extra, !userInfo.isChecked());
+            } else {
+                pickUserViewModel.checkUser(userInfo, !userInfo.isChecked());
+            }
         }
     }
 }

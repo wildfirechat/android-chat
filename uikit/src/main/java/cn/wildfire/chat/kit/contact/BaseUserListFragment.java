@@ -31,7 +31,7 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
  */
 public abstract class BaseUserListFragment extends ProgressFragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
 
-    RecyclerView usersRecyclerView;
+    protected RecyclerView usersRecyclerView;
     QuickIndexBar quickIndexBar;
     TextView indexLetterTextView;
 

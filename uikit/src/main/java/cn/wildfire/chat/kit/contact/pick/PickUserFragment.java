@@ -26,6 +26,7 @@ import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.widget.RecyclerViewScrollToHideKeyboardListener;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 
@@ -87,6 +88,7 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         configPickedUserRecyclerView();
         pickedUserAdapter = getPickedUserAdapter();
         pickedUserRecyclerView.setAdapter(pickedUserAdapter);
+        usersRecyclerView.addOnScrollListener(new RecyclerViewScrollToHideKeyboardListener());
     }
 
     protected void configPickedUserRecyclerView() {

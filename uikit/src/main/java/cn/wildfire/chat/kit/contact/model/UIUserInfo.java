@@ -25,7 +25,7 @@ public class UIUserInfo {
     private UserInfo userInfo;
     private boolean isChecked;
     private boolean isCheckable = true;
-    private String extra;
+    private Object extra;
 
     public UIUserInfo(UserInfo userInfo) {
         this.userInfo = userInfo;
@@ -83,11 +83,11 @@ public class UIUserInfo {
         isCheckable = checkable;
     }
 
-    public String getExtra() {
+    public Object getExtra() {
         return extra;
     }
 
-    public void setExtra(String extra) {
+    public void setExtra(Object extra) {
         this.extra = extra;
     }
 
