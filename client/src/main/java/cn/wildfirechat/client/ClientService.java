@@ -223,6 +223,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private boolean useSM4 = false;
     private boolean useAES256 = false;
+    private boolean useDataVerify = false;
+    private int encryptMaxMinutes = 0;
     private boolean tcpShortLink = false;
     private boolean isPad = false;
     private boolean rawMsg = false;
@@ -289,6 +291,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (useAES256) {
                 ProtoLogic.useEncryptAES256();
+            }
+
+            if (useDataVerify) {
+                ProtoLogic.useDataVerify(true);
+            }
+
+            if (encryptMaxMinutes > 0) {
+                ProtoLogic.useEncryptMaxMinutes(encryptMaxMinutes);
             }
 
             if (tcpShortLink) {
@@ -4014,6 +4024,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useAES256() throws RemoteException {
             useAES256 = true;
             ProtoLogic.useEncryptAES256();
+        }
+
+        @Override
+        public void setDataVerify(boolean enabled) throws RemoteException {
+            useDataVerify = enabled;
+            ProtoLogic.useDataVerify(enabled);
+        }
+
+        @Override
+        public void setEncryptMaxMinutes(int minutes) throws RemoteException {
+            encryptMaxMinutes = minutes;
+            ProtoLogic.useEncryptMaxMinutes(minutes);
         }
 
         @Override

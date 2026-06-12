@@ -348,6 +348,8 @@ interface IRemoteClient {
     oneway void setPlatform(in boolean isPad);
     oneway void useSM4();
     oneway void useAES256();
+    oneway void setDataVerify(boolean enabled);
+    oneway void setEncryptMaxMinutes(int minutes);
     oneway void useTcpShortLink();
     oneway void useRawMsg();
     oneway void noUseFts();

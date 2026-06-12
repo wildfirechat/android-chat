@@ -255,6 +255,8 @@ public class ChatManager {
     private boolean useSM4 = false;
     private boolean isPad = false;
     private boolean useAES256 = false;
+    private boolean dataVerify = false;
+    private int encryptMaxMinutes = 0;
     private boolean tcpShortLink = false;
     private int timeOffset = 0;
     private boolean rawMsg = false;
@@ -1345,6 +1347,38 @@ public class ChatManager {
 
         try {
             mClient.useAES256();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 启用数据校验。需要在connect之前调用。注意必须和服务器同时配置，否则无法连接。
+     */
+    public void setDataVerify(boolean enabled) {
+        dataVerify = enabled;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setDataVerify(enabled);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置加密最大时间段（分钟）。需要在connect之前调用。注意必须和服务器同时配置，否则无法连接。
+     */
+    public void setEncryptMaxMinutes(int minutes) {
+        encryptMaxMinutes = minutes;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setEncryptMaxMinutes(minutes);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -10904,6 +10938,12 @@ public class ChatManager {
                     }
                     if (useAES256) {
                         mClient.useAES256();
+                    }
+                    if (dataVerify) {
+                        mClient.setDataVerify(true);
+                    }
+                    if (encryptMaxMinutes > 0) {
+                        mClient.setEncryptMaxMinutes(encryptMaxMinutes);
                     }
                     if (tcpShortLink) {
                         mClient.useTcpShortLink();
