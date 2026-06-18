@@ -82,8 +82,8 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
             exNameTextView.setText(rich.exName);
         }
 
+        dataContainerLayout.removeAllViews();
         if (rich.datas != null && rich.datas.size() > 0) {
-            dataContainerLayout.removeAllViews();
             for (RichNotificationMessageContent.Data data : rich.datas) {
                 SimpleLabelView simpleLabelView = new SimpleLabelView(fragment.getContext());
                 simpleLabelView.setTitle(data.key);
