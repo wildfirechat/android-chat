@@ -28,14 +28,12 @@
             android:id="@+id/themeOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_theme"
             app:title="@string/theme" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/languageOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_lang"
             app:title="@string/language" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
@@ -43,7 +41,6 @@
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:show_divider="false"
-            app:start_src="@drawable/ic_font_size"
             app:title="@string/font_size" />
     </LinearLayout>
 

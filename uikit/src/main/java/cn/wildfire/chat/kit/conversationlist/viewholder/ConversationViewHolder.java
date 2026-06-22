@@ -35,7 +35,6 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.message.Message;
@@ -102,6 +101,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         LayoutScale.scaleViewHeight(itemView, LayoutScale.ROW);
         LayoutScale.scaleViewSize(itemView.findViewById(R.id.portraitRelativeLayout), LayoutScale.CAP);
         LayoutScale.scaleViewSize(portraitImageView, LayoutScale.CAP);
+        // 未读数徽标整体（宽高+文字）随字号放大但封顶，避免被撑成椭圆
+        LayoutScale.scaleBadge(unreadCountTextView, 18, 11, LayoutScale.BADGE_CAP);
     }
 
     final public void onBind(ConversationInfo conversationInfo, int position) {

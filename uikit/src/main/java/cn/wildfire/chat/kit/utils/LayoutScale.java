@@ -5,9 +5,11 @@
 package cn.wildfire.chat.kit.utils;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * 非文字元素随字号放大的「封顶比例」工具。
@@ -29,6 +31,30 @@ public class LayoutScale {
      */
     public static float factor(Context context, float cap) {
         return Math.min(FontScaleUtils.getFontScale(context), cap);
+    }
+
+    /** 未读数等徽标随字号放大的封顶比例（像微信一样略微变大即可）。 */
+    public static final float BADGE_CAP = 1.3f;
+
+    /**
+     * 整体缩放未读数等小徽标：最小宽/高与文字按同一个 {@code min(fontScale, cap)} 一起放大。
+     * <p>
+     * 关键在于「宽高同步放大」——只放大文字会让单个数字的徽标变得高而窄，配合胶囊背景就
+     * 渲染成竖椭圆。同步放大最小宽高后，单数字徽标始终保持正方形（圆形），多位数为横向药丸。
+     *
+     * @param baseMinSizeDp 基准最小宽高（dp），通常与布局里的 minWidth/minHeight 一致（16）
+     * @param baseTextSp    基准字号（sp），与布局里的 textSize 一致
+     */
+    public static void scaleBadge(TextView textView, float baseMinSizeDp, float baseTextSp, float cap) {
+        if (textView == null) {
+            return;
+        }
+        float density = textView.getResources().getDisplayMetrics().density;
+        float f = factor(textView.getContext(), cap);
+        int minPx = Math.round(baseMinSizeDp * density * f);
+        textView.setMinWidth(minPx);
+        textView.setMinHeight(minPx);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, baseTextSp * density * f);
     }
 
     /**

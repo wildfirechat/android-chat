@@ -6,6 +6,8 @@ package cn.wildfire.chat.kit.settings;
 
 import android.content.Intent;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -20,7 +22,6 @@ import cn.wildfire.chat.kit.utils.LayoutScale;
 
 /**
  * 字体大小设置页面。参考微信，通过 SeekBar 拖动选择字体缩放级别，并实时预览效果。
- * 选择的级别保存后，离开页面时若发生变化则重启 App 使其全局生效。
  */
 public class FontSizeActivity extends WfcBaseActivity {
 
@@ -39,6 +40,9 @@ public class FontSizeActivity extends WfcBaseActivity {
 
     private String[] levelNames;
     private int entryIndex;
+
+    private MenuItem confirmMenuItem;
+    private TextView confirmTextView;
 
     @Override
     protected int contentLayout() {
@@ -63,7 +67,6 @@ public class FontSizeActivity extends WfcBaseActivity {
         seekBar.setProgress(entryIndex);
         updatePreview(entryIndex);
 
-        // 将“标准”标记定位到滑块标准档位的正上方，使用 OnGlobalLayoutListener 确保布局尺寸测量完成
         seekBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -76,6 +79,7 @@ public class FontSizeActivity extends WfcBaseActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 updatePreview(progress);
+                updateConfirmEnabled();
             }
 
             @Override
@@ -84,9 +88,52 @@ public class FontSizeActivity extends WfcBaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                FontScaleUtils.setFontScaleIndex(FontSizeActivity.this, seekBar.getProgress());
             }
         });
+    }
+
+    @Override
+    protected int menu() {
+        return R.menu.font_size;
+    }
+
+    @Override
+    protected void afterMenus(Menu menu) {
+        confirmMenuItem = menu.findItem(R.id.confirm);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // actionLayout 的自定义 view 不会触发 onOptionsItemSelected，需手动设置点击监听
+        if (confirmMenuItem != null && confirmMenuItem.getActionView() != null) {
+            confirmTextView = confirmMenuItem.getActionView().findViewById(R.id.confirm_tv);
+            if (confirmTextView != null) {
+                confirmTextView.setOnClickListener(v -> confirm());
+            }
+            updateConfirmEnabled();
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void updateConfirmEnabled() {
+        boolean changed = seekBar != null && seekBar.getProgress() != entryIndex;
+        if (confirmMenuItem != null) {
+            confirmMenuItem.setEnabled(changed);
+        }
+        if (confirmTextView != null) {
+            confirmTextView.setEnabled(changed);
+        }
+    }
+
+    private void confirm() {
+        int index = seekBar.getProgress();
+        if (index == entryIndex) {
+            // 未改变，直接返回
+            finish();
+            return;
+        }
+        FontScaleUtils.setFontScaleIndex(this, index);
+        restart();
     }
 
     private void updatePreview(int index) {
@@ -140,16 +187,7 @@ public class FontSizeActivity extends WfcBaseActivity {
         standardMarkerTextView.setTranslationX(xInParent);
     }
 
-    @Override
-    public void onBackPressed() {
-        // 确保保存最新选择（用户可能点击 SeekBar 而非拖动）
-        FontScaleUtils.setFontScaleIndex(this, seekBar.getProgress());
-        if (seekBar.getProgress() != entryIndex) {
-            restart();
-        } else {
-            super.onBackPressed();
-        }
-    }
+    // 返回 = 取消，不保存、不重启（保持原字体大小）
 
     /**
      * 重启应用以应用字体大小更改，与切换语言的处理方式一致。

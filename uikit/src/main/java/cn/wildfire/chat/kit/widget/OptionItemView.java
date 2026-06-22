@@ -72,6 +72,8 @@ public class OptionItemView extends LinearLayout {
         View row = view.findViewById(R.id.contactLinearLayout);
         LayoutScale.scaleViewHeight(row, LayoutScale.ROW);
         LayoutScale.scaleViewSize(startImageView, LayoutScale.CAP);
+        // 徽标整体（宽高+文字）随字号放大但封顶，避免被撑成椭圆
+        LayoutScale.scaleBadge(badgeTextView, 16, 12, LayoutScale.BADGE_CAP);
 
         if (attrs == null) {
             return;
