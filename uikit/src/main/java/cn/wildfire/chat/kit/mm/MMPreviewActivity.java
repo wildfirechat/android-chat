@@ -76,6 +76,7 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
     private ImageView videoPlayButton;
 
     private PhotoView currentPhotoView;
+    private ImageView currentSaveImageView;
     private ViewPager viewPager;
     private MMPagerAdapter adapter;
     private boolean secret;
@@ -206,6 +207,15 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         if (videoLoadProgressBar != null && Math.abs(offset) == 0.0f) {
             videoLoadProgressBar.setVisibility(View.GONE);
         }
+
+        if (currentSaveImageView != null) {
+            // 拖拽时隐藏保存按钮，回弹完成时显示
+            if (Math.abs(offset) == 0.0f) {
+                currentSaveImageView.setVisibility(View.VISIBLE);
+            } else {
+                currentSaveImageView.setVisibility(View.GONE);
+            }
+        }
     }
 
     private class MMPagerAdapter extends PagerAdapter {
@@ -329,6 +339,7 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         zoomableFrameLayout.setEnableDragToFinish(instanceSourceRectProvider != null);
         zoomableFrameLayout.setOnDragListener(this);
         saveImageView.setVisibility(View.GONE);
+        currentSaveImageView = null;
 
         if (entry.getThumbnail() != null) {
             Glide.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
@@ -449,8 +460,10 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
         if (TextUtils.isEmpty(entry.getMediaLocalPath()) && !TextUtils.isEmpty(mediaUrl)) {
             if (secret) {
                 saveImageView.setVisibility(View.GONE);
+                currentSaveImageView = null;
             } else {
                 saveImageView.setVisibility(View.VISIBLE);
+                currentSaveImageView = saveImageView;
                 saveImageView.setOnClickListener(v -> {
                     Toast.makeText(this, getString(R.string.saving_image), Toast.LENGTH_SHORT).show();
                     downloadMediaFile(entry, file -> {
@@ -465,6 +478,7 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
             }
         } else {
             saveImageView.setVisibility(View.GONE);
+            currentSaveImageView = null;
         }
 
         if (entry.getThumbnail() != null) {

@@ -62,6 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/img_bubble_send"
+                android:backgroundTint="@color/lightColorPrimary"
                 android:maxWidth="240dp"
                 android:paddingStart="12dp"
                 android:paddingTop="8dp"
