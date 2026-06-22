@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 
 public class OptionItemView extends LinearLayout {
     private ImageView startImageView;
@@ -66,6 +67,11 @@ public class OptionItemView extends LinearLayout {
         badgeTextView = view.findViewById(R.id.badgeTextView);
 
         dividerView = view.findViewById(R.id.dividerLine);
+
+        // 字体放大时，按封顶比例放大行高与图标，避免文字被固定行高裁剪
+        View row = view.findViewById(R.id.contactLinearLayout);
+        LayoutScale.scaleViewHeight(row, LayoutScale.ROW);
+        LayoutScale.scaleViewSize(startImageView, LayoutScale.CAP);
 
         if (attrs == null) {
             return;

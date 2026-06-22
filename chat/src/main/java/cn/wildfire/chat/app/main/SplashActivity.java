@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import cn.wildfire.chat.app.login.LoginActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfirechat.chat.R;
 
@@ -52,9 +53,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        String language = LocaleUtils.getLanguage(newBase);
-        Context context = LocaleUtils.updateResources(newBase, language);
-        super.attachBaseContext(context);
+        super.attachBaseContext(FontScaleUtils.wrap(newBase));
     }
 
 

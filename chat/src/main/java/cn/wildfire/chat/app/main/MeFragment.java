@@ -4,9 +4,7 @@
 
 package cn.wildfire.chat.app.main;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -31,7 +28,6 @@ import java.util.List;
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
@@ -114,8 +110,6 @@ public class MeFragment extends Fragment {
         view.findViewById(R.id.favOptionItemView).setOnClickListener(v -> fav());
         view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(v -> files());
-        view.findViewById(R.id.themeOptionItemView).setOnClickListener(v -> theme());
-        view.findViewById(R.id.languageOptionItemView).setOnClickListener(v -> selectLanguage());
         view.findViewById(R.id.settingOptionItemView).setOnClickListener(v -> setting());
         view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
         view.findViewById(R.id.conversationOptionItemView).setOnClickListener(v -> conversationSetting());
@@ -189,62 +183,6 @@ public class MeFragment extends Fragment {
     }
 
 
-    void theme() {
-        SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
-        boolean darkTheme = sp.getBoolean("darkTheme", false);
-        new MaterialDialog.Builder(getContext()).items(R.array.themes).itemsCallback(new MaterialDialog.ListCallback() {
-            @Override
-            public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
-                if (position == 0 && darkTheme) {
-                    sp.edit().putBoolean("darkTheme", false).apply();
-                    restart();
-                    return;
-                }
-                if (position == 1 && !darkTheme) {
-                    sp.edit().putBoolean("darkTheme", true).apply();
-                    restart();
-                }
-            }
-        }).show();
-    }
-
-    void selectLanguage() {
-        String savedLanguage = LocaleUtils.getSavedLanguage(getContext());
-
-        new MaterialDialog.Builder(getContext()).items(R.array.languages).itemsCallback(new MaterialDialog.ListCallback() {
-            @Override
-            public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
-                String selectedLanguage = null;
-
-                switch (position) {
-                    case 0:
-                        // 跟随系统
-                        selectedLanguage = LocaleUtils.LANGUAGE_FOLLOW_SYSTEM;
-                        break;
-                    case 1:
-                        // 中文
-                        selectedLanguage = LocaleUtils.LANGUAGE_CHINESE;
-                        break;
-                    case 2:
-                        // 英文
-                        selectedLanguage = LocaleUtils.LANGUAGE_ENGLISH;
-                        break;
-                }
-
-                // 只有当选择的语言与当前不同时才需要切换
-                if (selectedLanguage != null && !selectedLanguage.equals(savedLanguage)) {
-                    changeLanguage(selectedLanguage);
-                }
-            }
-        }).show();
-    }
-
-    private void changeLanguage(String languageCode) {
-        LocaleUtils.setLocale(getContext(), languageCode);
-        // 重启应用以应用语言更改
-        restart();
-    }
-
     void setting() {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         startActivity(intent);
@@ -258,16 +196,5 @@ public class MeFragment extends Fragment {
     void conversationSetting() {
         // TODO
         // 设置背景等
-    }
-
-    private void restart() {
-        // 创建一个指向主活动的新意图，并清除任务栈
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        // 结束当前活动
-        if (getActivity() != null) {
-            getActivity().finish();
-        }
     }
 }

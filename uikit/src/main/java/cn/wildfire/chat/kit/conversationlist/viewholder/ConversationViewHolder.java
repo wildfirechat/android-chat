@@ -37,6 +37,7 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -98,6 +99,11 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         promptTextView = itemView.findViewById(R.id.promptTextView);
         statusImageView = itemView.findViewById(R.id.statusImageView);
         secretChatIndicator = itemView.findViewById(R.id.secretChatIndicator);
+
+        // 字体放大时按封顶比例放大行高与头像，避免被固定尺寸裁剪
+        LayoutScale.scaleViewHeight(itemView, LayoutScale.ROW);
+        LayoutScale.scaleViewSize(itemView.findViewById(R.id.portraitRelativeLayout), LayoutScale.CAP);
+        LayoutScale.scaleViewSize(portraitImageView, LayoutScale.CAP);
     }
 
     final public void onBind(ConversationInfo conversationInfo, int position) {

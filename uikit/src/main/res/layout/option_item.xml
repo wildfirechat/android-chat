@@ -39,8 +39,12 @@
 
             <TextView
                 android:id="@+id/badgeTextView"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="16dp"
+                android:minHeight="16dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
                 android:background="@drawable/shape_red_dot"
@@ -57,6 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="13dp"
+            android:maxWidth="200dp"
             android:singleLine="true"
             android:textColor="@color/gray17"
             android:textSize="15sp"

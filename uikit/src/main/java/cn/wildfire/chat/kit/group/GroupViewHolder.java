@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupViewHolder extends RecyclerView.ViewHolder {
@@ -39,6 +40,8 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
         nameTextView = itemView.findViewById(R.id.nameTextView);
         categoryTextView = itemView.findViewById(R.id.categoryTextView);
         dividerLine = itemView.findViewById(R.id.dividerLine);
+        // 字体放大时，按封顶比例放大收藏的群列表项的行高与头像
+        LayoutScale.scaleListItem(itemView);
     }
 
     // TODO hide the last diver line

@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.third.location.ui.base;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,8 +19,14 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.jaeger.library.StatusBarUtil;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.utils.FontScaleUtils;
 
 public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(FontScaleUtils.wrap(newBase));
+    }
 
     protected T mPresenter;
 

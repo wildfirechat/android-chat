@@ -965,4 +965,20 @@
     <string name="open_link_warning">谨防钓鱼网站或者带毒网站，只有确认已知安全的链接才可以打开。请确实该链接是否是已知安全的？</string>
     <string name="confirm_safe">确认安全</string>
     <string name="tip">提示</string>
+    <string name="font_size">字体大小</string>
+    <string name="font_size_small">小</string>
+    <string name="font_size_standard">标准</string>
+    <string name="font_size_large">大</string>
+    <string name="font_size_xlarge">特大</string>
+    <string name="font_size_xxlarge">超大</string>
+    <string name="font_size_tip">拖动上方滑块，可设置字体大小</string>
+    <string name="font_size_preview_message">设置文字大小后，会改变聊天和朋友圈等界面的字体大小。</string>
+    <string name="font_size_preview_reply">字体大小已调整。</string>
+    <string-array name="font_sizes">
+        <item>@string/font_size_small</item>
+        <item>@string/font_size_standard</item>
+        <item>@string/font_size_large</item>
+        <item>@string/font_size_xlarge</item>
+        <item>@string/font_size_xxlarge</item>
+    </string-array>
 </resources>

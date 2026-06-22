@@ -927,4 +927,13 @@
     <string name="open_link_warning">Beware of phishing or malicious websites. Only open links that are confirmed to be safe. Are you sure this link is safe?</string>
     <string name="confirm_safe">Confirm Safe</string>
     <string name="tip">Tip</string>
+    <string name="font_size">Font Size</string>
+    <string name="font_size_small">Small</string>
+    <string name="font_size_standard">Standard</string>
+    <string name="font_size_large">Large</string>
+    <string name="font_size_xlarge">Extra Large</string>
+    <string name="font_size_xxlarge">Huge</string>
+    <string name="font_size_tip">Drag the slider above to adjust the font size</string>
+    <string name="font_size_preview_message">Adjusting the font size changes the text in chats, moments and more.</string>
+    <string name="font_size_preview_reply">Font size adjusted.</string>
 </resources>

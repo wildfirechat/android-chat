@@ -29,8 +29,12 @@
 
             <TextView
                 android:id="@+id/unreadFriendRequestCountTextView"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="15dp"
+                android:minHeight="15dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
                 android:layout_alignTop="@id/ivNewFriend"
                 android:layout_alignRight="@id/ivNewFriend"
                 android:background="@drawable/shape_red_dot"

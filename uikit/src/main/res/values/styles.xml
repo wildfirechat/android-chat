@@ -1,5 +1,13 @@
 <resources>
 
+    <!--
+        底部导航 tab 的文字样式。字号使用 dp（而非 sp）以避免随字体大小设置缩放，
+        否则超大字体下文字会与图标重叠。
+    -->
+    <style name="BottomNavTextAppearance" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">12dp</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->

@@ -5,18 +5,13 @@
 package cn.wildfire.chat.kit.channel;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -24,47 +19,46 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.ChannelInfo;
 
-public class ChannelInfoActivity extends AppCompatActivity {
+public class ChannelInfoActivity extends WfcBaseActivity {
+
     ImageView portraitImageView;
     TextView channelTextView;
     TextView channelDescTextView;
     Button followChannelButton;
-    Toolbar toolbar;
 
     private boolean isFollowed = false;
     private ChannelViewModel channelViewModel;
     private ChannelInfo channelInfo;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.channel_info_activity);
-        bindViews();
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        init();
+    protected int contentLayout() {
+        return R.layout.channel_info_activity;
     }
 
-    private void bindViews() {
+    @Override
+    protected void bindViews() {
+        super.bindViews();
         portraitImageView = findViewById(R.id.portraitImageView);
         channelTextView = findViewById(R.id.channelNameTextView);
         channelDescTextView = findViewById(R.id.channelDescTextView);
         followChannelButton = findViewById(R.id.followChannelButton);
-        toolbar = findViewById(R.id.toolbar);
+    }
+
+    @Override
+    protected void bindEvents() {
+        super.bindEvents();
         followChannelButton.setOnClickListener(v -> followChannelButtonClick());
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected void afterViews() {
+        super.afterViews();
+        init();
     }
 
     private void init() {

@@ -18,11 +18,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.KeepAliveService;
 import cn.wildfire.chat.app.OrganizationService;
+import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.app.main.SplashActivity;
 import cn.wildfire.chat.app.misc.DiagnoseActivity;
 import cn.wildfire.chat.app.setting.backup.BackupAndRestoreActivity;
@@ -31,7 +33,9 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.settings.FontSizeActivity;
 import cn.wildfire.chat.kit.settings.PrivacySettingActivity;
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 
@@ -44,6 +48,9 @@ public class SettingActivity extends WfcBaseActivity {
 
     protected void bindEvents() {
         super.bindEvents();
+        findViewById(R.id.themeOptionItemView).setOnClickListener(v -> theme());
+        findViewById(R.id.languageOptionItemView).setOnClickListener(v -> selectLanguage());
+        findViewById(R.id.fontSizeOptionItemView).setOnClickListener(v -> fontSize());
         findViewById(R.id.exitOptionItemView).setOnClickListener(v -> exit());
         findViewById(R.id.privacySettingOptionItemView).setOnClickListener(v -> privacySetting());
         findViewById(R.id.diagnoseOptionItemView).setOnClickListener(v -> diagnose());
@@ -212,6 +219,58 @@ public class SettingActivity extends WfcBaseActivity {
         } else {
             Toast.makeText(this, R.string.system_version_not_support, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    void theme() {
+        SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
+        boolean darkTheme = sp.getBoolean("darkTheme", false);
+        new MaterialDialog.Builder(this).items(R.array.themes).itemsCallback((dialog, v, position, text) -> {
+            if (position == 0 && darkTheme) {
+                sp.edit().putBoolean("darkTheme", false).apply();
+                restart();
+                return;
+            }
+            if (position == 1 && !darkTheme) {
+                sp.edit().putBoolean("darkTheme", true).apply();
+                restart();
+            }
+        }).show();
+    }
+
+    void selectLanguage() {
+        String savedLanguage = LocaleUtils.getSavedLanguage(this);
+        new MaterialDialog.Builder(this).items(R.array.languages).itemsCallback((dialog, v, position, text) -> {
+            String selectedLanguage = null;
+            switch (position) {
+                case 0:
+                    selectedLanguage = LocaleUtils.LANGUAGE_FOLLOW_SYSTEM;
+                    break;
+                case 1:
+                    selectedLanguage = LocaleUtils.LANGUAGE_CHINESE;
+                    break;
+                case 2:
+                    selectedLanguage = LocaleUtils.LANGUAGE_ENGLISH;
+                    break;
+            }
+            if (selectedLanguage != null && !selectedLanguage.equals(savedLanguage)) {
+                LocaleUtils.setLocale(this, selectedLanguage);
+                restart();
+            }
+        }).show();
+    }
+
+    void fontSize() {
+        startActivity(new Intent(this, FontSizeActivity.class));
+    }
+
+    /**
+     * 切换主题/语言后重启应用以全局生效。
+     */
+    private void restart() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     void about() {

@@ -8,9 +8,49 @@
 
     <include layout="@layout/toolbar" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/themeOptionItemView"
+            style="@style/OptionItem"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_theme"
+            app:title="@string/theme" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/languageOptionItemView"
+            style="@style/OptionItem"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_lang"
+            app:title="@string/language" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/fontSizeOptionItemView"
+            style="@style/OptionItem"
+            app:show_arrow_indicator="true"
+            app:show_divider="false"
+            app:start_src="@drawable/ic_font_size"
+            app:title="@string/font_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@color/white"
         android:orientation="vertical">
 
@@ -133,5 +173,8 @@
 
         <View style="@style/Line" />
     </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

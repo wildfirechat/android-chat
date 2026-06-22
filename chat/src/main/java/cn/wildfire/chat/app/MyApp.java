@@ -27,6 +27,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.CollectionMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
+import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
@@ -139,12 +140,8 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
 
     @Override
     protected void attachBaseContext(Context base) {
-        // 获取用户语言偏好
-        String language = LocaleUtils.getLanguage(base);
-        // 应用用户语言设置
-        Context context = LocaleUtils.updateResources(base, language);
-        // 调用父类方法
-        super.attachBaseContext(context);
+        // 应用用户语言和字体大小设置
+        super.attachBaseContext(FontScaleUtils.wrap(base));
     }
 
     public static String getCurProcessName(Context context) {

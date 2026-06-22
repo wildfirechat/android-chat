@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -121,6 +122,10 @@ public class GroupMemberListAdapter extends RecyclerView.Adapter<GroupMemberList
         private void bindViews(View itemView) {
             portraitImageView = itemView.findViewById(R.id.portraitImageView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
+
+            // 字体放大时按封顶比例放大头像（及与之对齐的名字宽度）
+            LayoutScale.scaleViewSize(portraitImageView, LayoutScale.CAP);
+            LayoutScale.scaleViewSize(nameTextView, LayoutScale.CAP);
         }
 
         private void bindEvents(View itemView) {

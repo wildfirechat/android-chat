@@ -21,6 +21,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 
 public class UserViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
@@ -44,6 +45,11 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         nameTextView = itemView.findViewById(R.id.nameTextView);
         descTextView = itemView.findViewById(R.id.descTextView);
         categoryTextView = itemView.findViewById(R.id.categoryTextView);
+
+        // 字体放大时按封顶比例放大行高、分类 header 高度与头像，避免被固定尺寸裁剪
+        LayoutScale.scaleViewHeight(itemView.findViewById(R.id.contactLinearLayout), LayoutScale.ROW);
+        LayoutScale.scaleViewHeight(categoryTextView, LayoutScale.ROW);
+        LayoutScale.scaleViewSize(portraitImageView, LayoutScale.CAP);
     }
 
     public void onBind(UIUserInfo userInfo) {

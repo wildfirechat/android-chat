@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import wendu.dsbridge.DWebView;
 
 public class WebViewFragment extends Fragment {
@@ -55,6 +56,8 @@ public class WebViewFragment extends Fragment {
         htmlContent = bundle.getString("htmlContent");
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        // WebView 内容不受系统/应用的 fontScale 影响，需单独设置文字缩放，使工作台等页面字体随设置变化
+        settings.setTextZoom((int) (FontScaleUtils.getFontScale(webView.getContext()) * 100));
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {

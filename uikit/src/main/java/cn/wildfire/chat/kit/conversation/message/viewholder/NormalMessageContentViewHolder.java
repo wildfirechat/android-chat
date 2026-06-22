@@ -32,6 +32,7 @@ import java.util.Map;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -98,6 +99,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         progressBar = itemView.findViewById(R.id.progressBar);
         checkBox = itemView.findViewById(R.id.checkbox);
         readReceiptTextView = itemView.findViewById(R.id.readReceiptTextView);
+
+        // 字体放大时，聊天气泡头像按封顶比例放大
+        LayoutScale.scaleViewSize(portraitImageView, LayoutScale.CAP);
     }
 
     @Override

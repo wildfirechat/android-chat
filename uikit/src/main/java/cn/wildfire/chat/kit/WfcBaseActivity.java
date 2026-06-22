@@ -28,6 +28,8 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import cn.wildfire.chat.kit.utils.FontScaleUtils;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
@@ -67,14 +69,15 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             mWmv = WaterMarkManager.getView(this);
             ((ViewGroup) findViewById(android.R.id.content)).addView(mWmv);
         }
+
+        // 字体放大时，放大设置类页面中开关项的固定行高（含异步添加的 Fragment，故 post 到布局之后）
+        View content = findViewById(android.R.id.content);
+        content.post(() -> LayoutScale.scaleSwitchRows(content));
     }
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // 确保在 MainActivity 中也应用正确的语言设置
-        String language = LocaleUtils.getLanguage(newBase);
-        Context context = LocaleUtils.updateResources(newBase, language);
-        super.attachBaseContext(context);
+        super.attachBaseContext(FontScaleUtils.wrap(newBase));
     }
 
     @Override

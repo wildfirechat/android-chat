@@ -148,22 +148,6 @@
                 android:orientation="vertical">
 
                 <cn.wildfire.chat.kit.widget.OptionItemView
-                    android:id="@+id/themeOptionItemView"
-                    style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
-                    app:show_arrow_indicator="true"
-                    app:start_src="@mipmap/ic_theme"
-                    app:title="@string/theme" />
-
-                <cn.wildfire.chat.kit.widget.OptionItemView
-                    android:id="@+id/languageOptionItemView"
-                    style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
-                    app:show_arrow_indicator="true"
-                    app:start_src="@mipmap/ic_lang"
-                    app:title="@string/language" />
-
-                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/settingOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"

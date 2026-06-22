@@ -57,6 +57,10 @@
             android:name="cn.wildfire.chat.kit.conversation.ConversationActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name="cn.wildfire.chat.kit.settings.FontSizeActivity"
+            android:label="@string/font_size"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="cn.wildfire.chat.kit.user.SetAliasActivity"
             android:label="@string/set_user_alias"
             android:screenOrientation="portrait" />

@@ -15,9 +15,16 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.lang.ref.WeakReference;
 
+import cn.wildfire.chat.kit.utils.FontScaleUtils;
+
 public class AlertDialogActivity extends FragmentActivity {
     private static WeakReference<OnClickListener> negativeOnclickListerWr;
     private static WeakReference<OnClickListener> positiveOnclickListerWr;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(FontScaleUtils.wrap(newBase));
+    }
 
 
     @Override
