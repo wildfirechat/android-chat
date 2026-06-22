@@ -790,6 +790,11 @@
     <string name="mute_group_member">群成员禁言</string>
     <string name="speech_to_text">转文字</string>
     <string name="cancel_speech_to_text">取消转文字</string>
+    <string name="audio_play_mode_speaker">扬声器播放</string>
+    <string name="audio_play_mode_earpiece">听筒播放</string>
+    <string name="audio_play_mode_speaker_toast">已切换为扬声器播放</string>
+    <string name="audio_play_mode_earpiece_toast">已切换为听筒播放</string>
+    <string name="audio_earpiece_playing_hint">听筒播放，请贴近手机聆听</string>
     <string name="file_url_invalid">文件链接地址为空</string>
     <string name="local_preview_failed_tip">找不到能打开此文件的应用，在线预览</string>
     <string name="local_preview_failed">找不到能打开此文件的应用</string>

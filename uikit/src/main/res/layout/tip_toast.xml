@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_tip_toast"
+    android:gravity="center"
+    android:minWidth="220dp"
+    android:orientation="vertical"
+    android:paddingStart="32dp"
+    android:paddingTop="28dp"
+    android:paddingEnd="32dp"
+    android:paddingBottom="28dp">
+
+    <ImageView
+        android:id="@+id/tipIconImageView"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:tint="@android:color/white"
+        tools:ignore="ContentDescription,UseAppTint"
+        tools:src="@drawable/ic_conversation_earpiece" />
+
+    <TextView
+        android:id="@+id/tipTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        tools:text="听筒播放，请贴近手机聆听" />
+
+</LinearLayout>

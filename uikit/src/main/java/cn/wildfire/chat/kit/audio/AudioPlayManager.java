@@ -39,6 +39,8 @@ public class AudioPlayManager implements SensorEventListener {
     private Context context;
     private SoundPool soundPool;
     private int audioMsgPlayCompletionSoundId;
+    // 用户强制使用听筒播放。为 true 时，忽略距离传感器的“远离即切回扬声器”逻辑，始终走听筒。
+    private boolean earpieceMode;
 
     public AudioPlayManager() {
     }
@@ -50,6 +52,20 @@ public class AudioPlayManager implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         float range = event.values[0];
+        if (this._sensor == null || this._mediaPlayer == null) {
+            return;
+        }
+        // 听筒播放模式下，仍响应距离传感器，但不切换音频通道、不重新播放，仅做息屏/亮屏
+        if (this.earpieceMode) {
+            if (this._mediaPlayer.isPlaying()) {
+                if ((double) range > 0.0D) {
+                    this.setScreenOn();
+                } else {
+                    this.setScreenOff();
+                }
+            }
+            return;
+        }
         if (this._sensor != null && this._mediaPlayer != null) {
             if (this._mediaPlayer.isPlaying()) {
                 if ((double) range > 0.0D) {
@@ -206,7 +222,9 @@ public class AudioPlayManager implements SensorEventListener {
         try {
             this._powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             this._audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-            if (!this._audioManager.isWiredHeadsetOn()) {
+            this.earpieceMode = AudioPlayModeUtils.isEarpieceMode(context);
+            // 已连接耳机（有线/USB/蓝牙）时声音走耳机，无需距离传感器，避免误遮挡导致息屏
+            if (!AudioPlayModeUtils.isHeadsetOn(context)) {
                 this._sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
                 this._sensor = this._sensorManager.getDefaultSensor(8);
                 this._sensorManager.registerListener(this, this._sensor, 3);
@@ -241,7 +259,13 @@ public class AudioPlayManager implements SensorEventListener {
                     mp.start();
                 }
             });
-            this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            if (this.earpieceMode) {
+                this._audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                this._audioManager.setSpeakerphoneOn(false);
+                this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+            } else {
+                this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            }
             if (mediaDataSource != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     this._mediaPlayer.setDataSource((MediaDataSource) mediaDataSource);
@@ -284,8 +308,13 @@ public class AudioPlayManager implements SensorEventListener {
 
     private void resetAudioPlayManager() {
         if (this._audioManager != null) {
+            // 听筒播放会把音频模式切到 MODE_IN_COMMUNICATION，播放结束后恢复正常模式
+            if (this._audioManager.getMode() != AudioManager.MODE_NORMAL) {
+                this._audioManager.setMode(AudioManager.MODE_NORMAL);
+            }
             this.muteAudioFocus(this._audioManager, false);
         }
+        this.earpieceMode = false;
 
         if (this._sensorManager != null) {
             this._sensorManager.unregisterListener(this);

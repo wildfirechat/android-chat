@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,12 +30,14 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
+import cn.wildfire.chat.kit.audio.AudioPlayModeUtils;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleEventSourceListener;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.utils.ToastUtils;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -210,6 +213,17 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         speechToTextLayout.setVisibility(View.GONE);
     }
 
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_AUDIO_PLAY_MODE, confirm = false, priority = 14)
+    public void switchAudioPlayMode(View itemView, UiMessage message) {
+        Context context = fragment.getContext();
+        boolean earpiece = AudioPlayModeUtils.isEarpieceMode(context);
+        AudioPlayModeUtils.setEarpieceMode(context, !earpiece);
+        // 切换播放方式后停止当前播放，下次播放即按新方式生效
+        messageViewModel.stopPlayAudio();
+        Toast.makeText(context, !earpiece ? R.string.audio_play_mode_earpiece_toast : R.string.audio_play_mode_speaker_toast, Toast.LENGTH_SHORT).show();
+        fragment.onAudioPlayModeChanged();
+    }
+
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT.equals(tag)) {
@@ -218,8 +232,23 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         } else if (MessageContextMenuItemTags.TAG_CANCEL_SPEECH_TO_TEXT.equals(tag)) {
             //return context.getString(R.string.file_save_to_phone);
             return context.getString(R.string.cancel_speech_to_text);
+        } else if (MessageContextMenuItemTags.TAG_AUDIO_PLAY_MODE.equals(tag)) {
+            // 菜单项显示的是“切换到”的目标方式：当前听筒则提供“扬声器播放”，反之亦然
+            return AudioPlayModeUtils.isEarpieceMode(context)
+                ? context.getString(R.string.audio_play_mode_speaker)
+                : context.getString(R.string.audio_play_mode_earpiece);
         }
         return super.contextMenuTitle(context, tag);
+    }
+
+    @Override
+    public int contextMenuIcon(Context context, String tag) {
+        if (MessageContextMenuItemTags.TAG_AUDIO_PLAY_MODE.equals(tag)) {
+            return AudioPlayModeUtils.isEarpieceMode(context)
+                ? R.drawable.ic_msg_speaker
+                : R.drawable.ic_msg_earpiece;
+        }
+        return super.contextMenuIcon(context, tag);
     }
 
     @Override
@@ -242,6 +271,13 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
             return;
         }
         if (file.exists()) {
+            // 听筒播放模式下，开始播放（而非停止当前播放）时展示听筒播放提示；已连接耳机时无需提示
+            Context context = fragment.getContext();
+            if (!message.isPlaying
+                && AudioPlayModeUtils.isEarpieceMode(context)
+                && !AudioPlayModeUtils.isHeadsetOn(context)) {
+                ToastUtils.showTipToast(context, R.drawable.ic_conversation_earpiece, fragment.getString(R.string.audio_earpiece_playing_hint));
+            }
             messageViewModel.playAudioMessage(message);
         } else {
             if (message.isDownloading) {

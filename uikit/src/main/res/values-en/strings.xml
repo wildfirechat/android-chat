@@ -778,6 +778,11 @@
     <string name="mute_group_member">Mute Group Member</string>
     <string name="speech_to_text">Speech To Text</string>
     <string name="cancel_speech_to_text">Cancel Speech To Text</string>
+    <string name="audio_play_mode_speaker">Speaker</string>
+    <string name="audio_play_mode_earpiece">Earpiece</string>
+    <string name="audio_play_mode_speaker_toast">Switched to speaker</string>
+    <string name="audio_play_mode_earpiece_toast">Switched to earpiece</string>
+    <string name="audio_earpiece_playing_hint">Earpiece mode, hold the phone to your ear</string>
     <string name="file_url_invalid">The file link address is empty</string>
     <string name="local_preview_failed_tip">"No application was found to open this file. Preview online "</string>
     <string name="local_preview_failed">No application was found to open this file.</string>

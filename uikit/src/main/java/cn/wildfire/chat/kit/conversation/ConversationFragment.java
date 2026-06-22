@@ -7,11 +7,16 @@ package cn.wildfire.chat.kit.conversation;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ReplacementSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.util.Pair;
@@ -27,6 +32,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
@@ -53,6 +62,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.audio.AudioPlayModeUtils;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -167,6 +177,8 @@ public class ConversationFragment extends Fragment implements
     private String targetUser;
     private CharSequence conversationTitle = "";
     private CharSequence subConversationTitle = "";
+    // 缓存 Toolbar 的标题 TextView，用于在听筒模式下加耳朵图标并设置中间省略
+    private TextView toolbarTitleView;
     private LinearLayoutManager layoutManager;
 
     // for group
@@ -1024,9 +1036,116 @@ public class ConversationFragment extends Fragment implements
 
     private void setActivityTitle(CharSequence title, CharSequence subTitle) {
         WfcBaseActivity activity = (WfcBaseActivity) getActivity();
-        if (activity != null) {
+        if (activity == null) {
+            return;
+        }
+        boolean silent = isConversationSilent();
+        boolean earpiece = AudioPlayModeUtils.isEarpieceMode(activity);
+        if (!TextUtils.isEmpty(title) && (silent || earpiece)) {
+            applyTitleWithIcons(activity, title, silent, earpiece);
+        } else {
             activity.setTitle(title);
-            activity.getToolbar().setSubtitle(subTitle);
+            if (toolbarTitleView != null) {
+                toolbarTitleView.setEllipsize(TextUtils.TruncateAt.END);
+            }
+        }
+        activity.getToolbar().setSubtitle(subTitle);
+    }
+
+    private boolean isConversationSilent() {
+        if (conversation == null) {
+            return false;
+        }
+        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+        return conversationInfo != null && conversationInfo.isSilent;
+    }
+
+    /**
+     * 语音播放方式（扬声器/听筒）切换后，刷新标题上的耳朵图标。
+     */
+    public void onAudioPlayModeChanged() {
+        setActivityTitle(conversationTitle, subConversationTitle);
+    }
+
+    private void applyTitleWithIcons(WfcBaseActivity activity, CharSequence title, boolean silent, boolean earpiece) {
+        Toolbar toolbar = activity.getToolbar();
+        // 先设置纯文本标题，确保 Toolbar 已创建标题 TextView
+        activity.setTitle(title);
+        toolbar.post(() -> {
+            TextView titleView = findToolbarTitleView(toolbar, title);
+            if (titleView == null) {
+                return;
+            }
+            int size = (int) titleView.getTextSize();
+            int iconColor = ColorUtils.setAlphaComponent(titleView.getCurrentTextColor(), 0x80);
+
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            ssb.append(title == null ? "" : title);
+            if (silent) {
+                appendTitleIcon(ssb, activity, R.drawable.ic_conversation_silent, size, iconColor);
+            }
+            if (earpiece) {
+                appendTitleIcon(ssb, activity, R.drawable.ic_conversation_earpiece, size, iconColor);
+            }
+
+            // 标题过长时从中间省略，末尾图标不会被截断
+            titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            titleView.setText(ssb);
+        });
+    }
+
+    private void appendTitleIcon(SpannableStringBuilder ssb, Context context, int drawableRes, int size, int color) {
+        Drawable icon = ContextCompat.getDrawable(context, drawableRes);
+        if (icon == null) {
+            return;
+        }
+        icon = icon.mutate();
+        icon.setBounds(0, 0, size, size);
+        DrawableCompat.setTint(icon, color);
+        ssb.append("  "); // 与前面内容的间隔 + 图标占位符
+        int iconStart = ssb.length() - 1;
+        ssb.setSpan(new CenteredImageSpan(icon), iconStart, iconStart + 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+
+    private TextView findToolbarTitleView(Toolbar toolbar, CharSequence title) {
+        if (toolbarTitleView != null) {
+            return toolbarTitleView;
+        }
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View child = toolbar.getChildAt(i);
+            if (child instanceof TextView && TextUtils.equals(((TextView) child).getText(), title)) {
+                toolbarTitleView = (TextView) child;
+                return toolbarTitleView;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 垂直居中显示的图标 Span，避免使用默认基线对齐导致图标偏下。
+     */
+    private static class CenteredImageSpan extends ReplacementSpan {
+        private final Drawable drawable;
+
+        CenteredImageSpan(Drawable drawable) {
+            this.drawable = drawable;
+        }
+
+        @Override
+        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
+            return drawable.getBounds().width();
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+            canvas.save();
+            int drawableHeight = drawable.getBounds().height();
+            Paint.FontMetricsInt fm = paint.getFontMetricsInt();
+            int lineCenter = y + (fm.descent + fm.ascent) / 2;
+            int transY = lineCenter - drawableHeight / 2;
+            canvas.translate(x, transY);
+            drawable.draw(canvas);
+            canvas.restore();
         }
     }
 
@@ -1140,6 +1259,12 @@ public class ConversationFragment extends Fragment implements
         super.onPause();
         inputPanel.onActivityPause();
         messageViewModel.stopPlayAudio();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        toolbarTitleView = null;
     }
 
     @Override
