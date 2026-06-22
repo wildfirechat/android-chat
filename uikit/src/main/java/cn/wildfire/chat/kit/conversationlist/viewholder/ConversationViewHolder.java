@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.lqr.emoji.EmojiCompatUtils;
 
 import java.util.ArrayList;
@@ -72,7 +71,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected GroupViewModel groupViewModel;
 
     protected final CenterCrop centerCropTransformation = new CenterCrop();
-    protected RoundedCorners roundedCornerTransformation = null;
 
     private LiveData<String> groupMemberDisplayNameLiveData;
     private Observer<String> groupMemberDisplayNameObserver;
@@ -126,10 +124,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
         statusImageView.setVisibility(View.GONE);
         conversationPromptText = "";
-
-        if (roundedCornerTransformation == null) {
-            roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4));
-        }
 
         itemView.setBackgroundResource(conversationInfo.top > 0 ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
         redDotView.setVisibility(View.GONE);

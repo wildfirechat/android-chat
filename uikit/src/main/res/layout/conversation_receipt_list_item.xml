@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/receiptItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,12 +8,13 @@
     android:orientation="horizontal"
     android:padding="7.5dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/portraitImageView"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/default_header" />
+        android:src="@mipmap/default_header" 
+        app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
     <TextView
         android:id="@+id/nameTextView"

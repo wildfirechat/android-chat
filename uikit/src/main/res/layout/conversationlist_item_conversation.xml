@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
@@ -13,12 +14,13 @@
         android:layout_centerVertical="true">
 
         <!--头像-->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@mipmap/ic_launcher" 
+            app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
         <!--未读消息数-->
         <TextView

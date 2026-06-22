@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/richNotificationContentItemView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -50,10 +51,11 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/exPortraitImageView"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            app:shapeAppearance="@style/RoundedCorners_4dp"
             android:src="@mipmap/logo" />
 
         <TextView

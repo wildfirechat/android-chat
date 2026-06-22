@@ -46,7 +46,7 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_channel)
-            .transform(centerCropTransformation, roundedCornerTransformation)
+            .transform(centerCropTransformation)
             .into(portraitImageView);
     }
 

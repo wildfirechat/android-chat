@@ -50,7 +50,7 @@
                         android:layout_height="40dp"
                         android:layout_marginEnd="16dp"
                         android:src="@mipmap/ic_launcher"
-                        android:tint="@color/colorPrimary" />
+                        app:tint="@color/colorPrimary" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -79,8 +79,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_more"
-                        android:tint="@color/gray1"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:tint="@color/gray1" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -109,7 +109,7 @@
                         android:layout_height="40dp"
                         android:layout_marginEnd="16dp"
                         android:src="@mipmap/ic_launcher"
-                        android:tint="@color/gray11" />
+                        app:tint="@color/gray11" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -140,8 +140,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_more"
-                        android:tint="@color/gray11"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:tint="@color/gray11" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

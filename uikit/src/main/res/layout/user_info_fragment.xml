@@ -17,12 +17,13 @@
         android:paddingRight="16dp"
         android:paddingBottom="16dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_def" />
+            android:src="@mipmap/avatar_def"
+            app:shapeAppearanceOverlay="@style/RoundedCorners_8dp" />
 
         <LinearLayout
             android:layout_width="0dp"

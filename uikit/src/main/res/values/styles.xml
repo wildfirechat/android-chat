@@ -151,4 +151,9 @@
         <item name="cornerSize">4dp</item>
     </style>
 
+    <style name="RoundedCorners_8dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>

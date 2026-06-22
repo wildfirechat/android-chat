@@ -19,12 +19,13 @@
         android:layout_marginTop="15dp"
         android:orientation="horizontal">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_def" />
+            android:src="@mipmap/avatar_def" 
+            app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
 
         <TextView

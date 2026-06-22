@@ -52,7 +52,7 @@ public class SecretConversationViewHolder extends ConversationViewHolder {
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.avatar_def)
-            .transform(centerCropTransformation, roundedCornerTransformation)
+            .transform(centerCropTransformation)
             .into(portraitImageView);
         nameTextView.setText(name);
     }

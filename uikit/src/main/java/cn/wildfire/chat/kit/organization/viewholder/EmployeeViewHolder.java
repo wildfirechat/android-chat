@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.organization.model.Employee;
@@ -31,7 +30,7 @@ public class EmployeeViewHolder extends OrganizationEntityViewHolder<Employee> {
     public void onBind(Employee employee) {
         this.nameTextView.setText(employee.name);
         Glide.with(portraitImageView).load(employee.portraitUrl).placeholder(R.mipmap.avatar_def)
-            .transforms(new CenterCrop(), new RoundedCorners(10))
+            .transform(new CenterCrop())
             .into(portraitImageView);
     }
 }

@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/portraitImageView"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_gravity="center"
         android:scaleType="fitXY"
+        app:shapeAppearance="@style/RoundedCorners_8dp"
         android:src="@mipmap/avatar_def" />
 
     <cn.wildfire.chat.kit.voip.ResizableFrameLayout

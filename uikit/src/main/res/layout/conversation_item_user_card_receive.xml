@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/img_bubble_receive"
     android:backgroundTint="@color/white">
 
@@ -13,13 +14,14 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/userCardPortraitImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginTop="6dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="6dp"
+            app:shapeAppearance="@style/RoundedCorners_4dp"
             android:src="@mipmap/avatar_def" />
 
         <TextView

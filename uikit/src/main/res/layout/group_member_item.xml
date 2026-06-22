@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -11,13 +12,14 @@
         android:orientation="vertical"
         android:padding="7.5dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_add_team_member" />
+            android:src="@mipmap/ic_add_team_member" 
+            app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
         <TextView
             android:id="@+id/nameTextView"

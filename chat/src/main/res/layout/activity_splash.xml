@@ -2,14 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/gray5"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="113dp"
+        app:shapeAppearance="@style/RoundedCorners_4dp"
         android:src="@mipmap/logo" />
 
     <TextView

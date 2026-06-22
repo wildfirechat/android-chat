@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
@@ -261,9 +260,10 @@ public class UserInfoFragment extends Fragment {
 
     private void setUserInfo(UserInfo userInfo) {
         userInfo = ChatManager.Instance().getUserInfo(userInfo.uid, groupId, false);
+        // 圆角由布局中的 ShapeableImageView(RoundedCorners_8dp) 处理，这里只保留 centerCrop
         RequestOptions requestOptions = new RequestOptions()
             .placeholder(R.mipmap.avatar_def)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 8)));
+            .transform(new CenterCrop());
         Glide.with(this)
             .load(userInfo.portrait)
             .apply(requestOptions)

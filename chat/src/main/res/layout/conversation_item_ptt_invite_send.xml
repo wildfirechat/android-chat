@@ -6,6 +6,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/img_bubble_send_white">
 
     <RelativeLayout
@@ -15,12 +16,13 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/hostPortraitImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginTop="6dp"
             android:layout_marginRight="8dp"
+            app:shapeAppearance="@style/RoundedCorners_4dp"
             android:layout_marginBottom="6dp"
             android:src="@mipmap/avatar_def" />
 

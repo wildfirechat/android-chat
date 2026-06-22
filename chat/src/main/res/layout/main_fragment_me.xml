@@ -30,14 +30,15 @@
                 android:paddingTop="40dp"
                 android:paddingRight="3dp">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/portraitImageView"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="@dimen/option_item_margin_right"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/avatar_def" />
+                    android:src="@mipmap/avatar_def" 
+                    app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
                 <LinearLayout
                     android:layout_width="0dp"

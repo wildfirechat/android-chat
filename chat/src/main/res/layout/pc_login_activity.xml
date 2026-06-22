@@ -30,10 +30,11 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageView3"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
+                app:shapeAppearance="@style/RoundedCorners_8dp"
                 android:layout_weight="1"
                 app:srcCompat="@mipmap/pc" />
         </LinearLayout>

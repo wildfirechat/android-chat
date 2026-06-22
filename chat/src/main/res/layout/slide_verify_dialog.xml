@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:forceDarkAllowed="true">
 
     <LinearLayout
@@ -29,18 +30,20 @@
             android:layout_height="150dp"
             android:layout_marginBottom="16dp">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/backgroundImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                app:shapeAppearance="@style/RoundedCorners_4dp"
                 android:scaleType="fitCenter"/>
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/sliderImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                app:shapeAppearance="@style/RoundedCorners_4dp"
                 android:scaleType="fitCenter"/>
         </FrameLayout>
 

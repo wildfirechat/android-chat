@@ -61,7 +61,7 @@ public class SingleConversationViewHolder extends ConversationViewHolder impleme
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.avatar_def)
-            .transform(centerCropTransformation, roundedCornerTransformation)
+            .transform(centerCropTransformation)
             .into(portraitImageView);
         nameTextView.setText(name);
     }

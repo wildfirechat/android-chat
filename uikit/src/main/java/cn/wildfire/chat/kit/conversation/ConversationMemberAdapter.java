@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Iterator;
@@ -35,7 +34,6 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
     private boolean enableAddMember;
     private boolean enableRemoveMember;
     private OnMemberClickListener onMemberClickListener;
-    private RoundedCorners roundedCornerTransformation;
 
     public ConversationMemberAdapter(ConversationInfo conversationInfo, boolean enableAddMember, boolean enableRemoveMember) {
         this.conversationInfo = conversationInfo;
@@ -92,9 +90,6 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
     public MemberViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.conversation_item_member_info, parent, false);
-        if (this.roundedCornerTransformation == null) {
-            roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(parent.getContext(), 4));
-        }
         return new MemberViewHolder(view);
     }
 
@@ -205,7 +200,6 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
                 .load(userInfo.portrait)
                 .apply(new RequestOptions().centerCrop()
                     .placeholder(R.mipmap.avatar_def))
-                .transform(ConversationMemberAdapter.this.roundedCornerTransformation, roundedCornerTransformation)
                 .into(portraitImageView);
         }
 

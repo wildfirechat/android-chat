@@ -8,9 +8,13 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import cn.wildfire.chat.kit.utils.LayoutScale;
+
 public class CategoryViewHolder extends RecyclerView.ViewHolder {
     public CategoryViewHolder(View itemView) {
         super(itemView);
+        // 字体放大时，按封顶比例放大分类 header 的固定高度
+        LayoutScale.scaleListItem(itemView);
     }
 
     public void onBind() {

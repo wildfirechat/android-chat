@@ -97,7 +97,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder implemen
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_group_chat)
-            .transform(centerCropTransformation, roundedCornerTransformation)
+            .transform(centerCropTransformation)
             .into(portraitImageView);
         nameTextView.setText(name);
     }

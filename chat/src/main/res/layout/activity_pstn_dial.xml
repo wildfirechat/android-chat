@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     android:gravity="center_horizontal"
     android:orientation="vertical">
@@ -216,6 +217,7 @@
             android:layout_marginStart="60dp"
             android:background="@drawable/pstn_call_button_bg"
             android:contentDescription="拨打"
+            app:shapeAppearance="@style/RoundedCorners_8dp"
             android:padding="16dp"
             android:src="@drawable/av_phone" />
     </LinearLayout>

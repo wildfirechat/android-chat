@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -69,7 +68,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
             descTextView.setVisibility(View.GONE);
         }
         Glide.with(fragment).load(userInfo.getUserInfo().portrait).placeholder(R.mipmap.avatar_def)
-            .transforms(new CenterCrop(), new RoundedCorners(10))
+            .transform(new CenterCrop())
             .into(portraitImageView);
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_background"
@@ -14,13 +15,14 @@
         android:background="@drawable/selector_common_item"
         android:padding="10dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="5dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_def" />
+            android:src="@mipmap/avatar_def" 
+            app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
 
         <TextView

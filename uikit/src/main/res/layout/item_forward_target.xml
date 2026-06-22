@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingLeft="20dp"
@@ -9,11 +10,12 @@
     android:paddingRight="20dp"
     android:paddingBottom="10dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatarImageView"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="centerCrop"
+        app:shapeAppearance="@style/RoundedCorners_4dp"
         android:src="@mipmap/avatar_def" />
 
     <TextView
@@ -32,6 +34,6 @@
         android:layout_height="16dp"
         android:src="@mipmap/ic_right_arrow"
         android:visibility="gone"
-        android:tint="#CCCCCC" />
+        app:tint="#CCCCCC" />
 
 </LinearLayout>

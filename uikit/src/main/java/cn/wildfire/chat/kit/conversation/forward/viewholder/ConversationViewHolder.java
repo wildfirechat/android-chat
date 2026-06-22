@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -44,6 +45,9 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
     private void bindViews(View itemView) {
         nameTextView = itemView.findViewById(R.id.nameTextView);
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        // 字体放大时，按封顶比例放大转发会话项的行高与头像
+        LayoutScale.scaleListItem(itemView);
+        LayoutScale.scaleViewSize(portraitImageView, LayoutScale.CAP);
     }
 
     public void onBind(ConversationInfo conversationInfo) {

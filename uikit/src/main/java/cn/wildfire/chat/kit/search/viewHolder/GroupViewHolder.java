@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -46,7 +45,7 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_group_chat)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
+            .transform(new CenterCrop())
             .into(portraitImageView);
 
         String desc = "";

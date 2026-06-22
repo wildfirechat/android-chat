@@ -3,6 +3,7 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:adjustViewBounds="true"
     android:background="@drawable/selector_common_item"
     android:gravity="center_vertical"
@@ -17,12 +18,13 @@
         android:paddingLeft="10dp"
         tool:text="@string/link_title_placeholder" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/coverImageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="10dp"
         android:scaleType="centerCrop"
+        app:shapeAppearance="@style/RoundedCorners_8dp"
         android:src="@mipmap/logo" />
 
 </LinearLayout>

@@ -15,8 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,8 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
-import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -84,8 +80,6 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
 
 
     private void init() {
-        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
-            .get(ConversationListViewModel.class);
         adapter = new PickOrCreateConversationAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

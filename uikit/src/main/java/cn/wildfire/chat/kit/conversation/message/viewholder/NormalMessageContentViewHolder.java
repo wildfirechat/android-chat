@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -468,7 +467,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             Glide
                 .with(fragment)
                 .load(portraitUrl)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .transform(new CenterCrop())
                 .placeholder(R.mipmap.avatar_def)
                 .into(portraitImageView);
         }

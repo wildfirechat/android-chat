@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,7 +146,6 @@ public class ConversationSelectFragment extends Fragment {
     private class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
         private List<ConversationInfo> conversations = new ArrayList<>();
         private final CenterCrop centerCrop = new CenterCrop();
-        private final RoundedCorners roundedCorners = new RoundedCorners(6); // 6 px圆角
 
         void setData(List<ConversationInfo> data) {
             this.conversations = data;
@@ -219,7 +217,7 @@ public class ConversationSelectFragment extends Fragment {
                                 Glide.with(ConversationSelectFragment.this)
                                         .load(userInfo.portrait)
                                         .placeholder(R.mipmap.avatar_def)
-                                        .transform(centerCrop, roundedCorners)
+                                        .transform(centerCrop)
                                         .into(portraitImageView);
                             }
                         }
@@ -238,7 +236,7 @@ public class ConversationSelectFragment extends Fragment {
                                 Glide.with(ConversationSelectFragment.this)
                                         .load(groupInfo.portrait)
                                         .placeholder(R.mipmap.avatar_def)
-                                        .transform(centerCrop, roundedCorners)
+                                        .transform(centerCrop)
                                         .into(portraitImageView);
                             }
                         }

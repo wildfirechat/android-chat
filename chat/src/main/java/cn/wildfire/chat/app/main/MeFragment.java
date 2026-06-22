@@ -20,7 +20,6 @@ import androidx.lifecycle.Observer;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -129,7 +128,7 @@ public class MeFragment extends Fragment {
     private void updateUserInfo(UserInfo userInfo) {
         RequestOptions options = new RequestOptions()
             .placeholder(R.mipmap.avatar_def)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 4)));
+            .transform(new CenterCrop());
         Glide.with(this)
             .load(userInfo.portrait)
             .apply(options)

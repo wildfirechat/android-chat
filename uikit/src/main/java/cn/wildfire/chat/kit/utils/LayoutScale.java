@@ -5,7 +5,6 @@
 package cn.wildfire.chat.kit.utils;
 
 import android.content.Context;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,22 +29,6 @@ public class LayoutScale {
      */
     public static float factor(Context context, float cap) {
         return Math.min(FontScaleUtils.getFontScale(context), cap);
-    }
-
-    /**
-     * 按字号缩放一个布局尺寸（基准为 px）并封顶。
-     */
-    public static int scaledSize(Context context, int basePx, float cap) {
-        return Math.round(basePx * factor(context, cap));
-    }
-
-    /**
-     * 按字号缩放一个 dp 基准尺寸并封顶，返回 px。
-     */
-    public static int scaledDpToPx(Context context, float baseDp, float cap) {
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, baseDp,
-            context.getResources().getDisplayMetrics());
-        return Math.round(px * factor(context, cap));
     }
 
     /**

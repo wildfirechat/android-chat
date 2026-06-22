@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.organization.model.Organization;
@@ -33,7 +32,7 @@ public class OrganizationViewHolder extends OrganizationEntityViewHolder<Organiz
         this.nameTextView.setText(organization.name + "(" + organization.memberCount + ")");
         if (!TextUtils.isEmpty(organization.portraitUrl) && organization.portraitUrl.startsWith("http")) {
             Glide.with(portraitImageView).load(organization.portraitUrl).placeholder(R.mipmap.ic_deparment)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .transform(new CenterCrop())
                 .into(portraitImageView);
         } else {
             portraitImageView.setImageResource(R.mipmap.ic_deparment);

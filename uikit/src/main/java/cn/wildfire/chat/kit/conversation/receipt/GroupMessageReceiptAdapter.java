@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -115,7 +114,7 @@ public class GroupMessageReceiptAdapter extends RecyclerView.Adapter<GroupMessag
             nameTextView.setText(ChatManager.Instance().getGroupMemberDisplayName(groupInfo.target, userInfo.uid));
             Glide.with(portraitImageView)
                 .load(userInfo.portrait)
-                .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)).placeholder(R.mipmap.avatar_def))
+                .apply(new RequestOptions().placeholder(R.mipmap.avatar_def))
                 .into(portraitImageView);
         }
 

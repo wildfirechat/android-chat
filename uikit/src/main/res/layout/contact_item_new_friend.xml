@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,7 +15,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -22,7 +23,8 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_def" />
+            android:src="@mipmap/avatar_def" 
+            app:shapeAppearanceOverlay="@style/RoundedCorners_4dp"/>
 
 
         <LinearLayout

@@ -29,7 +29,7 @@ public class UnknownConversationViewHolder extends ConversationViewHolder {
         Glide
             .with(fragment)
             .load(R.mipmap.avatar_def)
-            .transform(centerCropTransformation, roundedCornerTransformation)
+            .transform(centerCropTransformation)
             .into(portraitImageView);
         nameTextView.setText(fragment.getString(R.string.unknown_conversation_type,
             conversationInfo.conversation.type.getValue(),
