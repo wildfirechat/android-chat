@@ -15,10 +15,11 @@
         android:orientation="horizontal"
         android:padding="5dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/portraitImageView"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            app:shapeAppearance="@style/RoundedCorners_4dp"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
             tool:src="@mipmap/avatar_def" />
