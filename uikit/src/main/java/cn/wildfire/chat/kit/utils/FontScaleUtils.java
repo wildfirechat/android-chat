@@ -6,8 +6,6 @@ package cn.wildfire.chat.kit.utils;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
 
 /**
  * 字体大小（字体缩放）工具类。
@@ -70,23 +68,20 @@ public class FontScaleUtils {
     /**
      * 将用户选择的字体缩放应用到给定 Context 的资源配置上，并返回应用后的 Context。
      * <p>
-     * 基于当前配置进行复制并只修改 fontScale，从而保留已经设置好的语言（locale）等其它配置，
+     * <strong>只覆盖 fontScale 一个字段</strong>（使用稀疏的 {@link Configuration}），
+     * 其余字段（尤其是 {@code uiMode} 夜间模式）继续跟随系统/基础配置。
+     * 若复制整份配置会把 uiMode 一并固化，导致系统暗黑模式切换时 forceDark 无法实时生效。
      * 需要在已应用语言设置（{@link LocaleUtils#updateResources}）之后链式调用。
      */
     public static Context applyFontScale(Context context) {
         float fontScale = getFontScale(context);
-        Configuration configuration = new Configuration(context.getResources().getConfiguration());
-        if (configuration.fontScale == fontScale) {
+        if (context.getResources().getConfiguration().fontScale == fontScale) {
             return context;
         }
-        configuration.fontScale = fontScale;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return context.createConfigurationContext(configuration);
-        } else {
-            Resources resources = context.getResources();
-            resources.updateConfiguration(configuration, resources.getDisplayMetrics());
-            return context;
-        }
+        // 稀疏配置：仅设置 fontScale，createConfigurationContext 只会覆盖该字段，
+        // uiMode/locale 等保持跟随系统，从而不影响系统暗黑模式的实时切换。
+        Configuration overrideConfig = new Configuration();
+        overrideConfig.fontScale = fontScale;
+        return context.createConfigurationContext(overrideConfig);
     }
 }
