@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 
 import cn.wildfire.chat.app.archive.ArchiveServiceImpl;
 import cn.wildfire.chat.app.collection.CollectionServiceImpl;
-import cn.wildfire.chat.app.KeepAliveService;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.app.poll.PollServiceImpl;
 import cn.wildfire.chat.kit.archive.service.ArchiveServiceProvider;
@@ -28,7 +27,6 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.CollectionMessageCon
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
-import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
@@ -71,20 +69,17 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             ChatManager.Instance().registerMessageContent(PollResultMessageContent.class);
 
             // 初始化接龙服务
-            if (!TextUtils.isEmpty(Config.COLLECTION_SERVER_ADDRESS)) {
-                CollectionServiceImpl.getInstance().setBaseUrl(Config.COLLECTION_SERVER_ADDRESS);
+            if (!TextUtils.isEmpty(Config.COLLECTION_SERVER_ADDRESS) || !TextUtils.isEmpty(Config.COLLECTION_SERVER_BACKUP_ADDRESS)) {
                 cn.wildfire.chat.kit.collection.CollectionServiceProvider.getInstance().setService(CollectionServiceImpl.getInstance());
             }
 
             // 初始化投票服务
-            if (!TextUtils.isEmpty(Config.POLL_SERVER_ADDRESS)) {
-                PollServiceImpl.getInstance().setBaseUrl(Config.POLL_SERVER_ADDRESS);
+            if (!TextUtils.isEmpty(Config.POLL_SERVER_ADDRESS) || !TextUtils.isEmpty(Config.POLL_SERVER_BACKUP_ADDRESS)) {
                 cn.wildfire.chat.kit.poll.service.PollServiceProvider.getInstance().setService(PollServiceImpl.getInstance());
             }
 
             // 初始化归档服务
-            if (!TextUtils.isEmpty(Config.ARCHIVE_SERVER_ADDRESS)) {
-                ArchiveServiceImpl.getInstance().setBaseUrl(Config.ARCHIVE_SERVER_ADDRESS);
+            if (!TextUtils.isEmpty(Config.ARCHIVE_SERVER_ADDRESS) || !TextUtils.isEmpty(Config.ARCHIVE_SERVER_BACKUP_ADDRESS)) {
                 ArchiveServiceProvider.getInstance().setService(ArchiveServiceImpl.getInstance());
             }
 
@@ -109,13 +104,13 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
 
             ChatManager.Instance().addConnectToServerListener(this);
 
-            if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+            if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS) || !TextUtils.isEmpty(Config.ORG_SERVER_BACKUP_ADDRESS)) {
                 OrganizationService organizationService = OrganizationService.Instance();
                 wfcUIKit.setOrganizationServiceProvider(organizationService);
             }
 
             ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
-            ChatManager.Instance().setUrlRedirectorClazz(TestUrlRedirector.class);
+            ChatManager.Instance().setUrlRedirectorClazz(WFUrlRedirector.class);
             SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
             Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = sp.getBoolean("audioMessageAmplificationEnabled", Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION);
 

@@ -316,7 +316,7 @@ public class MainActivity extends WfcBaseActivity {
         if (count > 0) {
             if (discoveryBadgeView == null) {
                 BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-                int index = TextUtils.isEmpty(Config.WORKSPACE_URL) ? 2 : 3;
+                int index = TextUtils.isEmpty(Config.getWorkspaceUrl()) ? 2 : 3;
                 View view = bottomNavigationMenuView.getChildAt(index);
                 discoveryBadgeView = new QBadgeView(MainActivity.this);
                 discoveryBadgeView.bindTarget(view);
@@ -479,7 +479,7 @@ public class MainActivity extends WfcBaseActivity {
         mFragmentList.add(contactListFragment);
         if (showWorkSpace()) {
             if (workspaceFragment == null) {
-                workspaceFragment = WebViewFragment.loadUrl(Config.WORKSPACE_URL);
+                workspaceFragment = WebViewFragment.loadUrl(Config.getWorkspaceUrl());
             }
             mFragmentList.add(workspaceFragment);
         }
@@ -933,8 +933,8 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private boolean showWorkSpace() {
-        return !TextUtils.isEmpty(Config.WORKSPACE_URL)
-            && (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.WORKSPACE_URL.contains("wildfirechat.cn")
-            || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.WORKSPACE_URL.contains("wildfirechat.cn")));
+        return !TextUtils.isEmpty(Config.getWorkspaceUrl())
+            && (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.getWorkspaceUrl().contains("wildfirechat.cn")
+            || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.getWorkspaceUrl().contains("wildfirechat.cn")));
     }
 }

@@ -30,7 +30,7 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (!TextUtils.isEmpty(userInfo.portrait)) {
             return userInfo.portrait;
         } else {
-            return AppService.APP_SERVER_ADDRESS + "/avatar?name=" + Uri.encode(userInfo.displayName);
+            return AppService.Instance().appServerAddress() + "/avatar?name=" + Uri.encode(userInfo.displayName);
         }
     }
 
@@ -56,7 +56,7 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
                     pending = true;
                 }
                 JSONObject obj = new JSONObject();
-                if (TextUtils.isEmpty(userInfo.portrait) || userInfo.portrait.startsWith(AppService.APP_SERVER_ADDRESS)) {
+                if (TextUtils.isEmpty(userInfo.portrait) || userInfo.portrait.startsWith(AppService.Instance().appServerAddress())) {
                     obj.put("name", userInfo.displayName);
                 } else {
                     obj.put("avatarUrl", userInfo.portrait);
@@ -70,7 +70,7 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (pending) {
             return null;
         }
-        String portrait = AppService.APP_SERVER_ADDRESS + "/avatar/group?request=" + Uri.encode(request.toString());
+        String portrait = AppService.Instance().appServerAddress() + "/avatar/group?request=" + Uri.encode(request.toString());
         groupPortraitMap.put(groupInfo.target, new Pair<>(groupInfo.updateDt, portrait));
         return portrait;
     }

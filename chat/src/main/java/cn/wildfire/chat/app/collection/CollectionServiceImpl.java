@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.collection.CollectionService;
 import cn.wildfire.chat.kit.collection.model.Collection;
 import cn.wildfire.chat.kit.net.Callback;
@@ -42,7 +43,6 @@ public class CollectionServiceImpl implements CollectionService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private static CollectionServiceImpl instance;
-    private String baseUrl;
     private OkHttpClient okHttpClient;
 
     private CollectionServiceImpl() {
@@ -58,25 +58,12 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     /**
-     * 设置接龙服务基础URL
-     *
-     * @param baseUrl 基础URL，如 https://jielong.wildfirechat.net
-     */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    /**
      * 检查服务是否已配置
      *
      * @return true=已配置
      */
     public boolean isConfigured() {
-        return !TextUtils.isEmpty(baseUrl);
+        return !TextUtils.isEmpty(Config.getCollectionServerAddress());
     }
 
     @Override
@@ -97,7 +84,7 @@ public class CollectionServiceImpl implements CollectionService {
             return;
         }
 
-        String url = baseUrl + "/api/collections";
+        String url = Config.getCollectionServerAddress() + "/api/collections";
         Map<String, Object> params = new HashMap<>();
         params.put("groupId", groupId);
         params.put("title", title);
@@ -159,7 +146,7 @@ public class CollectionServiceImpl implements CollectionService {
             return;
         }
 
-        String url = baseUrl + "/api/collections/" + collectionId + "/detail";
+        String url = Config.getCollectionServerAddress() + "/api/collections/" + collectionId + "/detail";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(groupId)) {
             params.put("groupId", groupId);
@@ -218,7 +205,7 @@ public class CollectionServiceImpl implements CollectionService {
             return;
         }
 
-        String url = baseUrl + "/api/collections/" + collectionId + "/join";
+        String url = Config.getCollectionServerAddress() + "/api/collections/" + collectionId + "/join";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(groupId)) {
             params.put("groupId", groupId);
@@ -261,7 +248,7 @@ public class CollectionServiceImpl implements CollectionService {
             return;
         }
 
-        String url = baseUrl + "/api/collections/" + collectionId + "/delete";
+        String url = Config.getCollectionServerAddress() + "/api/collections/" + collectionId + "/delete";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(groupId)) {
             params.put("groupId", groupId);
@@ -303,7 +290,7 @@ public class CollectionServiceImpl implements CollectionService {
             return;
         }
 
-        String url = baseUrl + "/api/collections/" + collectionId + "/close";
+        String url = Config.getCollectionServerAddress() + "/api/collections/" + collectionId + "/close";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(groupId)) {
             params.put("groupId", groupId);
@@ -347,7 +334,7 @@ public class CollectionServiceImpl implements CollectionService {
      */
     private void postWithAuth(final String url, final Map<String, Object> params, final Callback<JSONObject> callback) {
         // 先获取认证码
-        String host = extractHost(baseUrl);
+        String host = extractHost(Config.getCollectionServerAddress());
         ChatManager.Instance().getAuthCode(AUTH_CODE_ID, AUTH_CODE_TYPE, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String authCode) {

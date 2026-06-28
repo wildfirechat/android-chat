@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.poll.model.Poll;
@@ -48,7 +49,6 @@ public class PollServiceImpl implements PollService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private static PollServiceImpl instance;
-    private String baseUrl;
     private OkHttpClient okHttpClient;
 
     private PollServiceImpl() {
@@ -64,25 +64,12 @@ public class PollServiceImpl implements PollService {
     }
 
     /**
-     * 设置投票服务基础URL
-     *
-     * @param baseUrl 基础URL，如 http://your-poll-server:8088
-     */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    /**
      * 检查服务是否已配置
      *
      * @return true=已配置
      */
     public boolean isConfigured() {
-        return !TextUtils.isEmpty(baseUrl);
+        return !TextUtils.isEmpty(Config.getPollServerAddress());
     }
 
     @Override
@@ -104,7 +91,7 @@ public class PollServiceImpl implements PollService {
             return;
         }
 
-        String url = baseUrl + "/api/polls";
+        String url = Config.getPollServerAddress() + "/api/polls";
         Map<String, Object> params = new HashMap<>();
         params.put("groupId", groupId);
         params.put("title", title);
@@ -165,7 +152,7 @@ public class PollServiceImpl implements PollService {
             return;
         }
 
-        String url = baseUrl + "/api/polls/" + pollId;
+        String url = Config.getPollServerAddress() + "/api/polls/" + pollId;
         Map<String, Object> params = new HashMap<>();
 
         postWithAuth(url, params, new SimpleCallback<JSONObject>() {
@@ -221,7 +208,7 @@ public class PollServiceImpl implements PollService {
             return;
         }
 
-        String url = baseUrl + "/api/polls/" + pollId + "/vote";
+        String url = Config.getPollServerAddress() + "/api/polls/" + pollId + "/vote";
         Map<String, Object> params = new HashMap<>();
         params.put("optionIds", new JSONArray(optionIds));
 
@@ -261,7 +248,7 @@ public class PollServiceImpl implements PollService {
             return;
         }
 
-        String url = baseUrl + "/api/polls/" + pollId + "/close";
+        String url = Config.getPollServerAddress() + "/api/polls/" + pollId + "/close";
         Map<String, Object> params = new HashMap<>();
 
         postWithAuth(url, params, new SimpleCallback<JSONObject>() {
@@ -300,7 +287,7 @@ public class PollServiceImpl implements PollService {
             return;
         }
 
-        String url = baseUrl + "/api/polls/" + pollId + "/delete";
+        String url = Config.getPollServerAddress() + "/api/polls/" + pollId + "/delete";
         Map<String, Object> params = new HashMap<>();
 
         postWithAuth(url, params, new SimpleCallback<JSONObject>() {
@@ -339,7 +326,7 @@ public class PollServiceImpl implements PollService {
             return;
         }
 
-        String url = baseUrl + "/api/polls/" + pollId + "/export";
+        String url = Config.getPollServerAddress() + "/api/polls/" + pollId + "/export";
         Map<String, Object> params = new HashMap<>();
 
         postWithAuth(url, params, new SimpleCallback<JSONObject>() {
@@ -394,7 +381,7 @@ public class PollServiceImpl implements PollService {
         }
 
         // 后端API使用 POST /api/polls/my
-        String url = baseUrl + "/api/polls/my";
+        String url = Config.getPollServerAddress() + "/api/polls/my";
         Map<String, Object> params = new HashMap<>();
 
         postWithAuth(url, params, new SimpleCallback<JSONObject>() {
@@ -444,7 +431,7 @@ public class PollServiceImpl implements PollService {
      */
     private void postWithAuth(final String url, final Map<String, Object> params, final Callback<JSONObject> callback) {
         // 先获取认证码
-        String host = extractHost(baseUrl);
+        String host = extractHost(Config.getPollServerAddress());
         ChatManager.Instance().getAuthCode(AUTH_CODE_ID, AUTH_CODE_TYPE, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String authCode) {
@@ -510,7 +497,7 @@ public class PollServiceImpl implements PollService {
      */
     private void getWithAuth(final String url, final Callback<JSONObject> callback) {
         // 先获取认证码
-        String host = extractHost(baseUrl);
+        String host = extractHost(Config.getPollServerAddress());
         ChatManager.Instance().getAuthCode(AUTH_CODE_ID, AUTH_CODE_TYPE, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String authCode) {

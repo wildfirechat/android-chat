@@ -4,6 +4,11 @@
 
 package cn.wildfire.chat.kit;
 
+import android.text.TextUtils;
+
+import cn.wildfirechat.client.ConnectionStatus;
+import cn.wildfirechat.remote.ChatManager;
+
 /**
  * Created by heavyrain lee on 2017/11/24.
  */
@@ -33,6 +38,20 @@ public class Config {
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
+
+    /**
+     * 主网媒体地址前缀，双网环境下用于头像/媒体类消息的 URL 转换。
+     * <p>
+     * 只在双网环境下配置，不需要双网时保持为 null。
+     */
+    public static String MAIN_MEDIA_URL_PREFIX = null;
+
+    /**
+     * 备网媒体地址前缀，双网环境下用于头像/媒体类消息的 URL 转换。
+     * <p>
+     * 只在双网环境下配置，不需要双网时保持为 null。
+     */
+    public static String BACKUP_MEDIA_URL_PREFIX = null;
 
     /**
      * 音视频通话所用的turn server配置，详情参考 https://docs.wildfirechat.net/webrtc/
@@ -87,6 +106,11 @@ public class Config {
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
+     * 工作台页面备选地址，双网环境下使用。
+     */
+    public static String WORKSPACE_BACKUP_URL = null;
+
+    /**
      * 语音识别服务地址，配置之后，长按语音消息，会显示转文字按钮。
      * <p>
      * 语音转文字服务地址。关于语音转文字信息请参考：https://gitee.com/wfchat/asr-api 。
@@ -96,10 +120,20 @@ public class Config {
     public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
 
     /**
+     * 语音识别服务备选地址，双网环境下使用。
+     */
+    public static String ASR_SERVER_BACKUP_URL = null;
+
+    /**
      * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
      * 请注意，不能写应用服务地址
      */
     public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.net";
+
+    /**
+     * 组织通讯录服务备选地址，双网环境下使用。
+     */
+    public static String ORG_SERVER_BACKUP_ADDRESS = null;
 
     /**
      * 接龙服务地址，如果需要接龙功能，请部署接龙服务，然后这里填上接龙服务地址；如果不需要接龙功能，请置为 null
@@ -108,16 +142,31 @@ public class Config {
     public static String COLLECTION_SERVER_ADDRESS = "https://jielong.wildfirechat.net";
 
     /**
+     * 接龙服务备选地址，双网环境下使用。
+     */
+    public static String COLLECTION_SERVER_BACKUP_ADDRESS = null;
+
+    /**
      * 投票服务地址，如果需要投票功能，请部署投票服务，然后这里填上投票服务地址；如果不需要投票功能，请置为 null
      * 示例：http://192.168.1.81:8082
      */
     public static String POLL_SERVER_ADDRESS = "https://poll.wildfirechat.net";
 
     /**
+     * 投票服务备选地址，双网环境下使用。
+     */
+    public static String POLL_SERVER_BACKUP_ADDRESS = null;
+
+    /**
      * 归档服务地址，如果需要从历史归档服务器加载消息功能，请部署归档服务，然后这里填上归档服务地址；如果不需要归档功能，请置为 null
      * 示例：http://192.168.1.81:8083
      */
     public static String ARCHIVE_SERVER_ADDRESS = null;
+
+    /**
+     * 归档服务备选地址，双网环境下使用。
+     */
+    public static String ARCHIVE_SERVER_BACKUP_ADDRESS = null;
 
     /**
      * 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。
@@ -173,6 +222,11 @@ public class Config {
     // 会议纪要页面地址
     public static String MINUTES_URL = "http://101.42.4.222:8883/index.html";
 
+    /**
+     * 会议纪要页面备选地址，双网环境下使用。
+     */
+    public static String MINUTES_BACKUP_URL = null;
+
     // 用户协议地址
     public final static String USER_AGREEMENT_URL = "https://example.com/user_agreement.html";
 
@@ -190,4 +244,59 @@ public class Config {
      * false 时，组织通讯录中只能勾选单个成员，不能勾选整个组织。
      */
     public static boolean ENABLE_SELECT_ORGANIZATION = false;
+
+    /**
+     * 根据当前网络状态在主/备地址之间选择。
+     *
+     * @param main   主网地址
+     * @param backup 备网地址
+     * @return 实际应使用的地址
+     */
+    public static String selectServer(String main, String backup) {
+        if (TextUtils.isEmpty(main) && TextUtils.isEmpty(backup)) {
+            return null;
+        }
+        if (TextUtils.isEmpty(backup)) {
+            return main;
+        }
+        if (TextUtils.isEmpty(main)) {
+            return backup;
+        }
+        if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
+            return ChatManager.Instance().isConnectedToMainNetwork() ? main : backup;
+        }
+        return main;
+    }
+
+    public static String getOrgServerAddress() {
+        return selectServer(ORG_SERVER_ADDRESS, ORG_SERVER_BACKUP_ADDRESS);
+    }
+
+    public static String getCollectionServerAddress() {
+        return selectServer(COLLECTION_SERVER_ADDRESS, COLLECTION_SERVER_BACKUP_ADDRESS);
+    }
+
+    public static String getPollServerAddress() {
+        return selectServer(POLL_SERVER_ADDRESS, POLL_SERVER_BACKUP_ADDRESS);
+    }
+
+    public static String getArchiveServerAddress() {
+        return selectServer(ARCHIVE_SERVER_ADDRESS, ARCHIVE_SERVER_BACKUP_ADDRESS);
+    }
+
+    public static String getWorkspaceUrl() {
+        return selectServer(WORKSPACE_URL, WORKSPACE_BACKUP_URL);
+    }
+
+    public static String getAsrServerUrl() {
+        return selectServer(ASR_SERVER_URL, ASR_SERVER_BACKUP_URL);
+    }
+
+    public static String getMinutesUrl() {
+        return selectServer(MINUTES_URL, MINUTES_BACKUP_URL);
+    }
+
+    public static String getOnlineFilePreviewUrl() {
+        return ONLINE_FILE_PREVIEW_URL;
+    }
 }

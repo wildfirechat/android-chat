@@ -37,6 +37,11 @@ public class OrganizationService implements OrganizationServiceProvider {
 
     //组织通讯录服务地址，如果没有部署，可以设置为null
     public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = Config.ORG_SERVER_ADDRESS;
+    public static String ORG_SERVER_BACKUP_ADDRESS = Config.ORG_SERVER_BACKUP_ADDRESS;
+
+    private String getOrgServerAddress() {
+        return Config.selectServer(ORG_SERVER_ADDRESS, ORG_SERVER_BACKUP_ADDRESS);
+    }
 
     private OrganizationService() {
 
@@ -60,7 +65,7 @@ public class OrganizationService implements OrganizationServiceProvider {
 
                 Map<String, Object> params = new HashMap<>(1);
                 params.put("authCode", result);
-                String url = ORG_SERVER_ADDRESS + "/api/user_login";
+                String url = getOrgServerAddress() + "/api/user_login";
                 OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
                     @Override
                     public void onUiSuccess(Void r) {
@@ -104,7 +109,7 @@ public class OrganizationService implements OrganizationServiceProvider {
 
     private void fillDefaultPortrait(Employee employee) {
         if (employee != null && (TextUtils.isEmpty(employee.portraitUrl) || !employee.portraitUrl.startsWith("http"))) {
-            employee.portraitUrl = AppService.APP_SERVER_ADDRESS + "/avatar?name=" + Uri.encode(employee.name);
+            employee.portraitUrl = AppService.Instance().appServerAddress() + "/avatar?name=" + Uri.encode(employee.name);
         }
     }
 
@@ -134,7 +139,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeId", employeeId);
-        String url = ORG_SERVER_ADDRESS + "/api/relationship/employee";
+        String url = getOrgServerAddress() + "/api/relationship/employee";
         OKHttpHelper.post(url, params, callback);
 
     }
@@ -146,7 +151,7 @@ public class OrganizationService implements OrganizationServiceProvider {
             return;
         }
         Map<String, Object> params = new HashMap<>(1);
-        String url = ORG_SERVER_ADDRESS + "/api/organization/root";
+        String url = getOrgServerAddress() + "/api/organization/root";
         OKHttpHelper.post(url, params, new SimpleCallback<List<Organization>>() {
             @Override
             public void onUiSuccess(List<Organization> organizations) {
@@ -169,7 +174,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("id", orgId);
-        String url = ORG_SERVER_ADDRESS + "/api/organization/query_ex";
+        String url = getOrgServerAddress() + "/api/organization/query_ex";
         OKHttpHelper.post(url, params, new SimpleCallback<OrganizationEx>() {
             @Override
             public void onUiSuccess(OrganizationEx organizationEx) {
@@ -192,7 +197,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("ids", orgIds);
-        String url = ORG_SERVER_ADDRESS + "/api/organization/query_list";
+        String url = getOrgServerAddress() + "/api/organization/query_list";
         OKHttpHelper.post(url, params, new SimpleCallback<List<Organization>>() {
             @Override
             public void onUiSuccess(List<Organization> organizations) {
@@ -239,7 +244,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("ids", orgIds);
-        String url = ORG_SERVER_ADDRESS + "/api/organization/batch_employees";
+        String url = getOrgServerAddress() + "/api/organization/batch_employees";
         OKHttpHelper.post(url, params, callback);
     }
 
@@ -251,7 +256,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("id", orgId);
-        String url = ORG_SERVER_ADDRESS + "/api/organization/employees";
+        String url = getOrgServerAddress() + "/api/organization/employees";
         OKHttpHelper.post(url, params, callback);
     }
 
@@ -263,7 +268,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeId", employeeId);
-        String url = ORG_SERVER_ADDRESS + "/api/employee/query";
+        String url = getOrgServerAddress() + "/api/employee/query";
         OKHttpHelper.post(url, params, new SimpleCallback<Employee>() {
             @Override
             public void onUiSuccess(Employee employee) {
@@ -286,7 +291,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeIds", employeeIds);
-        String url = ORG_SERVER_ADDRESS + "/api/employee/query_list";
+        String url = getOrgServerAddress() + "/api/employee/query_list";
         OKHttpHelper.post(url, params, new SimpleCallback<List<Employee>>() {
             @Override
             public void onUiSuccess(List<Employee> employees) {
@@ -309,7 +314,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         }
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeId", employeeId);
-        String url = ORG_SERVER_ADDRESS + "/api/employee/query_ex";
+        String url = getOrgServerAddress() + "/api/employee/query_ex";
         OKHttpHelper.post(url, params, new SimpleCallback<EmployeeEx>() {
             @Override
             public void onUiSuccess(EmployeeEx employeeEx) {
@@ -337,7 +342,7 @@ public class OrganizationService implements OrganizationServiceProvider {
         params.put("keyword", keyword);
         params.put("count", 50);
         params.put("page", 0);
-        String url = ORG_SERVER_ADDRESS + "/api/employee/search";
+        String url = getOrgServerAddress() + "/api/employee/search";
         OKHttpHelper.post(url, params, new SimpleCallback<PageResponse<Employee>>() {
             @Override
             public void onUiSuccess(PageResponse<Employee> employees) {
@@ -359,7 +364,7 @@ public class OrganizationService implements OrganizationServiceProvider {
             return;
         }
         Map<String, Object> params = new HashMap<>(1);
-        String url = ORG_SERVER_ADDRESS + "/api/organization/root";
+        String url = getOrgServerAddress() + "/api/organization/root";
         OKHttpHelper.post(url, params, new Callback<List<Organization>>() {
             @Override
             public void onSuccess(List<Organization> organizations) {
@@ -372,7 +377,7 @@ public class OrganizationService implements OrganizationServiceProvider {
                         params.put("keyword", keyword);
                         params.put("count", 50);
                         params.put("page", 0);
-                        String url = ORG_SERVER_ADDRESS + "/api/employee/search";
+                        String url = getOrgServerAddress() + "/api/employee/search";
                         OKHttpHelper.post(url, params, new Callback<PageResponse<Employee>>() {
                             @Override
                             public void onSuccess(PageResponse<Employee> employees) {

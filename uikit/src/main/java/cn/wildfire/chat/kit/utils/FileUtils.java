@@ -1006,7 +1006,7 @@ public class FileUtils {
     }
 
     private static void onlinePreview(Context context, String fileName, String fileRemoteUrl) {
-        if (TextUtils.isEmpty(Config.ONLINE_FILE_PREVIEW_URL)) {
+        if (TextUtils.isEmpty(Config.getOnlineFilePreviewUrl())) {
             Toast.makeText(context, R.string.local_preview_failed, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -1015,7 +1015,7 @@ public class FileUtils {
             return;
         }
         Toast.makeText(context, R.string.local_preview_failed_tip, Toast.LENGTH_SHORT).show();
-        String url = Config.ONLINE_FILE_PREVIEW_URL + Base64.encodeToString(fileRemoteUrl.getBytes(), Base64.NO_WRAP);
+        String url = Config.getOnlineFilePreviewUrl() + Base64.encodeToString(fileRemoteUrl.getBytes(), Base64.NO_WRAP);
         WfcWebViewActivity.loadUrl(context, fileName, url);
     }
 

@@ -157,7 +157,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
             playStatusIndicator.setVisibility(View.GONE);
         }
 
-        OKHttpHelper.sse(Config.ASR_SERVER_URL, object, new SimpleEventSourceListener() {
+        OKHttpHelper.sse(Config.getAsrServerUrl(), object, new SimpleEventSourceListener() {
 
             @Override
             public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
@@ -257,7 +257,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
             if (speechToTextInProgress) {
                 return true;
             } else {
-                return TextUtils.isEmpty(Config.ASR_SERVER_URL) || !TextUtils.isEmpty(message.audioMessageSpeechToText);
+                return TextUtils.isEmpty(Config.getAsrServerUrl()) || !TextUtils.isEmpty(message.audioMessageSpeechToText);
             }
         } else if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_CANCEL_SPEECH_TO_TEXT)) {
             return TextUtils.isEmpty(message.audioMessageSpeechToText);

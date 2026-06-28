@@ -79,7 +79,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
     private void updateConfigInfo() {
         StringBuilder sb = new StringBuilder();
         sb.append(getString(R.string.diagnose_current_time, new Date().toString())).append("\n");
-        sb.append(getString(R.string.diagnose_app_server, AppService.APP_SERVER_ADDRESS)).append("\n");
+        sb.append(getString(R.string.diagnose_app_server, AppService.Instance().appServerAddress())).append("\n");
         sb.append(getString(R.string.diagnose_route_host, Config.IM_SERVER_HOST)).append("\n");
         sb.append(getString(R.string.diagnose_route_port, MyApp.routePort)).append("\n");
         sb.append(getString(R.string.diagnose_longlink_host, MyApp.longLinkHost)).append("\n");
@@ -104,7 +104,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
     }
 
     private void checkAppServer() {
-        OKHttpHelper.get(AppService.APP_SERVER_ADDRESS, null, new SimpleCallback<String>() {
+        OKHttpHelper.get(AppService.Instance().appServerAddress(), null, new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String s) {
                 if ("Ok".equals(s)) {

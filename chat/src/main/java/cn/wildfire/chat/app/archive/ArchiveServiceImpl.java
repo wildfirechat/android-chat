@@ -18,6 +18,7 @@ import java.util.Map;
 
 import cn.wildfire.chat.app.archive.model.ArchivedMessage;
 import cn.wildfire.chat.app.archive.model.ArchiveMessagePayload;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.archive.service.ArchiveService;
@@ -53,7 +54,6 @@ public class ArchiveServiceImpl implements ArchiveService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private static ArchiveServiceImpl instance;
-    private String baseUrl;
     private OkHttpClient okHttpClient;
     private long messageIdCounter;
 
@@ -71,25 +71,12 @@ public class ArchiveServiceImpl implements ArchiveService {
     }
 
     /**
-     * 设置归档服务基础URL
-     *
-     * @param baseUrl 基础URL，如 http://your-archive-server:8088
-     */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    /**
      * 检查服务是否已配置
      *
      * @return true=已配置
      */
     public boolean isConfigured() {
-        return !TextUtils.isEmpty(baseUrl);
+        return !TextUtils.isEmpty(Config.getArchiveServerAddress());
     }
 
     @Override
@@ -115,7 +102,7 @@ public class ArchiveServiceImpl implements ArchiveService {
             return;
         }
 
-        String url = baseUrl + "/api/messages/fetch";
+        String url = Config.getArchiveServerAddress() + "/api/messages/fetch";
         Map<String, Object> params = new HashMap<>();
         params.put("convType", conversationType);
         params.put("convTarget", convTarget);
@@ -184,7 +171,7 @@ public class ArchiveServiceImpl implements ArchiveService {
             return;
         }
 
-        String url = baseUrl + "/api/messages/search";
+        String url = Config.getArchiveServerAddress() + "/api/messages/search";
         Map<String, Object> params = new HashMap<>();
         params.put("keyword", keyword);
         params.put("convTarget", convTarget != null ? convTarget : "");
@@ -346,7 +333,7 @@ public class ArchiveServiceImpl implements ArchiveService {
      */
     private void postWithAuth(final String url, final Map<String, Object> params, final Callback<JSONObject> callback) {
         // 先获取认证码
-        String host = extractHost(baseUrl);
+        String host = extractHost(Config.getArchiveServerAddress());
         ChatManager.Instance().getAuthCode(AUTH_CODE_ID, AUTH_CODE_TYPE, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String authCode) {

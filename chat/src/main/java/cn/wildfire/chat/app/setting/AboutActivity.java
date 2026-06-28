@@ -66,7 +66,7 @@ public class AboutActivity extends WfcBaseActivity {
                 + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
                 + ChatManager.Instance().getProtoRevision() + "\n"
                 + Config.IM_SERVER_HOST + "\n"
-                + AppService.APP_SERVER_ADDRESS + "\n";
+                + AppService.Instance().appServerAddress() + "\n";
 
             if (AVEngineKit.isSupportConference()) {
                 info += "高级版音视频\n";
