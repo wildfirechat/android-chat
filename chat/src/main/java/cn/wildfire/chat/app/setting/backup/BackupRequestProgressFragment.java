@@ -25,6 +25,7 @@ import cn.wildfirechat.backup.BackupManager;
 import cn.wildfirechat.backup.BackupProgress;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.BackupRequestNotificationContent;
 import cn.wildfirechat.message.notification.BackupResponseNotificationContent;
 import cn.wildfirechat.model.Conversation;
@@ -183,8 +184,14 @@ public class BackupRequestProgressFragment extends Fragment {
                     return;
                 }
 
+                String currentUserId = ChatManagerHolder.gChatManager.getUserId();
                 for (Message msg : messages) {
                     if (msg.content instanceof BackupResponseNotificationContent) {
+                        // 校验发送者是否为自己，避免冒用攻击
+                        if (!msg.sender.equals(currentUserId) || msg.direction != MessageDirection.Receive) {
+                            continue;
+                        }
+
                         BackupResponseNotificationContent response = (BackupResponseNotificationContent) msg.content;
 
                         timeoutHandler.removeCallbacks(timeoutRunnable);
