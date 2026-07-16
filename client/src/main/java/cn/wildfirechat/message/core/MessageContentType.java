@@ -59,6 +59,9 @@ public interface MessageContentType {
 
     int ContentType_Mark_Unread_Sync = 31;
 
+    //更新消息类型，仅在服务端使用，客户端不使用
+    int ContentType_Message_Content_Update = 32;
+
     int ContentType_Start_Secret_Chat = 40;
 
 
