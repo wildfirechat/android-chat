@@ -127,7 +127,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 session.setCallback(this);
             } else {
                 Toast.makeText(this, getString(R.string.voip_permission_required), Toast.LENGTH_SHORT).show();
-                if (gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
+                if (gEngineKit.getCurrentSession() != null && gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
                     gEngineKit.getCurrentSession().endCall();
                 }
                 finishFadeout();
