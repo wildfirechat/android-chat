@@ -34,7 +34,7 @@ public class WfcScheme {
     public static String buildConferenceScheme(String conferenceId, String password) {
         String value = QR_CODE_PREFIX_CONFERENCE + conferenceId;
         if (!TextUtils.isEmpty(password)) {
-            value += "/?pwd=" + password;
+            value += "?pwd=" + password;
         }
         return value;
     }
