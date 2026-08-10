@@ -1,2 +1,21 @@
+plugins {
+    id 'maven-publish'
+}
+
+group = 'com.github.wildfirechat.android-chat'
+// JitPack 构建时注入 tag/commit，本地构建用占位版本
+version = System.getenv('VERSION') ?: 'local'
+
 configurations.maybeCreate("default")
 artifacts.add("default", file('mars-core-release.aar'))
+
+// 预编译 aar，直接作为 maven 制品发布，让外部工程（uni-app x 插件等）可以按坐标依赖
+publishing {
+    publications {
+        release(MavenPublication) {
+            artifactId = 'mars-core-release'
+            artifact file('mars-core-release.aar')
+            pom.packaging = 'aar'
+        }
+    }
+}

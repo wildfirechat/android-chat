@@ -1,0 +1,6 @@
+jdk:
+  - openjdk17
+
+# 只发布 SDK 的两个模块，不构建 demo app（settings.gradle 里也按 JITPACK 环境变量做了裁剪）
+install:
+  - ./gradlew --no-daemon :mars-core-release:publishToMavenLocal :client:publishToMavenLocal

@@ -1,6 +1,10 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
-group = 'com.github.wildfirechat'
+// JitPack 多模块仓库的坐标必须是 com.github.<user>.<repo>:<module>，否则 JitPack 找不到该构建哪个仓库
+group = 'com.github.wildfirechat.android-chat'
+// JitPack 构建时注入 tag/commit，本地构建用占位版本
+version = System.getenv('VERSION') ?: 'local'
 
 android {
     compileSdkVersion 34
@@ -47,6 +51,20 @@ android {
     }
     buildFeatures {
         aidl true
+    }
+    publishing {
+        singleVariant('release')
+    }
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            artifactId = 'client'
+            afterEvaluate {
+                from components.release
+            }
+        }
     }
 }
 
