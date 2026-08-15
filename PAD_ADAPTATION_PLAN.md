@@ -303,7 +303,7 @@ L0  设备判定、构建与回归基线                            ← 前置
 
 ---
 
-### 阶段 3：会话页宿主解耦（纯重构，行为等价）
+### 阶段 3：会话页宿主解耦（纯重构，行为等价）✅ 代码已完成，待真机回归
 
 **目标**：让 `ConversationFragment` 能被"主界面右栏"和"独立 Activity"两种宿主承载。**本阶段不改变任何可见行为**，手机端跑的还是 `ConversationActivity`。
 
@@ -335,9 +335,53 @@ L0  设备判定、构建与回归基线                            ← 前置
 
 **工作量**：3~5 人日
 
+#### 实施记录
+
+**对本节原计划的一处调整：`ConversationActivity` 没有 `implements ConversationHost`。**
+
+原计划让 `ConversationActivity` 实现接口、把 Fragment 里的四段代码搬进去。实际改为新增一个通用适配器
+`WfcBaseActivityConversationHost`，对**任意** `WfcBaseActivity` 提供"会话页独占一个 Activity"这一经典形态的实现。
+好处有二：
+
+1. `ConversationActivity` 在 C1~C4 上**一行都不用改**（只改了 C5 菜单转发），diff 更小、回归面更窄，更符合本阶段"只做搬运"的要求；
+2. uikit 作为 AAR 被集成时，宿主可能是集成方自己的 `WfcBaseActivity` 而并未实现 `ConversationHost`，
+   `ConversationFragment.conversationHost()` 会自动回退到该适配器 —— 本次改造对集成方**不是破坏性变更**。
+
+**新增文件**
+
+| 文件 | 职责 |
+|------|------|
+| `conversation/ConversationHost.java` | 宿主接口，4 个方法（设标题 / 读标题 / 关会话 / 取高亮消息 id） |
+| `conversation/ConversationTitleHelper.java` | 把标题（含静音/听筒图标）画到**指定的** toolbar 上。代码原样搬自 Fragment，只把"画到哪个 toolbar"变成构造参数，独立会话页与双栏右栏共用 |
+| `conversation/WfcBaseActivityConversationHost.java` | 上述经典形态的宿主实现 |
+
+**接口签名与原计划的差异**
+
+- `setConversationTitle(title, subTitle, silent, earpiece)` 合成一个方法（原计划拆成两个）。判定"是否免打扰/是否听筒"的**策略**留在 Fragment（它才知道会话状态），**渲染**交给宿主，职责边界更清晰。
+- 增加了 `getConversationTitle()`。原计划漏了 `resetConversationTitle()`（"对方正在输入"结束后还原标题）里的 `getActivity().getTitle()` —— 这也是一处宿主耦合。
+
+**逐点落实**
+
+| 耦合点 | 改法 |
+|--------|------|
+| C1 `setActivityTitle` | 改为 `host.setConversationTitle(...)`；`applyTitleWithIcons` / `appendTitleIcon` / `findToolbarTitleView` / `CenteredImageSpan` 与 `toolbarTitleView` 缓存整体迁入 `ConversationTitleHelper` |
+| C2 `applyTitleWithIcons` | 同上 |
+| C3 `checkAndHighlightMessage` | `host.getHighlightMessageId()` |
+| C4 两处 `getActivity().finish()` | 新增私有 `closeConversation()` → `host.closeConversation()` |
+| C5 会话菜单 | `menu_conversation_info` 的处理下沉为 `ConversationFragment.onConversationMenuItemSelected(MenuItem)`；`ConversationActivity.onOptionsItemSelected` 只做转发，其 `showConversationInfo()` 与 `conversation` 字段一并删除（字段改为方法内局部变量） |
+| C6 `onBackPressed()` | 包级可见 → `public` |
+| — | `onDestroyView()` 中原来的 `toolbarTitleView = null` 改为 `wfcBaseActivityHost = null`，等价地丢弃标题 TextView 缓存 |
+
+**行为差异（均为更宽容，不构成回归）**
+
+- 原 `(WfcBaseActivity) getActivity()` 在宿主类型不符时会抛 `ClassCastException`，现在 `conversationHost()` 返回 null、调用点直接 return。
+- `showConversationInfo()` 增加了 `conversation == null` 的保护（原来在 Activity 上，会话未初始化时点菜单会崩）。
+
+**验证**：`./gradlew :chat:assembleDebug` 通过；未新增/修改任何资源，手机端无资源变更。**行为等价只能靠真机回归确认**，见第六章。
+
 ---
 
-### 阶段 4：主界面双栏
+### 阶段 4：主界面双栏 ✅ 代码已完成，待真机回归
 
 **目标**：平板上左侧会话/联系人列表 + 右侧会话内容，类似微信 Pad / WhatsApp Pad。
 
@@ -385,6 +429,91 @@ L0  设备判定、构建与回归基线                            ← 前置
 - 平板：双栏切换流畅，未读数/角标正确，旋转与分屏窄化不崩溃、会话不丢。
 
 **工作量**：8~12 人日
+
+#### 实施记录
+
+**对本节原计划的核心调整：没有新增 `MainPadActivity`，双栏做在 `MainActivity` 内部（D2 开关隔离，而非 D4 新增文件）。**
+
+原计划"新增 `MainPadActivity`"的最大代价，本节第 1 条自己已经点出来了：manifest 里 `${applicationId}.main`、
+`ACTION_SEND` 分享等 intent-filter 与 `singleTask` 语义要复制一份，还要处理两个主界面并存。而
+`${applicationId}.main` 在 uikit 里有 **7 处**调用方（通知点击、退群后返回主界面等），一旦分叉必然踩坑。
+
+改法是让 `MainActivity` 自己按窗口宽度选布局：
+
+```java
+protected int contentLayout() {
+    return WfcDeviceUtils.isTwoPaneLayout(this) ? R.layout.main_pad_activity : R.layout.main_activity;
+}
+```
+
+配套地，本节第 3 条表格最后一行"旋转/分屏变窄至 < 600dp 需转跳"这个**最容易出问题的路径也随之消失**：
+Activity 重建时 `contentLayout()` 自然重新求值，无需任何跨 Activity 跳转编排。
+
+手机端保证由 **D2** 提供，且有静态证据：`bool/wfc_two_pane` 的无限定符取值为 `false`（`aapt2 dump` 已确认），
+`MainActivity` 中所有新增分支都在 `twoPaneController != null` 之下，手机上恒不成立。
+
+**双栏布局：左栏是手机布局的原样搬运**
+
+`layout/main_pad_activity.xml` 的左栏与 `main_activity.xml` 结构、控件 id 完全一致
+（`toolbar` / `contentLinearLayout` / `contentViewPager` / `bottomNavigationView` / `startingTextView`），
+只是宽度固定为 `wfc_pad_left_pane_width`（sw600dp 320dp，sw840dp 360dp）。
+
+因此 `MainActivity` 里 appbar 折叠动画（`updateToolbar`）、底部导航未读角标
+（`BottomNavigationMenuView.getChildAt(n)`）、ViewPager 切换、「+」菜单锚点等逻辑**一行都不用改**。
+
+> 未采用原计划的 `NavigationRailView` 侧边导航：它与 `BottomNavigationView` 虽同为 `NavigationBarView` 子类，
+> 但角标代码依赖 `getChildAt(0)` 返回 `BottomNavigationMenuView`，Rail 的子 View 结构不同（不同 material 版本还会变），
+> 会把三处角标逻辑全部拖下水。先用"左栏底部导航"这一低风险形态跑通双栏，侧边 Rail 可作为后续独立的视觉优化。
+
+**新增文件**
+
+| 文件 | 职责 |
+|------|------|
+| `chat/.../main/TwoPaneConversationController.java` | 右栏全部逻辑，`implements ConversationHost`。手机上**不会被实例化** |
+| `chat/res/layout/main_pad_activity.xml` | 双栏布局（无限定符，仅由代码在双栏时选用） |
+| `chat/res/values/dimens.xml`、`values-sw840dp/dimens.xml` | `wfc_pad_left_pane_width` |
+| `uikit/res/drawable/selector_conversation_item_two_pane.xml` | 会话列表项多一个 `state_activated` 选中态。**新建而非改 `selector_common_item`**，后者被多处复用，改它可能波及手机端 |
+
+**双栏交互规则的落地情况**
+
+| 场景 | 实现 |
+|------|------|
+| 点击会话列表项 | 右栏切换，不 `startActivity`；左栏高亮（`ConversationListAdapter.setSelectedConversation`） |
+| 首次进入 / 无会话 | 右栏显示占位（Logo + `pad_select_a_conversation`），右栏 toolbar 一并隐藏 |
+| 右栏有会话时按返回 | 先给 `ConversationFragment.onBackPressed()`，未消费则 `moveTaskToBack(true)`，与手机语义一致。**返回键不清空右栏**（微信 Pad 行为） |
+| 切到其他 Tab | 右栏保持当前会话（Q3 取建议默认值，无需代码） |
+| 会话被删除/退群 | 右栏回到空状态，见下方"两个易踩的坑" |
+| 旋转 / 分屏变窄 | 会话存进 `onSaveInstanceState`；仍是双栏则恢复到右栏，变成单栏则 `startActivity(ConversationActivity)` 交还给独立会话页 |
+
+**两个易踩的坑（都已处理）**
+
+1. **`commitNow()` 之后不能立刻 `setupConversation()`。** `commitNow` 只把 Fragment 推进到"**宿主当前的**"生命周期状态；
+   分屏/旋转重建后恢复右栏是在 `Activity.onCreate` 里调用的，此时 `onCreateView` 还没跑，直接
+   `setupConversation` 会因 `adapter`/`inputPanel` 未创建而 NPE。改为 `container.post(...)`，并用局部变量持有 Fragment，
+   避免快速连点两个会话时把参数应用到后一个 Fragment 上。
+2. **"会话从列表消失就清空右栏"是错的。** 新建的空会话在发出第一条消息前本来就不在会话列表里，
+   直接判"不在列表 → 关闭"会让刚点开的新会话立刻被关掉。改为只有**曾经出现在列表里、之后又消失**才算删除
+   （`conversationSeenInList` 标志位）。
+
+**会话切换用新建 Fragment 而不是复用**
+
+`ConversationActivity` 是 `singleTask` + `onNewIntent` + 复用同一个 Fragment 再 `setupConversation`；右栏改为**每次换会话新建一个
+`ConversationFragment`**。多选模式、输入框草稿、展开中的表情/扩展面板、密聊退出时的临时文件清理等状态都挂在 Fragment 上，
+复用极易串会话；平板上会话切换远比手机频繁，这个风险不能留。
+
+**已知差距（留待后续）**
+
+- 右栏内的入口（点头像进私聊、搜索定位、通知点击等）目前仍走 `startActivity(ConversationActivity)`，
+  即在双栏之上再压一个全屏会话页。这正是**阶段 5** 要收口的 31 处启动点，`ConversationHost.getHighlightMessageId()`
+  在双栏下暂时返回 0，也要到阶段 5 才由 `ConversationRouter` 按参数传入。
+- `updateToolbar()` 在「发现/我」页会把状态栏染成白色，双栏下这会影响整个窗口（含右栏）。属平板端视觉瑕疵，非功能问题。
+- `chat/res/layout-sw600dp/main_activity.xml`（阶段 2 产物）在双栏开启后不再被使用，但**予以保留**：
+  它与 `wfc_two_pane` 共用 `sw600dp` 限定符，若将来把 `wfc_two_pane` 改回 false 以关闭双栏，
+  平板会平滑退回到那份单栏布局，是一个现成的 kill-switch。
+
+**验证**：`./gradlew :chat:assembleDebug` 通过；`aapt2 dump resources` 确认
+`bool/wfc_two_pane` = `() false` / `(sw600dp) true`，`layout/main_pad_activity` 只有无限定符一份，
+`dimen/wfc_pad_left_pane_width` = `() 320dp` / `(sw840dp) 360dp`，未改动任何手机端既有资源。
 
 ---
 
