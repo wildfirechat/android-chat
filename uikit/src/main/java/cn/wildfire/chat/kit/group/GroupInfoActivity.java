@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.ErrorCode;
@@ -160,7 +161,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
     void action() {
         if (isJoined) {
             Intent intent = ConversationActivity.buildConversationIntent(this, Conversation.ConversationType.Group, groupId, 0);
-            startActivity(intent);
+            ConversationRouter.open(this, intent);
             finish();
         } else {
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_QRCode, this.from);
@@ -174,7 +175,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
                     public void onChanged(OperateResult<Boolean> booleanOperateResult) {
                         if (booleanOperateResult.isSuccess()) {
                             Intent intent = ConversationActivity.buildConversationIntent(GroupInfoActivity.this, Conversation.ConversationType.Group, groupId, 0);
-                            startActivity(intent);
+                            ConversationRouter.open(GroupInfoActivity.this, intent);
                             finish();
                         } else if (booleanOperateResult.getErrorCode() == ErrorCode.JOIN_GROUP_FAILED_NEED_VERIFY) {
                             sendJoinGroupRequest();

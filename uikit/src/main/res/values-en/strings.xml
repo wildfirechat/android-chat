@@ -941,4 +941,5 @@
     <string name="font_size_tip">Drag the slider above to adjust the font size</string>
     <string name="font_size_preview_message">Adjusting the font size changes the text in chats, moments and more.</string>
     <string name="font_size_preview_reply">Font size adjusted.</string>
+    <string name="ptt_toggle_restart_tip">Push-to-talk takes effect after restarting the app</string>
 </resources>

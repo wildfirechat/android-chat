@@ -4,42 +4,20 @@
 
 package cn.wildfire.chat.kit.search;
 
-import java.util.List;
+import android.content.Intent;
 
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.search.module.ConversationMessageSearchModule;
-import cn.wildfirechat.model.Conversation;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-public class SearchMessageActivity extends SearchActivity {
-    private Conversation conversation;
+/**
+ * 「查找聊天内容」在手机端的宿主壳。整页逻辑住在 {@link SearchMessagePageFragment}，
+ * 手机端与平板右栏共用同一份。
+ */
+public class SearchMessageActivity extends SearchShellActivity {
 
+    @Nullable
     @Override
-    protected void beforeViews() {
-        super.beforeViews();
-        conversation = getIntent().getParcelableExtra("conversation");
-    }
-
-    @Override
-    protected void initSearchModule(List<SearchableModule> modules) {
-        modules.add(new ConversationMessageSearchModule(conversation));
-
-        // 设置会话对象到SearchFragment
-        if (searchFragment != null) {
-            searchFragment.setConversation(conversation);
-        }
-    }
-
-    @Override
-    protected void initSearchFragment() {
-        super.initSearchFragment();
-        // 设置会话对象
-        if (searchFragment != null) {
-            searchFragment.setConversation(conversation);
-        }
-    }
-
-    @Override
-    protected String searchTip() {
-        return getString(R.string.search_tip);
+    protected Fragment createSearchPage(Intent intent) {
+        return SearchMessagePageFragment.fromIntent(intent);
     }
 }

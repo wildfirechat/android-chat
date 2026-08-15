@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.model.Conversation;
 
 public class ChatRoomListFragment extends Fragment {
@@ -49,6 +50,6 @@ public class ChatRoomListFragment extends Fragment {
         Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, roomId);
         intent.putExtra("conversation", conversation);
         intent.putExtra("conversationTitle", title);
-        startActivity(intent);
+        ConversationRouter.open(this, intent);
     }
 }

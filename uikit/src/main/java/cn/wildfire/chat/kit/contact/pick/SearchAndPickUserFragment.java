@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.organization.model.Employee;
@@ -67,7 +68,7 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     }
 
     private void init() {
-        pickUserViewModel = new ViewModelProvider(getActivity()).get(PickUserViewModel.class);
+        pickUserViewModel = new ViewModelProvider(WfcPageCompat.pageScope(this)).get(PickUserViewModel.class);
         contactAdapter = new CheckableUserListAdapter(this);
         contactAdapter.setOnUserClickListener(this);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

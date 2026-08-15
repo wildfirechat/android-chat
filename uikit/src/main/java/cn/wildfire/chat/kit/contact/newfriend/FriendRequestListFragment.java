@@ -4,8 +4,10 @@
 
 package cn.wildfire.chat.kit.contact.newfriend;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -21,10 +23,12 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.page.WfcPage;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
 
-public class FriendRequestListFragment extends Fragment {
+public class FriendRequestListFragment extends Fragment implements WfcPage {
     LinearLayout noNewFriendLinearLayout;
     LinearLayout newFriendLinearLayout;
     RecyclerView recyclerView;
@@ -70,5 +74,22 @@ public class FriendRequestListFragment extends Fragment {
             newFriendLinearLayout.setVisibility(View.GONE);
         }
         contactViewModel.clearUnreadFriendRequestStatus();
+    }
+
+    // ==================== WfcPage：菜单 ====================
+    // 改造前写在 FriendRequestListActivity 里，现在手机端与平板右栏共用这一份。
+
+    @Override
+    public int pageMenu() {
+        return R.menu.contact_friend_request;
+    }
+
+    @Override
+    public boolean onPageMenuItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.add) {
+            WfcPageCompat.startPage(this, new Intent(getActivity(), SearchUserActivity.class));
+            return true;
+        }
+        return false;
     }
 }

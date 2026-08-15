@@ -5,7 +5,10 @@
   左栏与手机版 main_activity.xml 结构、控件 id 完全一致（toolbar / contentLinearLayout /
   contentViewPager / bottomNavigationView / startingTextView），只是宽度固定，
   这样 MainActivity 里 appbar 折叠动画、底部导航角标、ViewPager 切换等逻辑一行都不用改。
-  右栏是会话容器 + 自己的 toolbar，由 TwoPaneConversationController 驱动。
+
+  右栏只是一个空容器：每个 tab 一条独立的导航栈（PaneStackFragment），栈里每一页自带 toolbar
+  （PanePageFragment）。所以这里既没有公用的会话 toolbar，也没有空状态占位——
+  空状态是各条栈栈底的欢迎页（PaneWelcomeFragment）。
 
   本布局只在 WfcDeviceUtils.isTwoPaneLayout() 为 true 时使用，手机端不会加载。
 -->
@@ -68,65 +71,12 @@
         android:layout_height="match_parent"
         android:background="@color/line" />
 
-    <!-- ===== 右栏：会话内容 ===== -->
-    <LinearLayout
+    <!-- ===== 右栏：每个 tab 一条导航栈 ===== -->
+    <FrameLayout
+        android:id="@+id/paneContainerFrameLayout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/conversationAppBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stateListAnimator="@null"
-            android:visibility="gone">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/conversationToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/gray5"
-                app:contentInsetStartWithNavigation="0dp"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/gray4">
-
-            <FrameLayout
-                android:id="@+id/conversationContainerFrameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <!-- 右栏未选中任何会话时的占位 -->
-            <LinearLayout
-                android:id="@+id/conversationEmptyLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:alpha="0.25"
-                    android:contentDescription="@null"
-                    android:src="@mipmap/ic_launcher" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/pad_select_a_conversation"
-                    android:textColor="@color/gray2"
-                    android:textSize="15sp" />
-            </LinearLayout>
-        </FrameLayout>
-    </LinearLayout>
+        android:background="@color/gray4" />
 
 </LinearLayout>

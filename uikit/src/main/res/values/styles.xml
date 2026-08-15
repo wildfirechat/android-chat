@@ -146,6 +146,18 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <!--
+        宽屏下取代底部面板的居中对话框主题，见 WfcSheetDialogCompat。
+        父主题必须留在 AppCompat 一系：MaterialComponents 的主题会把布局里的 <Button>
+        换成 MaterialButton，而这些面板的按钮都是自带 shape 背景的，换掉就丢背景。
+        windowMinWidth* 清零是因为宽度由代码按窗口宽度算，不要再被主题的最小宽度顶大。
+    -->
+    <style name="WfcCenteredDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@drawable/shape_centered_dialog_bg</item>
+        <item name="android:windowMinWidthMajor">0dp</item>
+        <item name="android:windowMinWidthMinor">0dp</item>
+    </style>
+
     <style name="RoundedCorners_4dp" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">4dp</item>

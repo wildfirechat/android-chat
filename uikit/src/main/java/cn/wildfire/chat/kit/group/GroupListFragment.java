@@ -22,10 +22,12 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetGroupsCallback;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public class GroupListFragment extends Fragment implements OnGroupItemClickListener {
     RecyclerView recyclerView;
@@ -90,7 +92,7 @@ public class GroupListFragment extends Fragment implements OnGroupItemClickListe
         Intent intent = new Intent(getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupInfo.target);
         intent.putExtra("conversation", conversation);
-        startActivity(intent);
-        getActivity().finish();
+        ConversationRouter.open(this, intent);
+        WfcPageCompat.finishAfterOpeningPage(this);
     }
 }

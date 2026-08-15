@@ -18,6 +18,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.client.Platform;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.PCOnlineInfo;
@@ -186,6 +187,6 @@ public class PCSessionActivity extends WfcBaseActivity implements OnSettingUpdat
 
     void fileHelper() {
         Intent intent = ConversationActivity.buildConversationIntent(this, Conversation.ConversationType.Single, Config.FILE_TRANSFER_ID, 0);
-        startActivity(intent);
+        ConversationRouter.open(this, intent);
     }
 }

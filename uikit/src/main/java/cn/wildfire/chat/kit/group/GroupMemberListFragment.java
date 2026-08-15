@@ -21,6 +21,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public class GroupMemberListFragment extends ProgressFragment implements GroupMemberListAdapter.OnMemberClickListener {
     private GroupInfo groupInfo;
@@ -41,7 +42,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
         if (groupInfo == null) {
-            getActivity().finish();
+            WfcPageCompat.finishPage(this);
         }
     }
 

@@ -81,7 +81,7 @@ public class ChatRoomConversationInfoFragment extends Fragment {
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
                     Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
-                    startActivity(intent);
+                    ConversationRouter.open(this, intent);
                 })
                 .build()
                 .show();

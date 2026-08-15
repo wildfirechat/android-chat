@@ -20,6 +20,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationLinkRecordFragment extends Fragment {
@@ -108,7 +109,7 @@ public class ConversationLinkRecordFragment extends Fragment {
                 null,
                 linkItem.message.messageId
         );
-        startActivity(intent);
+        ConversationRouter.open(this, intent);
     }
 }
 

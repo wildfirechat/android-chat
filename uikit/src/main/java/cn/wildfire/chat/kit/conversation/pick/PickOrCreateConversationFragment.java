@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -35,6 +36,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     private PickOrCreateConversationAdapter adapter;
     private OnPickOrCreateConversationListener listener;
     private OnSelectionChangedListener selectionChangedListener;
+    private boolean multiSelectMode;
 
     public void setListener(OnPickOrCreateConversationListener listener) {
         this.listener = listener;
@@ -45,13 +47,24 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     }
 
     public void setMultiSelectMode(boolean isMultiSelect) {
-        if (adapter != null) {
-            adapter.setMode(isMultiSelect ?
-                PickOrCreateConversationAdapter.MODE_MULTI :
-                PickOrCreateConversationAdapter.MODE_SINGLE);
-            if (!isMultiSelect) {
-                adapter.clearSelections();
-            }
+        this.multiSelectMode = isMultiSelect;
+        applyMultiSelectMode();
+    }
+
+    /**
+     * adapter 是在 {@code onCreateView} 里建的，而调用方（转发页）可能在那之前就把模式设过来了
+     * （视图重建后恢复多选态）。把模式先记在字段上、建完 adapter 再应用一次，
+     * 两种顺序都对。
+     */
+    private void applyMultiSelectMode() {
+        if (adapter == null) {
+            return;
+        }
+        adapter.setMode(multiSelectMode ?
+            PickOrCreateConversationAdapter.MODE_MULTI :
+            PickOrCreateConversationAdapter.MODE_SINGLE);
+        if (!multiSelectMode) {
+            adapter.clearSelections();
         }
     }
 
@@ -106,6 +119,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
                 selectionChangedListener.onSelectionChanged(count);
             }
         });
+        applyMultiSelectMode();
     }
 
     @Override
@@ -118,7 +132,9 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     @Override
     public void onNewConversationItemClick() {
         Intent intent = new Intent(getActivity(), PickOrCreateConversationTargetActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_PICK_CONVERSATION_TARGET);
+        // 必须走 startPageForResult：裸 startActivityForResult 的 requestCode 会被
+        // FragmentManager 换成内部生成的码，右栏拿到后送不回本页
+        WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_CONVERSATION_TARGET);
     }
 
     @Override

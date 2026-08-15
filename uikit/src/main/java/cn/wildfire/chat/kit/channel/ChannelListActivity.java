@@ -4,15 +4,16 @@
 
 package cn.wildfire.chat.kit.channel;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
+/**
+ * 频道列表在手机端的宿主壳。菜单（订阅频道）住在 {@link ChannelListFragment}，两端共用。
+ */
 public class ChannelListActivity extends WfcBaseActivity {
     private boolean pick;
 
@@ -20,20 +21,6 @@ public class ChannelListActivity extends WfcBaseActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         pick = getIntent().getBooleanExtra("pick", false);
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected int menu() {
-        return R.menu.channel_list;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.subscribe) {
-            subscribe();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -50,11 +37,5 @@ public class ChannelListActivity extends WfcBaseActivity {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, fragment)
             .commit();
-    }
-
-
-    void subscribe() {
-        Intent intent = new Intent(this, SearchChannelActivity.class);
-        startActivity(intent);
     }
 }

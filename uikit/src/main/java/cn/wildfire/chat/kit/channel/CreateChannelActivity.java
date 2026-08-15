@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.model.Conversation;
 
 public class CreateChannelActivity extends WfcBaseActivity {
@@ -121,7 +122,7 @@ public class CreateChannelActivity extends WfcBaseActivity {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     Intent intent = ConversationActivity.buildConversationIntent(CreateChannelActivity.this, Conversation.ConversationType.Channel, result.getResult(), 0);
-                    startActivity(intent);
+                    ConversationRouter.open(CreateChannelActivity.this, intent);
                     finish();
                 } else {
                     Toast.makeText(CreateChannelActivity.this,

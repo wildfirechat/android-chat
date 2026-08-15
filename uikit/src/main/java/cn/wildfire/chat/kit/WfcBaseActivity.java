@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -21,13 +22,18 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.MenuRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import cn.wildfire.chat.kit.page.WfcPage;
+import cn.wildfire.chat.kit.page.WfcPageHost;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
@@ -35,7 +41,7 @@ import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
-public abstract class WfcBaseActivity extends AppCompatActivity {
+public abstract class WfcBaseActivity extends AppCompatActivity implements WfcPageHost {
     Toolbar toolbar;
     private AppBarLayout appBarLayout;
 
@@ -48,6 +54,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         if (!WfcDeviceUtils.isLandscapeAllowed(this)) {
             this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        registerPageCallbacks();
         beforeViews();
         setContentView(contentLayout());
         bindViews();
@@ -145,8 +152,18 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (menu() != 0) {
-            getMenuInflater().inflate(menu(), menu);
+        WfcPage page = contentPage();
+        // 菜单优先由 Activity 自己声明（老页面），其次问内容 Fragment（已下沉到 WfcPage 的页面）。
+        // 两者都是 0 时不 inflate，与改造前一致。
+        int menuRes = menu();
+        if (menuRes == 0 && page != null) {
+            menuRes = page.pageMenu();
+        }
+        if (menuRes != 0) {
+            getMenuInflater().inflate(menuRes, menu);
+        }
+        if (page != null) {
+            page.onPreparePageMenu(menu);
         }
         afterMenus(menu);
         return super.onCreateOptionsMenu(menu);
@@ -159,7 +176,112 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             onBackPressed();
             return true;
         }
+        // 子类的 onOptionsItemSelected 先跑（它们处理完自己的项才调到 super），
+        // 这里兜底交给内容 Fragment，与右栏 PanePageFragment 的顺序一致。
+        WfcPage page = contentPage();
+        if (page != null && page.onPageMenuItemSelected(item)) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        WfcPage page = contentPage();
+        if (page != null && page.onPageBackPressed()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    // ==================== WfcPage / WfcPageHost ====================
+
+    /**
+     * 本 Activity 承载的内容页面。
+     * <p>
+     * 仓库里 35 个页面是「{@code fragment_container_activity} + 一个 Fragment」的壳，
+     * 所以先按容器 id 找；个别自定义布局的页面找不到时退化为在 FragmentManager 里找第一个
+     * {@link WfcPage} —— {@code WfcPage} 是页面主动实现的，不会误命中普通子 Fragment。
+     * 内容 Fragment 没实现 {@code WfcPage} 时返回 null，本类所有委托分支都跳过，行为与改造前一致。
+     */
+    @Nullable
+    protected WfcPage contentPage() {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.containerFrameLayout);
+        if (fragment instanceof WfcPage) {
+            return (WfcPage) fragment;
+        }
+        for (Fragment f : fm.getFragments()) {
+            if (f instanceof WfcPage) {
+                return (WfcPage) f;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 内容 Fragment 是在 {@link #afterViews()} 里异步 commit 的，等它视图就绪时
+     * {@code onCreateOptionsMenu} 往往已经跑过了（拿不到页面的菜单）。这里在它视图创建完成后
+     * 补一次菜单重建与标题应用。
+     */
+    private void registerPageCallbacks() {
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+            new FragmentManager.FragmentLifecycleCallbacks() {
+                @Override
+                public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment f,
+                                                  @NonNull View v, @Nullable Bundle savedInstanceState) {
+                    if (!(f instanceof WfcPage)) {
+                        return;
+                    }
+                    invalidateOptionsMenu();
+                    CharSequence title = ((WfcPage) f).pageTitle();
+                    if (title != null) {
+                        setTitle(title);
+                    }
+                }
+            }, false);
+    }
+
+    @Override
+    public void setPageTitle(CharSequence title) {
+        setTitle(title);
+    }
+
+    @Override
+    public void setPageSubtitle(@Nullable CharSequence subtitle) {
+        if (toolbar != null) {
+            toolbar.setSubtitle(subtitle);
+        }
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getPageTitle() {
+        return toolbar == null ? getTitle() : toolbar.getTitle();
+    }
+
+    @Override
+    public void invalidatePageMenu() {
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void finishPage() {
+        finish();
+    }
+
+    @Override
+    public void setPageResult(int resultCode, @Nullable Intent data) {
+        if (data == null) {
+            setResult(resultCode);
+        } else {
+            setResult(resultCode, data);
+        }
+    }
+
+    @Override
+    public boolean isPaneHost() {
+        return false;
     }
 
     protected void hideInputMethod() {

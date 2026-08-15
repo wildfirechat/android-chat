@@ -21,6 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.ChannelViewHolder;
 import cn.wildfirechat.model.ChannelInfo;
@@ -45,7 +46,7 @@ public class ChannelSearchModule extends SearchableModule<ChannelInfo, ChannelVi
         Toast.makeText(fragment.getActivity(), fragment.getString(R.string.show_channel_info), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(fragment.getActivity(), ChannelInfoActivity.class);
         intent.putExtra("channelInfo", channelInfo);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     @Override

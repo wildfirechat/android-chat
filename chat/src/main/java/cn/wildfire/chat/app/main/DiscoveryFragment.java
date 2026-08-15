@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -91,7 +92,7 @@ public class DiscoveryFragment extends Fragment {
 
     void robot() {
         Intent intent = ConversationActivity.buildConversationIntent(getActivity(), Conversation.ConversationType.Single, "FireRobot", 0);
-        startActivity(intent);
+        ConversationRouter.open(this, intent);
     }
 
     void channel() {

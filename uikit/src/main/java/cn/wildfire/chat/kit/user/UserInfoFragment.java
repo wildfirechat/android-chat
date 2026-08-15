@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,6 +47,7 @@ import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.group.GroupMemberMessageHistoryActivity;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
@@ -62,8 +65,10 @@ import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.utils.WfcUtils;
+import cn.wildfire.chat.kit.page.WfcPage;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
-public class UserInfoFragment extends Fragment {
+public class UserInfoFragment extends Fragment implements WfcPage {
     ImageView portraitImageView;
 
     TextView titleTextView;
@@ -288,8 +293,8 @@ public class UserInfoFragment extends Fragment {
         Intent intent = new Intent(getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
         intent.putExtra("conversation", conversation);
-        startActivity(intent);
-        getActivity().finish();
+        ConversationRouter.open(this, intent);
+        WfcPageCompat.finishAfterOpeningPage(this);
     }
 
     void moment() {
@@ -315,11 +320,11 @@ public class UserInfoFragment extends Fragment {
         String selfUid = userViewModel.getUserId();
         if (selfUid.equals(userInfo.uid)) {
             Intent intent = new Intent(getActivity(), ChangeMyNameActivity.class);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         } else {
             Intent intent = new Intent(getActivity(), SetAliasActivity.class);
             intent.putExtra("userId", userInfo.uid);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 
@@ -404,8 +409,8 @@ public class UserInfoFragment extends Fragment {
     void invite() {
         Intent intent = new Intent(getActivity(), InviteFriendActivity.class);
         intent.putExtra("userInfo", userInfo);
-        startActivity(intent);
-        getActivity().finish();
+        WfcPageCompat.startPage(this, intent);
+        WfcPageCompat.finishAfterOpeningPage(this);
     }
 
     void showMyQRCode() {
@@ -447,5 +452,169 @@ public class UserInfoFragment extends Fragment {
                     }
                 }
             });
+    }
+
+    // ==================== WfcPage：菜单 ====================
+    // 这套逻辑改造前在 UserInfoActivity 和 EmployeeInfoActivity 里各有一份逐行重复的拷贝，
+    // 平板右栏又需要第三份。现在下沉到页面自己，三处共用同一份实现。
+
+    @Override
+    public int pageMenu() {
+        return R.menu.user_info;
+    }
+
+    @Override
+    public void onPreparePageMenu(Menu menu) {
+        if (userInfo == null) {
+            return;
+        }
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+
+        MenuItem itemDelete = menu.findItem(R.id.delete);
+        MenuItem itemAddFriend = menu.findItem(R.id.addFriend);
+        MenuItem itemAddBlacklist = menu.findItem(R.id.addBlacklist);
+        MenuItem itemRemoveBlacklist = menu.findItem(R.id.removeBlacklist);
+        MenuItem itemSetAlias = menu.findItem(R.id.setAlias);
+        MenuItem itemSetFav = menu.findItem(R.id.setFav);
+        MenuItem itemRemoveFav = menu.findItem(R.id.removeFav);
+        MenuItem itemSetName = menu.findItem(R.id.setName);
+
+        if (userInfo.type == 0) {
+            if (ChatManager.Instance().getUserId().equals(userInfo.uid)) {
+                itemAddBlacklist.setEnabled(false);
+                itemAddBlacklist.setVisible(false);
+                itemAddFriend.setEnabled(false);
+                itemAddFriend.setVisible(false);
+                itemDelete.setEnabled(false);
+                itemDelete.setVisible(false);
+                itemRemoveBlacklist.setEnabled(false);
+                itemRemoveBlacklist.setVisible(false);
+                itemSetAlias.setEnabled(false);
+                itemSetAlias.setVisible(false);
+                itemSetName.setEnabled(true);
+                itemSetName.setVisible(true);
+                itemSetFav.setVisible(false);
+                itemSetFav.setEnabled(false);
+                itemRemoveFav.setVisible(false);
+                itemRemoveFav.setEnabled(false);
+            } else {
+                if (contactViewModel.isFriend(userInfo.uid)) {
+                    itemAddFriend.setEnabled(false);
+                    itemAddFriend.setVisible(false);
+                    itemDelete.setEnabled(true);
+                    itemDelete.setVisible(true);
+                    itemSetAlias.setEnabled(true);
+                    itemSetAlias.setVisible(true);
+                } else {
+                    itemAddFriend.setEnabled(true);
+                    itemAddFriend.setVisible(true);
+                    itemDelete.setEnabled(false);
+                    itemDelete.setVisible(false);
+                }
+
+                if (contactViewModel.isBlacklisted(userInfo.uid)) {
+                    itemAddBlacklist.setEnabled(false);
+                    itemAddBlacklist.setVisible(false);
+                    itemRemoveBlacklist.setEnabled(true);
+                    itemRemoveBlacklist.setVisible(true);
+                } else {
+                    itemAddBlacklist.setEnabled(true);
+                    itemAddBlacklist.setVisible(true);
+                    itemRemoveBlacklist.setEnabled(false);
+                    itemRemoveBlacklist.setVisible(false);
+                }
+
+                if (contactViewModel.isFav(userInfo.uid)) {
+                    itemSetFav.setEnabled(false);
+                    itemSetFav.setVisible(false);
+                    itemRemoveFav.setEnabled(true);
+                    itemRemoveFav.setVisible(true);
+                } else {
+                    itemSetFav.setEnabled(true);
+                    itemSetFav.setVisible(true);
+                    itemRemoveFav.setEnabled(false);
+                    itemRemoveFav.setVisible(false);
+                }
+            }
+        } else {
+            itemRemoveBlacklist.setVisible(false);
+            itemAddBlacklist.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean onPageMenuItemSelected(MenuItem item) {
+        if (userInfo == null) {
+            return false;
+        }
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.delete) {
+            contactViewModel.deleteFriend(userInfo.uid).observe(getViewLifecycleOwner(), result -> {
+                if (result.isSuccess()) {
+                    startActivity(new Intent(requireContext().getPackageName() + ".main"));
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.delete_friend_error, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        } else if (itemId == R.id.addFriend) {
+            Intent intent = new Intent(getActivity(), InviteFriendActivity.class);
+            intent.putExtra("userInfo", userInfo);
+            WfcPageCompat.startPage(this, intent);
+            return true;
+        } else if (itemId == R.id.addBlacklist) {
+            contactViewModel.setBlacklist(userInfo.uid, true).observe(getViewLifecycleOwner(), result -> {
+                if (result.isSuccess()) {
+                    Toast.makeText(getActivity(), getString(R.string.set_success), Toast.LENGTH_SHORT).show();
+                    WfcPageCompat.invalidatePageMenu(this);
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.blacklist_add_error, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        } else if (itemId == R.id.removeBlacklist) {
+            contactViewModel.setBlacklist(userInfo.uid, false).observe(getViewLifecycleOwner(), result -> {
+                if (result.isSuccess()) {
+                    Toast.makeText(getActivity(), getString(R.string.set_success), Toast.LENGTH_SHORT).show();
+                    WfcPageCompat.invalidatePageMenu(this);
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.blacklist_remove_error, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        } else if (itemId == R.id.setAlias) {
+            Intent intent = new Intent(getActivity(), SetAliasActivity.class);
+            intent.putExtra("userId", userInfo.uid);
+            WfcPageCompat.startPage(this, intent);
+            return true;
+        } else if (itemId == R.id.setFav) {
+            contactViewModel.setFav(userInfo.uid, true).observe(getViewLifecycleOwner(), result -> {
+                if (result.isSuccess()) {
+                    Toast.makeText(getActivity(), getString(R.string.set_success), Toast.LENGTH_SHORT).show();
+                    WfcPageCompat.invalidatePageMenu(this);
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.fav_set_error, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        } else if (itemId == R.id.removeFav) {
+            contactViewModel.setFav(userInfo.uid, false).observe(getViewLifecycleOwner(), result -> {
+                if (result.isSuccess()) {
+                    Toast.makeText(getActivity(), getString(R.string.set_success), Toast.LENGTH_SHORT).show();
+                    WfcPageCompat.invalidatePageMenu(this);
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.fav_remove_error, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        } else if (itemId == R.id.setName) {
+            Intent intent = new Intent(getActivity(), SetNameActivity.class);
+            intent.putExtra("userInfo", userInfo);
+            WfcPageCompat.startPage(this, intent);
+            return true;
+        }
+        return false;
     }
 }

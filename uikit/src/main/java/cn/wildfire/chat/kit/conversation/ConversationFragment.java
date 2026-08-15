@@ -52,6 +52,7 @@ import java.util.Set;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayModeUtils;
@@ -1051,6 +1052,13 @@ public class ConversationFragment extends Fragment implements
      * 适配器会缓存 toolbar 标题 TextView，所以要复用同一个实例，不能每次新建。
      */
     private ConversationHost conversationHost() {
+        // 平板右栏里，宿主是父 Fragment（PanePageFragment 提供该页自己的 toolbar），不是 Activity。
+        // 手机端会话页始终直接挂在 Activity 上，父链为空，这个循环一次都不会进。
+        for (Fragment parent = getParentFragment(); parent != null; parent = parent.getParentFragment()) {
+            if (parent instanceof ConversationHost) {
+                return (ConversationHost) parent;
+            }
+        }
         Activity activity = getActivity();
         if (activity instanceof ConversationHost) {
             return (ConversationHost) activity;
@@ -1096,7 +1104,9 @@ public class ConversationFragment extends Fragment implements
         }
         Intent intent = new Intent(getActivity(), ConversationInfoActivity.class);
         intent.putExtra("conversationInfo", conversationInfo);
-        startActivity(intent);
+        // startPage 而不是 startActivity：右栏据此确定地把会话详情压到「本会话页所在的那条栈」上，
+        // 于是详情页左上角有返回箭头、返回能回到会话。裸 startActivity 拿不到发起者。
+        WfcPageCompat.startPage(this, intent);
     }
 
     private boolean isConversationSilent() {
@@ -1126,7 +1136,7 @@ public class ConversationFragment extends Fragment implements
     public void onPortraitClick(UserInfo userInfo) {
         if (conversation.type == Conversation.ConversationType.Channel && TextUtils.isEmpty(targetUser)) {
             Intent intent = ConversationActivity.buildConversationIntent(getActivity(), this.conversation, userInfo.uid, -1);
-            startActivity(intent);
+            ConversationRouter.open(this, intent);
             return;
         }
 
@@ -1603,7 +1613,10 @@ public class ConversationFragment extends Fragment implements
         intent.putExtra("groupInfo", groupInfo);
         int maxCount = AVEngineKit.isSupportMultiCall() ? (isAudioOnly ? AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT - 1 : AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - 1) : 1;
         intent.putExtra("maxCount", maxCount);
-        startActivityForResult(intent, isAudioOnly ? REQUEST_CODE_GROUP_AUDIO_CHAT : REQUEST_CODE_GROUP_VIDEO_CHAT);
+        // startPageForResult：平板右栏里选人页压在会话页上，选完出栈时结果回到本 Fragment 的
+        // onActivityResult；手机端等价于 startActivityForResult。
+        WfcPageCompat.startPageForResult(this, intent,
+            isAudioOnly ? REQUEST_CODE_GROUP_AUDIO_CHAT : REQUEST_CODE_GROUP_VIDEO_CHAT);
     }
 
     private void onPickGroupMemberToVoipChat(Intent intent, boolean isAudioOnly) {

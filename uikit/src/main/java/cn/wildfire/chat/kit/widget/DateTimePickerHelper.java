@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.widget;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -7,7 +8,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.aigestudio.wheelpicker.WheelPicker;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,7 +21,8 @@ public class DateTimePickerHelper {
         if (callBack == null) {
             return;
         }
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
+        // 手机上是底部面板，宽屏上是居中对话框，见 WfcSheetDialogCompat
+        Dialog dialog = WfcSheetDialogCompat.create(context);
         View view = LayoutInflater.from(context).inflate(R.layout.date_time_picker, null);
 
         WheelPicker datePicker = view.findViewById(R.id.datePicker);
@@ -70,16 +71,16 @@ public class DateTimePickerHelper {
                 c.set(Calendar.SECOND, 0);
                 Date date = c.getTime();
                 callBack.onPick(date);
-                bottomSheetDialog.hide();
+                dialog.dismiss();
             }
         });
         cancelTextView.setOnClickListener(view1 -> {
-            bottomSheetDialog.hide();
+            dialog.dismiss();
             callBack.onCancel();
         });
 
-        bottomSheetDialog.setContentView(view);
-        bottomSheetDialog.show();
+        dialog.setContentView(view);
+        dialog.show();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         new Handler().postDelayed(() -> {

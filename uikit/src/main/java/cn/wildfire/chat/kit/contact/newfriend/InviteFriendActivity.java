@@ -1,80 +1,40 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
 package cn.wildfire.chat.kit.contact.newfriend;
 
-import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.UserInfo;
 
+/**
+ * 发送好友申请页的空壳。
+ * <p>
+ * 页面本体在 {@link InviteFriendFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、菜单、返回都由宿主提供，两端只有这一份实现。
+ */
 public class InviteFriendActivity extends WfcBaseActivity {
-    TextView introTextView;
 
-    private UserInfo userInfo;
-
-    protected void bindEvents() {
-        super.bindEvents();
-        findViewById(R.id.clearImageButton).setOnClickListener(v -> clear());
-    }
-
-    protected void bindViews() {
-        super.bindViews();
-        introTextView = findViewById(R.id.introTextView);
+    @Override
+    protected int contentLayout() {
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        userInfo = getIntent().getParcelableExtra("userInfo");
-        if (userInfo == null) {
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
+        }
+        Fragment fragment = InviteFriendFragment.fromIntent(getIntent());
+        if (fragment == null) {
             finish();
+            return;
         }
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
-        introTextView.setText(getString(R.string.invite_default_message, (me == null ? "" : me.displayName)));
-    }
-
-    @Override
-    protected int contentLayout() {
-        return R.layout.contact_invite_activity;
-    }
-
-    @Override
-    protected int menu() {
-        return R.menu.contact_invite;
-    }
-
-    void clear() {
-        introTextView.setText("");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.confirm) {
-            invite();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    void invite() {
-        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
-        contactViewModel.invite(userInfo.uid, introTextView.getText().toString())
-            .observe(this, errorCode -> {
-                if (errorCode == 0) {
-                    Toast.makeText(InviteFriendActivity.this, R.string.invite_sent, Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(InviteFriendActivity.this, getString(R.string.invite_error, errorCode), Toast.LENGTH_SHORT).show();
-                }
-            });
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }

@@ -27,6 +27,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.bydate.ConversationMessageByDateActivity;
 import cn.wildfire.chat.kit.search.link.ConversationLinkRecordActivity;
 import cn.wildfire.chat.kit.search.media.ConversationMediaActivity;
@@ -146,7 +147,7 @@ public class SearchFragment extends Fragment {
             Intent intent = new Intent();
             intent.setClass(getContext(), ConversationMessageByDateActivity.class);
             intent.putExtra("conversation", conversation);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         } catch (Exception e) {
             e.printStackTrace();
             // Activity还未实现，暂时显示Toast提示
@@ -165,7 +166,7 @@ public class SearchFragment extends Fragment {
             Intent intent = new Intent();
             intent.setClass(getContext(), ConversationMediaActivity.class);
             intent.putExtra("conversation", conversation);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         } catch (Exception e) {
             e.printStackTrace();
             android.widget.Toast.makeText(getContext(), "图片与视频功能开发中...", android.widget.Toast.LENGTH_SHORT).show();
@@ -182,7 +183,7 @@ public class SearchFragment extends Fragment {
         try {
             Intent intent = new Intent(getActivity(), FileRecordActivity.class);
             intent.putExtra("conversation", conversation);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -199,7 +200,7 @@ public class SearchFragment extends Fragment {
             Intent intent = new Intent();
             intent.setClass(getContext(), ConversationLinkRecordActivity.class);
             intent.putExtra("conversation", conversation);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         } catch (Exception e) {
             e.printStackTrace();
             android.widget.Toast.makeText(getContext(), "链接记录功能开发中...", android.widget.Toast.LENGTH_SHORT).show();

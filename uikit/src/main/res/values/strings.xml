@@ -986,4 +986,5 @@
         <item>@string/font_size_xlarge</item>
         <item>@string/font_size_xxlarge</item>
     </string-array>
+    <string name="ptt_toggle_restart_tip">开关对讲功能，重新启动应用生效</string>
 </resources>

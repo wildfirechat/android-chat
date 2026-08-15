@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class ForwardMessageAction extends MultiMessageAction {
         }
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("messages", msgs);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     private void forward(List<UiMessage> messages) {
@@ -85,7 +86,7 @@ public class ForwardMessageAction extends MultiMessageAction {
 
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     @Override

@@ -51,8 +51,7 @@ public class ConversationMessageSearchModule extends SearchableModule<Message, M
         Intent intent = new Intent(fragment.getContext(), ConversationActivity.class);
         intent.putExtra("conversation", message.conversation);
         intent.putExtra("toFocusMessageId", message.messageId);
-        fragment.startActivity(intent);
-        fragment.getActivity().finish();
+        openConversationAndFinishSearch(fragment, intent);
     }
 
     @Override

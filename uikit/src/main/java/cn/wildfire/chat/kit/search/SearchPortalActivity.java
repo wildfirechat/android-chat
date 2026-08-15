@@ -4,29 +4,18 @@
 
 package cn.wildfire.chat.kit.search;
 
-import java.util.List;
+import android.content.Intent;
 
-import cn.wildfire.chat.kit.search.module.ChannelSearchModule;
-import cn.wildfire.chat.kit.search.module.ContactSearchModule;
-import cn.wildfire.chat.kit.search.module.ConversationSearchModule;
-import cn.wildfire.chat.kit.search.module.EmployeeSearchModule;
-import cn.wildfire.chat.kit.search.module.GroupSearchViewModule;
+import androidx.fragment.app.Fragment;
 
-public class SearchPortalActivity extends SearchActivity {
+/**
+ * 「搜索」总入口在手机端的宿主壳。整页逻辑住在 {@link SearchPortalPageFragment}，
+ * 手机端与平板右栏共用同一份。
+ */
+public class SearchPortalActivity extends SearchShellActivity {
+
     @Override
-    protected void initSearchModule(List<SearchableModule> modules) {
-
-        SearchableModule module = new ContactSearchModule();
-        modules.add(module);
-
-        module = new GroupSearchViewModule();
-        modules.add(module);
-
-        module = new ConversationSearchModule();
-        modules.add(module);
-        modules.add(new ChannelSearchModule());
-
-        module = new EmployeeSearchModule();
-        modules.add(module);
+    protected Fragment createSearchPage(Intent intent) {
+        return SearchPortalPageFragment.fromIntent(intent);
     }
 }

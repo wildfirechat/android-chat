@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    宽屏下取代底部面板的居中对话框的窗口背景（见 WfcSheetDialogCompat）。
+    内容自带背景的面板（如转发确认框）会把它整块盖住，圆角半径与
+    drawable-sw600dp/shape_bottom_sheet_bg.xml 保持一致，两层的角对得上。
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/white" />
+    <corners android:radius="12dp" />
+</shape>

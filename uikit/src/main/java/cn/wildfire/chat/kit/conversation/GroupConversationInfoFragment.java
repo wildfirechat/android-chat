@@ -77,6 +77,7 @@ import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public class GroupConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -176,7 +177,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
                     Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
-                    startActivity(intent);
+                    ConversationRouter.open(this, intent);
                 })
                 .build()
                 .show();
@@ -233,14 +234,14 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
             if (groupInfo.deleted == 1) {
                 Toast.makeText(getActivity(), getString(R.string.group_dismissed_toast), Toast.LENGTH_SHORT).show();
-                getActivity().finish();
+                WfcPageCompat.finishPage(this);
                 return;
             }
         }
 
         if (selfGroupMember == null || selfGroupMember.type == GroupMember.GroupMemberType.Removed) {
             Toast.makeText(getActivity(), getString(R.string.group_not_member_error), Toast.LENGTH_SHORT).show();
-            getActivity().finish();
+            WfcPageCompat.finishPage(this);
             return;
         }
         loadAndShowGroupMembers(true);
@@ -284,7 +285,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     this.groupInfo = groupInfo;
                     if (groupInfo.deleted == 1) {
                         Toast.makeText(getActivity(), getString(R.string.group_dismissed_toast), Toast.LENGTH_SHORT).show();
-                        getActivity().finish();
+                        WfcPageCompat.finishPage(this);
                         return;
                     }
                     groupNameOptionItemView.setDesc(groupInfo.name);
@@ -425,7 +426,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             || (selfGroupMember.type == GroupMember.GroupMemberType.Manager || selfGroupMember.type == GroupMember.GroupMemberType.Owner)) {
             Intent intent = new Intent(getActivity(), SetGroupNameActivity.class);
             intent.putExtra("groupInfo", groupInfo);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 
@@ -436,7 +437,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void updateGroupRemark() {
         Intent intent = new Intent(getActivity(), SetGroupRemarkActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void updateGroupNotice() {
@@ -444,20 +445,20 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             || (selfGroupMember.type == GroupMember.GroupMemberType.Manager || selfGroupMember.type == GroupMember.GroupMemberType.Owner)) {
             Intent intent = new Intent(getActivity(), SetGroupAnnouncementActivity.class);
             intent.putExtra("groupInfo", groupInfo);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 
     void manageGroup() {
         Intent intent = new Intent(getActivity(), GroupManageActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void showAllGroupMember() {
         Intent intent = new Intent(getActivity(), GroupMemberListActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void updateMyGroupAlias() {
@@ -565,13 +566,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     @Override
@@ -586,7 +587,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         GroupMember groupMember = ChatManager.Instance().getGroupMember(groupInfo.target, userInfo.uid);
         GroupMemberSource source = GroupMemberSource.getGroupMemberSource(groupMember.extra);
         intent.putExtra("groupMemberSource", source);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
 
@@ -594,7 +595,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     public void onAddMemberClick() {
         Intent intent = new Intent(getActivity(), AddGroupMemberActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     @Override
@@ -602,7 +603,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (groupInfo != null) {
             Intent intent = new Intent(getActivity(), RemoveGroupMemberActivity.class);
             intent.putExtra("groupInfo", groupInfo);
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 

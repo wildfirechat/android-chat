@@ -46,8 +46,7 @@ public class EmployeeSearchModule extends SearchableModule<Employee, EmployeeVie
         Intent intent = new Intent(fragment.getContext(), EmployeeInfoActivity.class);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(employee.employeeId, false);
         intent.putExtra("userInfo", userInfo);
-        fragment.startActivity(intent);
-        fragment.getActivity().finish();
+        openPageAndFinishSearch(fragment, intent);
     }
 
     @Override

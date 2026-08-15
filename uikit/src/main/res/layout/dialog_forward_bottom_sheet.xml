@@ -13,7 +13,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
-        android:text="分别发送给："
+        android:text="@string/forward_send_to"
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold" />
@@ -46,14 +46,6 @@
             android:maxLines="3"
             android:textColor="#666666"
             android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="详情"
-            android:textColor="#576B95"
-            android:textSize="14sp"
-            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -74,7 +66,7 @@
             android:layout_height="44dp"
             android:layout_weight="1"
             android:background="@null"
-            android:hint="发消息"
+            android:hint="@string/forward_leave_message"
             android:textColor="#000000"
             android:textColorHint="#999999"
             android:textSize="14sp" />
@@ -84,7 +76,7 @@
             android:layout_width="60dp"
             android:layout_height="32dp"
             android:background="@drawable/shape_forward_btn_send_bg"
-            android:text="发送"
+            android:text="@string/forward_send"
             android:textColor="#FFFFFF"
             android:textSize="12sp"
             android:layout_marginLeft="8dp"
@@ -113,7 +105,7 @@
             android:layout_marginRight="15dp"
             android:layout_weight="1"
             android:background="@drawable/shape_forward_btn_cancel_bg"
-            android:text="取消"
+            android:text="@string/forward_cancel"
             android:textColor="#000000"
             android:textSize="16sp" />
 
@@ -124,7 +116,7 @@
             android:layout_marginLeft="15dp"
             android:layout_weight="1"
             android:background="@drawable/shape_forward_btn_send_bg"
-            android:text="发送"
+            android:text="@string/forward_send"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
     </LinearLayout>

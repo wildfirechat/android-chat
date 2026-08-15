@@ -35,4 +35,11 @@
     <dimen name="wfc_message_list_padding_horizontal">0dp</dimen>
     <!-- 会话扩展面板（8 格功能区）左右留白：宽屏下不收窄，图标会被等分拉得极稀疏 -->
     <dimen name="wfc_ext_panel_padding_horizontal">0dp</dimen>
+
+    <!--
+        宽屏下由底部面板改成的居中对话框的最大宽度，见 WfcSheetDialogCompat。
+        只在宽屏那条分支上被读到，手机端走的是 BottomSheet，取值与它无关；
+        定义在无限定符下是因为它是从代码里按 id 引用的，缺省值必须存在。
+    -->
+    <dimen name="wfc_dialog_max_width">400dp</dimen>
 </resources>

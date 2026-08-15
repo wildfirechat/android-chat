@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
@@ -86,15 +87,22 @@ public class MentionGroupMemberFragment extends BaseUserListFragment {
     public void onHeaderClick(HeaderViewHolder holder) {
         Intent intent = new Intent();
         intent.putExtra("mentionAll", true);
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
+        finishWithResult(intent);
     }
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
         Intent intent = new Intent();
         intent.putExtra("userId", userInfo.getUserInfo().uid);
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
+        finishWithResult(intent);
+    }
+
+    /**
+     * 手机端等价于 {@code getActivity().setResult(...) + finish()}；平板右栏里
+     * 记下结果并把本页出栈，结果在出栈时投递给打开本页的会话页。
+     */
+    private void finishWithResult(Intent data) {
+        WfcPageCompat.setPageResult(this, Activity.RESULT_OK, data);
+        WfcPageCompat.finishPage(this);
     }
 }

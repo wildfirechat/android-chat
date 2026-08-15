@@ -25,6 +25,7 @@ import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.GroupInfo;
@@ -140,7 +141,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
         uncheckableMemberIds.addAll(groupViewModel.getGroupManagerIds(groupInfo.target));
         uncheckableMemberIds.addAll(groupViewModel.getMutedOrAllowedMemberIds(groupInfo.target, groupMuted));
         intent.putExtra(BasePickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS, uncheckableMemberIds);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     private void observerGroupMemberUpdate() {

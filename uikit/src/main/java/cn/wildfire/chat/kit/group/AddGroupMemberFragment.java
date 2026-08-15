@@ -18,6 +18,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.OrganizationValue;
@@ -55,7 +56,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
     @Override
     protected void setupPickFromUsers() {
         super.setupPickFromUsers();
-        PickUserViewModel pickUserViewModel = new ViewModelProvider(getActivity()).get(PickUserViewModel.class);
+        PickUserViewModel pickUserViewModel = new ViewModelProvider(WfcPageCompat.pageScope(this)).get(PickUserViewModel.class);
 
         GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
 

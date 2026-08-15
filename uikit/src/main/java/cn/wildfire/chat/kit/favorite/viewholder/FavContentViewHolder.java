@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.favorite.FavoriteListFragment;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
@@ -69,6 +70,6 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
             null,
             favoriteItem.getMessageUid()
         );
-        fragment.startActivity(intent);
+        ConversationRouter.open(fragment, intent);
     }
 }

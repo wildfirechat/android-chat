@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.search;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -14,6 +15,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public abstract class SearchableModule<R, V extends RecyclerView.ViewHolder> {
     protected String keyword;
@@ -44,6 +48,39 @@ public abstract class SearchableModule<R, V extends RecyclerView.ViewHolder> {
 
     public void onClick(Fragment fragment, V holder, View view, R r) {
         // do nothing
+    }
+
+    /**
+     * 点开一条会话结果：打开会话，并把搜索页本身从导航栈里去掉。
+     * <p>
+     * 手机端等价于改造前的 {@code ConversationRouter.open(fragment, intent)} +
+     * {@code fragment.getActivity().finish()}。
+     * <p>
+     * <strong>右栏里绝不能照搬那句 finish</strong>：那里的 {@code getActivity()} 是双栏主界面，
+     * finish 掉就是整个界面退出。改用
+     * {@link WfcPageCompat#replaceSelfWithPage} —— 会话页顶替掉搜索页那一层，
+     * 语义与手机端一致：从会话返回时不该再回到一个用完了的搜索页。
+     *
+     * @param fragment 结果列表所在的 {@link SearchFragment}
+     */
+    protected static void openConversationAndFinishSearch(Fragment fragment, Intent conversationIntent) {
+        if (WfcPageCompat.replaceSelfWithPage(fragment, conversationIntent)) {
+            return;
+        }
+        ConversationRouter.open(fragment, conversationIntent);
+        WfcPageCompat.finishPage(fragment);
+    }
+
+    /**
+     * 点开一条非会话结果（组织架构成员详情等）：打开目标页，并把搜索页去掉。
+     * 与 {@link #openConversationAndFinishSearch} 同理，只是打开方式不走会话路由。
+     */
+    protected static void openPageAndFinishSearch(Fragment fragment, Intent intent) {
+        if (WfcPageCompat.replaceSelfWithPage(fragment, intent)) {
+            return;
+        }
+        WfcPageCompat.startPage(fragment, intent);
+        WfcPageCompat.finishPage(fragment);
     }
 
     /**

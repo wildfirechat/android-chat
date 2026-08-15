@@ -69,6 +69,7 @@ import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.imagerecommend.ImageRecommendManager;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ImageRecommendView;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
@@ -453,7 +454,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
             intent.putExtra("groupInfo", groupInfo);
         }
-        fragment.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
+        // 必须走 startPageForResult：裸 startActivityForResult 的 requestCode 会被
+        // FragmentManager 换成内部生成的码，右栏拿到后送不回本页
+        WfcPageCompat.startPageForResult(fragment, intent, REQUEST_PICK_MENTION_CONTACT);
     }
 
     void afterInputTextChanged(Editable editable) {

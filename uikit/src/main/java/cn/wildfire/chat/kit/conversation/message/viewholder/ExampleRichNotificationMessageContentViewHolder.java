@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.R;
@@ -82,6 +83,6 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
     public void forwardMessage(View itemView, UiMessage message) {
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 }

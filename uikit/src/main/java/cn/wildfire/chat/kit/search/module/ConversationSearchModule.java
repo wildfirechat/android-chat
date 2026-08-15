@@ -22,6 +22,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.ConversationViewHolder;
 import cn.wildfirechat.model.ConversationSearchResult;
@@ -57,13 +58,13 @@ public class ConversationSearchModule extends SearchableModule<ConversationSearc
             Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
             intent.putExtra("conversation", conversationSearchResult.conversation);
             intent.putExtra("toFocusMessageId", conversationSearchResult.marchedMessage.messageId);
-            fragment.startActivity(intent);
-            fragment.getActivity().finish();
+            openConversationAndFinishSearch(fragment, intent);
         } else {
+            // 命中多条：进「会话内查找」再挑一次。这一层压在搜索页上面，返回应能回到搜索结果。
             Intent intent = new Intent(fragment.getActivity(), SearchMessageActivity.class);
             intent.putExtra("conversation", conversationSearchResult.conversation);
             intent.putExtra("keyword", keyword);
-            fragment.startActivity(intent);
+            WfcPageCompat.startPage(fragment, intent);
         }
     }
 

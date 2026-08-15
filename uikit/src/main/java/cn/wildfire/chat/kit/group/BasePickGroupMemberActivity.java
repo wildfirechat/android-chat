@@ -20,6 +20,15 @@ import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.GroupInfo;
 
+/**
+ * 「从群成员里选人」的老基类。本仓库内已<strong>没有子类</strong>：整页逻辑收敛到了
+ * {@link BasePickGroupMemberPageFragment}，四个页面（选人、移出成员、禁言、加管理员）
+ * 各自只剩一个空壳 Activity。
+ * <p>
+ * 保留本类是因为它的四个 extra 键名是对外契约（调用方仍在用 {@code GROUP_INFO} 等常量），
+ * 且 AAR 集成方可能有自己的子类。<strong>新页面请继承 {@link BasePickGroupMemberPageFragment}</strong>
+ * —— 把页面写在 Activity 上，它就进不了平板右栏。
+ */
 public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected GroupInfo groupInfo;
     protected List<String> unCheckableMemberIds;

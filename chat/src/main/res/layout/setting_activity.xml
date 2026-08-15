@@ -6,7 +6,8 @@
     android:background="@color/gray5"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar" />
+    <!-- 标题栏不在这里：本布局现在由页面 Fragment 使用，标题栏由宿主提供
+         （手机端是壳 Activity 的 fragment_container_activity，平板是右栏的 PanePageFragment）。 -->
 
     <ScrollView
         android:layout_width="match_parent"

@@ -1,70 +1,40 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
 package cn.wildfire.chat.kit.settings;
 
-import android.content.Intent;
-import android.widget.Toast;
-
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
 
+/**
+ * 隐私设置页的空壳。
+ * <p>
+ * 页面本体在 {@link PrivacySettingFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、菜单、返回都由宿主提供，两端只有这一份实现。
+ */
 public class PrivacySettingActivity extends WfcBaseActivity {
-
-    private SwitchMaterial switchAddFriendNeedVerify;
-
-    protected void bindViews() {
-        super.bindViews();
-        this.switchAddFriendNeedVerify = findViewById(R.id.switchAddFriendNeedVerify);
-
-        this.switchAddFriendNeedVerify.setChecked(ChatManager.Instance().isAddFriendNeedVerify());
-    }
-
-    protected void bindEvents() {
-        super.bindEvents();
-        findViewById(R.id.blacklistOptionItemView).setOnClickListener(v -> blacklistSettings());
-        findViewById(R.id.momentsPrivacyOptionItemView).setOnClickListener(v -> mementsSettings());
-        findViewById(R.id.findMeOptionItemView).setOnClickListener(v -> findMeSettings());
-
-        this.switchAddFriendNeedVerify.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ChatManager.Instance().setAddFriendNeedVerify(isChecked, new GeneralCallback() {
-                @Override
-                public void onSuccess() {
-                    // do nothing
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-                    if (!isFinishing()) {
-                        Toast.makeText(PrivacySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        });
-    }
 
     @Override
     protected int contentLayout() {
-        return R.layout.privacy_setting_activity;
+        return R.layout.fragment_container_activity;
     }
 
-    void blacklistSettings() {
-        Intent intent = new Intent(this, BlacklistListActivity.class);
-        startActivity(intent);
-    }
-
-    void mementsSettings() {
-
-    }
-
-    void findMeSettings() {
-        Intent intent = new Intent(this, PrivacyFindMeSettingActivity.class);
-        startActivity(intent);
+    @Override
+    protected void afterViews() {
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
+        }
+        Fragment fragment = new PrivacySettingFragment();
+        if (fragment == null) {
+            finish();
+            return;
+        }
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }
