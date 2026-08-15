@@ -23,10 +23,32 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <!--
+        平板适配：不能声明为必需，否则无摄像头/无自动对焦的平板在应用市场会被过滤掉，无法安装。
+        avenginekit 的 manifest 声明了这两个 feature 且未指定 required（默认为 true），
+        合并时 true 会胜出，因此这里必须用 tools:replace 强制覆盖。
+    -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false"
+        tools:replace="android:required" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false"
+        tools:replace="android:required" />
     <uses-feature
         android:name="android.hardware.telephony"
+        android:required="false" />
+    <!--
+        音视频、拍照等页面仍锁定竖屏，aapt 会据此隐式加上 required=true 的
+        android.hardware.screen.portrait，导致只支持横屏的设备被应用市场过滤。
+        这里显式声明为非必需，两种屏幕方向的设备都能安装。
+    -->
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.landscape"
         android:required="false" />
 
     <!-- 通过GPS得到精确位置 -->
@@ -74,55 +96,43 @@
 
         <activity
             android:name="cn.wildfire.chat.app.main.SplashActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="cn.wildfire.chat.app.main.AgreementActivity"
-            android:screenOrientation="portrait" />
+            android:name="cn.wildfire.chat.app.main.AgreementActivity" />
         <activity
-            android:name="cn.wildfire.chat.app.login.LoginActivity"
-            android:screenOrientation="portrait" />
+            android:name="cn.wildfire.chat.app.login.LoginActivity" />
         <activity
             android:name="cn.wildfire.chat.app.setting.SettingActivity"
-            android:label="@string/setting"
-            android:screenOrientation="portrait" />
+            android:label="@string/setting" />
         <activity
             android:name="cn.wildfire.chat.app.setting.AboutActivity"
-            android:label="@string/about"
-            android:screenOrientation="portrait" />
+            android:label="@string/about" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.BackupAndRestoreActivity"
-            android:label="@string/backup_and_restore"
-            android:screenOrientation="portrait" />
+            android:label="@string/backup_and_restore" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.RestoreProgressActivity"
-            android:label="@string/backup_request"
-            android:screenOrientation="portrait" />
+            android:label="@string/backup_request" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.RestoreSourceActivity"
-            android:label="@string/select_restore_source"
-            android:screenOrientation="portrait" />
+            android:label="@string/select_restore_source" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.BackupListActivity"
-            android:label="@string/backup_list"
-            android:screenOrientation="portrait" />
+            android:label="@string/backup_list" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.RestoreOptionsActivity"
-            android:label="@string/restore_options"
-            android:screenOrientation="portrait" />
+            android:label="@string/restore_options" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.PCRestoreListActivity"
-            android:label="@string/pc_backup_list"
-            android:screenOrientation="portrait" />
+            android:label="@string/pc_backup_list" />
         <activity
             android:name="cn.wildfire.chat.app.setting.backup.PCRestoreProgressActivity"
-            android:label="@string/restoring_from_pc"
-            android:screenOrientation="portrait" />
+            android:label="@string/restoring_from_pc" />
 
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
@@ -169,8 +179,7 @@
             android:label="@string/diagnose" />
         <activity
             android:name="cn.wildfire.chat.app.voip.PstnDialActivity"
-            android:label="电话助手"
-            android:screenOrientation="portrait" />
+            android:label="电话助手" />
 
         <service
             android:name="cn.wildfire.chat.app.KeepAliveService"

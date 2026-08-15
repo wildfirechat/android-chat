@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        宽屏下表单类内容（登录、验证码、协议确认等）的最大宽度。
+        平板整宽拉伸的输入框既难看也难用，统一约束后居中显示。
+        仅存在于 sw600dp 限定符下，手机不会引用到，因此对手机端无影响。
+    -->
+    <dimen name="wfc_form_max_width">400dp</dimen>
+
+    <!-- 宽屏下卡片、协议确认这类文字较多的内容块最大宽度，比表单宽一些。 -->
+    <dimen name="wfc_card_max_width">560dp</dimen>
+
+</resources>

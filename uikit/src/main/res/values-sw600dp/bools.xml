@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        窗口最小宽度 >= 600dp（平板、折叠屏展开态、大屏横屏）时启用双栏布局。
+        注意这是「窗口」而非「设备」维度：平板分屏到窄窗口时会重新命中 values/bools.xml 的 false，
+        这正是我们期望的行为。设备维度的判定请用 WfcDeviceUtils.isPadDevice(Context)。
+    -->
+    <bool name="wfc_two_pane">true</bool>
+
+</resources>
