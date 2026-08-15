@@ -25,4 +25,14 @@
 
     <!-- 投票功能尺寸 -->
     <dimen name="poll_button_width_large">200dp</dimen>
+
+    <!--
+        以下 wfc_* 为平板宽屏适配预留的留白量，手机一律为 0dp，
+        即引用它们的默认布局在手机上渲染结果与改造前逐像素一致。
+        平板取值见 values-sw600dp/dimens.xml。
+    -->
+    <!-- 消息列表左右留白：宽屏下气泡最大宽度固定，不收窄列表会导致中间出现巨大空档 -->
+    <dimen name="wfc_message_list_padding_horizontal">0dp</dimen>
+    <!-- 会话扩展面板（8 格功能区）左右留白：宽屏下不收窄，图标会被等分拉得极稀疏 -->
+    <dimen name="wfc_ext_panel_padding_horizontal">0dp</dimen>
 </resources>

@@ -232,7 +232,7 @@ L0  设备判定、构建与回归基线                            ← 前置
 
 ---
 
-### 阶段 2：宽屏资源适配（`-sw600dp`）
+### 阶段 2：宽屏资源适配（`-sw600dp`）✅ 代码已完成，待真机回归
 
 **目标**：宽屏下不再是"拉伸的手机界面"。全部通过新增限定符资源实现，**不碰默认资源**。
 
@@ -261,6 +261,45 @@ L0  设备判定、构建与回归基线                            ← 前置
 - 平板：横竖屏下无异常拉伸，图片选择器、成员宫格、扩展面板排布合理。
 
 **工作量**：5~8 人日
+
+#### 实施记录
+
+**对本节原计划的三处修正**
+
+1. **`spanCount` 只改布局没用。** `group_member_list.xml` 等 4 个布局虽然写了 `app:spanCount="5"`，但 `GroupMemberListFragment`、`GroupConversationInfoFragment`、`SingleConversationInfoFragment` 都在 Java 里 `setLayoutManager(new GridLayoutManager(ctx, 5))`，**运行时覆盖了 XML**。原计划只点了 `GroupMemberListFragment.java:61` 一处，实际有 3 处，XML 与 Java 必须同改，否则宫格列数纹丝不动。
+2. **`menu/.../Display.java` 不是问题，未改。** `getScreenMetrics(Context)` 走的是传入 Context 的 `Resources`，而全部 5 个调用点传的都是 Activity（或 Fragment 的 Activity）Context —— API 24 起 Activity 的 Resources 已按窗口边界配置，多窗口下拿到的本就是窗口尺寸。且 `PopupMenu` 用 `getLocationInWindow` 定位，以窗口为界本身就是对的。
+3. **`SelectUtils.getDisplayWidth/getDisplayHeight` 是死代码，未改。** 全仓库零调用方。因 uikit 可作为 AAR 被外部集成，未删除，仅加 `@Deprecated` 说明其忽略窗口边界，引导后续改用锚点 View 自身尺寸。
+
+> 结论：2.5 节列的 5 处像素耦合，**真正需要修的只有 3 处**。
+
+**实际改动**
+
+| 项 | 落点 |
+|----|------|
+| 消息列表留白 | `values/dimens.xml` 加 `wfc_message_list_padding_horizontal`（手机 **0dp**）、`values-sw600dp` 48dp；`conversation_fragment.xml` 的 `msgRecyclerView` 引用之 |
+| 扩展面板留白 | 同上，`wfc_ext_panel_padding_horizontal`；`conversation_ext_layout.xml` 的 8 格容器引用之 |
+| 头像宫格列数 | `values/integers.xml` `wfc_member_grid_span`=5 / `-sw600dp`=8；4 个布局 + **3 个** Fragment 同改 |
+| 图片选择器列数 | imagepicker 模块**不依赖 uikit**，须自建 `values/integers.xml` `ip_image_grid_span`=3 / `-sw600dp`=5，不能复用 uikit 的 integer |
+| 底部导航 | 新增 `chat/layout-sw600dp/main_activity.xml`，导航条限宽 560dp 居中，外套一层铺满的 FrameLayout 承载底色（否则收窄后两侧露底、底栏看着是断的） |
+
+> 未采用原计划的"最大宽度 + 复制整份 `layout-sw600dp` 布局"：`LinearLayout`/`RecyclerView` 没有 `maxWidth` 属性，而复制 246 行的 `conversation_ext_layout.xml` 只为改一个宽度，维护成本和漏同步风险都更高。改用**手机取值为 0dp 的 padding dimen**，默认布局里加一行引用即可，手机端解析结果与改造前逐像素一致。
+
+**3 处像素耦合的具体改法**
+
+- `ConversationFragment.setupMultiMessageAction()`：改为 `setWeightSum(actions.size())` + 子 View `LayoutParams(0, WRAP_CONTENT, 1f)`。**注意 weightSum 必须取 `actions.size()` 而不是实际渲染出的按钮数** —— 密聊会跳过转发按钮，原代码此时按钮总宽小于容器宽、由容器 `gravity="center"` 居中；若按实际数量分权重，按钮会填满整行，密聊下手机端就变样了。
+- `ConversationInputPanel` 图片推荐 popup：x 改为 `输入面板 getLocationOnScreen()[0] + getWidth() - popupWidth - 8dp`。y 的键盘避让仍用 `heightPixels` —— 双栏是横向切分，纵向没有窗口≠屏幕的问题，动它反而有回归风险。
+- `KeyboardAwareLinearLayout.getDeviceRotation()`：改为按自身 `getWidth()/getHeight()` 判断，宽高为 0（布局未完成）时退回 `Configuration.orientation`。**这是 3 处里唯一在手机上也可能有可见变化的**：手机分屏时原逻辑取物理屏幕方向，横屏设备上分屏出竖窗口会读错键盘高度缓存 key，改后才对。手机全屏场景取值不变。
+
+**朋友圈（用户已授权放宽约束）**
+
+代码不在本仓库：位于**同级独立仓库 `../android-momentkit`**（remote 指向 wildfirechat 官方 github/gitee），经 `uikit/build.gradle` 的 `sourceSets` 挂进 uikit 编译，资源并入 `cn.wildfire.chat.kit.R` 命名空间。且该模块**仅在你本地未提交的 `settings.gradle` / `uikit/build.gradle` 改动下才会被编进来**，仓库提交态是关闭的。
+
+- 留白用 **`w` 限定符而非 `sw600dp`**：朋友圈横竖屏都要看，`sw` 是屏幕最小宽度、旋转时不变，跟不上；`w` 跟随当前窗口可用宽度，折叠屏展开与分屏也能自动适配。断点 `w600/w840/w1080/w1280dp`，正文列稳定在 470~550dp。
+- 留白加在 **feed 条目**而非列表 —— 朋友圈封面图是 RecyclerView 的 header，给列表加 padding 会把封面一起缩进去。
+- 三种条目原本用了两套内边距（图文 16dp、纯文字/链接 10dp），保留差异各自外扩，不做统一，避免动到手机端现有排版。
+- `Utils.getScreenWidth()` 取的是 **Application** 的 DisplayMetrics（永远是整屏），新增 `getFeedContentWidth()` 替代。`calculateShowCheckAllText`（决定是否显示"全文"）与两个九宫格 Glide 解码尺寸改用之；其中 `calculateShowCheckAllText` 的常量由 74dp 调为 42dp，使手机上合计仍等于"屏宽 − 74dp"，判定结果不变。
+
+**验证方式**：`aapt2 dump resources <apk>`，确认每个新资源的**无限定符取值**与改造前写死的数值完全一致（`wfc_*_padding_horizontal` = 0dp、`wfc_member_grid_span` = 5、`ip_image_grid_span` = 3、`moment_feed_item_*` = 16dp/10dp）。这是"手机端零回归"的静态证据。
 
 ---
 

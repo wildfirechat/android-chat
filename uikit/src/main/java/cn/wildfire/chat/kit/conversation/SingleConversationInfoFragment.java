@@ -123,7 +123,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         conversationMemberAdapter.setOnMemberClickListener(this);
 
         memberReclerView.setAdapter(conversationMemberAdapter);
-        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
+        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.wfc_member_grid_span)));
         stickTopSwitchButton.setChecked(conversationInfo.top > 0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);

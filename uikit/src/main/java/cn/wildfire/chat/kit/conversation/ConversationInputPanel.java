@@ -1014,8 +1014,14 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             extImageView.getLocationOnScreen(location);
 
-            // 默认位置：按钮上方
-            int x = displayMetrics.widthPixels - popupWidth - dpToPx(8);
+            // 默认位置：按钮上方，右对齐到输入面板的右边缘。
+            // 原来用整块屏幕宽度算，双栏时 popup 会贴到屏幕最右、脱离所属的右栏。
+            // showAtLocation 用的是屏幕坐标，所以这里取输入面板自身在屏幕上的位置加自身宽度；
+            // 手机上输入面板铺满整屏（panelLocation[0] == 0、getWidth() == 屏幕宽），取值与改造前相同。
+            int[] panelLocation = new int[2];
+            getLocationOnScreen(panelLocation);
+            int panelRightOnScreen = panelLocation[0] + getWidth();
+            int x = panelRightOnScreen - popupWidth - dpToPx(8);
             int y = location[1] - popupHeight - dpToPx(8);
 
             // 如果有键盘高度，限制 popup 的最大 Y 坐标，避免显示在右下角

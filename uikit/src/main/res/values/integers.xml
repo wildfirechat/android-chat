@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        头像宫格（群成员、会话信息页成员区、已读回执）的列数。
+        手机保持原有的 5 列，取值与改造前写死的常量完全一致，因此手机端无任何变化。
+        平板取值见 values-sw600dp/integers.xml。
+    -->
+    <integer name="wfc_member_grid_span">5</integer>
+
+</resources>

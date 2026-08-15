@@ -20,7 +20,7 @@
             android:clipToPadding="false"
             android:horizontalSpacing="2dp"
             android:listSelector="@android:color/transparent"
-            android:numColumns="3"
+            android:numColumns="@integer/ip_image_grid_span"
             android:paddingLeft="2dp"
             android:paddingTop="2dp"
             android:paddingRight="2dp"

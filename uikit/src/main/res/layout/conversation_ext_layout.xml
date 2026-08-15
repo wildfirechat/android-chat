@@ -5,11 +5,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--
+        8 个功能格按 weight 等分容器宽度。左右留白在手机上为 0dp，等分结果与改造前一致；
+        平板上收窄容器，避免图标被拉得过于稀疏。
+    -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/wfc_ext_panel_padding_horizontal"
+        android:paddingEnd="@dimen/wfc_ext_panel_padding_horizontal">
 
         <LinearLayout
             android:id="@+id/container_0"

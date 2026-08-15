@@ -1570,7 +1570,11 @@ public class ConversationFragment extends Fragment implements
     private void setupMultiMessageAction() {
         multiMessageActionContainerLinearLayout.removeAllViews();
         List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
-        int width = getResources().getDisplayMetrics().widthPixels;
+        // 原来按整块屏幕宽度除以 action 数来算每个按钮的宽度，双栏时会按整屏平分而溢出右栏。
+        // 改为让容器自己按权重等分：weightSum 仍取 actions.size()（而非实际渲染出的按钮数），
+        // 这样密聊下少渲染一个转发按钮时，剩余空间依旧由容器的 gravity="center" 居中，与改造前一致。
+        // 手机上容器宽度就等于屏幕宽度，等分结果与改造前相同。
+        multiMessageActionContainerLinearLayout.setWeightSum(actions.size());
 
         for (MultiMessageAction action : actions) {
             if (conversation.type == Conversation.ConversationType.SecretChat && action instanceof ForwardMessageAction) {
@@ -1581,7 +1585,7 @@ public class ConversationFragment extends Fragment implements
             imageView.setImageResource(action.iconResId());
 
 
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / actions.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             multiMessageActionContainerLinearLayout.addView(imageView, layoutParams);
             ViewGroup.LayoutParams p = imageView.getLayoutParams();
             p.height = 70;

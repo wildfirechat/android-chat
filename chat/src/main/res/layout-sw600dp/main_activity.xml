@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    平板（sw600dp）专用的主界面。与 layout/main_activity.xml 的唯一差别是
+    底部导航限宽居中 —— 整屏铺开时 4 个 tab 会散在屏幕两端，既难看也难点。
+    阶段 4 落地侧边栏 + 双栏后，本文件连同 wfc_bottom_nav_max_width 一并作废。
+    控件 id 与手机版完全一致，MainActivity 无需任何改动。
+    ⚠️ 修改手机版布局的控件时，请同步本文件。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/contentLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/contentViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!--
+                外层容器铺满并承载底色，导航条本身限宽居中，
+                否则收窄后两侧会露出页面背景，底栏看着是断的。
+            -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray14">
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottomNavigationView"
+                    android:layout_width="@dimen/wfc_bottom_nav_max_width"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/gray14"
+                    app:elevation="8dp"
+                    app:itemIconTint="@color/bottom_nav_color"
+                    app:itemTextAppearanceActive="@style/BottomNavTextAppearance"
+                    app:itemTextAppearanceInactive="@style/BottomNavTextAppearance"
+                    app:itemTextColor="@color/bottom_nav_color"
+                    app:labelVisibilityMode="labeled"
+                    app:menu="@menu/main_bottom_navigation" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/startingTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="野火IM初始化中" />
+    </FrameLayout>
+</LinearLayout>

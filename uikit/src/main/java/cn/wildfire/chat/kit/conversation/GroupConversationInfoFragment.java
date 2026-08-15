@@ -413,7 +413,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
         memberReclerView.setAdapter(conversationMemberAdapter);
-        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
+        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.wfc_member_grid_span)));
         memberReclerView.setNestedScrollingEnabled(false);
         memberReclerView.setHasFixedSize(true);
         memberReclerView.setFocusable(false);

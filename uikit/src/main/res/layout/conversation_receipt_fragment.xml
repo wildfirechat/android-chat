@@ -16,6 +16,6 @@
         android:paddingTop="15dp"
         android:paddingRight="7dp"
         android:paddingBottom="5dp"
-        app:spanCount="5" />
+        app:spanCount="@integer/wfc_member_grid_span" />
 </LinearLayout>
 

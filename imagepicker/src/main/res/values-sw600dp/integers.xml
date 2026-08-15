@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 平板上 3 列会让每张缩略图大到一屏放不下几张，加到 5 列。 -->
+    <integer name="ip_image_grid_span">5</integer>
+
+</resources>

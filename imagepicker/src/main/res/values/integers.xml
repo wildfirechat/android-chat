@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        图片选择器宫格列数。手机保持原有的 3 列，与改造前 activity_image_grid.xml
+        中写死的 numColumns="3" 完全一致，手机端无任何变化。
+        平板取值见 values-sw600dp/integers.xml。
+        本模块不依赖 uikit，因此不能复用 uikit 的 integer，需在此单独定义。
+    -->
+    <integer name="ip_image_grid_span">3</integer>
+
+</resources>
