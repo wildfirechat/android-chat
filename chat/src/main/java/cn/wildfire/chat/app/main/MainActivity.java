@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Menu;
@@ -55,6 +56,7 @@ import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationHost;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
@@ -68,6 +70,7 @@ import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.FileUtils;
+import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
@@ -88,9 +91,15 @@ import cn.wildfirechat.uikit.menu.PopupMenu;
 import cn.wildfirechat.uikit.permission.PermissionKit;
 import q.rorbin.badgeview.QBadgeView;
 
-public class MainActivity extends WfcBaseActivity {
+public class MainActivity extends WfcBaseActivity implements ConversationHost {
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
+
+    /**
+     * 平板双栏的右栏控制器。**手机端恒为 null**，本文件中所有 {@code twoPaneController != null}
+     * 分支在手机上都走不到，手机路径与改造前逐行一致。
+     */
+    private TwoPaneConversationController twoPaneController;
 
     BottomNavigationView bottomNavigationView;
     ViewPager2 contentViewPager;
@@ -126,7 +135,34 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.main_activity;
+        // 双栏布局只是在同一个 Activity 里多挂一个右栏，从而完整复用 manifest 里的
+        // ${applicationId}.main、分享等 intent-filter 与 singleTask 语义——
+        // 若另起一个 MainPadActivity，这些入口都要复制一份并处理两个主界面并存的问题。
+        return WfcDeviceUtils.isTwoPaneLayout(this) ? R.layout.main_pad_activity : R.layout.main_activity;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (WfcDeviceUtils.isTwoPaneLayout(this)) {
+            twoPaneController = new TwoPaneConversationController(this);
+            twoPaneController.restoreInstanceState(savedInstanceState);
+        } else {
+            // 平板分屏把窗口拖窄到 600dp 以下时，Activity 会以单栏布局重建。
+            // 把原来在右栏里的会话交还给独立会话页，避免用户正在聊的会话凭空消失。
+            Conversation conversation = TwoPaneConversationController.getSavedConversation(savedInstanceState);
+            if (conversation != null) {
+                startActivity(ConversationActivity.buildConversationIntent(this, conversation, null, -1));
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (twoPaneController != null) {
+            twoPaneController.onSaveInstanceState(outState);
+        }
     }
 
     @Override
@@ -277,6 +313,11 @@ public class MainActivity extends WfcBaseActivity {
                 hideUnreadMessageBadgeView();
             }
         });
+        if (twoPaneController != null) {
+            // 双栏：会话被删除/退群后，右栏回到空状态
+            conversationListViewModel.conversationListLiveData()
+                .observe(this, conversationInfos -> twoPaneController.onConversationListChanged(conversationInfos));
+        }
 
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
@@ -359,7 +400,40 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     public void onBackPressed() {
+        // 双栏下先让右栏会话页消费返回键（收起表情/扩展面板、退出多选），语义与手机端
+        // ConversationActivity.onBackPressed 一致；未消费才按主界面语义退到后台。
+        if (twoPaneController != null && twoPaneController.onBackPressed()) {
+            return;
+        }
         moveTaskToBack(true);
+    }
+
+    // ==================== ConversationHost（仅双栏下会被调用） ====================
+    // ConversationFragment 通过 getActivity() instanceof ConversationHost 找到宿主。
+    // 手机端 ConversationFragment 从不挂在 MainActivity 上，以下方法不会被调用。
+
+    @Override
+    public void setConversationTitle(CharSequence title, CharSequence subTitle, boolean silent, boolean earpiece) {
+        if (twoPaneController != null) {
+            twoPaneController.setConversationTitle(title, subTitle, silent, earpiece);
+        }
+    }
+
+    @Override
+    public CharSequence getConversationTitle() {
+        return twoPaneController == null ? null : twoPaneController.getConversationTitle();
+    }
+
+    @Override
+    public void closeConversation() {
+        if (twoPaneController != null) {
+            twoPaneController.closeConversation();
+        }
+    }
+
+    @Override
+    public long getHighlightMessageId() {
+        return twoPaneController == null ? 0 : twoPaneController.getHighlightMessageId();
     }
 
     private void checkVersion() {
@@ -460,10 +534,18 @@ public class MainActivity extends WfcBaseActivity {
             conversationListFragment = new ConversationListFragment();
         }
         conversationListFragment.setOnClickConversationItemListener(conversationInfo -> {
+            if (twoPaneController != null) {
+                // 平板双栏：右栏切换会话，不启动新 Activity
+                twoPaneController.showConversation(conversationInfo.conversation);
+                return;
+            }
             Intent intent = new Intent(this, ConversationActivity.class);
             intent.putExtra("conversation", conversationInfo.conversation);
             startActivity(intent);
         });
+        if (twoPaneController != null) {
+            twoPaneController.setConversationListFragment(conversationListFragment);
+        }
         if (contactListFragment == null) {
             contactListFragment = new ContactListFragment();
         }

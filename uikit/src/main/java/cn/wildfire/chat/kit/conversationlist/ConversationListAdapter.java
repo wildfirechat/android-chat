@@ -50,6 +50,16 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private OnClickConversationItemListener onClickConversationItemListener;
 
+    /**
+     * 平板双栏下右栏当前打开的会话，在左栏列表里高亮。手机端不使用，恒为 null。
+     */
+    private Conversation selectedConversation;
+    /**
+     * 是否启用选中态。只有调用过 {@link #setSelectedConversation(Conversation)} 才会置为 true，
+     * 即只有平板双栏宿主会打开它，手机端的绑定逻辑完全不受影响。
+     */
+    private boolean selectionEnabled;
+
     private boolean isEmpty(List list) {
         return list == null || list.isEmpty();
     }
@@ -83,6 +93,18 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public void setOnClickConversationItemListener(OnClickConversationItemListener onClickConversationItemListener) {
         this.onClickConversationItemListener = onClickConversationItemListener;
+    }
+
+    /**
+     * 平板双栏专用：设置左栏中高亮的会话，传 null 表示右栏没有打开任何会话。
+     */
+    public void setSelectedConversation(Conversation conversation) {
+        if (selectionEnabled && Conversation.equals(this.selectedConversation, conversation)) {
+            return;
+        }
+        this.selectionEnabled = true;
+        this.selectedConversation = conversation;
+        notifyDataSetChanged();
     }
 
     private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
@@ -312,7 +334,16 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             return;
         }
         int conversationItemPosition = position - headerCount();
-        ((ConversationViewHolder) holder).onBind(conversationInfos.get(conversationItemPosition), conversationItemPosition);
+        ConversationInfo conversationInfo = conversationInfos.get(conversationItemPosition);
+        ((ConversationViewHolder) holder).onBind(conversationInfo, conversationItemPosition);
+
+        // 平板双栏：标记右栏当前打开的会话。手机端从不调用 setSelectedConversation，
+        // selectionEnabled 恒为 false，这一段不会执行，列表项背景与改造前一致。
+        if (selectionEnabled) {
+            holder.itemView.setBackgroundResource(R.drawable.selector_conversation_item_two_pane);
+            holder.itemView.setActivated(selectedConversation != null
+                && Conversation.equals(selectedConversation, conversationInfo.conversation));
+        }
     }
 
     @Override

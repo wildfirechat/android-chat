@@ -380,4 +380,5 @@
     <string name="restored_messages_media">Restored %1$d messages, %2$d media files</string>
     <string name="restore_failed_prefix">Restore failed: %1$s</string>
     <string name="restore_failed_status">Restore failed</string>
+    <string name="pad_select_a_conversation">Select a conversation to start chatting</string>
 </resources>
