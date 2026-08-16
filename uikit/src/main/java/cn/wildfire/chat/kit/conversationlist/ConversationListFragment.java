@@ -117,12 +117,14 @@ public class ConversationListFragment extends ProgressFragment {
             public void onChanged(List<UserInfo> userInfos) {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
-                adapter.notifyItemRangeChanged(start, end - start + 1);
+                adapter.notifyUserInfosUpdated(userInfos, start, end);
             }
         });
         userViewModel.domainInfoLiveData().observe(this, new Observer<DomainInfo>() {
             @Override
             public void onChanged(DomainInfo domainInfo) {
+                // 域信息影响的是全局展示（外部用户昵称等），出现的频率很低，
+                // 这里仍然刷新整个可见区域即可；用户/群信息已改为按行精准刷新。
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyItemRangeChanged(start, end - start + 1);
@@ -134,7 +136,7 @@ public class ConversationListFragment extends ProgressFragment {
             public void onChanged(List<GroupInfo> groupInfos) {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
-                adapter.notifyItemRangeChanged(start, end - start + 1);
+                adapter.notifyGroupInfosUpdated(groupInfos, start, end);
             }
         });
 

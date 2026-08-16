@@ -21,9 +21,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
@@ -32,8 +34,13 @@ import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolderManager;
 import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContainerViewHolder;
+import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.SecretChatInfo;
+import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.uikit.menu.OnMenuItemClickListener;
 import cn.wildfirechat.uikit.menu.VerticalContextMenu;
 
@@ -102,9 +109,115 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         if (selectionEnabled && Conversation.equals(this.selectedConversation, conversation)) {
             return;
         }
-        this.selectionEnabled = true;
+        Conversation oldSelected = this.selectedConversation;
         this.selectedConversation = conversation;
-        notifyDataSetChanged();
+        if (!selectionEnabled) {
+            // 第一次启用选中态时，所有列表项都要从普通背景换成带选中态的背景，
+            // 这里只能整体刷新一次；之后切换选中项只需要通知受影响的项。
+            selectionEnabled = true;
+            notifyDataSetChanged();
+            return;
+        }
+        int oldPosition = findConversationPosition(oldSelected);
+        if (oldPosition >= 0) {
+            notifyItemChanged(oldPosition);
+        }
+        int newPosition = findConversationPosition(conversation);
+        if (newPosition >= 0) {
+            notifyItemChanged(newPosition);
+        }
+    }
+
+    private int findConversationPosition(Conversation conversation) {
+        if (conversation == null || conversationInfos == null) {
+            return -1;
+        }
+        for (int i = 0; i < conversationInfos.size(); i++) {
+            if (Conversation.equals(conversationInfos.get(i).conversation, conversation)) {
+                return headerCount() + i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 只刷新可见范围内受用户信息更新影响的会话行，避免用户/群信息每次回调都把整个可见列表重绘一遍，
+     * 在平板双栏左栏常驻时尤其明显（点开会话触发信息刷新会让左栏整体闪烁）。
+     *
+     * @param startVisible 可见区域第一个 item 的 position（含 header）
+     * @param endVisible   可见区域最后一个 item 的 position（含 header）
+     */
+    public void notifyUserInfosUpdated(List<UserInfo> userInfos, int startVisible, int endVisible) {
+        if (userInfos == null || userInfos.isEmpty() || conversationInfos == null
+            || startVisible < 0 || endVisible < startVisible) {
+            return;
+        }
+        Set<String> userIds = new HashSet<>();
+        for (UserInfo userInfo : userInfos) {
+            if (userInfo != null && userInfo.uid != null) {
+                userIds.add(userInfo.uid);
+            }
+        }
+        if (userIds.isEmpty()) {
+            return;
+        }
+        int first = Math.max(startVisible, headerCount());
+        int last = Math.min(endVisible, headerCount() + conversationInfos.size() - 1);
+        for (int position = first; position <= last; position++) {
+            if (isUserAffected(conversationInfos.get(position - headerCount()), userIds)) {
+                notifyItemChanged(position);
+            }
+        }
+    }
+
+    /**
+     * 只刷新可见范围内受群信息更新影响的会话行，避免整体重绘可见列表。
+     *
+     * @param startVisible 可见区域第一个 item 的 position（含 header）
+     * @param endVisible   可见区域最后一个 item 的 position（含 header）
+     */
+    public void notifyGroupInfosUpdated(List<GroupInfo> groupInfos, int startVisible, int endVisible) {
+        if (groupInfos == null || groupInfos.isEmpty() || conversationInfos == null
+            || startVisible < 0 || endVisible < startVisible) {
+            return;
+        }
+        Set<String> groupIds = new HashSet<>();
+        for (GroupInfo groupInfo : groupInfos) {
+            if (groupInfo != null && groupInfo.target != null) {
+                groupIds.add(groupInfo.target);
+            }
+        }
+        if (groupIds.isEmpty()) {
+            return;
+        }
+        int first = Math.max(startVisible, headerCount());
+        int last = Math.min(endVisible, headerCount() + conversationInfos.size() - 1);
+        for (int position = first; position <= last; position++) {
+            ConversationInfo conversationInfo = conversationInfos.get(position - headerCount());
+            if (conversationInfo.conversation.type == Conversation.ConversationType.Group
+                && groupIds.contains(conversationInfo.conversation.target)) {
+                notifyItemChanged(position);
+            }
+        }
+    }
+
+    private boolean isUserAffected(ConversationInfo conversationInfo, Set<String> userIds) {
+        Conversation conversation = conversationInfo.conversation;
+        if (conversation.type == Conversation.ConversationType.Single
+            && userIds.contains(conversation.target)) {
+            return true;
+        }
+        if ((conversation.type == Conversation.ConversationType.Group || conversation.type == Conversation.ConversationType.Channel)
+            && conversationInfo.lastMessage != null
+            && conversationInfo.lastMessage.direction == MessageDirection.Receive
+            && userIds.contains(conversationInfo.lastMessage.sender)) {
+            return true;
+        }
+        if (conversation.type == Conversation.ConversationType.SecretChat) {
+            SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
+            return secretChatInfo != null && userIds.contains(secretChatInfo.getUserId());
+        }
+        return false;
     }
 
     private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
