@@ -574,19 +574,19 @@ ConversationRouter.open(context, intent);                           // 只改这
 3. **新增 extra 时两条路径自动同步**：右栏解析的键名与 `ConversationActivity` 完全一致，
    将来加参数不必改路由。
 
-**判定顺序：必须先判双栏，再找宿主**
+**判定顺序：必须先判双栏，再找导航器**
 
 计划写的是 `isTwoPaneLayout(ctx) && ctx instanceof ConversationHost`，实现时这两个条件的**顺序**是关键：
-双栏主界面在手机上**依然是同一个 `MainActivity` 类、依然实现 `ConversationPaneHost`**，只是没有右栏。
+双栏主界面在手机上**依然是同一个 `MainActivity` 类、依然实现 `WfcPageNavigator`**，只是没有右栏。
 若先做 `instanceof` 再判宽度，手机端点会话会调到一个空实现上，表现为"点了没反应"。
-`ConversationRouter.open()` 里对此有显式注释，`MainActivity.showConversationInPane()` 另有一层兜底
+`ConversationRouter.open()` 里对此有显式注释，`MainActivity.openPageInPane()` 另有一层兜底
 （控制器为 null 时退回独立会话页）。
 
-**新增接口 `ConversationPaneHost`，没有复用 `ConversationHost`**
+**复用 `WfcPageNavigator`，不再新增 `ConversationPaneHost`**
 
 `ConversationHost`（阶段 3）是"**会话页对宿主的要求**"——设标题、关闭自己，独立会话页和右栏都要实现；
-`ConversationPaneHost` 是"**路由对宿主的要求**"——换一个会话，只有双栏主界面才有意义。
-如果按计划把 `showConversation` 塞进 `ConversationHost`，`WfcBaseActivityConversationHost`
+`WfcPageNavigator` 是"**路由对宿主的要求**"——把一个页面/会话开进右栏，只有双栏主界面才有意义。
+如果按计划把 `openPageInPane` 塞进 `ConversationHost`，`WfcBaseActivityConversationHost`
 （独立会话页的适配器）就得实现一个它无法履行的语义。
 
 **对 AAR 集成方的保护：双栏主界面必须显式注册**
@@ -771,12 +771,12 @@ flutter 靠"调用点的最近 Navigator 是不是根 Navigator"来分，Android
 手机端会话页始终直接挂在 Activity 上，父链为空，这个循环一次都不会进。
 
 同时 `MainActivity` 不再 `implements ConversationHost`（那是阶段 4 的单会话形态遗留），
-`ConversationPaneHost` 保留——`ConversationRouter` 靠它找双栏宿主。
+`ConversationRouter` 改为通过 `WfcPageNavigator` 找双栏宿主。
 
 #### 与阶段 5 的关系
 
 阶段 5 那 30 处 `ConversationRouter.open(...)` **全部保留且仍然有效**：它们最终调到
-`MainActivity.showConversationInPane` → `TwoPaneNavigator.openInPane`。从非主界面页面
+`MainActivity.openPageInPane` → `TwoPaneNavigator.openInPane`。从非主界面页面
 （全屏页）发起的路由仍走"起 `MainActivity` + `EXTRA_OPEN_CONVERSATION_IN_PANE`"那条，
 落到**消息 tab** 的栈里。本阶段新增的拦截是它的超集，两者不冲突。
 

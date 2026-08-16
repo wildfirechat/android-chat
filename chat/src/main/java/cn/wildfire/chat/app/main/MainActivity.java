@@ -11,7 +11,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -20,6 +22,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.webkit.CookieManager;
 import android.webkit.WebStorage;
 import android.widget.LinearLayout;
@@ -57,7 +61,6 @@ import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfire.chat.kit.conversation.ConversationPaneHost;
 import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
@@ -95,7 +98,7 @@ import cn.wildfirechat.uikit.menu.PopupMenu;
 import cn.wildfirechat.uikit.permission.PermissionKit;
 import q.rorbin.badgeview.QBadgeView;
 
-public class MainActivity extends WfcBaseActivity implements ConversationPaneHost, WfcPageNavigator {
+public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
@@ -150,6 +153,7 @@ public class MainActivity extends WfcBaseActivity implements ConversationPaneHos
         super.onCreate(savedInstanceState);
         if (WfcDeviceUtils.isTwoPaneLayout(this)) {
             twoPaneNavigator = new TwoPaneNavigator(this);
+            setupTwoPaneImeAdjustment();
         } else {
             // 平板分屏把窗口拖窄到 600dp 以下时，Activity 会以单栏布局重建。
             // 单栏布局里没有右栏容器，先把 FragmentManager 自动恢复出来的那几条栈清掉，
@@ -165,6 +169,58 @@ public class MainActivity extends WfcBaseActivity implements ConversationPaneHos
         if (savedInstanceState == null) {
             handleConversationLaunchIntent(getIntent());
         }
+    }
+
+    /**
+     * 平板双栏下，软键盘弹出时把左栏底部导航藏起来，避免它被顶到键盘上方。
+     * <p>
+     * 手机端不会走到这里；双栏的输入框在右栏，但窗口级 adjustResize/adjustPan
+     * 会让整个左栏一起变矮/上移，左栏底部的 tab 会被顶到键盘上方。这里监听窗口
+     * 可见区域变化，识别到键盘高度后直接隐藏左栏底部导航，让左栏内容继续使用
+     * 键盘上方的完整高度。
+     */
+    private void setupTwoPaneImeAdjustment() {
+        final View content = findViewById(android.R.id.content);
+        content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (bottomNavigationView == null) {
+                    return;
+                }
+                Rect rect = new Rect();
+                content.getWindowVisibleDisplayFrame(rect);
+                View root = content.getRootView();
+                int rootHeight = root.getHeight();
+                if (rootHeight <= 0 || rect.bottom <= 0) {
+                    return;
+                }
+
+                int bottomInset = 0;
+                WindowInsets windowInsets = root.getRootWindowInsets();
+                if (windowInsets != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        bottomInset = windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+                    } else {
+                        bottomInset = windowInsets.getStableInsetBottom();
+                    }
+                } else {
+                    // 极少数情况下拿不到 Insets，退回资源里的导航栏高度，避免把导航栏误判成键盘。
+                    int navBarResId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+                    if (navBarResId > 0) {
+                        bottomInset = getResources().getDimensionPixelSize(navBarResId);
+                    }
+                }
+
+                // 与 KeyboardAwareLinearLayout 相同的键盘高度估算：
+                // root 高度 - 当前可见区域底部 - 导航栏高度。
+                int keyboardHeight = Math.max(0, rootHeight - rect.bottom - bottomInset);
+                boolean keyboardShowing = keyboardHeight > 100;
+                int targetVisibility = keyboardShowing ? View.GONE : View.VISIBLE;
+                if (bottomNavigationView.getVisibility() != targetVisibility) {
+                    bottomNavigationView.setVisibility(targetVisibility);
+                }
+            }
+        });
     }
 
     /**
@@ -513,26 +569,6 @@ public class MainActivity extends WfcBaseActivity implements ConversationPaneHos
         }
     }
 
-    // ==================== ConversationPaneHost（仅双栏下会被调用） ====================
-    // ConversationRouter 通过 Context instanceof ConversationPaneHost 找到双栏宿主。
-
-    @Override
-    public void showConversationInPane(Intent conversationIntent) {
-        showConversationInPane(null, conversationIntent);
-    }
-
-    @Override
-    public void showConversationInPane(Fragment caller, Intent conversationIntent) {
-        if (twoPaneNavigator != null && twoPaneNavigator.openInPane(caller, conversationIntent, -1)) {
-            return;
-        }
-        // 兜底：本 Activity 在手机/窄窗口下也实现着这个接口但没有右栏，退回独立会话页。
-        // 正常情况下 ConversationRouter 已先判过双栏，走不到这里。
-        Intent intent = new Intent(this, ConversationActivity.class);
-        intent.putExtras(conversationIntent);
-        startActivity(intent);
-    }
-
     private void checkVersion() {
         try {
             String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -634,7 +670,7 @@ public class MainActivity extends WfcBaseActivity implements ConversationPaneHos
             Intent intent = new Intent(this, ConversationActivity.class);
             intent.putExtra("conversation", conversationInfo.conversation);
             // 手机端等价于 startActivity(intent)；双栏下由 ConversationRouter 找到本 Activity
-            // 这个 ConversationPaneHost，直接换右栏
+            // 这个 WfcPageNavigator，直接换右栏
             ConversationRouter.open(this, intent);
         });
         if (twoPaneNavigator != null) {

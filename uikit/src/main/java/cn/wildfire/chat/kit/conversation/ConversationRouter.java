@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import cn.wildfire.chat.kit.page.WfcPageNavigator;
 import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 
 /**
@@ -77,13 +78,20 @@ public class ConversationRouter {
         if (context == null || conversationIntent == null) {
             return;
         }
-        // 必须先判双栏再找宿主：双栏主界面在手机上依然是同一个 Activity 类、依然实现
-        // ConversationPaneHost，只是没有右栏。少了这个判断，手机端点会话会调到一个空实现上，
+        // 必须先判双栏再找导航器：双栏主界面在手机上依然是同一个 Activity 类、依然实现
+        // WfcPageNavigator，只是没有右栏。少了这个判断，手机端点会话会调到一个空实现上，
         // 表现为「点了没反应」。
         if (WfcDeviceUtils.isTwoPaneLayout(context)) {
-            ConversationPaneHost paneHost = findPaneHost(context);
-            if (paneHost != null) {
-                paneHost.showConversationInPane(caller, conversationIntent);
+            WfcPageNavigator paneNavigator = findPaneNavigator(context);
+            if (paneNavigator != null) {
+                if (paneNavigator.openPageInPane(caller, conversationIntent, -1)) {
+                    return;
+                }
+                // 兜底：主界面实现了导航接口但当前没有右栏（如窄窗口），退回独立会话页。
+                // 与 MainActivity.showConversationInPane 的兜底保持一致。
+                Intent fallbackIntent = new Intent(context, ConversationActivity.class);
+                fallbackIntent.putExtras(conversationIntent);
+                context.startActivity(fallbackIntent);
                 return;
             }
             Intent twoPaneIntent = buildTwoPaneIntent(context, conversationIntent);
@@ -137,14 +145,14 @@ public class ConversationRouter {
     }
 
     /**
-     * 沿 ContextWrapper 链向上找双栏宿主。Fragment 的 {@code getContext()} 可能是
+     * 沿 ContextWrapper 链向上找双栏导航器。Fragment 的 {@code getContext()} 可能是
      * ContextThemeWrapper（对话框、带主题的 Fragment），必须解包才能拿到 Activity。
      */
-    private static ConversationPaneHost findPaneHost(Context context) {
+    private static WfcPageNavigator findPaneNavigator(Context context) {
         Context ctx = context;
         while (ctx != null) {
-            if (ctx instanceof ConversationPaneHost) {
-                return (ConversationPaneHost) ctx;
+            if (ctx instanceof WfcPageNavigator) {
+                return (WfcPageNavigator) ctx;
             }
             if (!(ctx instanceof ContextWrapper)) {
                 return null;
