@@ -1165,10 +1165,12 @@ intent 没带标题、网页也还没加载出标题时用它，避免右栏标�
 - 媒体预览、音视频通话、扫码：本来就该全屏，**永远不要登记**。
 - 备份与恢复：自带多步进度的独立流程，且内部用 `getParentFragmentManager()` 自建返回栈，
   塞进右栏会和右栏的栈打架。**是有意不登记的**，见 `AppPaneRegistry` 末尾的注释。
-- 会议一族：入口是全屏会议界面，且依赖 `avenginekit` 兄弟仓库与会议服务端，尚未评估。
-- 投票、接龙的**页面本体**（`PollHomeActivity` 等 4 页、`CreateCollectionActivity` 等 2 页）：
-  依赖 `Config.POLL_SERVER_ADDRESS` 指向的可选后端，没有部署就无法真机验收，尚未评估。
-  它们的**入口**（加号面板）已经走 `WfcPageCompat`，登记之后即可进右栏。
+- ~~会议一族~~：入口是全屏会议界面，且依赖 `avenginekit` 兄弟仓库与会议服务端。
+  → 入口页/详情页已登记进右栏（**阶段 5.9**）；`ConferenceActivity`（会议本体）、
+  `ConferenceInviteActivity`（会议内邀请选人）、`ConferenceParticipantListActivity`（参会人列表）
+  仍全屏——音视频界面本来就是全屏形态，且入口只在全屏会议里。
+- ~~投票、接龙的页面本体~~（`PollHomeActivity` 等 4 页、`CreateCollectionActivity` 等 2 页）：
+  依赖 `Config.POLL_SERVER_ADDRESS` 指向的可选后端。→ 已全部登记进右栏（**阶段 5.9**）。
 - `FileUtils.openFile` 的在线预览、`WfcScheme` 的网页落地：只有 Context，走「上一次点在哪一栏」
   的兜底启发式。要做精确得给这几个公开静态方法加 Fragment 重载，是独立的一小步。
 
@@ -1326,6 +1328,102 @@ intent 没带标题、网页也还没加载出标题时用它，避免右栏标�
 - 右上角相机 →「拍摄」→ 录像全屏 → 回到右栏发表页。**长按**右上角相机 → 直接进纯文字发表页。
 - **手机端**：以上全流程与改造前一致；朋友圈**仍然可以横屏**（B6 的既有行为，本轮刻意保留）；
   全局字号设置现在对朋友圈生效了。
+
+---
+
+### 阶段 5.9：投票、接龙、会议一族 ✅ 代码已完成，真机验证通过
+
+**背景**：5.7d 收尾时把三族挂在「仍然全屏」里：会议一族（入口全屏会议界面、依赖 avenginekit）、
+投票/接龙页面本体（依赖 `Config.POLL_SERVER_ADDRESS` 指向的可选后端）。它们的**入口**当时已经走
+`WfcPageCompat`（加号面板、发现 tab、消息气泡），只差页面本体转成 Fragment + 壳 + 登记。
+本轮把三族共 **10 个页面**全部接入右栏。
+
+#### 投票（4 页）
+
+| 页面 | 做法 |
+|------|------|
+| `PollHomeActivity` → `PollHomePageFragment` | 投票首页，从会话加号面板进入；两个入口（发起投票/我的投票）走 `WfcPageCompat.startPage` |
+| `PollListActivity` → `PollListPageFragment` | 我的投票列表；下拉刷新、长按结束/删除、点击进详情 |
+| `PollDetailActivity` → `PollDetailPageFragment` | 投票详情。菜单（提交/转发）、动态标题（「已选 n/m」）、底部管理栏全部迁到 Fragment |
+| `CreatePollActivity` → `CreatePollPageFragment` | 创建投票表单；发布按钮在页内，公开投票创建成功后弹转发确认 |
+
+#### 接龙（2 页）
+
+| 页面 | 做法 |
+|------|------|
+| `CreateCollectionActivity` → `CreateCollectionPageFragment` | 创建接龙表单，「完成」菜单随标题输入使能 |
+| `CollectionDetailActivity` → `CollectionDetailPageFragment` | 接龙详情；参与/修改/删除/复制，菜单「提交」随内容变化使能 |
+
+#### 会议（4 页）
+
+| 页面 | 做法 |
+|------|------|
+| `ConferencePortalActivity` → `ConferencePortalPageFragment` | 会议入口页（发现 tab → 会议）：发起/加入/预定/记录 + 收藏列表 |
+| `ConferenceInfoActivity` → `ConferenceInfoPageFragment` | 会议详情：信息展示、销毁/收藏/取消收藏、扫码、加入会议 |
+| `CreateConferenceActivity` → `CreateConferencePageFragment` | 发起会议表单 |
+| `OrderConferenceActivity` → `OrderConferencePageFragment` | 预定会议表单 |
+
+`ConferenceHistoryListActivity` 早在 5.6 就已登记。**仍然全屏**（有意不登记）：
+`ConferenceActivity`（会议本体，音视频界面）、`ConferenceInviteActivity`（会议内邀请选人）、
+`ConferenceParticipantListActivity`（参会人列表）——它们的入口只在全屏会议界面里，且音视频
+本来就该全屏。
+
+#### 消息气泡入口（4 处改走 `WfcPageCompat.startPage`）
+
+| ViewHolder | 目标页 |
+|---|---|
+| `PollMessageContentViewHolder` | 投票详情 |
+| `PollResultMessageContentViewHolder` | 投票详情 |
+| `CollectionMessageContentViewHolder` | 接龙详情 |
+| `ConferenceInviteMessageContentViewHolder` | 会议详情（权限回调后进入） |
+
+外加 `DiscoveryFragment.conference()`（发现 tab 会议入口）改走 `WfcPageCompat.startPage`。
+`WfcScheme` 会议二维码落地只有 Context，仍走「上一次点在哪一栏」兜底启发式（与 5.7d 记录一致）。
+
+#### 三族共用的迁移要点
+
+- **标题**：静态标题由 `pageTitle()` 返回（或用 manifest label 兜底）；动态标题
+  （投票详情多选时的「已选 n/m」）用 `WfcPageCompat.setPageTitle`。手机端与右栏两端一致。
+- **菜单**：全部下沉到 `pageMenu()` / `onPreparePageMenu` / `onPageMenuItemSelected`；
+  状态变化（完成按钮随标题、提交按钮随输入、收藏按钮随异步查询）用
+  `WfcPageCompat.invalidatePageMenu` 重刷。`ConferenceInfoPageFragment` 的收藏状态
+  （`favState` 字段）是异步查回的，`onPreparePageMenu` 以它为唯一依据渲染，避免异步回调
+  里持有失效的 `MenuItem` 引用。
+- **返回键**：`PollDetailPageFragment.onPageBackPressed()` 从消息进入时 `finishPage`
+  （等价手机端 `finish()`），从列表进入返回 false 让宿主逐层出栈。其余页面用默认返回。
+- **用完即弃**：`CreatePollPageFragment` 公开投票转发时用 `replaceSelfWithPage`
+  （转发页顶替掉创建页，返回不再回到已完成的表单）。
+- **加入会议仍全屏**：`ConferenceInfoPageFragment.joinConference` 与
+  `CreateConferencePageFragment.createConference(join)` 仍 `startActivity(ConferenceActivity)`
+  —— 音视频界面全屏形态，**不登记**；随后 `finishAfterOpeningPage` 收尾（右栏里保留当前页，
+  返回栈下层还在，语义与手机端一致）。
+- **壳 Activity**：全部 `contentLayout()` 返回 `fragment_container_activity`，
+  `afterViews()` 里「先查 `findFragmentById` 有没有，没有才 add」——配置变化后不重复叠层。
+  10 个原布局各摘掉 `<include layout="@layout/toolbar"/>`，由页面 Fragment 直接使用；
+  `activity_poll_detail.xml` 的 RecyclerView 原引用 `layout_below="@id/toolbarLayout"`，
+  改为 `layout_alignParentTop="true"`。
+
+#### 去重键
+
+| 页面 | 键 |
+|------|-----|
+| `PollHomeActivity` / `PollListActivity` | 按群（`groupId`） |
+| `PollDetailActivity` | 按 `pollId` |
+| `CollectionDetailActivity` | 按 `collectionId` |
+| `ConferencePortalActivity` | 全局单例 |
+| `ConferenceInfoActivity` | 按 `conferenceId` |
+| `CreatePollActivity` / `CreateCollectionActivity` / `CreateConferenceActivity` / `OrderConferenceActivity` | 不去重（一次性表单） |
+
+**真机验收**
+- 平板：群会话加号 →「投票」→ 首页/我的投票/创建/详情全在右栏；投票、结束、删除、导出、转发
+  正常；「接龙」创建/参与/修改/删除在右栏；发现 →「会议」→ 发起/加入/预定/会议记录在右栏；
+  会议邀请消息点开详情在右栏，加入会议后进入全屏会议界面；返回逐层出栈。
+- 手机：以上全流程与改造前一致（同一份 Fragment 由壳 Activity 承载）。
+- 未部署投票/接龙服务时（`PollServiceProvider`/`CollectionServiceProvider` 不可用），
+  加号面板不显示对应入口，与改造前一致。
+
+**验证**：`./gradlew :chat:assembleDebug` 通过；`aapt2 dump resources` 复核
+`bool/wfc_two_pane` 仍为 `() false` / `(sw600dp) true`，未改动任何手机端既有资源。
 
 ---
 
