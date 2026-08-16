@@ -1,192 +1,42 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
 package cn.wildfire.chat.kit.pc;
 
-import android.content.Intent;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
+import androidx.fragment.app.Fragment;
 
-import java.util.List;
-
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfire.chat.kit.conversation.ConversationRouter;
-import cn.wildfirechat.client.Platform;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.PCOnlineInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnSettingUpdateListener;
 
-public class PCSessionActivity extends WfcBaseActivity implements OnSettingUpdateListener {
-
-    Button kickOffPCButton;
-    TextView descTextView;
-    ImageView pcImageView;
-    Switch muteSwitch;
-    Switch lockSwitch;
-    LinearLayout fileHelperLayout;
-
-    private PCOnlineInfo pcOnlineInfo;
-    private boolean isMuteWhenPCOnline = false;
-
-    protected void bindEvents() {
-        super.bindEvents();
-        kickOffPCButton.setOnClickListener(v -> kickOffPC());
-        muteSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mutePhone(isChecked));
-        lockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> lockPC(isChecked));
-        fileHelperLayout.setOnClickListener(v -> fileHelper());
-    }
-
-    protected void bindViews() {
-        super.bindViews();
-        kickOffPCButton = findViewById(R.id.kickOffPCButton);
-        descTextView = findViewById(R.id.descTextView);
-        pcImageView = findViewById(R.id.pcImageView);
-        muteSwitch = findViewById(R.id.muteSwitch);
-        lockSwitch = findViewById(R.id.lockSwitch);
-        fileHelperLayout = findViewById(R.id.fileHelperLayout);
-    }
+/**
+ * PC 端会话管理页的空壳。
+ * <p>
+ * 页面本体在 {@link PCSessionFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、菜单、返回都由宿主提供，两端只有这一份实现。
+ */
+public class PCSessionActivity extends WfcBaseActivity {
 
     @Override
-    protected void beforeViews() {
-        pcOnlineInfo = getIntent().getParcelableExtra("pcOnlineInfo");
-        if (pcOnlineInfo == null) {
-            finish();
-        }
+    protected int contentLayout() {
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        if (pcOnlineInfo == null) {
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
             return;
         }
-        Platform platform = pcOnlineInfo.getPlatform();
-        setTitle(platform.getPlatFormName() + " " + getString(R.string.pc_online_status_logged_in));
-        kickOffPCButton.setText(getString(R.string.pc_session_logout_button, platform.getPlatFormName()));
-        descTextView.setText(platform.getPlatFormName() + " " + getString(R.string.pc_online_status_logged_in));
-
-        isMuteWhenPCOnline = ChatManager.Instance().isMuteNotificationWhenPcOnline();
-        muteSwitch.setChecked(isMuteWhenPCOnline);
-        
-        // 读取锁定状态
-        boolean isLocked = ChatManager.Instance().isLockPCClient(pcOnlineInfo.getClientId());
-        lockSwitch.setChecked(isLocked);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ChatManager.Instance().addSettingUpdateListener(this);
-        checkPCOnlineStatus();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ChatManager.Instance().removeSettingUpdateListener(this);
-    }
-
-    @Override
-    public void onSettingUpdate() {
-        checkPCOnlineStatus();
-    }
-
-    private void checkPCOnlineStatus() {
-        List<PCOnlineInfo> infos = ChatManager.Instance().getPCOnlineInfos();
-        boolean pcStillOnline = false;
-        for (PCOnlineInfo info : infos) {
-            if (info.getClientId().equals(pcOnlineInfo.getClientId())) {
-                pcStillOnline = true;
-                break;
-            }
-        }
-        if (!pcStillOnline) {
+        Fragment fragment = PCSessionFragment.fromIntent(getIntent());
+        if (fragment == null) {
+            // 参数不全，这一页显示不出东西
             finish();
+            return;
         }
-    }
 
-    @Override
-    protected int contentLayout() {
-        return R.layout.pc_session_activity;
-    }
-
-    void kickOffPC() {
-        ChatManager.Instance().kickoffPCClient(pcOnlineInfo.getClientId(), new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(PCSessionActivity.this, pcOnlineInfo.getPlatform() + " " + getString(R.string.pc_kicked_offline), Toast.LENGTH_SHORT).show();
-                finish();
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(PCSessionActivity.this, "" + errorCode, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    void mutePhone(boolean isMute) {
-        ChatManager.Instance().muteNotificationWhenPcOnline(isMute, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_success), Toast.LENGTH_SHORT).show();
-                isMuteWhenPCOnline = isMute;
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_failed) + " " + errorCode, Toast.LENGTH_SHORT).show();
-                // 恢复开关状态
-                muteSwitch.setChecked(!isMute);
-            }
-        });
-    }
-
-    void lockPC(boolean isLock) {
-        ChatManager.Instance().lockPCClient(pcOnlineInfo.getClientId(), isLock, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_success), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_failed) + " " + errorCode, Toast.LENGTH_SHORT).show();
-                // 恢复开关状态
-                lockSwitch.setChecked(!isLock);
-            }
-        });
-    }
-
-    void fileHelper() {
-        Intent intent = ConversationActivity.buildConversationIntent(this, Conversation.ConversationType.Single, Config.FILE_TRANSFER_ID, 0);
-        ConversationRouter.open(this, intent);
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }

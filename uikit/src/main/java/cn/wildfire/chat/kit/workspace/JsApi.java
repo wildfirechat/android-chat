@@ -26,6 +26,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -68,12 +69,22 @@ public class JsApi {
 //            Log.e(TAG, "only workspace can call openurl " + this.appUrl);
 //            return;
 //        }
-        WfcWebViewActivity.loadUrl(activity, "", url.toString());
+        if (fragment != null) {
+            WfcWebViewActivity.loadUrl(fragment, "", url.toString());
+        } else {
+            WfcWebViewActivity.loadUrl(activity, "", url.toString());
+        }
     }
 
     @JavascriptInterface
     public void close(Object obj, CompletionHandler handler) {
-        activity.finish();
+        // 平板右栏里 activity 是双栏主界面，finish 掉就是整个界面退出；
+        // 走 WfcPageCompat 才是「关掉网页这一页」。手机端仍然落到 activity.finish()。
+        if (fragment != null) {
+            WfcPageCompat.finishPage(fragment);
+        } else {
+            activity.finish();
+        }
         JSONObject resultObj = new JSONObject();
         try {
             resultObj.put("code", 0);
@@ -225,7 +236,9 @@ public class JsApi {
 
     private void startActivityForResult(Intent intent, int requestCode) {
         if (fragment != null) {
-            fragment.startActivityForResult(intent, requestCode);
+            // 走 WfcPageCompat：选联系人在平板上压到网页所在的那条右栏栈上，
+            // 结果照样带着原始 requestCode 回到 fragment.onActivityResult
+            WfcPageCompat.startPageForResult(fragment, intent, requestCode);
         } else {
             activity.startActivityForResult(intent, requestCode);
         }

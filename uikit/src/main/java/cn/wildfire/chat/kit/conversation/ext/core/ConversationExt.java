@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.model.Conversation;
 
@@ -94,8 +95,16 @@ public abstract class ConversationExt {
         this.extension = null;
     }
 
+    /**
+     * 从加号面板打开一个页面。
+     * <p>
+     * 走 {@code WfcPageCompat}：登记进右栏的扩展页（投票、接龙）在平板上压到会话所在的那条栈上。
+     * 改造前是 {@code activity.startActivity}，那条路上主界面拿不到发起者，只能靠
+     * 「上一次按下点落在哪一栏」去猜；面板本来就在右栏里，猜通常也对，但没必要靠猜。
+     * 手机端 {@code getActivity()} 不是 {@code WfcPageNavigator}，逐字节等价于改造前。
+     */
     protected final void startActivity(Intent intent) {
-        activity.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     /**

@@ -21,6 +21,7 @@ import java.util.Map;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
@@ -136,6 +137,6 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo);
         intent.putExtra("groupId", groupInfo.target);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 }

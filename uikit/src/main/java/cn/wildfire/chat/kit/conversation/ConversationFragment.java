@@ -1635,7 +1635,7 @@ public class ConversationFragment extends Fragment implements
         Intent intent = new Intent(getActivity(), GroupMessageReceiptActivity.class);
         intent.putExtra("message", message);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     public boolean isShowGroupMemberName() {

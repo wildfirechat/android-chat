@@ -116,7 +116,7 @@ public class TextMessageContentViewHolder extends SelectableTextViewHolder {
 
     public void onClick(View view) {
         String content = ((TextMessageContent) message.message.content).getContent();
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), content);
+        WfcWebViewActivity.loadHtmlContent(fragment, fragment.getString(R.string.message_detail_title), content);
     }
 
     public void onRefClick(View view) {
@@ -125,7 +125,7 @@ public class TextMessageContentViewHolder extends SelectableTextViewHolder {
             // TODO previewMessageActivity
             MessageContent messageContent = message.content;
             if (messageContent instanceof TextMessageContent) {
-                WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), ((TextMessageContent) messageContent).getContent());
+                WfcWebViewActivity.loadHtmlContent(fragment, fragment.getString(R.string.message_detail_title), ((TextMessageContent) messageContent).getContent());
             } else {
                 if (messageContent instanceof VideoMessageContent) {
                     MMPreviewActivity.previewVideo(fragment.getActivity(), message);

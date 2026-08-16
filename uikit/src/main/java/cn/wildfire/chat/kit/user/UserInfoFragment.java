@@ -300,7 +300,8 @@ public class UserInfoFragment extends Fragment implements WfcPage {
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         intent.putExtra("userInfo", userInfo);
-        startActivity(intent);
+        // 走 WfcPageCompat：平板上这个人的朋友圈压到「个人资料」所在的那条右栏栈上，返回能退回来
+        WfcPageCompat.startPage(this, intent);
     }
 
     void voipChat() {
@@ -416,7 +417,7 @@ public class UserInfoFragment extends Fragment implements WfcPage {
     void showMyQRCode() {
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_USER + userInfo.uid;
-        startActivity(QRCodeActivity.buildQRCodeIntent(getActivity(), "二维码", userInfo.portrait, qrCodeValue));
+        WfcPageCompat.startPage(this, QRCodeActivity.buildQRCodeIntent(getActivity(), "二维码", userInfo.portrait, qrCodeValue));
     }
 
     private void loadOrganizationData() {

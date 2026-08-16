@@ -295,7 +295,12 @@ public class PanePageFragment extends Fragment implements ConversationHost, WfcP
     }
 
     private void setupTitle(Fragment content) {
-        CharSequence title = content instanceof WfcPage ? ((WfcPage) content).pageTitle() : null;
+        // 只在内容 Fragment 已经 attach 之后才问它要标题。第一次进本页时事务还没执行，
+        // 此刻 content 拿不到 Context，动态标题的页面（PCSessionFragment 用 getString 拼
+        // 「Windows 已登录」）会直接抛 IllegalStateException。那一次先落到 label 兜底，
+        // 真正的标题由 onFragmentViewCreated 里的这同一个方法补上。
+        CharSequence title = content instanceof WfcPage && content.getContext() != null
+            ? ((WfcPage) content).pageTitle() : null;
         if (title == null && getArguments() != null) {
             title = getArguments().getCharSequence(ARG_TITLE);
         }

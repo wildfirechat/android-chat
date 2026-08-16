@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.LocationMessageContent;
@@ -64,11 +65,10 @@ public class LocationMessageContentViewHolder extends NormalMessageContentViewHo
     }
 
     public void onClick(View view) {
-        Intent intent = new Intent(fragment.getContext(), ShowLocationActivity.class);
         LocationMessageContent content = (LocationMessageContent) message.message.content;
-        intent.putExtra("Lat", content.getLocation().getLatitude());
-        intent.putExtra("Long", content.getLocation().getLongitude());
-        intent.putExtra("title", content.getTitle());
-        fragment.startActivity(intent);
+        Intent intent = ShowLocationActivity.buildShowLocationIntent(fragment.requireContext(),
+            content.getLocation().getLatitude(), content.getLocation().getLongitude(), content.getTitle());
+        // 走 WfcPageCompat：平板上地图压到会话所在的那条右栏栈上，而不是整屏跳出去
+        WfcPageCompat.startPage(fragment, intent);
     }
 }

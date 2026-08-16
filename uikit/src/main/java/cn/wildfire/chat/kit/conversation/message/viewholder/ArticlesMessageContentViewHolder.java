@@ -110,7 +110,7 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
     }
 
     private void openArticle(ArticlesMessageContent.Article article) {
-        WfcWebViewActivity.loadUrl(fragment.getContext(), article.title, article.url);
+        WfcWebViewActivity.loadUrl(fragment, article.title, article.url);
     }
 
 }

@@ -183,7 +183,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     void showChannelQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_CHANNEL + channelInfo.channelId;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), getString(R.string.channel_qr_code_title), channelInfo.portrait, qrCodeValue);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void fileRecord() {

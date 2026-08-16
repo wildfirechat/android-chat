@@ -4,51 +4,32 @@
 
 package cn.wildfire.chat.kit.contact.pick;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.model.UserInfo;
 
+/**
+ * 选联系人（可多选）页的空壳。
+ * <p>
+ * 页面本体是 {@link PickContactPageFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、「完成」菜单、返回都由宿主提供。这里只保留调用方要用的参数名和 intent 构造器。
+ */
 public class PickContactActivity extends WfcBaseActivity {
     public static final String PARAM_MAX_COUNT = "maxCount";
     public static final String PARAM_INITIAL_CHECKED_IDS = "initialCheckedIds";
     public static final String PARA_UNCHECKABLE_IDS = "uncheckableIds";
     public static final String RESULT_PICKED_USERS = "pickedUsers";
 
-    private MenuItem menuItem;
-    private TextView confirmTv;
-
-    private PickUserViewModel pickUserViewModel;
-    private Observer<Object> contactCheckStatusUpdateLiveDataObserver = new Observer<Object>() {
-        @Override
-        public void onChanged(@Nullable Object object) {
-            List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
-            updatePickStatus(list);
-        }
-    };
-
-    protected void updatePickStatus(List<UIUserInfo> userInfos) {
-        if (userInfos == null || userInfos.isEmpty()) {
-            confirmTv.setText(R.string.contact_pick_confirm);
-            menuItem.setEnabled(false);
-        } else {
-            confirmTv.setText(getString(R.string.contact_pick_confirm_with_count, userInfos.size()));
-            menuItem.setEnabled(true);
-        }
+    public static Intent buildPickIntent(Context context, int maxCount, ArrayList<String> initialChecedIds, ArrayList<String> uncheckableIds) {
+        Intent intent = new Intent(context, PickContactActivity.class);
+        intent.putExtra(PARAM_MAX_COUNT, maxCount);
+        intent.putExtra(PARAM_INITIAL_CHECKED_IDS, initialChecedIds);
+        intent.putExtra(PARA_UNCHECKABLE_IDS, uncheckableIds);
+        return intent;
     }
 
     @Override
@@ -58,81 +39,12 @@ public class PickContactActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        pickUserViewModel = new ViewModelProvider(this).get(PickUserViewModel.class);
-        pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
-        Intent intent = getIntent();
-        int maxCount = intent.getIntExtra(PARAM_MAX_COUNT, 0);
-        if (maxCount > 0) {
-            pickUserViewModel.setMaxPickCount(maxCount);
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
         }
-
-        pickUserViewModel.setInitialCheckedIds(intent.getStringArrayListExtra(PARAM_INITIAL_CHECKED_IDS));
-        pickUserViewModel.setUncheckableIds(intent.getStringArrayListExtra(PARA_UNCHECKABLE_IDS));
-
-        initView();
-    }
-
-    @Override
-    protected int menu() {
-        return R.menu.contact_pick;
-    }
-
-    @Override
-    protected void afterMenus(Menu menu) {
-        menuItem = menu.findItem(R.id.confirm);
-        menuItem.setEnabled(false);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        confirmTv = menuItem.getActionView().findViewById(R.id.confirm_tv);
-        confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.confirm) {
-            onConfirmClick();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void initView() {
-        PickContactFragment fragment = new PickContactFragment();
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.containerFrameLayout, fragment)
+            .replace(R.id.containerFrameLayout, PickContactPageFragment.fromIntent(getIntent()))
             .commit();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
-    }
-
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos) {
-        Intent intent = new Intent();
-        ArrayList<UserInfo> newlyPickedInfos = new ArrayList<>();
-        for (UIUserInfo info : newlyCheckedUserInfos) {
-            newlyPickedInfos.add(info.getUserInfo());
-        }
-        intent.putExtra(RESULT_PICKED_USERS, newlyPickedInfos);
-        setResult(Activity.RESULT_OK, intent);
-        finish();
-    }
-
-    protected void onConfirmClick() {
-        List<UIUserInfo> newlyCheckedUserInfos = pickUserViewModel.getCheckedUsers();
-        onContactPicked(newlyCheckedUserInfos);
-    }
-
-    public static Intent buildPickIntent(Context context, int maxCount, ArrayList<String> initialChecedIds, ArrayList<String> uncheckableIds) {
-        Intent intent = new Intent(context, PickContactActivity.class);
-        intent.putExtra(PARAM_MAX_COUNT, maxCount);
-        intent.putExtra(PARAM_INITIAL_CHECKED_IDS, initialChecedIds);
-        intent.putExtra(PARA_UNCHECKABLE_IDS, uncheckableIds);
-        return intent;
     }
 }

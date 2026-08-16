@@ -560,7 +560,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void showGroupQRCode() {
         String qrCodeValue = WfcScheme.buildGroupScheme(groupInfo.target, ChatManager.Instance().getUserId());
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "群二维码", groupInfo.portrait, qrCodeValue);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void searchGroupMessage() {

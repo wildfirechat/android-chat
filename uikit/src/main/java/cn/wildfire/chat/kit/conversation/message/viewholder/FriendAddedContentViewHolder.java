@@ -51,7 +51,7 @@ public class FriendAddedContentViewHolder extends NormalMessageContentViewHolder
 
     public void onClick(View view) {
         String content = ((FriendAddedMessageContent) message.message.content).formatNotification(message.message);
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), content);
+        WfcWebViewActivity.loadHtmlContent(fragment, fragment.getString(R.string.message_detail_title), content);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_COPY, confirm = false, priority = 12)

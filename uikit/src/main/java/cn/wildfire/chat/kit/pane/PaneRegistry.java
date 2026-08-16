@@ -18,18 +18,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.WfcWebViewFragment;
+import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
+import cn.wildfire.chat.kit.channel.ChannelInfoFragment;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.channel.ChannelListFragment;
+import cn.wildfire.chat.kit.channel.CreateChannelActivity;
+import cn.wildfire.chat.kit.channel.CreateChannelFragment;
 import cn.wildfire.chat.kit.channel.SearchChannelActivity;
 import cn.wildfire.chat.kit.channel.SearchChannelPageFragment;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListFragment;
+import cn.wildfire.chat.kit.contact.ContactListActivity;
+import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListFragment;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendFragment;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserPageFragment;
+import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
+import cn.wildfire.chat.kit.contact.pick.PickContactPageFragment;
 import cn.wildfire.chat.kit.conversation.ChannelConversationInfoFragment;
 import cn.wildfire.chat.kit.conversation.ChatRoomConversationInfoFragment;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -48,12 +58,18 @@ import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardPageFragment;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberPageFragment;
+import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentActivity;
+import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentFragment;
 import cn.wildfire.chat.kit.conversation.pick.PickConversationActivity;
 import cn.wildfire.chat.kit.conversation.pick.PickConversationPageFragment;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetActivity;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetPageFragment;
+import cn.wildfire.chat.kit.conversation.receipt.GroupMessageReceiptActivity;
+import cn.wildfire.chat.kit.conversation.receipt.GroupMessageReceiptFragment;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListFragment;
+import cn.wildfire.chat.kit.group.GroupInfoActivity;
+import cn.wildfire.chat.kit.group.GroupInfoFragment;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.group.GroupListFragment;
 import cn.wildfire.chat.kit.group.GroupMemberListActivity;
@@ -82,13 +98,23 @@ import cn.wildfire.chat.kit.group.manage.GroupManagerListActivity;
 import cn.wildfire.chat.kit.group.manage.GroupManagerListFragment;
 import cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity;
 import cn.wildfire.chat.kit.group.manage.GroupMemberPermissionFragment;
+import cn.wildfire.chat.kit.group.manage.GroupMuteOrAllowActivity;
+import cn.wildfire.chat.kit.group.manage.GroupMuteOrAllowFragment;
 import cn.wildfire.chat.kit.group.manage.JoinGroupRequestListActivity;
 import cn.wildfire.chat.kit.group.manage.JoinGroupRequestListFragment;
+import cn.wildfire.chat.kit.mesh.DomainInfoActivity;
+import cn.wildfire.chat.kit.mesh.DomainInfoFragment;
 import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.mesh.DomainListFragment;
 import cn.wildfire.chat.kit.organization.EmployeeInfoActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListFragment;
+import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
+import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberPageFragment;
+import cn.wildfire.chat.kit.pc.PCSessionActivity;
+import cn.wildfire.chat.kit.pc.PCSessionFragment;
+import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
+import cn.wildfire.chat.kit.qrcode.QRCodeFragment;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.search.SearchMessagePageFragment;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
@@ -109,6 +135,10 @@ import cn.wildfire.chat.kit.settings.PrivacySettingActivity;
 import cn.wildfire.chat.kit.settings.PrivacySettingFragment;
 import cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity;
 import cn.wildfire.chat.kit.settings.blacklist.BlacklistListFragment;
+import cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity;
+import cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity;
+import cn.wildfire.chat.kit.third.location.ui.fragment.MyLocationPageFragment;
+import cn.wildfire.chat.kit.third.location.ui.fragment.ShowLocationPageFragment;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameFragment;
 import cn.wildfire.chat.kit.user.SetAliasActivity;
@@ -119,9 +149,12 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserInfoFragment;
 import cn.wildfire.chat.kit.voip.conference.ConferenceHistoryListActivity;
 import cn.wildfire.chat.kit.voip.conference.ConferenceHistoryListFragment;
+import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
 
 /**
@@ -191,6 +224,30 @@ public final class PaneRegistry {
 
     static {
         registerBuiltInPages();
+        registerOptionalPages();
+    }
+
+    /**
+     * 登记那些「源码不一定在」的页面。
+     * <p>
+     * 目前只有朋友圈：它是 {@code uikit/build.gradle} 里 {@code // moment start ... // moment end}
+     * 之间那两行 srcDirs 指进来的一份可选源码（同级仓库 {@code ../android-momentkit}），
+     * 不集成朋友圈的项目会把那两行删掉。本类一旦直接 import {@code cn.wildfire.chat.moment.*}，
+     * uikit 在那些项目里就编译不过了，所以只能反射 —— 与 {@code WfcUIKit.initMomentClient()}
+     * 反射 {@code MomentClient} 是同一个理由。
+     * <p>
+     * 找不到就什么也不做：朋友圈的页面照旧全屏打开，与改造前一致。
+     */
+    private static void registerOptionalPages() {
+        try {
+            Class.forName("cn.wildfire.chat.moment.MomentPaneRegistry")
+                .getMethod("register")
+                .invoke(null);
+        } catch (ClassNotFoundException e) {
+            // 没集成朋友圈
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void register(Class<? extends Activity> activityClass, PageFactory factory) {
@@ -500,6 +557,97 @@ public final class PaneRegistry {
         register(ChangeMyNameActivity.class, (context, intent) -> new ChangeMyNameFragment());
         // 发好友申请。不去重：申请对象不同，退回上一次那张申请表是错的。
         register(InviteFriendActivity.class, (context, intent) -> InviteFriendFragment.fromIntent(intent));
+
+        // ==================== 已接入族的叶子页 ====================
+        // 下面这些页面本身不带下级，但它们挂在已经进了右栏的页面上。少登记一个，
+        // 用户就会在一条右栏路径走到一半时突然被弹到全屏，返回还回不到原来那条栈。
+
+        // 选联系人（会话里发名片）。不去重：每次挑的对象不同，且要回传结果。
+        register(ContactListActivity.class,
+            (context, intent) -> ContactListFragment.newPickInstance(intent));
+
+        // 频道详情（搜索结果点进来、扫频道码）。按频道去重，同一个频道不重复压栈。
+        register(ChannelInfoActivity.class, (context, intent) -> ChannelInfoFragment.fromIntent(intent),
+            PaneRegistry::channelInfoKey);
+        // 创建频道。demo 里没有入口，是留给 aar 集成方的。不去重：是一张一次性表单。
+        register(CreateChannelActivity.class, (context, intent) -> new CreateChannelFragment());
+
+        // 互联域详情。按域去重。
+        register(DomainInfoActivity.class, (context, intent) -> DomainInfoFragment.fromIntent(intent),
+            intent -> {
+                DomainInfo domainInfo = intent.getParcelableExtra("domainInfo");
+                return domainInfo == null ? null : "domainInfo:" + domainInfo.domainId;
+            });
+
+        // 群禁言设置，挂在群管理下面。按群去重。
+        register(GroupMuteOrAllowActivity.class,
+            (context, intent) -> GroupMuteOrAllowFragment.fromIntent(intent),
+            PaneRegistry::groupInfoKey);
+
+        // 群消息已读回执，挂在会话里。不去重：每条消息一份回执。
+        register(GroupMessageReceiptActivity.class,
+            (context, intent) -> GroupMessageReceiptFragment.fromIntent(intent));
+
+        // 合并转发消息详情，挂在会话和收藏里。不去重：合并消息可以层层嵌套，
+        // 每一层都是不同的内容，去重会让内层那条打不开。
+        register(CompositeMessageContentActivity.class,
+            (context, intent) -> CompositeMessageContentFragment.fromIntent(intent));
+
+        // PC 端会话管理，挂在会话列表顶部那条在线横幅上。按 clientId 去重。
+        register(PCSessionActivity.class, (context, intent) -> PCSessionFragment.fromIntent(intent),
+            intent -> {
+                PCOnlineInfo info = intent.getParcelableExtra("pcOnlineInfo");
+                return info == null ? null : "pcSession:" + info.getClientId();
+            });
+
+        // 扫群码之后的入群落地页（不是群设置页，那个是 ConversationInfoActivity）。按群去重。
+        register(GroupInfoActivity.class, (context, intent) -> GroupInfoFragment.fromIntent(intent),
+            intent -> {
+                String groupId = intent.getStringExtra("groupId");
+                return groupId == null ? null : "groupInfo:" + groupId;
+            });
+
+        // ==================== 网页、二维码、选人 ====================
+
+        // 内嵌网页。全仓库被引用最多的一页（链接消息、图文消息、用户协议、工作台 H5……），
+        // 调用方几乎都已经在右栏里。不去重：同一个 url 可以同时开两份，且网页自己有前进后退栈。
+        register(WfcWebViewActivity.class, (context, intent) -> WfcWebViewFragment.fromIntent(intent));
+
+        // 二维码展示（我的 / 群 / 频道 / 会议）。按二维码内容去重，反复点只退回原来那一层。
+        register(QRCodeActivity.class, (context, intent) -> QRCodeFragment.fromIntent(intent),
+            intent -> {
+                String qrCodeValue = intent.getStringExtra("qrCodeValue");
+                return qrCodeValue == null ? null : "qrcode:" + qrCodeValue;
+            });
+
+        // 选联系人（可多选，工作台 H5 和文件记录在用）。不去重：每次挑的对象不同，且要回传结果。
+        register(PickContactActivity.class,
+            (context, intent) -> PickContactPageFragment.fromIntent(intent));
+
+        // 在组织架构里选人，挂在「发起群聊」和「加群成员」里点部门那一下。
+        // 不去重：每次带着当前已勾选的人进来，是一次性的选择流程，且要回传结果。
+        register(PickOrganizationMemberActivity.class,
+            (context, intent) -> PickOrganizationMemberPageFragment.fromIntent(intent));
+
+        // ==================== 位置 ====================
+
+        // 查看一条位置消息。按坐标去重：同一条位置消息连点两下不该叠出两张地图。
+        // 不同的位置消息（坐标不同）各自是一页，返回能逐个退回去。
+        register(ShowLocationActivity.class, (context, intent) -> ShowLocationPageFragment.fromIntent(intent),
+            intent -> "location:" + intent.getDoubleExtra("Lat", 0) + "," + intent.getDoubleExtra("Long", 0));
+
+        // 发送位置（会话加号面板 →「位置」）。不去重：是一次性的选择流程，且要回传结果。
+        register(MyLocationActivity.class, (context, intent) -> MyLocationPageFragment.fromIntent(intent));
+    }
+
+    @Nullable
+    private static String channelInfoKey(Intent intent) {
+        ChannelInfo channelInfo = intent.getParcelableExtra("channelInfo");
+        if (channelInfo != null) {
+            return "channelInfo:" + channelInfo.channelId;
+        }
+        String channelId = intent.getStringExtra("channelId");
+        return channelId == null ? null : "channelInfo:" + channelId;
     }
 
     // ==================== 用户资料（UserInfoActivity / EmployeeInfoActivity 共用） ====================

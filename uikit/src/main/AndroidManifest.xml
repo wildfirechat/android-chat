@@ -83,9 +83,12 @@
         <activity
             android:name=".group.SetGroupAnnouncementActivity"
             android:label="@string/modify_group_announcement" />
+        <!-- label 只是兜底：真正的标题是位置消息里带的地点名，由 ShowLocationPageFragment.pageTitle() 给出。
+             改造前这里还锁着 android:screenOrientation="portrait"，是阶段 1 解锁横屏时漏掉的一处
+             ——平板横屏下点开一条位置消息，整个 App 会跟着转成竖屏。 -->
         <activity
             android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
-            android:screenOrientation="portrait" />
+            android:label="@string/location" />
 
         <activity
             android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
@@ -133,7 +136,7 @@
             android:label="@string/privacy_setting" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
-            android:label="@string/privacy_setting" />
+            android:label="@string/find_me_ways" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
             android:label="@string/blacklist" />
@@ -175,7 +178,8 @@
             android:label="@string/channel_info" />
         <activity
             android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/web_page">
             <intent-filter>
                 <action android:name="${packageName}.webview" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -184,7 +188,11 @@
         <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
         <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity" />
-        <activity android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity" />
+        <!-- label 只是兜底：真正的标题是调用方传进来的「群二维码」「频道二维码」等，
+             由 QRCodeFragment.pageTitle() 给出 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity"
+            android:label="@string/qrcode" />
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupInfoActivity"
             android:label="@string/group_info" />
@@ -258,8 +266,14 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity" />
-        <activity android:name="cn.wildfire.chat.kit.pc.PCSessionActivity" />
-        <activity android:name=".third.location.ui.activity.MyLocationActivity" />
+        <!-- label 只是兜底：真正的标题是「Windows 已登录」这种按平台拼出来的，
+             由 PCSessionFragment.pageTitle() 给出 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.pc.PCSessionActivity"
+            android:label="@string/pc_online" />
+        <activity
+            android:name=".third.location.ui.activity.MyLocationActivity"
+            android:label="@string/location" />
         <activity
             android:name=".conversation.file.FileRecordActivity"
             android:label="@string/file_record" />

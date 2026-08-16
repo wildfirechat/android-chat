@@ -47,6 +47,13 @@
     public void init(***);
 }
 
+# 朋友圈在平板右栏的登记项。朋友圈是一份可选源码（uikit/build.gradle 的 // moment start...end），
+# 所以 PaneRegistry 只能反射调用它，R8 看不到这条引用，不 keep 就会被裁掉——
+# 表现是平板上朋友圈莫名其妙又变回全屏，且只在 release 包上复现。
+-keep class cn.wildfire.chat.moment.MomentPaneRegistry {
+    public static void register();
+}
+
 -keep class cn.wildfire.chat.app.login.model.** {*;}
 -keepclassmembers class cn.wildfire.chat.app.login.model.** {
   *;

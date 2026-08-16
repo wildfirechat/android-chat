@@ -142,7 +142,7 @@ public class AboutFragment extends Fragment {
 
     private void intro() {
         if (!Config.IM_SERVER_HOST.equals("wildfirechat.net")) {
-            WfcWebViewActivity.loadUrl(requireContext(), getString(R.string.about_intro_title), getString(R.string.about_intro_url));
+            WfcWebViewActivity.loadUrl(this, getString(R.string.about_intro_title), getString(R.string.about_intro_url));
         } else {
             Toast.makeText(getActivity(), "野火IM 功能介绍对第三方应用不适用", Toast.LENGTH_SHORT).show();
         }
@@ -153,7 +153,7 @@ public class AboutFragment extends Fragment {
             Toast.makeText(getActivity(), R.string.no_user_agreement_url_tip, Toast.LENGTH_SHORT).show();
             return;
         }
-        WfcWebViewActivity.loadUrl(requireContext(), getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
+        WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
     }
 
     private void privacy() {
@@ -161,6 +161,6 @@ public class AboutFragment extends Fragment {
             Toast.makeText(getActivity(), R.string.no_privacy_agreement_url_tip, Toast.LENGTH_SHORT).show();
             return;
         }
-        WfcWebViewActivity.loadUrl(requireContext(), getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
+        WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
     }
 }

@@ -172,6 +172,7 @@
     <string name="channel_name_title">Channel Name</string>
     <string name="channel_desc_title">Channel Description</string>
     <string name="qrcode">QR Code</string>
+    <string name="web_page">Web Page</string>
     <string name="search_message">Search Messages</string>
 
     <string name="chatroom_details">Chatroom Details</string>

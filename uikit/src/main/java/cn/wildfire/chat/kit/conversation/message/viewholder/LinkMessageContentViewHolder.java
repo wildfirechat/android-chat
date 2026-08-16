@@ -61,13 +61,32 @@ public class LinkMessageContentViewHolder extends NormalMessageContentViewHolder
     }
 
     public void onClick(View view) {
-        openLink(fragment.getContext(), linkMessageContent.getUrl());
+        openLink(fragment, linkMessageContent.getUrl());
+    }
+
+    /**
+     * 拿得到发起页时优先用这一版：平板上网页会压到会话所在的那条右栏栈上。
+     * 只有 Context 的调用方走 {@link #openLink(android.content.Context, String)}。
+     */
+    public static void openLink(androidx.fragment.app.Fragment fragment, String url) {
+        if (TextUtils.isEmpty(url) || fragment.getContext() == null) {
+            return;
+        }
+        confirmAndOpen(fragment.getContext(), url, () -> WfcWebViewActivity.loadUrl(fragment, "", url));
     }
 
     public static void openLink(android.content.Context context, String url) {
         if (TextUtils.isEmpty(url)) {
             return;
         }
+        confirmAndOpen(context, url, () -> WfcWebViewActivity.loadUrl(context, "", url));
+    }
+
+    /**
+     * {@code Config.OPEN_LINK_POLICY} 的三种策略：2 禁止、1 先确认、其余直接打开。
+     * 「怎么打开」由调用方给进来，两个重载只在这一步上不同。
+     */
+    private static void confirmAndOpen(android.content.Context context, String url, Runnable open) {
         if (Config.OPEN_LINK_POLICY == 2) {
             android.widget.Toast.makeText(context, R.string.open_link_forbidden, android.widget.Toast.LENGTH_SHORT).show();
             return;
@@ -76,13 +95,11 @@ public class LinkMessageContentViewHolder extends NormalMessageContentViewHolder
             new AlertDialog.Builder(context)
                 .setTitle(R.string.tip)
                 .setMessage(R.string.open_link_warning)
-                .setPositiveButton(R.string.confirm_safe, (dialog, which) -> {
-                    WfcWebViewActivity.loadUrl(context, "", url);
-                })
+                .setPositiveButton(R.string.confirm_safe, (dialog, which) -> open.run())
                 .setNegativeButton(R.string.close, null)
                 .show();
             return;
         }
-        WfcWebViewActivity.loadUrl(context, "", url);
+        open.run();
     }
 }

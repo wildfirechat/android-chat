@@ -57,7 +57,7 @@ public abstract class SelectableTextViewHolder extends NormalMessageContentViewH
 
             @Override
             public void onClickUrl(String url) {
-                handleUrlClick(fragment.getContext(), url);
+                handleUrlClick(fragment, url);
             }
 
             @Override
@@ -75,16 +75,40 @@ public abstract class SelectableTextViewHolder extends NormalMessageContentViewH
         // TODO 根据是否是部分选中进行过滤
     }
 
+    /**
+     * 拿得到发起页时优先用这一版：http 链接会开在会话所在的那条右栏栈上。
+     * tel/mailto/geo/sms 仍然交给系统应用，与改造前一致。
+     */
+    public static void handleUrlClick(androidx.fragment.app.Fragment fragment, String url) {
+        if (fragment.getContext() == null) {
+            return;
+        }
+        if (isSystemHandledScheme(url)) {
+            openWithSystemApp(fragment.getContext(), url);
+        } else {
+            LinkMessageContentViewHolder.openLink(fragment, url);
+        }
+    }
+
     public static void handleUrlClick(android.content.Context context, String url) {
-        String lower = url.toLowerCase();
-        if (lower.startsWith("tel:") || lower.startsWith("mailto:") || lower.startsWith("geo:") || lower.startsWith("sms:") || lower.startsWith("smsto:")) {
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(url));
-            context.startActivity(intent);
+        if (isSystemHandledScheme(url)) {
+            openWithSystemApp(context, url);
         } else {
             LinkMessageContentViewHolder.openLink(context, url);
         }
+    }
+
+    private static boolean isSystemHandledScheme(String url) {
+        String lower = url.toLowerCase();
+        return lower.startsWith("tel:") || lower.startsWith("mailto:") || lower.startsWith("geo:")
+            || lower.startsWith("sms:") || lower.startsWith("smsto:");
+    }
+
+    private static void openWithSystemApp(android.content.Context context, String url) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        context.startActivity(intent);
     }
 
     protected void replaceUrlSpans(TextView textView) {
@@ -96,19 +120,32 @@ public abstract class SelectableTextViewHolder extends NormalMessageContentViewH
                 int start = spannable.getSpanStart(urlSpan);
                 int end = spannable.getSpanEnd(urlSpan);
                 spannable.removeSpan(urlSpan);
-                spannable.setSpan(new PolicyURLSpan(urlSpan.getURL()), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannable.setSpan(new PolicyURLSpan(fragment, urlSpan.getURL()), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
     }
 
+    /**
+     * 带上发起页的 URLSpan。
+     * <p>
+     * 改造前只有 {@code widget.getContext()}，那是双栏主界面，网页只能靠「上一次点在哪一栏」
+     * 去猜该压到哪条栈上。span 与本 viewholder 同生共死，本来就攥着 fragment，多存一份不增加泄漏面。
+     */
     private static class PolicyURLSpan extends URLSpan {
-        public PolicyURLSpan(String url) {
+        private final androidx.fragment.app.Fragment fragment;
+
+        public PolicyURLSpan(androidx.fragment.app.Fragment fragment, String url) {
             super(url);
+            this.fragment = fragment;
         }
 
         @Override
         public void onClick(View widget) {
-            handleUrlClick(widget.getContext(), getURL());
+            if (fragment != null && fragment.getContext() != null) {
+                handleUrlClick(fragment, getURL());
+            } else {
+                handleUrlClick(widget.getContext(), getURL());
+            }
         }
     }
 }

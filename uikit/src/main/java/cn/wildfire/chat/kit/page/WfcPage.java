@@ -57,6 +57,11 @@ public interface WfcPage {
     /**
      * 页面标题，null 表示交给宿主决定：手机端用 manifest 里该 Activity 的 {@code android:label}，
      * 右栏同样去读那个 label，因此两端标题必然一致。
+     * <p>
+     * 只有标题算出来才知道（「Windows 已登录」「某某和某某的聊天记录」）的页面才需要覆写。
+     * 宿主保证在 Fragment attach 之后才调用本方法，因此 {@code getString(...)} 是安全的；
+     * 但视图未必已经建好，所以<strong>只能依赖 arguments，不要读控件</strong>。
+     * 需要在运行时改标题（拉到群资料之后才有群名）用 {@link WfcPageCompat#setPageTitle}。
      */
     @Nullable
     default CharSequence pageTitle() {

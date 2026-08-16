@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.model.Conversation;
@@ -147,7 +148,11 @@ public class ConversationExtension {
     public void startActivityForResult(Intent intent, @IntRange(from = 0, to = 256) int requestCode, int index) {
         int extRequestCode = (requestCode << 7) | ConversationExtension.REQUEST_CODE_MIN;
         extRequestCode += index;
-        fragment.startActivityForResult(intent, extRequestCode);
+        // 走 WfcPageCompat：登记进右栏的扩展页（发名片的通讯录、发位置的地图）在平板上压到
+        // 会话所在的那条栈上，结果照样回到 fragment.onActivityResult(extRequestCode, ...)，
+        // 编码解码两端都不用动。相册、相机、文件这些没登记的扩展页原样落到
+        // fragment.startActivityForResult，与改造前逐字节一致 —— 它们本来就该全屏。
+        WfcPageCompat.startPageForResult(fragment, intent, extRequestCode);
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {

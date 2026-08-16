@@ -575,7 +575,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         switch (menu.type) {
             case "view":
                 if (!TextUtils.isEmpty(menu.url)) {
-                    WfcWebViewActivity.loadUrl(getContext(), "", menu.url);
+                    WfcWebViewActivity.loadUrl(fragment, "", menu.url);
                 }
                 break;
             case "miniprogram":

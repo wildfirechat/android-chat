@@ -110,14 +110,14 @@ public class AddGroupMemberFragment extends PickContactFragment {
             intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         } else if (holder instanceof DepartViewHolder) {
             Organization organization = ((DepartViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
             intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         }
     }
 

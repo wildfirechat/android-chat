@@ -1,70 +1,42 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
 package cn.wildfire.chat.kit.mesh;
 
-import android.content.Intent;
-
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
-import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
-import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.model.DomainInfo;
 
+/**
+ * 互联域详情页的空壳。
+ * <p>
+ * 页面本体在 {@link DomainInfoFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、菜单、返回都由宿主提供，两端只有这一份实现。
+ */
 public class DomainInfoActivity extends WfcBaseActivity {
-    private OptionItemView nameOptionItemView;
-    private OptionItemView emailOptionItemView;
-    private OptionItemView telOptionItemView;
-    private OptionItemView addrOptionItemView;
-    private OptionItemView descOptionItemView;
-
-    private ContactViewModel contactViewModel;
-
-    private DomainInfo domainInfo;
-
-    protected void bindEvents() {
-        super.bindEvents();
-        findViewById(R.id.searchTextView).setOnClickListener(v -> searchUser());
-    }
-
-    protected void bindViews() {
-        super.bindViews();
-        nameOptionItemView = findViewById(R.id.nameOptionItemView);
-        emailOptionItemView = findViewById(R.id.emailOptionItemView);
-        telOptionItemView = findViewById(R.id.telOptionItemView);
-        addrOptionItemView = findViewById(R.id.addrOptionItemView);
-        descOptionItemView = findViewById(R.id.descOptionItemView);
-    }
 
     @Override
     protected int contentLayout() {
-        return R.layout.domain_info_activity;
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        super.afterViews();
-        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
-        this.domainInfo = getIntent().getParcelableExtra("domainInfo");
-        if (this.domainInfo != null) {
-
-
-            nameOptionItemView.setDesc(domainInfo.name);
-            emailOptionItemView.setDesc(domainInfo.email);
-            telOptionItemView.setDesc(domainInfo.tel);
-            addrOptionItemView.setDesc(domainInfo.address);
-            descOptionItemView.setDesc(domainInfo.desc);
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
         }
-    }
+        Fragment fragment = DomainInfoFragment.fromIntent(getIntent());
+        if (fragment == null) {
+            // 参数不全，这一页显示不出东西
+            finish();
+            return;
+        }
 
-    void searchUser() {
-        Intent intent = new Intent(this, SearchUserActivity.class);
-        intent.putExtra("domainInfo", this.domainInfo);
-        startActivity(intent);
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }

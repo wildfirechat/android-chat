@@ -148,8 +148,7 @@ public class GroupManageFragment extends Fragment {
     void showGroupMuteSetting() {
         Intent intent = new Intent(getActivity(), GroupMuteOrAllowActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
-
+        WfcPageCompat.startPage(this, intent);
     }
 
     void showMemberPermissionSetting() {

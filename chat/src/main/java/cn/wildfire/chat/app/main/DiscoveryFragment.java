@@ -29,6 +29,7 @@ import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationRouter;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -102,7 +103,7 @@ public class DiscoveryFragment extends Fragment {
 
     void cookbook() {
         if (!Config.IM_SERVER_HOST.equals("wildfirechat.net")) {
-            WfcWebViewActivity.loadUrl(getContext(), getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
+            WfcWebViewActivity.loadUrl(this, getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
         } else {
             Toast.makeText(getContext(), "野火IM 开发文档对第三方应用不适用", Toast.LENGTH_SHORT).show();
         }
@@ -127,7 +128,9 @@ public class DiscoveryFragment extends Fragment {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
 //        Intent intent = new Intent(getActivity(), FeedListActivity.class);
-        startActivity(intent);
+        // 走 WfcPageCompat：平板上朋友圈开在「发现」那条右栏栈上。这是个隐式 intent（只有 action），
+        // 右栏靠 PaneRegistry.resolveComponent 把它解析成 FeedListActivity 再查登记表。
+        WfcPageCompat.startPage(this, intent);
     }
 
     void conference() {
