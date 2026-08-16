@@ -17,6 +17,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.message.PollMessageContent;
 
 /**
@@ -108,6 +109,7 @@ public class PollMessageContentViewHolder extends NormalMessageContentViewHolder
             .buildIntent(fragment.getContext(), message.message,
                 Long.parseLong(pollMessageContent.getPollId()),
                 pollMessageContent.getGroupId());
-        fragment.startActivity(intent);
+        // 走 WfcPageCompat：平板上投票详情压到会话所在的那条右栏栈上，而不是整屏跳出去
+        WfcPageCompat.startPage(fragment, intent);
     }
 }

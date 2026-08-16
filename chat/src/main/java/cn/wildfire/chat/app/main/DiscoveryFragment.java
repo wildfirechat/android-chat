@@ -140,7 +140,8 @@ public class DiscoveryFragment extends Fragment {
             return;
         }
         Intent intent = new Intent(getActivity(), ConferencePortalActivity.class);
-        startActivity(intent);
+        // 走 WfcPageCompat：平板上会议入口开在「发现」那条右栏栈上
+        WfcPageCompat.startPage(this, intent);
     }
 
 }

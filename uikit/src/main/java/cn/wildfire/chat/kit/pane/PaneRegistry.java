@@ -113,6 +113,18 @@ import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberPageFragment;
 import cn.wildfire.chat.kit.pc.PCSessionActivity;
 import cn.wildfire.chat.kit.pc.PCSessionFragment;
+import cn.wildfire.chat.kit.poll.activity.CreatePollActivity;
+import cn.wildfire.chat.kit.poll.activity.CreatePollPageFragment;
+import cn.wildfire.chat.kit.poll.activity.PollDetailActivity;
+import cn.wildfire.chat.kit.poll.activity.PollDetailPageFragment;
+import cn.wildfire.chat.kit.poll.activity.PollHomeActivity;
+import cn.wildfire.chat.kit.poll.activity.PollHomePageFragment;
+import cn.wildfire.chat.kit.poll.activity.PollListActivity;
+import cn.wildfire.chat.kit.poll.activity.PollListPageFragment;
+import cn.wildfire.chat.kit.collection.CollectionDetailActivity;
+import cn.wildfire.chat.kit.collection.CollectionDetailPageFragment;
+import cn.wildfire.chat.kit.collection.CreateCollectionActivity;
+import cn.wildfire.chat.kit.collection.CreateCollectionPageFragment;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeFragment;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
@@ -149,6 +161,14 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserInfoFragment;
 import cn.wildfire.chat.kit.voip.conference.ConferenceHistoryListActivity;
 import cn.wildfire.chat.kit.voip.conference.ConferenceHistoryListFragment;
+import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
+import cn.wildfire.chat.kit.voip.conference.ConferenceInfoPageFragment;
+import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
+import cn.wildfire.chat.kit.voip.conference.ConferencePortalPageFragment;
+import cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity;
+import cn.wildfire.chat.kit.voip.conference.CreateConferencePageFragment;
+import cn.wildfire.chat.kit.voip.conference.OrderConferenceActivity;
+import cn.wildfire.chat.kit.voip.conference.OrderConferencePageFragment;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -475,6 +495,43 @@ public final class PaneRegistry {
             intent -> DomainListActivity.class.getName());
         register(ConferenceHistoryListActivity.class, (context, intent) -> new ConferenceHistoryListFragment(),
             intent -> ConferenceHistoryListActivity.class.getName());
+
+        // 会议一族。入口页（发现 tab → 会议）与详情页都在右栏可达的路径上，登记后不再整屏跳。
+        // 会议入口页：全局唯一。
+        register(ConferencePortalActivity.class, (context, intent) -> ConferencePortalPageFragment.fromIntent(intent),
+            intent -> ConferencePortalActivity.class.getName());
+        // 会议详情：按会议去重（收藏列表/邀请消息反复点到同一个会议不该叠两层）。
+        register(ConferenceInfoActivity.class, (context, intent) -> ConferenceInfoPageFragment.fromIntent(intent),
+            intent -> "conferenceInfo:" + intent.getStringExtra("conferenceId"));
+        // 发起会议 / 预定会议：一次性表单，不去重。
+        register(CreateConferenceActivity.class, (context, intent) -> CreateConferencePageFragment.fromIntent(intent));
+        register(OrderConferenceActivity.class, (context, intent) -> OrderConferencePageFragment.fromIntent(intent));
+
+        // 投票一族。入口是会话加号面板（已在右栏），页面本体登记后不再整屏跳。
+        // 投票首页 / 我的投票：按群去重（不同的群各自一份）。
+        register(PollHomeActivity.class, (context, intent) -> PollHomePageFragment.fromIntent(intent),
+            intent -> "pollHome:" + intent.getStringExtra("groupId"));
+        register(PollListActivity.class, (context, intent) -> PollListPageFragment.fromIntent(intent),
+            intent -> "pollList:" + intent.getStringExtra("groupId"));
+        // 投票详情：按投票去重。
+        register(PollDetailActivity.class, (context, intent) -> PollDetailPageFragment.fromIntent(intent),
+            intent -> "pollDetail:" + intent.getLongExtra("pollId", 0));
+        // 创建投票：一次性表单，不去重。
+        register(CreatePollActivity.class, (context, intent) -> CreatePollPageFragment.fromIntent(intent));
+
+        // 接龙一族。入口是会话加号面板（已在右栏），页面本体登记后不再整屏跳。
+        // 创建接龙：一次性表单，不去重。
+        register(CreateCollectionActivity.class, (context, intent) -> CreateCollectionPageFragment.fromIntent(intent));
+        // 接龙详情：按 collectionId 去重（同一条接龙消息反复点开不该叠两层）。
+        register(CollectionDetailActivity.class, (context, intent) -> CollectionDetailPageFragment.fromIntent(intent),
+            intent -> {
+                cn.wildfirechat.message.Message message = intent.getParcelableExtra("message");
+                if (message == null || !(message.content instanceof cn.wildfirechat.message.CollectionMessageContent)) {
+                    return null;
+                }
+                return "collectionDetail:"
+                    + ((cn.wildfirechat.message.CollectionMessageContent) message.content).getCollectionId();
+            });
 
         // 组织架构成员列表。带 pick 时是选择器，只能全屏；菜单里的搜索框要回调到页面本身。
         register(OrganizationMemberListActivity.class, (context, intent) -> {

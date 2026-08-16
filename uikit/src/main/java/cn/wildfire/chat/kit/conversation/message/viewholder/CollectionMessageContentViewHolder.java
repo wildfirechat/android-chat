@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.collection.CollectionDetailActivity;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.message.CollectionEntry;
 import cn.wildfirechat.message.CollectionMessageContent;
 
@@ -167,7 +168,8 @@ public class CollectionMessageContentViewHolder extends NormalMessageContentView
     public void onClick(View view) {
         Intent intent = new Intent(fragment.getContext(), CollectionDetailActivity.class);
         intent.putExtra("message", message.message);
-        fragment.startActivity(intent);
+        // 走 WfcPageCompat：平板上接龙详情压到会话所在的那条右栏栈上，而不是整屏跳出去
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     /**

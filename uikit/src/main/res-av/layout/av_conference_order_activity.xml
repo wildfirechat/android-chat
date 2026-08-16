@@ -5,8 +5,6 @@
     android:background="@color/gray5"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
