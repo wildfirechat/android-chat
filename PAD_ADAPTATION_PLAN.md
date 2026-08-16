@@ -888,6 +888,7 @@ Android 文档推荐的新 API 是在**一个** FragmentManager 上用 `saveBack
   自管窗口的独立 Activity（`BaseFeedActivity` / `BaseTitleBarActivity` / `BaseStatusControlActivity`
   共约 1500 行，且在同级仓库 `../android-momentkit`）。要进右栏必须先把它改造成 Fragment，
   是独立一块工作，未在本轮进行。修好隐式 intent 之后，改造完成时登记只需一行。
+  →（已于**阶段 5.8** 完成；那三个基类换成了两个 Fragment 基类 + 一个手机端的壳）
 - 搜索类页面、短表单编辑页、选择器（`Pick*Activity`）：见下一节，已在阶段 5.7 全部接入。
 
 ---
@@ -941,7 +942,7 @@ javadoc 指向新基类，供 AAR 集成方过渡，仓库内不再派生。
 「标题 + 返回箭头」，手机端它们继承 `WfcBaseNoToolbarActivity`，右栏对应的就是这个开关。
 显隐必须在内容 commit 的**同一帧**决定，晚一帧会看到一条标题栏闪过去。
 
-#### 已接入的页面族（`PaneRegistry` 登记项 14 → 50 + App 侧 6）
+#### 已接入的页面族（`PaneRegistry` 登记项 14 → 65 + App 侧 6）
 
 | 族 | 页面 | 要点 |
 |---|---|---|
@@ -952,6 +953,10 @@ javadoc 指向新基类，供 AAR 集成方过渡，仓库内不再派生。
 | 搜索 | 搜索总入口 / 会话内查找 / 添加朋友 / 查找频道 / @群成员 | 共用 `SearchPageFragment` + `SearchShellActivity`，`providesOwnToolbar()==true` |
 | 转发 | `ForwardActivity` / `PickOrCreateConversationTargetActivity` / `PickConversationActivity` / `FileRecordListActivity` | 共用 `PickOrCreateConversationPageFragment`；会议邀请 `ConferenceInviteActivity` 同样下沉但**不登记**（入口是全屏会议界面） |
 | 设置 | 设置 / 关于 / 诊断 / 字体大小 / 隐私设置 / 找到我的方式 / 消息通知 / 账号与安全 / 修改密码 / 重置密码 / 修改昵称 / 发好友申请 | 这一族原来是「UI 直接长在 Activity 里」，见下文 |
+| 叶子页 | 选联系人 / 频道详情 / 建频道 / 互联域详情 / 群禁言 / 已读回执 / 合并转发详情 / PC 会话管理 / 扫码入群 | 挂在已接入页面下面的末端页，见 5.7c |
+| 网页 / 二维码 / 选人 | `WfcWebViewActivity` / `QRCodeActivity` / `PickContactActivity` / `PickOrganizationMemberActivity` | 剩下的几条断链，见 5.7d |
+| 位置 | `ShowLocationActivity` / `MyLocationActivity` | 会话流里最后一处断链，顺带删掉位置包自带的 MVP 脚手架，见 5.7e |
+| 朋友圈 | `FeedListActivity` / `FeedDetailActivity` / `FeedMessageActivity` / `PublishFeedActivity` / `FeedVisibleScopeActivity` | 代码在同级仓库 `../android-momentkit`，自带标题栏；**登记项反射装载**（可选源码），见 5.8 |
 
 **设置一族的不同之处：layout 不复制，而是把 toolbar 从原布局里摘掉**
 
@@ -978,6 +983,51 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
 - **消息通知设置页的对讲开关挂错了控件**（`MessageNotifySettingActivity`）：
   `switchPtt` 的监听被写成 `switchSyncDraft.setOnCheckedChangeListener`，覆盖掉了同步草稿
   自己的监听。结果是拨「同步草稿」会去写 `pttEnabled`，而「对讲」开关拨了完全没反应。
+
+---
+
+#### 阶段 5.7c：补齐已接入族的叶子页
+
+前几轮是按「族」推进的，每一族接的是主干。留下的是挂在主干末端的单页——它们本身不带下级，
+所以容易被当成"可以以后再说"。但少接一个，用户就会在一条右栏路径上走到一半突然被弹到全屏，
+返回时还回不到原来那条栈。这一轮把这些断点补齐。
+
+| 页面 | 从哪儿进来（都已在右栏） | 去重键 |
+|---|---|---|
+| `ContactListActivity` | 会话「+」→ 个人名片 | 不去重（要回传结果） |
+| `ChannelInfoActivity` | 搜索结果点频道、扫频道码 | 按 channelId |
+| `CreateChannelActivity` | demo 无入口，留给 aar 集成方 | 不去重（一次性表单） |
+| `DomainInfoActivity` | 通讯录 → 外部域 → 某个域 | 按 domainId |
+| `GroupMuteOrAllowActivity` | 群设置 → 群管理 → 群禁言 | 按群 |
+| `GroupMessageReceiptActivity` | 会话内点消息的「已读/未读」 | 不去重（每条消息一份） |
+| `CompositeMessageContentActivity` | 会话/收藏里点合并转发消息 | **不去重**：合并消息可层层嵌套，去重会让内层那条打不开 |
+| `PCSessionActivity` | 会话列表顶部「PC 已登录」横幅 | 按 clientId |
+| `GroupInfoActivity` | 扫群二维码 | 按 groupId |
+
+布局处理与设置一族相同：8 个原布局各摘掉一行 `<include layout="@layout/toolbar"/>`，
+不复制孪生文件。
+
+**扩展面板的选择器一并接上**。`ConversationExtension.startActivityForResult` 原来是
+`fragment.startActivityForResult(intent, extRequestCode)`，改为 `WfcPageCompat.startPageForResult`。
+它对 requestCode 的高低位编码完全不用动，结果照样回到 `fragment.onActivityResult(extRequestCode, ...)`；
+登记过的扩展页（发名片的通讯录）压到会话所在那条栈上，没登记的（相册、相机、地图、文件）
+原样落回 `fragment.startActivityForResult` —— 那些本来就该全屏。一处改动，整族受益。
+
+**动态标题的调用时机**（本轮踩到的坑）。`PanePageFragment` 为了避免标题空白闪一下，在提交
+内容 Fragment 的事务**之前**就先问了一次 `pageTitle()`；此时 Fragment 还没 attach，
+`PCSessionFragment.pageTitle()` 里的 `getString(...)` 会抛 `IllegalStateException`。
+改成 attach 之后才问（`content.getContext() != null`），那一次先落到 manifest label 兜底，
+真正的标题由 `onFragmentViewCreated` 补上。`WfcPage.pageTitle()` 的契约里补了这条说明。
+
+顺带修掉的真 bug：
+
+- **PC 会话页每次打开都会重发一遍设置**（`PCSessionActivity`）。`bindEvents()` 比 `afterViews()`
+  先跑，所以 `afterViews` 里的 `muteSwitch.setChecked(已静音)` / `lockSwitch.setChecked(已锁定)`
+  会触发已经挂上的 `OnCheckedChangeListener`，往服务端重发一次 `mutePhone` / `lockPC` 并弹一个
+  「操作成功」。迁到 Fragment 后改成读完初始状态再挂监听。
+- **`ContactListFragment` 的 `getActivity().finish()`**（3 处）。这个 Fragment 既是通讯录 tab 的
+  内容也是选人页的内容，选人回传那条路径在右栏里会把整个双栏主界面关掉。收口成一个
+  `finishWithResult` helper。
 
 ---
 
@@ -1024,6 +1074,85 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
 - 陌生人资料 → 添加到通讯录 → 申请页在右栏，发完退回。
 - 设置里切换语言 / 主题 / 字体大小 → 应用整体重启（不是只关掉右栏那一页）。
 - 转发确认框、会议日期选择器在平板上是**居中对话框**，手机上仍是底部面板。
+- 会话「+」→ 个人名片 → 通讯录开在**右栏**（压在会话上面），选中后退回会话并发出名片。
+- 会话内自己发的群消息点「已读/未读」→ 回执页在右栏，两个 tab 的计数正确。
+- 会话/收藏里点「群聊的聊天记录」→ 合并转发详情在右栏，标题是消息自带的；里面再点一条
+  合并消息应当**再压一层**（不是原地不动），逐层返回。
+- 群设置 → 群管理 → 群禁言 → 在同一条栈上；拨全员禁言开关，下半屏名单跟着换。
+- 通讯录 → 外部域 → 某个域 → 详情在右栏，点「搜索」再压一层搜人页。
+- 会话列表顶部「PC 已登录」横幅 → PC 会话页在右栏，标题是「Windows 已登录」这类；
+  **打开时不应弹「操作成功」**（原来静音或锁定开着时会误弹）；PC 下线后这一页自动退掉。
+- 扫群二维码 / 频道二维码 → 落地页显示正确；入群后会话**顶替**掉落地页。
+- 通讯录 tab 点「新的朋友」/「群聊」/「频道」/「外部域」→ 右栏换内容（不是全屏）。
+- 会话「+」里的相册、拍照、位置、文件仍然**全屏**打开，选完正确回到会话。
+- 以上每一项在**手机端**的表现与改造前一致。
+
+#### 阶段 5.7d：最后几条断链——网页、二维码、选人
+
+5.7c 补的是「族的末端」，这一轮补的是**跨族被反复引用的公共页**。它们不属于任何一族，
+因此在按族推进的过程中一直被跳过，但引用它们的页面基本都已经在右栏里了。
+
+| 页面 | 引用点 | 去重键 |
+|---|---|---|
+| `WfcWebViewActivity` | **17 处**：链接消息、图文消息、文本长按看全文、收藏文本、会话菜单里的 url、关于→用户协议/隐私协议、发现→文档、工作台 H5、诊断 | 不去重（同一个 url 可以开两份，网页自己有前进后退栈） |
+| `QRCodeActivity` | 我的二维码 / 群二维码 / 频道二维码（会议那个入口仍是全屏页） | 按二维码内容 |
+| `PickContactActivity` | 文件记录→按人筛选、工作台 H5 的 `chooseContacts` | 不去重（要回传结果） |
+| `PickOrganizationMemberActivity` | 发起群聊里点部门、加群成员里点部门 | 不去重（带着当前勾选进来，一次性流程） |
+
+布局照 5.7 的办法处理：把 `activity_webview.xml` / `qrcode_activity.xml` 里的
+`<include layout="@layout/toolbar" />` 摘掉，不复制孪生布局。
+
+**`loadUrl` / `loadHtmlContent` 加了 Fragment 重载**
+
+`WfcWebViewActivity.loadUrl(Context, ...)` 这个静态入口被 17 处调用，只有 Context 拿不到发起页，
+右栏只能靠「上一次点击落在哪一栏」去猜该压到哪条栈上。因此加了 `loadUrl(Fragment, ...)` /
+`loadHtmlContent(Fragment, ...)` 两个重载（内部走 `WfcPageCompat.startPage`），把 13 处拿得到
+Fragment 的调用点切过去。Context 版原样保留：登录页、用户协议页在双栏主界面存在之前就跑了，
+`FileUtils.openFile` 是给集成方用的公开静态方法，`WfcScheme` 只有 Context——这些继续走兜底路径。
+
+同理给 `LinkMessageContentViewHolder.openLink` 和 `SelectableTextViewHolder.handleUrlClick`
+加了 Fragment 重载，`PolicyURLSpan`（文本里自动识别出来的链接）也带上了发起页。
+
+**选人页的 ViewModel 作用域是现成的**
+
+`PickContactPageFragment` / `PickOrganizationMemberPageFragment` 都不是新写的列表，而是
+**继承**已有的列表 Fragment（`PickContactFragment` / `PickOrganizationMemberFragment`），
+只加「确定」菜单和回传结果——与 5.7 里 `CreateConversationPageFragment` 同一个模板。
+`PickUserFragment` 早在 5.7 就改用了 `WfcPageCompat.pageScope`，所以本页与列表、搜索、已选栏
+拿到的是同一个 `PickUserViewModel`，且随本页出栈而清空，两个 tab 各开一个选人页不会串状态。
+
+`PickOrganizationMemberPageFragment` 有个坑：改造前 Activity 是靠
+`setOnOrganizationMemberClickListener(this)` 监听列表勾选的，现在本页与列表是同一个对象，
+再挂监听器会指向自己造成无限递归，改成**覆写父类回调**。
+
+**顺带修掉的 bug**
+- `JsApi.close`（工作台 H5 调 `close` 关自己）原来是 `activity.finish()`。在右栏里 activity 是
+  双栏主界面，H5 一关就把整个界面关掉了。改走 `WfcPageCompat.finishPage`。
+- `JsApi.chooseContacts` 走的是 `fragment.startActivityForResult`，requestCode 会被
+  FragmentManager 换掉，选联系人页因此进不了右栏。改走 `WfcPageCompat.startPageForResult`。
+- `PickContactActivity` 一个人都没勾时置灰的是 `MenuItem`，但点击是 actionView 上的
+  `OnClickListener` 处理的，`MenuItem` 的 enabled 拦不住，空手点「完成」会回传一个空列表。
+  改成置灰 actionView 本身（与兄弟页 `CreateConversationPageFragment` 一致）。
+- `PickOrganizationMemberActivity` 的两个调用点用的都是 `Fragment.startActivityForResult`，
+  同样进不了右栏，一并改走 `WfcPageCompat.startPageForResult`。
+
+**新增字符串**：`web_page`（网页 / Web Page），作为内嵌网页页面的兜底标题——
+intent 没带标题、网页也还没加载出标题时用它，避免右栏标题栏空一帧。
+`QRCodeActivity` 补了 `android:label="@string/qrcode"`，同样是兜底。
+
+**真机验收**
+- 会话里点一条链接消息 / 图文消息 → 网页开在**右栏**（压在会话上面），网页标题正确显示在标题栏，
+  网页内部跳转后按返回是**网页后退**，退到头才关掉这一页。
+- 文本消息长按 →「查看全文」→ 右栏；文本里自动识别的链接点一下同样在右栏。
+- `Config.OPEN_LINK_POLICY = 1` 时先弹确认框，确认后才打开——两条路径都在右栏。
+- 网页菜单：「转发」→ 选择会话页**顶替**掉网页；「浏览器打开」仍然拉起系统浏览器；「关闭」退栈。
+- 我 → 个人信息 → 二维码 / 群设置 → 群二维码 / 频道设置 → 频道二维码 → 都在右栏，标题分别是
+  「二维码」「群二维码」「频道二维码」。
+- 关于 → 用户协议 / 隐私协议 / 产品介绍 → 右栏；发现 → 文档 → 右栏。
+- 发起群聊 → 点一个部门 → 组织架构选人在右栏，勾几个人点「选择」，**回到发起群聊页且勾选生效**。
+- 群设置 → 加成员 → 点部门 → 同上。
+- 文件记录 → 按人筛选 → 选联系人在右栏，选完回到文件记录并按人过滤。
+- 一个人都没勾时「完成」是灰的，点不动。
 - 以上每一项在**手机端**的表现与改造前一致。
 
 **已知取舍**
@@ -1034,6 +1163,169 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
 **仍然全屏**
 - 朋友圈（原因见 5.6）。
 - 媒体预览、音视频通话、扫码：本来就该全屏，**永远不要登记**。
+- 备份与恢复：自带多步进度的独立流程，且内部用 `getParentFragmentManager()` 自建返回栈，
+  塞进右栏会和右栏的栈打架。**是有意不登记的**，见 `AppPaneRegistry` 末尾的注释。
+- 会议一族：入口是全屏会议界面，且依赖 `avenginekit` 兄弟仓库与会议服务端，尚未评估。
+- 投票、接龙的**页面本体**（`PollHomeActivity` 等 4 页、`CreateCollectionActivity` 等 2 页）：
+  依赖 `Config.POLL_SERVER_ADDRESS` 指向的可选后端，没有部署就无法真机验收，尚未评估。
+  它们的**入口**（加号面板）已经走 `WfcPageCompat`，登记之后即可进右栏。
+- `FileUtils.openFile` 的在线预览、`WfcScheme` 的网页落地：只有 Context，走「上一次点在哪一栏」
+  的兜底启发式。要做精确得给这几个公开静态方法加 Fragment 重载，是独立的一小步。
+
+---
+
+#### 阶段 5.7e：位置一族，会话流里最后一处断链
+
+到 5.7d 为止，会话里点得到的东西——链接、图文、文件、名片、图片、合并转发、@某人——
+都留在右栏了，只剩位置：点一条位置消息看地图、加号面板里发一个位置，两条路都还整屏跳出去。
+这是聊天时最容易撞上的一处，因为它发生在会话流的正中间。
+
+| 页面 | 入口 | 去重 |
+|---|---|---|
+| `ShowLocationActivity` | 会话里的位置消息气泡 | 按坐标（同一条消息连点两下不叠两张地图） |
+| `MyLocationActivity` | 会话加号面板 →「位置」，回传 `LocationData` | 不去重（一次性选择流程） |
+
+**这一族与前几族的不同：先要拆掉一套自带的 MVP 脚手架**
+
+位置这几页是从 [LQRWeChat](https://github.com/GitLqr/LQRWeChat) 搬进来的第三方代码
+（见 `third/location/readme.md`），自带一整套 MVP：`ui/base/BaseActivity`（**全仓库唯一一个
+不是 `WfcBaseActivity` 的页面基类**）、`ui/base/BasePresenter`、`ui/view/IMyLocationAtView`、
+`ui/presenter/MyLocationAtPresenter`。
+
+它挡在改造前面：`BasePresenter` 的构造函数签名写死了 `BaseActivity`，页面变成 Fragment 之后
+这套东西无法成立。而它真正承载的逻辑只有「POI 列表 adapter + 回传选中项」约 50 行，
+`ShowLocationActivity` 那一侧更是完全空转（`createPresenter()` 返回 null、`getRvPOI()` 返回 null）。
+于是**四个文件整体删除**，逻辑并进 `MyLocationPageFragment`。连同 `location_include_toolbar.xml`
+（那套脚手架专用的标题栏布局，删掉后零引用）一起，位置包少了 5 个文件。
+
+这也顺手统一了页面基类：uikit 里现在只剩 `WfcBaseActivity` / `WfcBaseNoToolbarActivity` 两个。
+
+**「发送」按钮从布局搬到菜单**
+
+标题栏现在由宿主提供，页面无从往里塞按钮。改造前布局里的 `confirmButton` 改成菜单项
+`R.menu.location_send`，周边地点搜出来之前 `setVisible(false)`，等价于改造前的 `View.GONE`；
+搜到之后调 `WfcPageCompat.invalidatePageMenu` 让它出现。
+
+**顺带修掉的三处**
+
+- **`ShowLocationActivity` 还锁着 `android:screenOrientation="portrait"`** —— 阶段 1 解锁横屏时
+  漏掉的一处。平板横屏下点开一条位置消息，整个 App 会跟着转成竖屏再转回来。它现在继承
+  `WfcBaseActivity`，与其余页面共用同一套「手机锁竖屏、平板不限制」的策略。
+- **地图的生命周期一次都没转发过**。`MapView` 有 `onResume` / `onPause` / `onDestroy`，
+  改造前一个都没调——Activity 整个销毁掉也就跟着没了。右栏里宿主 Activity 长期活着，
+  本页出栈只销毁视图，不放地图和定位就是真泄漏。现已接到 Fragment 的生命周期上。
+- **`ConversationExt.startActivity` 走的是 `activity.startActivity`**。加号面板里所有
+  `startActivity` 型的扩展（投票、接龙）都经过它，那条路上主界面拿不到发起者，只能靠
+  「上一次按下点落在哪一栏」去猜。改走 `WfcPageCompat.startPage(fragment, intent)` 之后是确定的。
+
+**真机验收**
+- 会话里点一条**位置消息** → 地图开在**右栏**（压在会话上面），标题是消息里的地点名，
+  右下角按钮能定位到「我」，返回退回会话。
+- 连点同一条位置消息两下 → 右栏只有一层地图，不叠。点**另一条**位置消息 → 是新的一页，
+  返回能逐层退回去。
+- **平板横屏**下点开位置消息，整个界面**不再翻转成竖屏**。
+- 会话加号面板 →「位置」→ 发送位置页在右栏，等周边地点列表出来后标题栏才出现「发送」，
+  选一个地点点「发送」→ **回到会话并发出位置消息**，气泡缩略图正常。
+- 滑动周边地点列表，上半张地图会收缩/展开（与改造前一致）。
+- 反复进出发送位置页十几次，内存不持续增长（地图已随视图销毁）。
+- 加号面板里的**投票 / 接龙**（若已部署对应服务）同样开在右栏。
+- 以上每一项在**手机端**的表现与改造前一致，位置消息、发送位置全流程不变。
+
+---
+
+### 阶段 5.8：朋友圈一族 ✅ 代码已完成，待真机回归
+
+朋友圈从 5.6 起就挂在「仍然全屏」里，理由写得很清楚：它不是「壳 + Fragment」形态，而是
+自带沉浸式状态栏、自绘 TitleBar、自管窗口的独立 Activity 家族，且住在同级仓库
+`../android-momentkit`。这一轮把它接进来。
+
+**代码在另一个仓库，但编译进的是 uikit**
+
+`../android-momentkit` 不是 gradle 模块，而是 `uikit/build.gradle` 里
+`// moment start ... // moment end` 之间那两行 `srcDirs` 指进来的一份**源码目录**
+（`java` + `res-moment`），最终编译进 uikit、共用 `cn.wildfire.chat.kit` 的 `R`。
+所以它能直接用 `WfcPage` / `WfcPageCompat`，改造模板与前几族完全一致 —— 只是文件要提交到
+另一个仓库。
+
+| 页面 | 入口 | 去重键 |
+|---|---|---|
+| `FeedListActivity` | 发现 →「朋友圈」（隐式 intent）、个人资料页 →「朋友圈」、feed 里点头像 | 按「看谁的朋友圈」（自己是 `self`） |
+| `FeedDetailActivity` | 朋友圈消息列表里的一条 | 按 `feedId` |
+| `FeedMessageActivity` | 主页头图上「您有 N 条未读消息」 | 栈内单例 |
+| `PublishFeedActivity` | 主页右上角相机 → 拍摄 / 选图；长按 → 纯文字。回传 `RESULT_OK` | 不去重 |
+| `FeedVisibleScopeActivity` | 发表页 →「谁可以看」。回传 mode + users | 不去重 |
+
+**三个 Activity 基类换成两个 Fragment 基类**
+
+`BaseFeedActivity → BaseTitleBarActivity → BaseStatusControlActivity → AppCompatActivity`
+这条链和位置包那套 MVP 脚手架是同一类问题：方法签名（`setContentView` 的三个重载、`finish()`、
+`getWindow()`）与 Activity 绑死，页面变成 Fragment 之后无法成立。区别是这里的内容是真有用的，
+所以不是删掉而是**按宿主重新切分**：
+
+- `MomentPageFragment`（新）——TitleBar 装配 + 状态栏占位，搬自 `BaseTitleBarActivity` +
+  `BaseStatusControlActivity` 的**非窗口部分**；
+- `BaseFeedPageFragment`（新）——feed 列表 + 点赞评论，搬自 `BaseFeedActivity`；
+- `MomentShellActivity`（新）——手机端的壳，只留**窗口级**那两句
+  （`setRootViewFitsSystemWindows(false)` + `setTranslucentStatus()`）。
+
+沉浸式状态栏留在壳里，是因为它只在「一个页面 = 一个窗口」时成立。右栏是主界面窗口里的一块，
+顶上并没有状态栏，所以那里两处按宿主分岔：状态栏占位收起
+（`WfcPageCompat.isInPane` 判定），改状态栏明暗的调用直接跳过（改了会连左栏一起改）。
+下拉刷新的触发距离原来写死加一个状态栏高度，改成读占位的实际高度，于是两端自动一致。
+
+**朋友圈自带标题栏**
+
+五个页面 `providesOwnToolbar()` 恒为 true：手机端的壳没有 toolbar，右栏的 `PanePageFragment`
+也会把自己那条收起来。朋友圈的视觉与改造前逐像素一致 —— 它本来就长得跟 App 其余部分不一样，
+不该被套进统一标题栏里。
+
+**登记项不能写进 `PaneRegistry`**
+
+朋友圈是可选源码，不集成的项目会把 `uikit/build.gradle` 里那两行 `srcDirs` 删掉。
+`PaneRegistry` 一旦 `import cn.wildfire.chat.moment.*`，uikit 在那些项目里就编译不过。
+所以登记项住在朋友圈自己这边（`MomentPaneRegistry`），由 `PaneRegistry` 的静态块反射调用；
+找不到就当没有朋友圈，它的页面照旧全屏 —— 与 `WfcUIKit.initMomentClient()` 反射
+`MomentClient` 是同一个理由，也是**本仓库第一个可选页面族**。因此 uikit 内建登记项仍是 65，
+朋友圈的 5 项是运行时追加的。
+
+**入口的隐式 intent**
+
+发现 tab 和个人资料页都用 `new Intent(WfcIntent.ACTION_MOMENT)`，只有 action 没有 component。
+5.6 加的 `PaneRegistry.resolveComponent` 正是为这一处写的，现在终于用上了。两处入口一并
+改走 `WfcPageCompat.startPage`，右栏拿得到发起页，不必再靠触点去猜压哪条栈。
+
+**顺带修掉的四处**
+
+- **`FeedDetailActivity` 初始化跑了两遍**：`onCreate` 先 `super.onCreate(...)`（基类里已经调过
+  一次 `initView()`）、紧接着自己又调了一次，于是 RecyclerView 挂了两个滚动监听、adapter 建了
+  两遍、`getFeed` 请求了两次。现在初始化只发生在 `onViewCreated` 一处。
+- **发表时从工作线程读 `EditText`**：`publishFeed()` 把整段上传逻辑 post 到工作线程，里面
+  `feed.text = editText.getText().toString()` 是在工作线程上碰 View。现在正文在主线程先取好。
+- **朋友圈绕过了 App 统一的页面策略**：改造前直接继承 `AppCompatActivity`，于是它拿不到
+  全局字号设置、水印这些 App 级能力。换成 `WfcBaseNoToolbarActivity` 之后就有了。
+  **唯独屏幕方向刻意没跟**：朋友圈是全 App 唯一从来没锁过竖屏的一族（B6），
+  阶段 1 就记着「改成锁竖屏属于手机端可见变化、需产品确认」，所以
+  `MomentShellActivity.onCreate` 里显式把方向恢复成 `UNSPECIFIED`，抵消基类的竖屏锁 ——
+  手机端零回归优先。产品若确认要统一，删掉那个 `onCreate` 覆写即可。
+- **异步回调缺少存活判断**：点赞、评论、删除的回调改造前多数没有 `isFinishing()` 判断，
+  Activity 销毁后 adapter 也就无人引用了所以看不出问题；右栏里宿主长期活着，统一补了
+  `getView() == null` 判断。
+
+**真机验收**
+- 发现 →「朋友圈」→ 开在**右栏**「发现」那条栈上，头图、下拉刷新、上滑加载更早的都正常。
+- 主页往下滚，标题栏由透明渐变为不透明、图标由白转黑（与改造前一致）；
+  右栏里标题栏**紧贴右栏顶部**，上方没有多出一条空白。
+- 点一条 feed 的头像 → 进那个人的朋友圈（压一层）；再点同一个人 → 不叠；返回能逐层退回去。
+- 个人资料页 →「朋友圈」→ 开在**个人资料所在的那条栈**上，返回退回资料页。
+- 点赞、评论、回复评论、长按删除评论、长按 feed 复制/删除 —— 全部正常，
+  评论输入条弹出时被评论的那条会滚到键盘上方。
+- 头图上「您有 N 条未读消息」→ 消息列表在右栏；点一条 → 详情在右栏；
+  点消息里的头像 → 那个人的朋友圈。
+- 右上角相机 →「从相册选取」→ 相册**全屏**（本该如此）→ 选完回到**右栏**的发表页；
+  填正文 → 「提醒谁看」「谁可以看」都开在右栏并能回传 → 「发表」→ 回到主页并自动刷新出新内容。
+- 右上角相机 →「拍摄」→ 录像全屏 → 回到右栏发表页。**长按**右上角相机 → 直接进纯文字发表页。
+- **手机端**：以上全流程与改造前一致；朋友圈**仍然可以横屏**（B6 的既有行为，本轮刻意保留）；
+  全局字号设置现在对朋友圈生效了。
 
 ---
 
@@ -1130,7 +1422,7 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
 11. 通知点击进入会话
 12. 设置：字体大小、语言、深色主题、听筒播放、备份恢复
 13. 朋友圈：列表、发布、详情、消息、可见范围
-14. **全程确认无法横屏**——唯一例外是朋友圈的 8 个页面，它们改动前就可横屏（见 B6），基线中需如实记录，不要当成回归
+14. **全程确认无法横屏**——唯一例外是朋友圈的几个页面，它们改动前就可横屏（见 B6），基线中需如实记录，不要当成回归。阶段 5.8 把朋友圈改造成 Fragment 之后**仍然保留**这一既有行为（`MomentShellActivity.onCreate` 显式恢复 `UNSPECIFIED`）
 
 ### 6.2 平板测试设备矩阵
 
@@ -1191,7 +1483,7 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
 |------|------|
 | 平板判定与开关（阶段 0 已落地） | `uikit/src/main/java/cn/wildfire/chat/kit/utils/WfcDeviceUtils.java`<br>`uikit/src/main/res/values/bools.xml`（`wfc_two_pane=false`）<br>`uikit/src/main/res/values-sw600dp/bools.xml`（`wfc_two_pane=true`） |
 | 全局竖屏锁 | `uikit/src/main/java/cn/wildfire/chat/kit/WfcBaseActivity.java:46`<br>`uikit/src/main/java/cn/wildfire/chat/kit/WfcBaseNoToolbarActivity.java:34` |
-| 朋友圈独立基类（B6，另一仓库） | `../android-momentkit/src/main/java/cn/wildfire/chat/moment/thirdbar/BaseStatusControlActivity.java` |
+| 朋友圈（B6，另一仓库；阶段 5.8 已改造） | `../android-momentkit/src/main/java/cn/wildfire/chat/moment/MomentPageFragment.java`（标题栏 + 状态栏占位）<br>`../android-momentkit/.../MomentShellActivity.java`（手机端的壳，沉浸式状态栏）<br>`../android-momentkit/.../MomentPaneRegistry.java`（右栏登记项，被 `PaneRegistry` 反射调用）<br>原 `thirdbar/BaseStatusControlActivity.java` / `BaseTitleBarActivity.java` / `BaseFeedActivity.java` 已删除 |
 | Manifest 竖屏锁 | `chat/src/main/AndroidManifest.xml`（13 处）<br>`uikit/src/main/AndroidManifest.xml`（22 处）<br>`push/src/main/AndroidManifest.xml`（1 处） |
 | 摄像头 uses-feature | `chat/src/main/AndroidManifest.xml:26-27`<br>`uikit/src/main/AndroidManifest.xml:21-22` |
 | 主界面 | `chat/src/main/java/cn/wildfire/chat/app/main/MainActivity.java`<br>`chat/src/main/res/layout/main_activity.xml` |
