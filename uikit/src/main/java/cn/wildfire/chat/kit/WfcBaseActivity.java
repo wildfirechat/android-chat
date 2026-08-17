@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit;
 
 import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -36,7 +39,6 @@ import cn.wildfire.chat.kit.page.WfcPage;
 import cn.wildfire.chat.kit.page.WfcPageHost;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfire.chat.kit.utils.LayoutScale;
-import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
@@ -226,20 +228,20 @@ public abstract class WfcBaseActivity extends AppCompatActivity implements WfcPa
      */
     private void registerPageCallbacks() {
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(
-            new FragmentManager.FragmentLifecycleCallbacks() {
-                @Override
-                public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment f,
-                                                  @NonNull View v, @Nullable Bundle savedInstanceState) {
-                    if (!(f instanceof WfcPage)) {
-                        return;
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment f,
+                                                      @NonNull View v, @Nullable Bundle savedInstanceState) {
+                        if (!(f instanceof WfcPage)) {
+                            return;
+                        }
+                        invalidateOptionsMenu();
+                        CharSequence title = ((WfcPage) f).pageTitle();
+                        if (title != null) {
+                            setTitle(title);
+                        }
                     }
-                    invalidateOptionsMenu();
-                    CharSequence title = ((WfcPage) f).pageTitle();
-                    if (title != null) {
-                        setTitle(title);
-                    }
-                }
-            }, false);
+                }, false);
     }
 
     @Override
@@ -383,6 +385,17 @@ public abstract class WfcBaseActivity extends AppCompatActivity implements WfcPa
             final int lFlags = pActivity.getWindow().getDecorView().getSystemUiVisibility();
             // Update the SystemUiVisibility dependening on whether we want a Light or Dark theme.
             pActivity.getWindow().getDecorView().setSystemUiVisibility(pIsDark ? (lFlags & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) : (lFlags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR));
+        }
+
+        UiModeManager uiModeManager = (UiModeManager) pActivity.getSystemService(Context.UI_MODE_SERVICE);
+        int mode = uiModeManager.getNightMode();
+        // Fetch the WindowInsetsControllerCompat
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(pActivity.getWindow(), pActivity.getWindow().getDecorView());
+        if (mode == UiModeManager.MODE_NIGHT_YES) {
+            // TRUE for dark icons, FALSE for light/white icons
+            controller.setAppearanceLightStatusBars(false);
+        } else if (mode == UiModeManager.MODE_NIGHT_NO) {
+            controller.setAppearanceLightStatusBars(true);
         }
     }
 
