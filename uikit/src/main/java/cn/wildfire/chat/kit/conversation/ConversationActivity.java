@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
@@ -38,10 +39,17 @@ public class ConversationActivity extends WfcBaseActivity {
                 isInitialized = true;
             }
         });
-        conversationFragment = new ConversationFragment();
-        getSupportFragmentManager().beginTransaction()
-            .add(R.id.containerFrameLayout, conversationFragment, "content")
-            .commit();
+        // 配置变化（Pad 解锁了横竖屏/分屏）后 FragmentManager 已经把会话页恢复出来了，
+        // 无条件 add 会在恢复出来的这个之上再叠一层，见 PAD_ADAPTATION_REVIEW.md P1。
+        Fragment restored = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (restored instanceof ConversationFragment) {
+            conversationFragment = (ConversationFragment) restored;
+        } else {
+            conversationFragment = new ConversationFragment();
+            getSupportFragmentManager().beginTransaction()
+                .add(R.id.containerFrameLayout, conversationFragment, "content")
+                .commit();
+        }
 
         setAppBarLayoutElevation(1);
         setConversationBackground();

@@ -1010,8 +1010,9 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
 **扩展面板的选择器一并接上**。`ConversationExtension.startActivityForResult` 原来是
 `fragment.startActivityForResult(intent, extRequestCode)`，改为 `WfcPageCompat.startPageForResult`。
 它对 requestCode 的高低位编码完全不用动，结果照样回到 `fragment.onActivityResult(extRequestCode, ...)`；
-登记过的扩展页（发名片的通讯录）压到会话所在那条栈上，没登记的（相册、相机、地图、文件）
+登记过的扩展页（发名片的通讯录）压到会话所在那条栈上，没登记的（~~相册~~、相机、地图、文件）
 原样落回 `fragment.startActivityForResult` —— 那些本来就该全屏。一处改动，整族受益。
+（相册后于**阶段 5.10** 也接入了右栏，见该节；相机、文件仍按此处结论全屏。）
 
 **动态标题的调用时机**（本轮踩到的坑）。`PanePageFragment` 为了避免标题空白闪一下，在提交
 内容 Fragment 的事务**之前**就先问了一次 `pageTitle()`；此时 Fragment 还没 attach，
@@ -1084,7 +1085,8 @@ App 自己的 6 个页面（设置、关于、诊断、账号与安全、改密�
   **打开时不应弹「操作成功」**（原来静音或锁定开着时会误弹）；PC 下线后这一页自动退掉。
 - 扫群二维码 / 频道二维码 → 落地页显示正确；入群后会话**顶替**掉落地页。
 - 通讯录 tab 点「新的朋友」/「群聊」/「频道」/「外部域」→ 右栏换内容（不是全屏）。
-- 会话「+」里的相册、拍照、位置、文件仍然**全屏**打开，选完正确回到会话。
+- 会话「+」里的~~相册、~~拍照、位置、文件仍然**全屏**打开，选完正确回到会话。
+  （位置后于**阶段 5.7e**、相册后于**阶段 5.10** 也接入了右栏，见各自节。）
 - 以上每一项在**手机端**的表现与改造前一致。
 
 #### 阶段 5.7d：最后几条断链——网页、二维码、选人
@@ -1424,6 +1426,307 @@ intent 没带标题、网页也还没加载出标题时用它，避免右栏标�
 
 **验证**：`./gradlew :chat:assembleDebug` 通过；`aapt2 dump resources` 复核
 `bool/wfc_two_pane` 仍为 `() false` / `(sw600dp) true`，未改动任何手机端既有资源。
+
+---
+
+### 阶段 5.10：相册选择页接入右栏 + 代码巡检修补 ✅ 代码已完成，待真机回归
+
+**背景**：本轮任务是「继续推进适配 pad 计划」，聚焦两件事——① 会话「+」→「相册」这个
+选择图片/视频的页面在平板上的适配；② 把 `PAD_ADAPTATION_REVIEW.md`（5.6 阶段留下的一份
+真机/代码 review，此后再未更新过）里点名的问题逐条核对一遍代码现状——不少标着"已在后续阶段
+接入右栏"的页面族，实际上仍留着个别调用点没跟上。
+
+#### 相册选择页：从「保持全屏」改为接入右栏（`imagepicker` 模块）
+
+本节是对阶段 5.7c/5.9 结论的一次修正。彼时的结论是"相册、拍照、文件保持全屏，媲美微信 Pad"，
+真机试用后产品明确要求相册也要跟其余入口一样进右栏——回头看，"全屏"当时更多是因为
+`ImageGridActivity` 独立于 `WfcPage` 体系之外（`imagepicker` 模块不依赖 uikit，接不进
+`PaneRegistry`），而不是刻意的体验取舍。拍照、文件、预览三个子流程**仍然全屏**不变，
+理由见下文。
+
+**架构约束**：`imagepicker` 是纯 Android 库模块，不依赖 `uikit`（`WfcPage`/`WfcPageCompat`/
+`PaneRegistry` 都在 uikit），而 `uikit → imagepicker` 是既有的单向依赖（`uikit/build.gradle`
+已 `implementation project(':imagepicker')`，头像选择等入口一直在用）。反向加一条
+`imagepicker → uikit` 会造成 Gradle 循环依赖，行不通。于是没有照搬 `MyLocationPageFragment`
+那种"整页搬进 uikit"的模板，改为**在 imagepicker 内部把 Activity 拆成"壳 + Fragment"，
+Fragment 留两个可覆写的收尾钩子**，uikit 侧只需一个子类去实现这两个钩子：
+
+| 文件 | 位置 | 职责 |
+|---|---|---|
+| `ImageGridFragment`（新） | `imagepicker/.../ui/` | 原 `ImageGridActivity` 的全部内容——文件夹切换、九宫格、拍照入口、预览入口。收尾统一走两个 `protected` 钩子：`cancelPick()`（点返回，不回传）、`finishPick(resultCode, data)`（选完，回传结果） |
+| `ImageGridActivity`（改） | 同上 | 瘦身成壳：`setContentView` 一个空 `FrameLayout`，`add` 一个 `ImageGridFragment`。手机端行为零变化——同一份实现，只是隔了一层 Fragment |
+| `ImagePickerPanePageFragment`（新） | `uikit/.../conversation/ext/` | `extends ImageGridFragment implements WfcPage`——与 `PickContactPageFragment extends PickContactFragment` 是同一个模板，只是这次跨了 `uikit → imagepicker` 这条既有依赖方向。覆写两个钩子改走 `WfcPageCompat.setPageResult/finishPage`；`providesOwnToolbar()` 返回 true（页面自带暗色沉浸式顶/底栏，不需要宿主再给一条标题栏） |
+
+`PaneRegistry` 登记一行：`register(ImageGridActivity.class, (context, intent) ->
+ImagePickerPanePageFragment.fromIntent(intent))`。登记之后**不需要改调用点**——
+`ImageExt.pickImage()` 早就经 `ConversationExt.startActivityForResult` →
+`ConversationExtension.startActivityForResult` 落到 `WfcPageCompat.startPageForResult`
+（发名片、发位置是同一条路），一直以来卡住它的只是"目标 Activity 没登记"这一件事。
+去重键留空（不去重）：与投票、接龙的创建页同类，是一次性选择流程且要回传结果。
+
+**`ImageGridAdapter` 的两处硬转型**：`(ImageGridActivity) mActivity` 出现在点相机格子、
+点选中框两处回调里。右栏场景下 `mActivity` 是双栏主界面，硬转型会直接 `ClassCastException`。
+改法与 `GroupMemberSearchModule` 那次一致——加两个回调方法（`onCameraClick` /
+`onPickStatusChanged`）到已有的 `OnImageItemClickListener` 接口上，`ImageGridFragment`
+实现接口、在内部调用自己的私有方法，两端走的是同一份代码，不用再判断"我在哪个宿主里"。
+
+**顺带修的一处像素耦合：格子高度按整屏宽度算，右栏里会拉成竖长条**
+
+`Utils.getImageItemWidth(Activity)` 按 `activity.getResources().getDisplayMetrics()`
+算列数与格子边长，这在"整屏就是容器"的前提下成立；右栏里容器只是屏幕的一部分，
+再用整屏宽度算出来的边长会比 `GridView` 实际拉伸出的列宽大得多，格子从正方形变成竖长条。
+且这个算列数的公式（`屏宽 / densityDpi`，下限 3）跟 `numColumns` 实际引用的
+`@integer/ip_image_grid_span`（手机 3 / 平板 5，阶段 2 产物）是两套独立公式——大屏平板上
+即使是全屏场景，两者也可能对不上，格子早就有可能不是正方形，只是之前没人在真平板上盯着看过。
+
+改法：`ImageGridAdapter` 新增 `setImageItemWidth(int)`，`ImageGridFragment` 在
+`GridView` 的 `ViewTreeObserver.OnGlobalLayoutListener`（持久监听，不是一次性）里，
+用 `GridView` **自己的真实宽度** ÷ `ip_image_grid_span` 重算边长并回填。构造时仍按
+`Utils.getImageItemWidth` 给一个初始值兜底，实测值算出来后如果跟兜底值一样就直接跳过
+（`setImageItemWidth` 内部做了判等），手机全屏场景两者本来就相等，不会多刷一次。
+持久监听而非一次性，是为了旋转、分屏拖动等宽度会变的场景也能自动更正——这也顺带修了一个
+更早就存在的潜性 bug：这三个 Activity 早就用 `configChanges="orientation|screenSize"`
+处理旋转（不走 `onCreate` 重建），改造前旋转后格子边长只算过一次，一直用的是启动时那个朝向
+的屏宽，旋转后其实已经不对。
+
+**拍照、预览两个子流程为什么仍然全屏**：`ImageGridFragment` 内部对它们用的是
+**Fragment 自己的** `startActivityForResult`（不是 `WfcPageCompat`），这条路径不查
+`PaneRegistry`，落在哪个宿主（壳 Activity 还是 `PanePageFragment`）里都会正确把结果
+投递回 `ImageGridFragment.onActivityResult`——这是 Android Fragment 机制本身的行为，
+与本仓库的双栏框架无关，阶段 5.7c 早就验证过同一结论（"没登记的（相机、地图、文件）
+原样落回 `fragment.startActivityForResult`"）。系统相机、多图预览本来就适合整屏——
+沉浸看图/摆弄快门是"占满可用空间"的场景，不必强行塞进右栏。
+
+**折叠面板宽度**：这是一个 `PopupWindow`，不受所在 Fragment 是否在右栏里的影响
+（`showAtLocation` 相对整个应用窗口定位），进右栏前后观感一致，改法不用跟着调整——
+
+`FolderPopUpWindow`（点底部「全部图片」弹出的相册文件夹列表）是一个 `PopupWindow`，
+`pop_folder.xml` 整条 `ListView` 宽度写死 `match_parent`。手机上贴边合理，平板上会把
+每一行拉成"左边一个 68dp 缩略图 + 右边大片空白"——正是 D1 一直在修的"被拉伸的手机界面"。
+
+- 新增 `imagepicker/src/main/res/layout-sw600dp/pop_folder.xml`：与默认布局逐行一致，
+  唯一差异是承载 `ListView` 的 `FrameLayout` 宽度从 `match_parent` 改为 `400dp` 并贴左
+  （与触发它的「文件夹」按钮同侧，效果类似一个从底部弹出的定宽下拉菜单）。
+- `FolderPopUpWindow.java` **零改动**：宽度差异完全由资源限定符决出，符合 D1；
+  `imagepicker` 模块不依赖 uikit，因此沿用该模块已有的"`values-sw600dp` 独立一套"惯例
+  （与 `ip_image_grid_span` 同例），未复用 uikit 的 `WfcSheetDialogCompat`。
+- 检查过预览页（`activity_image_preview.xml`）与顶部栏（`include_top_bar.xml`）：
+  前者是沉浸式黑底看图/看视频，后者靠边缘定位而非整宽拉伸控件，两者在宽屏下均无异常，未改动。
+- `imagepicker/src/main/AndroidManifest.xml` 本就没有任何 `screenOrientation` 锁定
+  （`ImageBaseActivity extends AppCompatActivity`，不经过 `WfcBaseActivity`），
+  三个页面早已是 B5 提到的"仅有的 3 个声明 `configChanges` 的 Activity"之一，旋转安全。
+
+**手机端保证**：D1（`-sw600dp` 布局零改动默认资源）+ D3（`ImageGridActivity` 拆分是等价重构，
+壳 Activity 承载的还是同一份 `ImageGridFragment` 实现，多一层 Fragment 但逐帧行为不变）。
+`ImageDataSource`（内部用 `LoaderManager.getInstance(activity)`）改造前后都传"当前宿主
+Activity"，手机端还是原来的 `ImageGridActivity` 实例，未变。头像选择（个人资料、群头像、
+频道 logo 等）走的是同一个 `ImageGridActivity`，但那几处调用点用的是**普通**
+`startActivityForResult`（不经 `WfcPageCompat`），不受本次登记影响，继续全屏——
+只有"会话「+」→ 相册"这一条走 `WfcPageCompat` 的路径才会进右栏。
+
+#### 代码巡检修补：右栏里仍会"越权动到宿主 Activity"的漏网调用点
+
+`PAD_ADAPTATION_REVIEW.md` 点名的问题逐条核对后，以下几处**在当前代码里依然存在**
+（该 review 写于阶段 5.5 之后、5.7 系列之前，后续几轮虽然把同类问题在其他页面修过，
+但没有回头覆盖到这几处）：
+
+| 文件 | 问题 | 影响 | 改法 |
+|---|---|---|---|
+| `conversation/mention/GroupMemberSearchModule.java:50-51` | `@` 群成员搜索命中后 `fragment.getActivity().setResult(...)` + `.finish()` | 右栏里 `getActivity()` 是双栏主界面，选中一个 `@` 对象会把整个 App 关掉 | 改用 `WfcPageCompat.setPageResult` + `WfcPageCompat.finishPage` |
+| `organization/OrganizationMemberListFragment.java:107` | 加载出组织信息后 `getActivity().setTitle(...)` | 标题写到左栏的 `MainActivity`，右栏自己的标题栏不更新 | 改用 `WfcPageCompat.setPageTitle(this, ...)` |
+| `conversation/ChannelConversationInfoFragment.java:78`、`conversation/ChatRoomConversationInfoFragment.java:61` | 同上（会话信息页里"频道详情"标题） | 同上；这两个是 `ConversationInfoActivity` 按会话类型分发出的内容 Fragment，文件里其余导航早已用 `WfcPageCompat.startPage`，唯独这一行初始化标题的代码被漏改 | 同上，字符串取值不变（`R.string.channel_details`），仅换调用方式，手机端逐字节等价 |
+| `conversation/receipt/GroupMessageReceiptListFragment.java:61-63` | 参数缺失时的防御分支 `getActivity().finish()` | 该 Fragment 挂在 `GroupMessageReceiptFragment`（已注册进右栏）的 ViewPager 里，`fromIntent()` 只校验了 `message` 非空、没校验 `groupInfo`，理论上仍可能走到这条防御分支，届时会带崩整个 App | 改用 `WfcPageCompat.finishPage(this)` |
+
+逐一核对过的**非问题**（review 提到但现状已经是对的，本轮未改）：
+
+- `openInPane()` 冷启动阶段的"仅验证已注册、未验证工厂能否创建"——`TwoPaneNavigator.openInPane()`
+  现在对 `requestCode >= 0`（需要回传结果的选择器）直接短路返回 `false`，从不进入
+  `pendingIntent` 缓存分支；能被缓存、稍后由 `onImServiceReady()` 冲掉的 intent 只剩
+  "打开即走、不需要结果"这一类，`PaneRegistry.createPage()` 对这类 intent 的成功率
+  与 `isRegistered()` 是一致的，review 描述的"缓存了但之后发现造不出页面"的场景已不可达。
+- `settings.gradle` 的 `':pttclient'` 重复 include——当前只有一行，无重复。
+- `GroupMemberPermissionFragment.onCreate()` 里同样有一句 `groupInfo == null` 时的
+  `getActivity().finish()`；但它在 `PaneRegistry` 的注册工厂里已经先判过
+  `groupInfo == null` 返回 `null`（进不了右栏，回退全屏），右栏场景下这个分支根本走不到，
+  未改。
+- `FontSizeFragment.restart()`、`SettingFragment` 里两处切语言/退出登录的 `finish()`——
+  代码注释已写明是"`CLEAR_TASK` 清过任务栈后让当前界面立刻消失"，属于有意为之的整个应用重启，
+  不是"该转 `finishPage` 而没转"，未改。
+
+#### 代码巡检修补：`ConversationActivity` 旋转后叠出两个会话页
+
+`ConversationActivity.afterViews()` 一直是无条件 `add`：
+
+```java
+conversationFragment = new ConversationFragment();
+getSupportFragmentManager().beginTransaction()
+    .add(R.id.containerFrameLayout, conversationFragment, "content")
+    .commit();
+```
+
+这正是 review 点名过、且阶段 5.7c/5.9 那批"壳 Activity"逐个改成"先查 `findFragmentById`
+有没有，没有才 add"的同一种坑——只是 `ConversationActivity` 本身不属于那批"新壳化"的
+Activity（它是整个方案里最早、阶段 3 就动过的会话页宿主），review 之后的历次巡检都没再
+回头看它。手机端因为全程锁竖屏从未暴露；阶段 1 解锁横屏后，旋转或分屏宽度跨越 600dp 阈值
+都会触发它重建：FragmentManager 先把旧的 `ConversationFragment` 自动恢复挂回
+`containerFrameLayout`，这段代码接着又 `add` 一个全新的空白实例上去，两个会话页重叠在一起，
+且 `conversationFragment` 字段之后只指向那个新实例。
+
+改法与 `PollHomeActivity` 等页面一致：
+
+```java
+Fragment restored = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+if (restored instanceof ConversationFragment) {
+    conversationFragment = (ConversationFragment) restored;
+} else {
+    conversationFragment = new ConversationFragment();
+    getSupportFragmentManager().beginTransaction()
+        .add(R.id.containerFrameLayout, conversationFragment, "content")
+        .commit();
+}
+```
+
+`init()`（IM 服务就绪后触发一次 `setupConversation(...)`）在两条分支下都会跑到，
+无论是复用回来的实例还是新建的实例，初始化时序与"冷启动新建 Fragment、稍后 `init()`
+填数据"这条早已验证过的路径完全一致，不存在"复用的 Fragment 缺状态"的问题。
+
+**手机端保证**：D3，等价重构。手机端锁竖屏、`ConversationActivity` 几乎不会因配置变化重建，
+这条分支在手机上原则上不会被走到；即使走到（多任务窗口大小调整等极端场景），效果也只是
+"复用已恢复的 Fragment 而不是另起一个"，行为更接近正确而非引入变化。
+
+#### 代码巡检修补：通知冷启动的 pending intent 在旋转后丢失
+
+`TwoPaneNavigator.pendingIntent`（通知/深链冷启动时 IM 未就绪，暂存等 `onImServiceReady()`
+冲掉）此前只是一个瞬时字段，`onSaveInstanceState` 没有保存它。如果用户在"通知拉起 App
+冷启动"与"IM 连接完成"这个间隙里旋转了设备，`MainActivity` 重建出一个全新的
+`TwoPaneNavigator`，暂存的 intent 就随旧实例一起被丢弃，`onImServiceReady()` 冲不到任何东西，
+通知点击等于失效。
+
+补法：`onSaveInstanceState` 一并存下 `pendingIntent` / `pendingIntentTab`（`Intent` 本身是
+`Parcelable`，与 `STATE_CONVERSATION` 存法一致）；新增 `restoreState(Bundle)`，由
+`MainActivity.onCreate()` 在 `new TwoPaneNavigator(this)` 之后立即调用接回去，
+后续 `start()` 或 `onImServiceReady()` 的冲刷逻辑不用改一行——它们本来就是"字段不为空就冲"，
+不关心这个字段是刚设的还是恢复回来的。
+
+**手机端保证**：D2，`TwoPaneNavigator` 手机端不会被实例化，`restoreState` 调用点被
+`WfcDeviceUtils.isTwoPaneLayout()` 包裹，恒不执行。
+
+**验证**：`./gradlew :imagepicker:compileDebugJavaWithJavac :uikit:compileDebugJavaWithJavac
+:chat:compileDebugJavaWithJavac :chat:assembleDebug` 全部通过。资源侧只新增了一个
+`-sw600dp` 限定符布局文件、一个新的（无限定符，由代码按需 add 的）壳布局
+`image_grid_shell.xml`，未修改任何默认资源；`grep` 复核仓库内 `getActivity().finish()` /
+`getActivity().setTitle(` / `getActivity().setResult(` 已无遗漏的真实问题点（voip 通话
+一族的 `getActivity().finish()` 属于本就"永不登记进右栏、始终全屏"的页面，`getActivity()`
+恒为真实的通话 Activity，非漏网）；`grep` 确认 `ImageGridAdapter.java` 里不再出现
+`(ImageGridActivity)` 硬转型。
+
+**真机验收（待办）**
+- 平板：会话「+」→「相册」，页面在**右栏**打开（不再整屏），顶/底栏是页面自带的暗色沉浸式
+  样式，没有多出一条宿主标题栏；九宫格是正方形（不是竖长条），列数与阶段 2 一致（5 列）；
+  底部「全部图片」弹出的文件夹列表是一个贴左侧、定宽的面板，不再整宽拉伸。
+- 平板：右栏相册页里点相机格子 → 系统相机**全屏**打开，拍完正确回到右栏的相册页并带着新照片。
+- 平板：右栏相册页里点一张图（多选模式）→ 预览页**全屏**打开，勾选/取消、看「原图」大小，
+  确定后正确回到右栏并带着选择结果；点右栏页面自己的「预览」按钮同理。
+- 平板：多选/单选、有无拍照入口、有无视频的各种组合分别测一遍（会话「+」→ 相册用的是
+  `multiMode+showCamera+showVideo` 全开这一种组合，其余组合来自头像选择等仍然全屏的入口，
+  用于确认 `ImageGridFragment` 本身没有因为拆分出 Fragment 而行为跑偏）。
+- 平板：右栏相册页点返回箭头/系统返回键 → 退回会话，不误发消息；选完发送后消息正常出现在会话里。
+- 平板：旋转、拖动分屏宽度跨越 600dp 阈值时，正在选择的过程不崩溃（可以选择丢弃当前选择，
+  不强求跨阈值保留半选状态）。
+- 平板：群会话里 `@` 一个人，搜索命中后点选，正确插入 `@`，**不会退出整个 App**。
+- 平板：通讯录 → 外部域 → 某个域，标题正确显示在右栏自己的标题栏（不再写到左栏）；
+  频道/聊天室的会话信息页同理。
+- 平板：会话内点消息「已读/未读」，参数正常时功能不变；本项是防御性分支，无需刻意构造异常入参验证。
+- 平板：横竖屏之间旋转、或拖动分屏宽度跨越 600dp 阈值时，会话页不出现重复/错位内容。
+- 平板：收到一条通知，在 App 完全冷启动、IM 尚未连接完成的这一两秒内快速旋转设备，
+  通知仍能正确打开对应会话（此前会静默失效）。
+- 手机：以上全部路径与改造前表现一致（相册选择器视觉不变；`@` 搜索、组织架构标题、
+  会话信息标题、已读回执异常分支、会话页旋转与通知冷启动均无 Pad 特有代码路径可走）。
+
+#### 真机回归发现的两个问题（已修复）
+
+第一轮真机测试就命中了两个 bug，均是"壳 Activity → Fragment"这次拆分带出来的回归，
+不是既有代码的问题：
+
+1. **点拍照后没有直接返回、退回了相册九宫格**——根因是 `ImageGridFragment.takePhoto()`
+   调用 `Utils.takePhoto(requireActivity(), ...)`，内部用**Activity**发起
+   `startActivityForResult`。拆分前 `ImageGridActivity` 自己就是 Activity，
+   `activity.startActivityForResult` 与"这个 Activity 自己的 `onActivityResult`"是同一个
+   对象，天然对得上；拆分后 `requireActivity()` 拿到的是壳 Activity（或右栏场景下的双栏
+   主界面），它没有覆写 `onActivityResult`，`FragmentActivity` 默认实现只在请求码经过
+   `Fragment.startActivityForResult` 编码过的情况下才会转发给发起请求的子 Fragment——
+   直接用 Activity 发起的请求码没有这层编码，结果被投递到宿主的 `onActivityResult` 后
+   无人认领，`ImageGridFragment.onTakePhoto()` 永远不会被调用，看起来就是"拍完照片后
+   什么也没发生，停在原来的九宫格页面"。九宫格里的预览入口（`btn_preview`、点图片进预览）
+   一直是`this.startActivityForResult(...)`（Fragment 自己发起），从未受影响，这也是为什么
+   只有拍照这一条路径出问题。
+   **改法**：`Utils.takePhoto(Activity, ...)` 改成 `Utils.takePhoto(Fragment, ...)`，
+   内部改用 `fragment.startActivityForResult(...)`；仓库内唯一调用点
+   （`ImageGridFragment.takePhoto()`）同步改成传 `this`。
+2. **选完照片后偶发崩溃**：`IllegalStateException: Fragment ... not attached to a context`，
+   崩溃点在 `updateImageItemWidthFromGridView()` 里的 `getResources()`。根因是这个方法挂在
+   `GridView.getViewTreeObserver()` 的**持久**监听器上，注册之后从未移除；选中一张图片走
+   `finishPick()` 把右栏这个 Fragment 弹出/替换掉时，如果这之前还有一次排队中的布局回调
+   （比如选中态刷新触发的 `notifyDataSetChanged()`），它会在 Fragment 已经 `onDetach()`
+   之后才真正执行到，此时 `getResources()`/`requireContext()` 必炸。
+   **改法**：监听器改存成字段，`onDestroyView()` 里主动
+   `mGridView.getViewTreeObserver().removeOnGlobalLayoutListener(...)` 摘掉；
+   `updateImageItemWidthFromGridView()` 内部再加一道 `isAdded()` 防御，双保险应对
+   "摘除时机与排队中的回调"之间的窄窗口竞态。
+
+两处改动都在 `imagepicker` 模块（`Utils.java`、`ImageGridFragment.java`），不涉及
+`uikit`/`PaneRegistry` 侧代码，手机端与右栏端走的是同一份实现，无需分别验证——
+`./gradlew :imagepicker:compileDebugJavaWithJavac :uikit:compileDebugJavaWithJavac
+:chat:compileDebugJavaWithJavac` 复核通过。**这两条尚未经过再次真机回归**，需要在下一轮
+测试里确认：① 点拍照后直接带着新照片退出选择页（无论手机全屏还是平板右栏）；
+② 右栏里连续多选/切换文件夹/选中后立即退出，不再出现上述崩溃。
+
+#### 第二轮真机回归发现的问题
+
+1. **（已修复）「我」的头像编辑没有进右栏，仍是全屏**——根因与上一轮的拍照 bug是同一类
+   问题，但发生在更早一步：`UserInfoFragment.updatePortrait()` 直接调用
+   `ImagePicker.picker().pick(this, REQUEST_CODE_PICK_IMAGE)`，内部是
+   `Fragment.startActivityForResult`，压根没有经过 `WfcPageCompat.startPageForResult` /
+   `PaneRegistry` 这一层去问"这个 intent 是不是该进右栏"——即使 `ImageGridActivity` 已经在
+   `PaneRegistry` 里登记过，也没有任何代码路径会去查这张表，请求直接原样发去了 Activity 级的
+   `startActivityForResult`，自然只会全屏打开。会话「+」→「相册」之所以表现正确，是因为那条
+   路径走的是 `ConversationExtension.startActivityForResult()`，内部本来就调用了
+   `WfcPageCompat.startPageForResult()`。
+   **改法**：`updatePortrait()` 改成 `WfcPageCompat.startPageForResult(this,
+   ImagePicker.picker().buildPickIntent(getActivity()), REQUEST_CODE_PICK_IMAGE)`；
+   `onActivityResult` 里按原始 `requestCode` 比对，不涉及编码，改法与原调用行为兼容。
+   顺手排查了仓库里其余 `ImagePicker.picker().pick(this, ...)` 调用点，发现
+   `CreateChannelFragment.portraitClick()`（创建频道头像）、
+   `GroupConversationInfoFragment.updateGroupPortrait()`（群头像）是同一个 bug、同一处代码
+   模式（`CreateChannelFragment` 里甚至留了一条注释显式说"相册要整屏、不该进右栏"，这是在
+   右栏相册页做出来之前写的，现在已经不成立），一并改成同样的 `WfcPageCompat.startPageForResult`
+   写法，避免同一处「未适配」在下一轮测试里被逐个头像入口重复报出来。`ScanQRCodeActivity`
+   里那处 `ImagePicker.picker()...buildPickIntent(this)` 没有改：调用方是 Activity 不是
+   Fragment，本来就不在 `WfcPageCompat` 覆盖范围内，且扫码取图这个场景本身全屏也合理，不属于
+   这次要收敛的范围。
+   三处改动都在 `uikit` 模块，`./gradlew :uikit:compileDebugJavaWithJavac
+   :chat:compileDebugJavaWithJavac` 复核通过，**尚未经过真机回归**。
+2. **（已修复）相册页 titlebar 与 statusbar 之间有一条灰色的线**——一开始怀疑是平板右栏的
+   配色接缝（相册自己的深色沉浸式 titlebar 跟右栏共用的系统状态栏颜色对不上），但向用户确认后
+   发现现象正好相反：**右栏里看不到，手机端全屏和平板全屏（拍照、预览这些仍然全屏的子流程）都
+   能看到**——说明问题跟右栏配色无关，根子出在 `ImageBaseActivity` 用来沉浸式着色状态栏的
+   `SystemBarTintManager` 本身。
+   这个库是 2013 年的老代码，状态栏高度是反射读一个静态的 `android:dimen/status_bar_height`
+   资源猜出来的（`SystemBarConfig.getInternalDimensionSize()`），在挖孔屏、手势导航等现代
+   机型上这个猜测值经常比真实状态栏矮一截；`setupStatusBarView()` 用这个偏矮的高度建一个
+   着色占位 View 塞进 decorView 顶部，矮的那一截盖不到，露出 decorView 默认背景，看起来就是
+   titlebar（着色正确但从这个高度往下）和状态栏（着色占位 View，从顶到这个偏矮的高度）之间
+   一条灰线。右栏没有这个问题，是因为右栏走的是普通非沉浸式布局，压根不用
+   `SystemBarTintManager` 猜状态栏高度。
+   **改法**：给 `SystemBarTintManager` 加一个 `setStatusBarHeight(int heightPx)`，用于事后
+   纠正着色占位 View 的高度；`ImageBaseActivity.onCreate()` 里给 decorView 挂一个
+   `ViewCompat.setOnApplyWindowInsetsListener`，用真实 `WindowInsetsCompat` 里的
+   `statusBars()` 顶部 inset（系统给的准确值，不受机型差异影响）去纠正，而不是依赖那个反射猜出
+   来的静态资源值。改动在 `imagepicker` 模块（`SystemBarTintManager.java`、
+   `ImageBaseActivity.java`），`./gradlew :imagepicker:compileDebugJavaWithJavac
+   :uikit:compileDebugJavaWithJavac :chat:compileDebugJavaWithJavac` 复核通过，
+   **尚未经过真机回归**，需要在下一轮测试里在此前能复现的机型上确认手机端和平板全屏的相册页
+   titlebar 与状态栏之间不再有灰线。
 
 ---
 

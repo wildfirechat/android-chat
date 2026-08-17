@@ -153,6 +153,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         super.onCreate(savedInstanceState);
         if (WfcDeviceUtils.isTwoPaneLayout(this)) {
             twoPaneNavigator = new TwoPaneNavigator(this);
+            twoPaneNavigator.restoreState(savedInstanceState);
             setupTwoPaneImeAdjustment();
         } else {
             // 平板分屏把窗口拖窄到 600dp 以下时，Activity 会以单栏布局重建。

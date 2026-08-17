@@ -431,7 +431,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     void updateGroupPortrait() {
-        ImagePicker.picker().pick(this, REQUEST_CODE_PICK_IMAGE);
+        // 用 WfcPageCompat 发起，才能被 PaneRegistry 接管进右栏；直接 ImagePicker.pick(Fragment,...)
+        // 走的是 Fragment 自己的 startActivityForResult，主界面拦不到，只会全屏打开。
+        WfcPageCompat.startPageForResult(this, ImagePicker.picker().buildPickIntent(getActivity()), REQUEST_CODE_PICK_IMAGE);
     }
 
     void updateGroupRemark() {

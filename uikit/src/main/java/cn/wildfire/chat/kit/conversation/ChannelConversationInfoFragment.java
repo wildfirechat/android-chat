@@ -75,7 +75,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         assert args != null;
         conversationInfo = args.getParcelable("conversationInfo");
         assert conversationInfo != null;
-        getActivity().setTitle(getString(R.string.channel_details));
+        WfcPageCompat.setPageTitle(this, getString(R.string.channel_details));
     }
 
     @Nullable

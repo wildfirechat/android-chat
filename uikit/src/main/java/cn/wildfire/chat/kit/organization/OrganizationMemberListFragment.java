@@ -104,7 +104,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
         organizationServiceViewModel.getOrganizationEx(orgId).observe(this, new Observer<OrganizationEx>() {
             @Override
             public void onChanged(OrganizationEx organizationEx) {
-                getActivity().setTitle(organizationEx.organization.name);
+                WfcPageCompat.setPageTitle(OrganizationMemberListFragment.this, organizationEx.organization.name);
                 currentOrganizationEx = organizationEx;
                 adapter.setOrganizationEx(organizationEx);
                 adapter.setSearchMode(false);

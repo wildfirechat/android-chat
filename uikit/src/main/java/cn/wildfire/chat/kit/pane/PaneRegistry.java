@@ -50,6 +50,7 @@ import cn.wildfire.chat.kit.conversation.CreateConversationPageFragment;
 import cn.wildfire.chat.kit.conversation.GroupConversationInfoFragment;
 import cn.wildfire.chat.kit.conversation.SecretConversationInfoFragment;
 import cn.wildfire.chat.kit.conversation.SingleConversationInfoFragment;
+import cn.wildfire.chat.kit.conversation.ext.ImagePickerPanePageFragment;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordFragment;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
@@ -176,6 +177,7 @@ import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
+import com.lqr.imagepicker.ui.ImageGridActivity;
 
 /**
  * 「哪些页面可以在平板右栏里打开」的注册表：{@code Activity 类} → 对应的 Fragment 工厂。
@@ -695,6 +697,13 @@ public final class PaneRegistry {
 
         // 发送位置（会话加号面板 →「位置」）。不去重：是一次性的选择流程，且要回传结果。
         register(MyLocationActivity.class, (context, intent) -> MyLocationPageFragment.fromIntent(intent));
+
+        // ==================== 相册 ====================
+
+        // 会话「+」→「相册」，选图片/视频发送。不去重：是一次性的选择流程，且要回传结果。
+        // 拍照、预览两个子流程仍然全屏——它们是 ImageGridFragment 内部自己的
+        // Fragment.startActivityForResult，不经过右栏机制，落在哪个宿主里都会正确回调。
+        register(ImageGridActivity.class, (context, intent) -> ImagePickerPanePageFragment.fromIntent(intent));
     }
 
     @Nullable

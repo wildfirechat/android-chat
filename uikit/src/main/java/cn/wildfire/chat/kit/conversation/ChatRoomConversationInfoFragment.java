@@ -25,6 +25,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
@@ -58,7 +59,7 @@ public class ChatRoomConversationInfoFragment extends Fragment {
         assert args != null;
         conversationInfo = args.getParcelable("conversationInfo");
         assert conversationInfo != null;
-        getActivity().setTitle(getString(R.string.channel_details));
+        WfcPageCompat.setPageTitle(this, getString(R.string.channel_details));
     }
 
     @Nullable

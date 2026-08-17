@@ -59,7 +59,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         this.unread = getArguments().getBoolean("unread");
 
         if (groupInfo == null || message == null) {
-            getActivity().finish();
+            WfcPageCompat.finishPage(this);
         }
     }
 

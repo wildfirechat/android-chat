@@ -43,6 +43,8 @@ import cn.wildfirechat.model.ConversationInfo;
 public class TwoPaneNavigator {
 
     private static final String STATE_CONVERSATION = "twoPaneConversation";
+    private static final String STATE_PENDING_INTENT = "twoPanePendingIntent";
+    private static final String STATE_PENDING_INTENT_TAB = "twoPanePendingIntentTab";
 
     private final MainActivity activity;
     private final View paneContainer;
@@ -530,6 +532,28 @@ public class TwoPaneNavigator {
         Conversation conversation = currentPaneConversation();
         if (conversation != null) {
             outState.putParcelable(STATE_CONVERSATION, conversation);
+        }
+        // 通知冷启动时 IM 未就绪，intent 先暂存在 pendingIntent 里等 onImServiceReady 冲掉；
+        // 这期间旋转会重建出一条新的 TwoPaneNavigator，字段跟着丢，通知点击就此失效。存下来，
+        // 由 restoreState 在新实例上接回去。
+        if (pendingIntent != null) {
+            outState.putParcelable(STATE_PENDING_INTENT, pendingIntent);
+            outState.putInt(STATE_PENDING_INTENT_TAB, pendingIntentTab);
+        }
+    }
+
+    /**
+     * 接回 {@link #onSaveInstanceState} 存下的暂存 intent，由 {@link MainActivity} 在构造本对象后
+     * 立即调用。手机端不会创建 {@link TwoPaneNavigator}，这条路径不会被走到。
+     */
+    public void restoreState(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return;
+        }
+        Intent intent = savedInstanceState.getParcelable(STATE_PENDING_INTENT);
+        if (intent != null) {
+            pendingIntent = intent;
+            pendingIntentTab = savedInstanceState.getInt(STATE_PENDING_INTENT_TAB, -1);
         }
     }
 
