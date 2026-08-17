@@ -270,7 +270,14 @@ public class ImageGridFragment extends Fragment implements ImageDataSource.OnIma
             if (mFolderPopupWindow.isShowing()) {
                 mFolderPopupWindow.dismiss();
             } else {
-                mFolderPopupWindow.showAtLocation(mFooterBar, Gravity.NO_GRAVITY, 0, 0);
+                //PopupWindow 默认按整个窗口定位/铺宽，平板双栏下窗口是左右两栏共用的，
+                //必须按本 Fragment 根 View（即右栏）的实际宽度和在窗口中的位置来约束，
+                //否则蒙层和目录列表会盖过左栏，看起来像全屏弹出。
+                View root = requireView();
+                int[] location = new int[2];
+                root.getLocationInWindow(location);
+                mFolderPopupWindow.setWidth(root.getWidth());
+                mFolderPopupWindow.showAtLocation(mFooterBar, Gravity.NO_GRAVITY, location[0], location[1]);
                 //默认选择当前选择的上一个，当目录很多时，直接定位到已选中的条目
                 int index = mImageFolderAdapter.getSelectIndex();
                 index = index == 0 ? index : index - 1;
