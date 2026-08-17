@@ -989,4 +989,14 @@
         <item>@string/font_size_xxlarge</item>
     </string-array>
     <string name="ptt_toggle_restart_tip">开关对讲功能，重新启动应用生效</string>
+    <!-- 平板双栏工作台 tab 左栏迎宾面板 -->
+    <string name="workspace_greeting_morning">早上好</string>
+    <string name="workspace_greeting_noon">中午好</string>
+    <string name="workspace_greeting_afternoon">下午好</string>
+    <string name="workspace_greeting_evening">晚上好</string>
+    <string name="workspace_greeting_night">夜深了</string>
+    <string name="workspace_greeting_format">%1$s，%2$s</string>
+    <string name="workspace_welcome_subtitle">祝你有美好的一天</string>
+    <string name="workspace_welcome_hint">探索今天的高效工作吧</string>
+    <string name="workspace_welcome_date_format">%1$d年%2$d月%3$d日</string>
 </resources>

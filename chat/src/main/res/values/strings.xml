@@ -380,5 +380,4 @@
     <string name="pad_select_a_conversation">选择一个会话开始聊天</string>
     <string name="pad_select_a_contact">选择一位联系人查看资料</string>
     <string name="pad_select_an_entry">从左侧选择一项</string>
-    <string name="pad_workspace_in_right_pane">工作台已在右侧打开</string>
 </resources>

@@ -383,5 +383,4 @@
     <string name="pad_select_a_conversation">Select a conversation to start chatting</string>
     <string name="pad_select_a_contact">Select a contact to view profile</string>
     <string name="pad_select_an_entry">Select an item on the left</string>
-    <string name="pad_workspace_in_right_pane">Workspace is open on the right</string>
 </resources>

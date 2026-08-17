@@ -71,7 +71,6 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.page.WfcPageNavigator;
-import cn.wildfire.chat.kit.pane.PaneWelcomeFragment;
 import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
@@ -80,6 +79,7 @@ import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
+import cn.wildfire.chat.kit.workspace.WorkspaceWelcomeFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.message.FileMessageContent;
@@ -698,8 +698,8 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         }
         if (showWorkSpace()) {
             if (twoPaneNavigator != null) {
-                // 工作台没有「列表 → 详情」的层次：左栏放欢迎占位，网页始终占着右栏栈底。
-                mFragmentList.add(PaneWelcomeFragment.newInstance(getString(R.string.pad_workspace_in_right_pane)));
+                // 工作台没有「列表 → 详情」的层次：左栏放迎宾面板（问候语 + 日期），网页始终占着右栏栈底。
+                mFragmentList.add(new WorkspaceWelcomeFragment());
                 Bundle workspaceArgs = new Bundle();
                 workspaceArgs.putString("url", Config.getWorkspaceUrl());
                 twoPaneNavigator.addTabWithRootPage(WebViewFragment.class, workspaceArgs,
