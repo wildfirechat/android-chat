@@ -4,44 +4,20 @@
 
 package cn.wildfire.chat.kit.conversation.mention;
 
-import java.util.List;
+import android.content.Intent;
 
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.search.SearchActivity;
-import cn.wildfire.chat.kit.search.SearchableModule;
-import cn.wildfirechat.model.GroupInfo;
+import androidx.fragment.app.Fragment;
 
-public class MentionGroupMemberActivity extends SearchActivity {
-    private GroupInfo groupInfo;
+import cn.wildfire.chat.kit.search.SearchShellActivity;
 
-    @Override
-    protected void beforeViews() {
-        super.beforeViews();
-        groupInfo = getIntent().getParcelableExtra("groupInfo");
-    }
+/**
+ * 「@ 谁」在手机端的宿主壳。整页逻辑住在 {@link MentionGroupMemberPageFragment}，
+ * 手机端与平板右栏共用同一份。
+ */
+public class MentionGroupMemberActivity extends SearchShellActivity {
 
     @Override
-    protected boolean hideSearchDescView() {
-        return true;
-    }
-
-    @Override
-    protected void afterViews() {
-        super.afterViews();
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.mentionGroupMemberContainer, MentionGroupMemberFragment.newInstance(groupInfo))
-            .commit();
-    }
-
-    @Override
-    protected void initSearchModule(List<SearchableModule> modules) {
-        if(groupInfo != null){
-            modules.add(new GroupMemberSearchModule(groupInfo.target));
-        }
-    }
-
-    @Override
-    protected int contentLayout() {
-        return R.layout.group_mention_activity;
+    protected Fragment createSearchPage(Intent intent) {
+        return MentionGroupMemberPageFragment.fromIntent(intent);
     }
 }

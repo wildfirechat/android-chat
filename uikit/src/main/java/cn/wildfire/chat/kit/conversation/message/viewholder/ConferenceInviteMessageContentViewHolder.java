@@ -18,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -80,7 +81,8 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
                 Intent intent = new Intent(fragment.getActivity(), ConferenceInfoActivity.class);
                 intent.putExtra("conferenceId", inviteMessageContent.getCallId());
                 intent.putExtra("password", inviteMessageContent.getPassword());
-                fragment.startActivity(intent);
+                // 走 WfcPageCompat：平板上会议详情压到会话所在的那条右栏栈上，而不是整屏跳出去
+                WfcPageCompat.startPage(fragment, intent);
             }
         });
     }

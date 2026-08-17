@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  平板双栏下会话列表项的背景：比 selector_common_item 多一个「选中态」，
+  用来标记右栏当前打开的是哪个会话。
+  只在双栏布局中由 ConversationListAdapter 代码设置，手机端不会用到本资源。
+  选中态与按压态用同一个颜色：两者视觉统一，按压态褪去、选中态还没生效的那一帧
+  也不会有色差，观感上不会闪。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/primary_item_pressed_color" android:state_pressed="true" />
+    <item android:drawable="@color/primary_item_pressed_color" android:state_activated="true" />
+    <item android:drawable="@color/white" />
+</selector>

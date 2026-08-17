@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    平板（sw600dp）专用的闪屏页。
+    手机版靠固定的 113dp 顶部间距定位 logo，在平板横屏（可用高度骤减）和大屏竖屏
+    （大片留白）下都不合适，这里改为垂直居中、slogan 贴底。
+    本页无 findViewById，不涉及任何控件 id 约定。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/logo"
+            app:shapeAppearance="@style/RoundedCorners_4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/name"
+            android:textColor="@color/black2"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="53dp"
+        android:text="@string/slogan"
+        android:textColor="@color/gray11"
+        android:textSize="18sp" />
+
+</FrameLayout>

@@ -23,6 +23,20 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 
+/**
+ * 「选人（可跨群、跨组织）」页的旧基类。
+ * <p>
+ * <strong>本仓库内已无子类</strong>：两个子类分别下沉成了
+ * {@code CreateConversationPageFragment}（选完直接开会话）与
+ * {@code PickOrCreateConversationTargetPageFragment}（选完把结果回传），
+ * 它们都继承 {@link PickConversationTargetFragment} 并实现 {@code WfcPage}，手机端与右栏共用。
+ * <p>
+ * <strong>新增这类页面请继承 {@link PickConversationTargetFragment}</strong>，别再从这里派生。
+ * 本类仅为已经继承它的外部集成方保留。{@link #CURRENT_PARTICIPANTS} 仍是两端通用的 extra 键名。
+ *
+ * @deprecated 用 {@link PickConversationTargetFragment} + {@code WfcPage}
+ */
+@Deprecated
 public abstract class PickConversationTargetActivity extends WfcBaseActivity implements PickConversationTargetFragment.OnGroupPickListener {
     public static final String CURRENT_PARTICIPANTS = "currentParticipants";
 

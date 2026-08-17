@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    平板（sw600dp）专用的验证码登录页。
+    与 layout/login_activity_sms.xml 相比只有两点差别：
+      1. 外层包 ScrollView —— 横屏时可用高度骤减，加上键盘会遮挡输入框和登录按钮；
+      2. 表单限制最大宽度并居中 —— 避免输入框被拉伸到整个平板宽度。
+    控件 id 与手机版完全一致，SMSLoginActivity 无需任何改动。
+    ⚠️ 修改手机版布局的控件时，请同步本文件。
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray14"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="40dp">
+
+        <LinearLayout
+            android:layout_width="@dimen/wfc_form_max_width"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="72dp"
+                android:text="@string/sms_login_title"
+                android:textColor="@color/black2"
+                android:textSize="26sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/phoneNumberEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@null"
+                    android:drawableBottom="@drawable/selector_edit_focus"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:hint="@string/login_phone_hint"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:paddingLeft="60dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray13"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/login_phone_label"
+                    android:textColor="@color/black3"
+                    android:textSize="17sp" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/authCodeEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:drawableBottom="@drawable/selector_edit_focus"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:hint="@string/verify_code_hint"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:paddingLeft="60dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray13"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/verify_code"
+                    android:textColor="@color/black3"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/requestAuthCodeButton"
+                    android:layout_width="72dp"
+                    android:layout_height="23dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:background="@drawable/request_auth_code_bg"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:text="@string/get_verify_code"
+                    android:textColor="@color/request_auth_code_text_color"
+                    android:textSize="12sp" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/passwordLoginTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/login_use_password"
+                android:textColor="@color/colorPrimary"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:enabled="false"
+                android:text="@string/login_button"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/wfc_form_max_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <CheckBox
+                android:id="@+id/agreementCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/agreementTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/privacy_agreement_tip_and_links"
+                android:textColorLink="@color/colorPrimary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

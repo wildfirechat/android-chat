@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfirechat.model.GroupInfo;
@@ -34,7 +35,7 @@ public class PickGroupMemberFragment extends PickUserFragment {
 
     @Override
     protected void setupPickFromUsers() {
-        PickUserViewModel pickUserViewModel = new ViewModelProvider(getActivity()).get(PickUserViewModel.class);
+        PickUserViewModel pickUserViewModel = new ViewModelProvider(WfcPageCompat.pageScope(this)).get(PickUserViewModel.class);
         GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
             showContent();

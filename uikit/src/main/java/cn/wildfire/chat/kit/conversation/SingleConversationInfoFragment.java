@@ -35,6 +35,7 @@ import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -99,7 +100,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
                     Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
-                    startActivity(intent);
+                    ConversationRouter.open(this, intent);
                 })
                 .build()
                 .show();
@@ -123,7 +124,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         conversationMemberAdapter.setOnMemberClickListener(this);
 
         memberReclerView.setAdapter(conversationMemberAdapter);
-        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
+        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.wfc_member_grid_span)));
         stickTopSwitchButton.setChecked(conversationInfo.top > 0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
@@ -169,7 +170,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void fileRecord() {

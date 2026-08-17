@@ -4,14 +4,15 @@
 
 package cn.wildfire.chat.kit.contact;
 
-import android.content.Intent;
-import android.os.Bundle;
-
-import java.util.ArrayList;
-
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
+/**
+ * 选联系人页（发名片等）的空壳。
+ * <p>
+ * 页面本体是 {@link ContactListFragment}（{@code pick == true} 那一形态）：手机端由本壳装着，
+ * 平板上同一份实现直接进右栏，标题栏、菜单、返回都由宿主提供。
+ */
 public class ContactListActivity extends WfcBaseActivity {
     public static String FILTER_USER_LIST = "filterUserList";
 
@@ -22,16 +23,12 @@ public class ContactListActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        Intent intent = getIntent();
-        ArrayList<String> filterUserList = intent.getStringArrayListExtra(FILTER_USER_LIST);
-        ContactListFragment fragment = new ContactListFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("pick", true);
-        bundle.putBoolean("showChannel", intent.getBooleanExtra("showChannel", true));
-        bundle.putStringArrayList(FILTER_USER_LIST, filterUserList);
-        fragment.setArguments(bundle);
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
+        }
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.containerFrameLayout, fragment)
+            .replace(R.id.containerFrameLayout, ContactListFragment.newPickInstance(getIntent()))
             .commit();
     }
 }

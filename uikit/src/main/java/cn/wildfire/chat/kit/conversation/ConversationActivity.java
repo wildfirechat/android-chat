@@ -7,21 +7,18 @@ package cn.wildfire.chat.kit.conversation;
 import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
-import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationActivity extends WfcBaseActivity {
     private boolean isInitialized = false;
     private ConversationFragment conversationFragment;
-    private Conversation conversation;
 
     @Override
     protected int contentLayout() {
@@ -42,10 +39,17 @@ public class ConversationActivity extends WfcBaseActivity {
                 isInitialized = true;
             }
         });
-        conversationFragment = new ConversationFragment();
-        getSupportFragmentManager().beginTransaction()
-            .add(R.id.containerFrameLayout, conversationFragment, "content")
-            .commit();
+        // 配置变化（Pad 解锁了横竖屏/分屏）后 FragmentManager 已经把会话页恢复出来了，
+        // 无条件 add 会在恢复出来的这个之上再叠一层，见 PAD_ADAPTATION_REVIEW.md P1。
+        Fragment restored = getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout);
+        if (restored instanceof ConversationFragment) {
+            conversationFragment = (ConversationFragment) restored;
+        } else {
+            conversationFragment = new ConversationFragment();
+            getSupportFragmentManager().beginTransaction()
+                .add(R.id.containerFrameLayout, conversationFragment, "content")
+                .commit();
+        }
 
         setAppBarLayoutElevation(1);
         setConversationBackground();
@@ -62,8 +66,8 @@ public class ConversationActivity extends WfcBaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_conversation_info) {
-            showConversationInfo();
+        // 「会话信息」的处理已下沉到 ConversationFragment（平板双栏右栏复用同一套逻辑），这里只做转发
+        if (conversationFragment != null && conversationFragment.onConversationMenuItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -76,21 +80,10 @@ public class ConversationActivity extends WfcBaseActivity {
         }
     }
 
-    private void showConversationInfo() {
-        Intent intent = new Intent(this, ConversationInfoActivity.class);
-        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
-        if (conversationInfo == null) {
-            Toast.makeText(this, R.string.get_conversation_info_failed, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        intent.putExtra("conversationInfo", conversationInfo);
-        startActivity(intent);
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        conversation = intent.getParcelableExtra("conversation");
+        Conversation conversation = intent.getParcelableExtra("conversation");
         if (conversation == null) {
             finish();
             return;
@@ -105,7 +98,7 @@ public class ConversationActivity extends WfcBaseActivity {
 
     private void init() {
         Intent intent = getIntent();
-        conversation = intent.getParcelableExtra("conversation");
+        Conversation conversation = intent.getParcelableExtra("conversation");
         String conversationTitle = intent.getStringExtra("conversationTitle");
         boolean isPreJoinedChatRoom = intent.getBooleanExtra("isPreJoinedChatRoom", false);
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -49,7 +50,7 @@ public class DomainListFragment extends ProgressFragment implements DomainListAd
     public void onExternalOrganizationClick(DomainInfo domainInfo) {
         Intent intent = new Intent(getContext(), DomainInfoActivity.class);
         intent.putExtra("domainInfo", domainInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     private void loadRemoteDomains() {

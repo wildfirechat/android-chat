@@ -29,6 +29,7 @@ import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -154,7 +155,7 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void fileRecord() {

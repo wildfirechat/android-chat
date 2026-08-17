@@ -19,6 +19,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
@@ -47,8 +48,8 @@ public class GroupMemberSearchModule extends SearchableModule<UserInfo, UserView
     public void onClick(Fragment fragment, UserViewHolder holder, View view, UserInfo userInfo) {
         Intent intent = new Intent();
         intent.putExtra("userId", userInfo.uid);
-        fragment.getActivity().setResult(Activity.RESULT_OK, intent);
-        fragment.getActivity().finish();
+        WfcPageCompat.setPageResult(fragment, Activity.RESULT_OK, intent);
+        WfcPageCompat.finishPage(fragment);
     }
 
     @Override

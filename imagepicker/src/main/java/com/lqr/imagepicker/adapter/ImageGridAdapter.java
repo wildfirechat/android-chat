@@ -17,7 +17,6 @@ import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.R;
 import com.lqr.imagepicker.Utils;
 import com.lqr.imagepicker.bean.ImageItem;
-import com.lqr.imagepicker.ui.ImageGridActivity;
 import com.lqr.imagepicker.view.SuperCheckBox;
 
 import java.util.ArrayList;
@@ -49,6 +48,19 @@ public class ImageGridAdapter extends BaseAdapter {
         this.multiMode = multiMode;
         this.limit = limit;
         mSelectedImages = store.getSelectedImages();
+    }
+
+    /**
+     * 每个条目的边长（正方形）。构造时先用 {@link Utils#getImageItemWidth} 按整屏宽度给一个初始值
+     * （手机上就是最终值），承载页在拿到 GridView 真实宽度后会用 {@link #setImageItemWidth} 校正——
+     * 平板双栏下 GridView 的真实宽度是右栏宽度，不是整屏宽度，两者不一致。
+     */
+    public void setImageItemWidth(int imageSize) {
+        if (imageSize <= 0 || imageSize == mImageSize) {
+            return;
+        }
+        mImageSize = imageSize;
+        notifyDataSetChanged();
     }
 
     public void refreshData(ArrayList<ImageItem> images) {
@@ -98,7 +110,9 @@ public class ImageGridAdapter extends BaseAdapter {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((ImageGridActivity) mActivity).takePhoto();
+                    if (listener != null) {
+                        listener.onCameraClick();
+                    }
                 }
             });
         } else {
@@ -130,7 +144,9 @@ public class ImageGridAdapter extends BaseAdapter {
                     } else {
                         store.addSelectedImageItem(position, imageItem, holder.cbCheck.isChecked());
                         holder.mask.setVisibility(View.VISIBLE);
-                        ((ImageGridActivity) mActivity).updatePickStatus();
+                        if (listener != null) {
+                            listener.onPickStatusChanged();
+                        }
                     }
                 }
             });
@@ -184,6 +200,18 @@ public class ImageGridAdapter extends BaseAdapter {
 
     public interface OnImageItemClickListener {
         void onImageItemClick(View view, ImageItem imageItem, int position);
+
+        /**
+         * 相机格子被点击。原来是 {@code (ImageGridActivity) mActivity).takePhoto()} 的硬转型——
+         * 承载页在平板双栏下不是 {@code ImageGridActivity}，会 {@code ClassCastException}。
+         */
+        void onCameraClick();
+
+        /**
+         * 某一格的选中状态变化了，承载页据此刷新底部「完成/预览」按钮的文案与可用状态。
+         * 原来是 {@code (ImageGridActivity) mActivity).updatePickStatus()} 的硬转型，理由同上。
+         */
+        void onPickStatusChanged();
     }
 
     private static String formatDuration(long second) {

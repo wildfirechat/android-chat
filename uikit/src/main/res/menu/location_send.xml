@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 改造前这是布局里的 confirmButton，标题栏归宿主之后只能做成菜单项。
+         周边地点搜出来之前不可见，与改造前的 View.GONE 一致。 -->
+    <item xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/send"
+        android:title="@string/send"
+        android:visible="false"
+        app:showAsAction="always" />
+</menu>

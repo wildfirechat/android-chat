@@ -41,8 +41,7 @@ public class GroupSearchViewModule extends SearchableModule<GroupSearchResult, G
         Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupSearchResult.groupInfo.target, 0);
         intent.putExtra("conversation", conversation);
-        fragment.startActivity(intent);
-        fragment.getActivity().finish();
+        openConversationAndFinishSearch(fragment, intent);
     }
 
     @Override

@@ -34,6 +34,6 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
 
     @Override
     protected void onClick() {
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.favorite_content), favoriteItem.getTitle());
+        WfcWebViewActivity.loadHtmlContent(fragment, fragment.getString(R.string.favorite_content), favoriteItem.getTitle());
     }
 }

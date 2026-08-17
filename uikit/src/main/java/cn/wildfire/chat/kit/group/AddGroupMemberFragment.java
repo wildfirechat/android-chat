@@ -18,6 +18,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.OrganizationValue;
@@ -55,7 +56,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
     @Override
     protected void setupPickFromUsers() {
         super.setupPickFromUsers();
-        PickUserViewModel pickUserViewModel = new ViewModelProvider(getActivity()).get(PickUserViewModel.class);
+        PickUserViewModel pickUserViewModel = new ViewModelProvider(WfcPageCompat.pageScope(this)).get(PickUserViewModel.class);
 
         GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
 
@@ -109,14 +110,14 @@ public class AddGroupMemberFragment extends PickContactFragment {
             intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         } else if (holder instanceof DepartViewHolder) {
             Organization organization = ((DepartViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
             intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         }
     }
 

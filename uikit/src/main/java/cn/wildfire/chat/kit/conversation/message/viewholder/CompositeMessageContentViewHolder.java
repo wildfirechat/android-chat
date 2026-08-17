@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -53,7 +54,7 @@ public class CompositeMessageContentViewHolder extends NormalMessageContentViewH
     public void onClick(View view) {
         Intent intent = new Intent(fragment.getContext(), CompositeMessageContentActivity.class);
         intent.putExtra("message", message.message);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
 }

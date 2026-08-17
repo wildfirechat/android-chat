@@ -7,20 +7,16 @@ package cn.wildfire.chat.kit.conversation;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ReplacementSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +28,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.ColorUtils;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
@@ -60,6 +52,7 @@ import java.util.Set;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayModeUtils;
@@ -177,8 +170,10 @@ public class ConversationFragment extends Fragment implements
     private String targetUser;
     private CharSequence conversationTitle = "";
     private CharSequence subConversationTitle = "";
-    // 缓存 Toolbar 的标题 TextView，用于在听筒模式下加耳朵图标并设置中间省略
-    private TextView toolbarTitleView;
+    /**
+     * 宿主未实现 {@link ConversationHost} 时的兼容适配器，见 {@link #conversationHost()}。
+     */
+    private WfcBaseActivityConversationHost wfcBaseActivityHost;
     private LinearLayoutManager layoutManager;
 
     // for group
@@ -571,7 +566,11 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void checkAndHighlightMessage() {
-        long highlightMessageId = getActivity().getIntent().getLongExtra("highlightMessageId", 0);
+        ConversationHost host = conversationHost();
+        if (host == null) {
+            return;
+        }
+        long highlightMessageId = host.getHighlightMessageId();
         if (highlightMessageId != 0 && adapter != null) {
             handler.postDelayed(() -> {
                 int position = adapter.getMessagePosition(highlightMessageId);
@@ -935,7 +934,7 @@ public class ConversationFragment extends Fragment implements
 
                     } else {
                         Toast.makeText(getActivity(), R.string.join_chatroom_error, Toast.LENGTH_SHORT).show();
-                        getActivity().finish();
+                        closeConversation();
                     }
                 }
             });
@@ -1019,7 +1018,7 @@ public class ConversationFragment extends Fragment implements
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
             SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
             if (secretChatInfo == null) {
-                getActivity().finish();
+                closeConversation();
                 return;
             }
             String userId = secretChatInfo.getUserId();
@@ -1035,21 +1034,79 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void setActivityTitle(CharSequence title, CharSequence subTitle) {
-        WfcBaseActivity activity = (WfcBaseActivity) getActivity();
-        if (activity == null) {
+        Activity activity = getActivity();
+        ConversationHost host = conversationHost();
+        if (activity == null || host == null) {
             return;
         }
         boolean silent = isConversationSilent();
         boolean earpiece = AudioPlayModeUtils.isEarpieceMode(activity);
-        if (!TextUtils.isEmpty(title) && (silent || earpiece)) {
-            applyTitleWithIcons(activity, title, silent, earpiece);
-        } else {
-            activity.setTitle(title);
-            if (toolbarTitleView != null) {
-                toolbarTitleView.setEllipsize(TextUtils.TruncateAt.END);
+        host.setConversationTitle(title, subTitle, silent, earpiece);
+    }
+
+    /**
+     * 解析当前宿主。
+     * <p>
+     * 双栏主界面直接实现了 {@link ConversationHost}；独立会话页仍是普通的
+     * {@link WfcBaseActivity}，用 {@link WfcBaseActivityConversationHost} 适配，行为与改造前一致。
+     * 适配器会缓存 toolbar 标题 TextView，所以要复用同一个实例，不能每次新建。
+     */
+    private ConversationHost conversationHost() {
+        // 平板右栏里，宿主是父 Fragment（PanePageFragment 提供该页自己的 toolbar），不是 Activity。
+        // 手机端会话页始终直接挂在 Activity 上，父链为空，这个循环一次都不会进。
+        for (Fragment parent = getParentFragment(); parent != null; parent = parent.getParentFragment()) {
+            if (parent instanceof ConversationHost) {
+                return (ConversationHost) parent;
             }
         }
-        activity.getToolbar().setSubtitle(subTitle);
+        Activity activity = getActivity();
+        if (activity instanceof ConversationHost) {
+            return (ConversationHost) activity;
+        }
+        if (activity instanceof WfcBaseActivity) {
+            if (wfcBaseActivityHost == null) {
+                wfcBaseActivityHost = new WfcBaseActivityConversationHost((WfcBaseActivity) activity);
+            }
+            return wfcBaseActivityHost;
+        }
+        return null;
+    }
+
+    private void closeConversation() {
+        ConversationHost host = conversationHost();
+        if (host != null) {
+            host.closeConversation();
+        }
+    }
+
+    /**
+     * 会话页菜单点击。由宿主转发过来：独立会话页从 {@code onOptionsItemSelected} 转发，
+     * 平板双栏从右栏 toolbar 的菜单监听转发，这样右栏切换会话时菜单天然作用于当前会话。
+     *
+     * @return 是否已消费该菜单项
+     */
+    public boolean onConversationMenuItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_conversation_info) {
+            showConversationInfo();
+            return true;
+        }
+        return false;
+    }
+
+    private void showConversationInfo() {
+        if (conversation == null) {
+            return;
+        }
+        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+        if (conversationInfo == null) {
+            Toast.makeText(getActivity(), R.string.get_conversation_info_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(getActivity(), ConversationInfoActivity.class);
+        intent.putExtra("conversationInfo", conversationInfo);
+        // startPage 而不是 startActivity：右栏据此确定地把会话详情压到「本会话页所在的那条栈」上，
+        // 于是详情页左上角有返回箭头、返回能回到会话。裸 startActivity 拿不到发起者。
+        WfcPageCompat.startPage(this, intent);
     }
 
     private boolean isConversationSilent() {
@@ -1067,88 +1124,6 @@ public class ConversationFragment extends Fragment implements
         setActivityTitle(conversationTitle, subConversationTitle);
     }
 
-    private void applyTitleWithIcons(WfcBaseActivity activity, CharSequence title, boolean silent, boolean earpiece) {
-        Toolbar toolbar = activity.getToolbar();
-        // 先设置纯文本标题，确保 Toolbar 已创建标题 TextView
-        activity.setTitle(title);
-        toolbar.post(() -> {
-            TextView titleView = findToolbarTitleView(toolbar, title);
-            if (titleView == null) {
-                return;
-            }
-            int size = (int) titleView.getTextSize();
-            int iconColor = ColorUtils.setAlphaComponent(titleView.getCurrentTextColor(), 0x80);
-
-            SpannableStringBuilder ssb = new SpannableStringBuilder();
-            ssb.append(title == null ? "" : title);
-            if (silent) {
-                appendTitleIcon(ssb, activity, R.drawable.ic_conversation_silent, size, iconColor);
-            }
-            if (earpiece) {
-                appendTitleIcon(ssb, activity, R.drawable.ic_conversation_earpiece, size, iconColor);
-            }
-
-            // 标题过长时从中间省略，末尾图标不会被截断
-            titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-            titleView.setText(ssb);
-        });
-    }
-
-    private void appendTitleIcon(SpannableStringBuilder ssb, Context context, int drawableRes, int size, int color) {
-        Drawable icon = ContextCompat.getDrawable(context, drawableRes);
-        if (icon == null) {
-            return;
-        }
-        icon = icon.mutate();
-        icon.setBounds(0, 0, size, size);
-        DrawableCompat.setTint(icon, color);
-        ssb.append("  "); // 与前面内容的间隔 + 图标占位符
-        int iconStart = ssb.length() - 1;
-        ssb.setSpan(new CenteredImageSpan(icon), iconStart, iconStart + 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-    }
-
-    private TextView findToolbarTitleView(Toolbar toolbar, CharSequence title) {
-        if (toolbarTitleView != null) {
-            return toolbarTitleView;
-        }
-        for (int i = 0; i < toolbar.getChildCount(); i++) {
-            View child = toolbar.getChildAt(i);
-            if (child instanceof TextView && TextUtils.equals(((TextView) child).getText(), title)) {
-                toolbarTitleView = (TextView) child;
-                return toolbarTitleView;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 垂直居中显示的图标 Span，避免使用默认基线对齐导致图标偏下。
-     */
-    private static class CenteredImageSpan extends ReplacementSpan {
-        private final Drawable drawable;
-
-        CenteredImageSpan(Drawable drawable) {
-            this.drawable = drawable;
-        }
-
-        @Override
-        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
-            return drawable.getBounds().width();
-        }
-
-        @Override
-        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-            canvas.save();
-            int drawableHeight = drawable.getBounds().height();
-            Paint.FontMetricsInt fm = paint.getFontMetricsInt();
-            int lineCenter = y + (fm.descent + fm.ascent) / 2;
-            int transY = lineCenter - drawableHeight / 2;
-            canvas.translate(x, transY);
-            drawable.draw(canvas);
-            canvas.restore();
-        }
-    }
-
     boolean onTouch(View view, MotionEvent event) {
 //        if (event.getAction() == MotionEvent.ACTION_DOWN && inputPanel.extension.canHideOnScroll()) {
 //            inputPanel.collapse();
@@ -1161,7 +1136,7 @@ public class ConversationFragment extends Fragment implements
     public void onPortraitClick(UserInfo userInfo) {
         if (conversation.type == Conversation.ConversationType.Channel && TextUtils.isEmpty(targetUser)) {
             Intent intent = ConversationActivity.buildConversationIntent(getActivity(), this.conversation, userInfo.uid, -1);
-            startActivity(intent);
+            ConversationRouter.open(this, intent);
             return;
         }
 
@@ -1264,7 +1239,8 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        toolbarTitleView = null;
+        // 与改造前一致：丢弃 toolbar 标题 TextView 的缓存（现在缓存在适配器里）
+        wfcBaseActivityHost = null;
     }
 
     @Override
@@ -1320,7 +1296,7 @@ public class ConversationFragment extends Fragment implements
         }
     }
 
-    boolean onBackPressed() {
+    public boolean onBackPressed() {
         boolean consumed = true;
         if (rootLinearLayout.getCurrentInput() != null) {
             rootLinearLayout.hideAttachedInput(true);
@@ -1528,10 +1504,12 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void resetConversationTitle() {
-        if (getActivity() == null || getActivity().isFinishing()) {
+        Activity activity = getActivity();
+        ConversationHost host = conversationHost();
+        if (activity == null || activity.isFinishing() || host == null) {
             return;
         }
-        if (!TextUtils.equals(conversationTitle, getActivity().getTitle())) {
+        if (!TextUtils.equals(conversationTitle, host.getConversationTitle())) {
             setActivityTitle(conversationTitle);
         }
     }
@@ -1570,7 +1548,11 @@ public class ConversationFragment extends Fragment implements
     private void setupMultiMessageAction() {
         multiMessageActionContainerLinearLayout.removeAllViews();
         List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
-        int width = getResources().getDisplayMetrics().widthPixels;
+        // 原来按整块屏幕宽度除以 action 数来算每个按钮的宽度，双栏时会按整屏平分而溢出右栏。
+        // 改为让容器自己按权重等分：weightSum 仍取 actions.size()（而非实际渲染出的按钮数），
+        // 这样密聊下少渲染一个转发按钮时，剩余空间依旧由容器的 gravity="center" 居中，与改造前一致。
+        // 手机上容器宽度就等于屏幕宽度，等分结果与改造前相同。
+        multiMessageActionContainerLinearLayout.setWeightSum(actions.size());
 
         for (MultiMessageAction action : actions) {
             if (conversation.type == Conversation.ConversationType.SecretChat && action instanceof ForwardMessageAction) {
@@ -1581,7 +1563,7 @@ public class ConversationFragment extends Fragment implements
             imageView.setImageResource(action.iconResId());
 
 
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / actions.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             multiMessageActionContainerLinearLayout.addView(imageView, layoutParams);
             ViewGroup.LayoutParams p = imageView.getLayoutParams();
             p.height = 70;
@@ -1631,7 +1613,10 @@ public class ConversationFragment extends Fragment implements
         intent.putExtra("groupInfo", groupInfo);
         int maxCount = AVEngineKit.isSupportMultiCall() ? (isAudioOnly ? AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT - 1 : AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - 1) : 1;
         intent.putExtra("maxCount", maxCount);
-        startActivityForResult(intent, isAudioOnly ? REQUEST_CODE_GROUP_AUDIO_CHAT : REQUEST_CODE_GROUP_VIDEO_CHAT);
+        // startPageForResult：平板右栏里选人页压在会话页上，选完出栈时结果回到本 Fragment 的
+        // onActivityResult；手机端等价于 startActivityForResult。
+        WfcPageCompat.startPageForResult(this, intent,
+            isAudioOnly ? REQUEST_CODE_GROUP_AUDIO_CHAT : REQUEST_CODE_GROUP_VIDEO_CHAT);
     }
 
     private void onPickGroupMemberToVoipChat(Intent intent, boolean isAudioOnly) {
@@ -1650,7 +1635,7 @@ public class ConversationFragment extends Fragment implements
         Intent intent = new Intent(getActivity(), GroupMessageReceiptActivity.class);
         intent.putExtra("message", message);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     public boolean isShowGroupMemberName() {

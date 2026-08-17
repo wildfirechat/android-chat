@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.mesh.DomainListActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
@@ -67,6 +68,21 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private UserViewModel userViewModel;
 
 
+
+    /**
+     * 「挑一个联系人回传给调用方」这一形态（发名片、选人）。通讯录 tab 那一份不走这里，
+     * 它是直接 new 出来、不带 pick 参数的。
+     */
+    public static ContactListFragment newPickInstance(@Nullable Intent intent) {
+        ContactListFragment fragment = new ContactListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("pick", true);
+        bundle.putBoolean("showChannel", intent == null || intent.getBooleanExtra("showChannel", true));
+        bundle.putStringArrayList("filterUserList",
+            intent == null ? null : intent.getStringArrayListExtra(ContactListActivity.FILTER_USER_LIST));
+        fragment.setArguments(bundle);
+        return fragment;
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,17 +222,30 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         addFooterViewHolder(ContactCountViewHolder.class, R.layout.contact_item_footer, new ContactCountFooterValue());
     }
 
+
+    /**
+     * 把选中的联系人回传给发起方并关掉本页。
+     * <p>
+     * 本 Fragment 既是通讯录 tab 的内容（{@code pick == false}），也是选人页的内容
+     * （{@code pick == true}，装在 {@link ContactListActivity} 或右栏那一层里）。
+     * 只有后者会走到这里 —— 前者如果误走，{@code getActivity()} 是双栏主界面，
+     * 原来那句 {@code getActivity().finish()} 会把整个界面关掉。
+     */
+    private void finishWithResult(Intent data) {
+        WfcPageCompat.setPageResult(this, Activity.RESULT_OK, data);
+        WfcPageCompat.finishPage(this);
+    }
+
     @Override
     public void onUserClick(UIUserInfo userInfo) {
         if (pick) {
             Intent intent = new Intent();
             intent.putExtra("userInfo", userInfo.getUserInfo());
-            getActivity().setResult(Activity.RESULT_OK, intent);
-            getActivity().finish();
+            finishWithResult(intent);
         } else {
             Intent intent = new Intent(getActivity(), UserInfoActivity.class);
             intent.putExtra("userInfo", userInfo.getUserInfo());
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 
@@ -234,8 +263,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
         } else if (holder instanceof ExternalDomainViewHolder) {
             if (ChatManager.Instance().isEnableMesh()) {
-                Intent intent = new Intent(getContext(), DomainListActivity.class);
-                startActivity(intent);
+                WfcPageCompat.startPage(this, new Intent(getContext(), DomainListActivity.class));
             } else {
                 Toast.makeText(getContext(), R.string.mesh_service_not_enabled, Toast.LENGTH_SHORT).show();
             }
@@ -246,22 +274,20 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         FriendRequestValue value = new FriendRequestValue(0);
         userListAdapter.updateHeader(0, value);
 
-        Intent intent = new Intent(getActivity(), FriendRequestListActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, new Intent(getActivity(), FriendRequestListActivity.class));
     }
 
     private void showGroupList() {
-        Intent intent = new Intent(getActivity(), GroupListActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, new Intent(getActivity(), GroupListActivity.class));
     }
 
     private void showChannelList() {
         Intent intent = new Intent(getActivity(), ChannelListActivity.class);
         if (pick) {
             intent.putExtra("pick", true);
-            startActivityForResult(intent, REQUEST_CODE_PICK_CHANNEL);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_CHANNEL);
         } else {
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 
@@ -270,9 +296,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         intent.putExtra("organizationId", org.id);
         if (pick) {
             intent.putExtra("pick", true);
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORG_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORG_MEMBER);
         } else {
-            startActivity(intent);
+            WfcPageCompat.startPage(this, intent);
         }
     }
 
@@ -285,14 +311,12 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             Intent intent = new Intent();
             ChannelInfo channelInfo = data.getParcelableExtra("channelInfo");
             intent.putExtra("channelInfo", channelInfo);
-            getActivity().setResult(Activity.RESULT_OK, intent);
-            getActivity().finish();
+            finishWithResult(intent);
         } else if (requestCode == REQUEST_CODE_PICK_ORG_MEMBER) {
             Intent intent = new Intent();
             Employee employee = data.getParcelableExtra("employee");
             intent.putExtra("employee", employee);
-            getActivity().setResult(Activity.RESULT_OK, intent);
-            getActivity().finish();
+            finishWithResult(intent);
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);

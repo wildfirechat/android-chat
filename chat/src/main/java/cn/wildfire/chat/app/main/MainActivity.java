@@ -11,13 +11,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.webkit.CookieManager;
 import android.webkit.WebStorage;
 import android.widget.LinearLayout;
@@ -55,6 +61,7 @@ import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
@@ -63,13 +70,16 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.page.WfcPageNavigator;
 import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.FileUtils;
+import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
+import cn.wildfire.chat.kit.workspace.WorkspaceWelcomeFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.message.FileMessageContent;
@@ -88,9 +98,15 @@ import cn.wildfirechat.uikit.menu.PopupMenu;
 import cn.wildfirechat.uikit.permission.PermissionKit;
 import q.rorbin.badgeview.QBadgeView;
 
-public class MainActivity extends WfcBaseActivity {
+public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
+
+    /**
+     * 平板双栏的右栏导航器（每个 tab 一条栈）。**手机端恒为 null**，本文件中所有
+     * {@code twoPaneNavigator != null} 分支在手机上都走不到，手机路径与改造前逐行一致。
+     */
+    private TwoPaneNavigator twoPaneNavigator;
 
     BottomNavigationView bottomNavigationView;
     ViewPager2 contentViewPager;
@@ -126,7 +142,118 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.main_activity;
+        // 双栏布局只是在同一个 Activity 里多挂一个右栏，从而完整复用 manifest 里的
+        // ${applicationId}.main、分享等 intent-filter 与 singleTask 语义——
+        // 若另起一个 MainPadActivity，这些入口都要复制一份并处理两个主界面并存的问题。
+        return WfcDeviceUtils.isTwoPaneLayout(this) ? R.layout.main_pad_activity : R.layout.main_activity;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (WfcDeviceUtils.isTwoPaneLayout(this)) {
+            twoPaneNavigator = new TwoPaneNavigator(this);
+            twoPaneNavigator.restoreState(savedInstanceState);
+            setupTwoPaneImeAdjustment();
+        } else {
+            // 平板分屏把窗口拖窄到 600dp 以下时，Activity 会以单栏布局重建。
+            // 单栏布局里没有右栏容器，先把 FragmentManager 自动恢复出来的那几条栈清掉，
+            // 再把原来在右栏里的会话交还给独立会话页，避免用户正在聊的会话凭空消失。
+            TwoPaneNavigator.removeRestoredStacks(this);
+            Conversation conversation = TwoPaneNavigator.getSavedConversation(savedInstanceState);
+            if (conversation != null) {
+                startActivity(ConversationActivity.buildConversationIntent(this, conversation, null, -1));
+            }
+        }
+        // 只在全新启动时处理启动 intent；配置变化重建时 savedInstanceState 非空，
+        // 会话由上面的状态恢复负责，再处理一次会导致每次旋转都重新打开／重新高亮。
+        if (savedInstanceState == null) {
+            handleConversationLaunchIntent(getIntent());
+        }
+    }
+
+    /**
+     * 平板双栏下，软键盘弹出时把左栏底部导航藏起来，避免它被顶到键盘上方。
+     * <p>
+     * 手机端不会走到这里；双栏的输入框在右栏，但窗口级 adjustResize/adjustPan
+     * 会让整个左栏一起变矮/上移，左栏底部的 tab 会被顶到键盘上方。这里监听窗口
+     * 可见区域变化，识别到键盘高度后直接隐藏左栏底部导航，让左栏内容继续使用
+     * 键盘上方的完整高度。
+     */
+    private void setupTwoPaneImeAdjustment() {
+        final View content = findViewById(android.R.id.content);
+        content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (bottomNavigationView == null) {
+                    return;
+                }
+                Rect rect = new Rect();
+                content.getWindowVisibleDisplayFrame(rect);
+                View root = content.getRootView();
+                int rootHeight = root.getHeight();
+                if (rootHeight <= 0 || rect.bottom <= 0) {
+                    return;
+                }
+
+                int bottomInset = 0;
+                WindowInsets windowInsets = root.getRootWindowInsets();
+                if (windowInsets != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        bottomInset = windowInsets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+                    } else {
+                        bottomInset = windowInsets.getStableInsetBottom();
+                    }
+                } else {
+                    // 极少数情况下拿不到 Insets，退回资源里的导航栏高度，避免把导航栏误判成键盘。
+                    int navBarResId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+                    if (navBarResId > 0) {
+                        bottomInset = getResources().getDimensionPixelSize(navBarResId);
+                    }
+                }
+
+                // 与 KeyboardAwareLinearLayout 相同的键盘高度估算：
+                // root 高度 - 当前可见区域底部 - 导航栏高度。
+                int keyboardHeight = Math.max(0, rootHeight - rect.bottom - bottomInset);
+                boolean keyboardShowing = keyboardHeight > 100;
+                int targetVisibility = keyboardShowing ? View.GONE : View.VISIBLE;
+                if (bottomNavigationView.getVisibility() != targetVisibility) {
+                    bottomNavigationView.setVisibility(targetVisibility);
+                }
+            }
+        });
+    }
+
+    /**
+     * 处理 {@link ConversationRouter} 从其他页面（或通知）路由过来的「打开会话」启动 intent。
+     * 手机端不会收到这种 intent（路由器在手机端直接 startActivity(ConversationActivity)）。
+     */
+    private void handleConversationLaunchIntent(Intent intent) {
+        if (intent == null || !intent.getBooleanExtra(ConversationRouter.EXTRA_OPEN_CONVERSATION_IN_PANE, false)) {
+            return;
+        }
+        if (twoPaneNavigator != null) {
+            // 会话统一进消息 tab 那条栈；左栏由导航器一并切回会话列表，
+            // 否则列表里的选中态用户根本看不见。
+            twoPaneNavigator.handleLaunchIntent(intent);
+            return;
+        }
+        // 通知只有 Application Context 可用，那里判定双栏在多窗口窄窗口下可能不准；
+        // 真到了主界面发现是单栏，就退回独立会话页，语义与手机端一致。
+        if (intent.getParcelableExtra("conversation") == null) {
+            return;
+        }
+        Intent conversationIntent = new Intent(this, ConversationActivity.class);
+        conversationIntent.putExtras(intent);
+        startActivity(conversationIntent);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (twoPaneNavigator != null) {
+            twoPaneNavigator.onSaveInstanceState(outState);
+        }
     }
 
     @Override
@@ -152,7 +279,10 @@ public class MainActivity extends WfcBaseActivity {
                 handleShareIntent();
                 init();
                 isInitialized = true;
-
+                if (twoPaneNavigator != null) {
+                    // 通知点击冷启动时，路由 intent 早于 IM 服务就绪到达，这里把它冲掉
+                    twoPaneNavigator.onImServiceReady();
+                }
             }
         });
 
@@ -223,6 +353,7 @@ public class MainActivity extends WfcBaseActivity {
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
             handleSendMultiple(intent); // Handle multiple items being sent
         }
+        handleConversationLaunchIntent(intent);
     }
 
     @Override
@@ -277,6 +408,11 @@ public class MainActivity extends WfcBaseActivity {
                 hideUnreadMessageBadgeView();
             }
         });
+        if (twoPaneNavigator != null) {
+            // 双栏：会话被删除/退群后，右栏回到欢迎页
+            conversationListViewModel.conversationListLiveData()
+                .observe(this, conversationInfos -> twoPaneNavigator.onConversationListChanged(conversationInfos));
+        }
 
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
@@ -359,7 +495,79 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     public void onBackPressed() {
+        // 双栏下先交给当前 tab 的右栏栈：栈顶页面自己消费（收起表情/扩展面板、退出多选），
+        // 否则出栈一层；栈空了才按主界面语义退到后台。
+        if (twoPaneNavigator != null && twoPaneNavigator.onBackPressed()) {
+            return;
+        }
         moveTaskToBack(true);
+    }
+
+    // ==================== 双栏右栏：页面拦截与 tab 联动（仅双栏下生效） ====================
+
+    /**
+     * 双栏下把「能在右栏承载的页面」拦下来，改为压进当前 tab 的右栏栈。
+     * <p>
+     * 之所以拦这里而不是逐个改调用点：{@code Activity.startActivity(intent)}、
+     * {@code Fragment.startActivity(intent)}、{@code context.startActivity(intent)}
+     * 最终都汇到本方法（requestCode 为 -1），这是全仓库唯一的公共出口，
+     * 相当于 flutter 端那个唯一的 {@code openPage} 入口。
+     * <p>
+     * 三重保险确保手机端零影响：{@code twoPaneNavigator} 手机端恒为 null；
+     * {@code requestCode == -1} 把所有等结果的跳转排除在外（选择器、拍照、扫码）；
+     * 未在 {@code PaneRegistry} 登记的页面（媒体预览、音视频通话）一律放行走原路径。
+     */
+    @Override
+    public void startActivityForResult(@NonNull Intent intent, int requestCode, @Nullable Bundle options) {
+        if (requestCode == -1 && twoPaneNavigator != null && twoPaneNavigator.openInPane(intent)) {
+            return;
+        }
+        super.startActivityForResult(intent, requestCode, options);
+    }
+
+    /**
+     * 页面显式发起的跳转（{@code WfcPageCompat.startPage / startPageForResult}）。
+     * <p>
+     * <strong>这是唯一能同时拿到「谁发起的」和「要什么结果」的入口。</strong>
+     * 覆写 {@code startActivityFromFragment} 是行不通的：androidx fragment 1.5 的
+     * {@code FragmentActivity$HostCallbacks} 不再覆写 {@code onStartActivityFromFragment}，
+     * {@code Fragment.startActivity} 直接落到 {@code ContextCompat.startActivity(Activity, ...)}；
+     * 而 {@code Fragment.startActivityForResult} 走 {@code FragmentManager.launchStartActivityForResult}，
+     * 到达 Activity 时 requestCode 已被换成内部生成的码。
+     */
+    @Override
+    public boolean openPageInPane(@Nullable Fragment caller, Intent intent, int requestCode) {
+        return twoPaneNavigator != null && twoPaneNavigator.openInPane(caller, intent, requestCode);
+    }
+
+    /**
+     * 页面显式发起的「打开下一页并把自己从栈里去掉」（{@code WfcPageCompat.replaceSelfWithPage}）。
+     */
+    @Override
+    public boolean replacePageInPane(@Nullable Fragment caller, Intent intent) {
+        return twoPaneNavigator != null && twoPaneNavigator.replaceInPane(caller, intent);
+    }
+
+    /**
+     * 记录按下点落在左栏还是右栏。这是<strong>兜底</strong>信号，只在发起者未知
+     * （尚未改用 {@code WfcPageCompat.startPage} 的裸 {@code startActivity}）时才被用到，
+     * 见 {@code TwoPaneNavigator.lastTouchInPane}。
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (twoPaneNavigator != null && ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            twoPaneNavigator.recordTouchOrigin(ev.getRawX(), ev.getRawY());
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    /**
+     * 供右栏导航器把左栏切到某个 tab（通知点击落到消息 tab、从通讯录发消息等）。
+     */
+    void selectTab(int index) {
+        if (contentViewPager != null) {
+            setCurrentViewPagerItem(index, false);
+        }
     }
 
     private void checkVersion() {
@@ -462,8 +670,13 @@ public class MainActivity extends WfcBaseActivity {
         conversationListFragment.setOnClickConversationItemListener(conversationInfo -> {
             Intent intent = new Intent(this, ConversationActivity.class);
             intent.putExtra("conversation", conversationInfo.conversation);
-            startActivity(intent);
+            // 手机端等价于 startActivity(intent)；双栏下由 ConversationRouter 找到本 Activity
+            // 这个 WfcPageNavigator，直接换右栏
+            ConversationRouter.open(this, intent);
         });
+        if (twoPaneNavigator != null) {
+            twoPaneNavigator.setConversationListFragment(conversationListFragment);
+        }
         if (contactListFragment == null) {
             contactListFragment = new ContactListFragment();
         }
@@ -477,14 +690,34 @@ public class MainActivity extends WfcBaseActivity {
         mFragmentList.clear();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
+        if (twoPaneNavigator != null) {
+            // 四个列表 tab 共用同一个欢迎页（与微信 Pad 一致），不再按 tab 给不同文案：
+            // 右栏是同一块区域，切 tab 时文案跟着变反而像是内容变了。
+            twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
+            twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
+        }
         if (showWorkSpace()) {
-            if (workspaceFragment == null) {
-                workspaceFragment = WebViewFragment.loadUrl(Config.getWorkspaceUrl());
+            if (twoPaneNavigator != null) {
+                // 工作台没有「列表 → 详情」的层次：左栏放迎宾面板（问候语 + 日期），网页始终占着右栏栈底。
+                mFragmentList.add(new WorkspaceWelcomeFragment());
+                Bundle workspaceArgs = new Bundle();
+                workspaceArgs.putString("url", Config.getWorkspaceUrl());
+                twoPaneNavigator.addTabWithRootPage(WebViewFragment.class, workspaceArgs,
+                    getString(R.string.app_title_workspace));
+            } else {
+                if (workspaceFragment == null) {
+                    workspaceFragment = WebViewFragment.loadUrl(Config.getWorkspaceUrl());
+                }
+                mFragmentList.add(workspaceFragment);
             }
-            mFragmentList.add(workspaceFragment);
         }
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
+        if (twoPaneNavigator != null) {
+            twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
+            twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
+            twoPaneNavigator.start(contentViewPager.getCurrentItem());
+        }
 
         contentViewPager.setAdapter(new HomeFragmentPagerAdapter(this, mFragmentList));
         contentViewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
@@ -609,7 +842,7 @@ public class MainActivity extends WfcBaseActivity {
                 Conversation conversation = new Conversation(Conversation.ConversationType.SecretChat, stringOperateResult.getResult().first, stringOperateResult.getResult().second);
                 Intent intent = new Intent(this, ConversationActivity.class);
                 intent.putExtra("conversation", conversation);
-                startActivity(intent);
+                ConversationRouter.open(this, intent);
             } else {
                 if (stringOperateResult.getErrorCode() == 86) {
                     //自己关闭了密聊功能
@@ -843,6 +1076,10 @@ public class MainActivity extends WfcBaseActivity {
         @Override
         public void onPageSelected(int position) {
             updateToolbar(position, 0);
+            if (twoPaneNavigator != null) {
+                // 右栏切到该 tab 自己的那条栈；没进过的 tab 显示欢迎页
+                twoPaneNavigator.setCurrentTab(position);
+            }
             if (!showWorkSpace()) {
                 if (position > 1) {
                     position++;

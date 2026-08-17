@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 平板宽屏下头像宫格加密，避免头像被拉大、行间留白过多。 -->
+    <integer name="wfc_member_grid_span">8</integer>
+
+</resources>

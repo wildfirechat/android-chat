@@ -18,8 +18,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <!-- 平板适配：不能声明为必需，否则无摄像头/无自动对焦的平板在应用市场会被过滤掉，无法安装 -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -54,20 +59,16 @@
             android:value="true" />
 
         <activity
-            android:name="cn.wildfire.chat.kit.conversation.ConversationActivity"
-            android:screenOrientation="portrait" />
+            android:name="cn.wildfire.chat.kit.conversation.ConversationActivity" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.FontSizeActivity"
-            android:label="@string/font_size"
-            android:screenOrientation="portrait" />
+            android:label="@string/font_size" />
         <activity
             android:name="cn.wildfire.chat.kit.user.SetAliasActivity"
-            android:label="@string/set_user_alias"
-            android:screenOrientation="portrait" />
+            android:label="@string/set_user_alias" />
         <activity
             android:name="cn.wildfire.chat.kit.user.ChangeMyNameActivity"
-            android:label="@string/modify_nickname"
-            android:screenOrientation="portrait" />
+            android:label="@string/modify_nickname" />
 
         <activity
             android:name="cn.wildfire.chat.kit.mm.TakePhotoActivity"
@@ -75,19 +76,19 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.group.SetGroupNameActivity"
-            android:label="@string/modify_group_name"
-            android:screenOrientation="portrait" />
+            android:label="@string/modify_group_name" />
         <activity
             android:name="cn.wildfire.chat.kit.group.SetGroupRemarkActivity"
-            android:label="@string/modify_group_remark"
-            android:screenOrientation="portrait" />
+            android:label="@string/modify_group_remark" />
         <activity
             android:name=".group.SetGroupAnnouncementActivity"
-            android:label="@string/modify_group_announcement"
-            android:screenOrientation="portrait" />
+            android:label="@string/modify_group_announcement" />
+        <!-- label 只是兜底：真正的标题是位置消息里带的地点名，由 ShowLocationPageFragment.pageTitle() 给出。
+             改造前这里还锁着 android:screenOrientation="portrait"，是阶段 1 解锁横屏时漏掉的一处
+             ——平板横屏下点开一条位置消息，整个 App 会跟着转成竖屏。 -->
         <activity
             android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
-            android:screenOrientation="portrait" />
+            android:label="@string/location" />
 
         <activity
             android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
@@ -135,7 +136,7 @@
             android:label="@string/privacy_setting" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
-            android:label="@string/privacy_setting" />
+            android:label="@string/find_me_ways" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
             android:label="@string/blacklist" />
@@ -177,7 +178,8 @@
             android:label="@string/channel_info" />
         <activity
             android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/web_page">
             <intent-filter>
                 <action android:name="${packageName}.webview" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -186,7 +188,11 @@
         <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
         <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity" />
-        <activity android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity" />
+        <!-- label 只是兜底：真正的标题是调用方传进来的「群二维码」「频道二维码」等，
+             由 QRCodeFragment.pageTitle() 给出 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity"
+            android:label="@string/qrcode" />
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupInfoActivity"
             android:label="@string/group_info" />
@@ -210,13 +216,11 @@
             android:label="@string/group_member_permission" />
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.JoinGroupRequestListActivity"
-            android:label="@string/join_group_request_list"
-            android:screenOrientation="portrait" />
+            android:label="@string/join_group_request_list" />
 
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"
-            android:label="@string/group_member_list"
-            android:screenOrientation="portrait" />
+            android:label="@string/group_member_list" />
 
         <activity
             android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
@@ -262,8 +266,14 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity" />
-        <activity android:name="cn.wildfire.chat.kit.pc.PCSessionActivity" />
-        <activity android:name=".third.location.ui.activity.MyLocationActivity" />
+        <!-- label 只是兜底：真正的标题是「Windows 已登录」这种按平台拼出来的，
+             由 PCSessionFragment.pageTitle() 给出 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.pc.PCSessionActivity"
+            android:label="@string/pc_online" />
+        <activity
+            android:name=".third.location.ui.activity.MyLocationActivity"
+            android:label="@string/location" />
         <activity
             android:name=".conversation.file.FileRecordActivity"
             android:label="@string/file_record" />
@@ -274,18 +284,15 @@
         <!-- 按日期查找Activity -->
         <activity
             android:name=".search.bydate.ConversationMessageByDateActivity"
-            android:label="按日期查找"
-            android:screenOrientation="portrait" />
+            android:label="按日期查找" />
         <!-- 图片与视频Activity -->
         <activity
             android:name=".search.media.ConversationMediaActivity"
-            android:label="图片与视频"
-            android:screenOrientation="portrait" />
+            android:label="图片与视频" />
         <!-- 链接记录Activity -->
         <activity
             android:name=".search.link.ConversationLinkRecordActivity"
-            android:label="链接记录"
-            android:screenOrientation="portrait" />
+            android:label="链接记录" />
 
 
         <!--moment start-->
@@ -344,30 +351,24 @@
         <!-- 接龙功能 -->
         <activity
             android:name="cn.wildfire.chat.kit.collection.CreateCollectionActivity"
-            android:label="@string/create_collection"
-            android:screenOrientation="portrait" />
+            android:label="@string/create_collection" />
         <activity
             android:name="cn.wildfire.chat.kit.collection.CollectionDetailActivity"
-            android:label="@string/collection_detail"
-            android:screenOrientation="portrait" />
+            android:label="@string/collection_detail" />
 
         <!-- 投票功能 -->
         <activity
             android:name="cn.wildfire.chat.kit.poll.activity.PollHomeActivity"
-            android:label="@string/poll"
-            android:screenOrientation="portrait" />
+            android:label="@string/poll" />
         <activity
             android:name="cn.wildfire.chat.kit.poll.activity.CreatePollActivity"
-            android:label="@string/create_poll"
-            android:screenOrientation="portrait" />
+            android:label="@string/create_poll" />
         <activity
             android:name="cn.wildfire.chat.kit.poll.activity.PollListActivity"
-            android:label="@string/my_polls"
-            android:screenOrientation="portrait" />
+            android:label="@string/my_polls" />
         <activity
             android:name="cn.wildfire.chat.kit.poll.activity.PollDetailActivity"
-            android:label="@string/poll_detail"
-            android:screenOrientation="portrait" />
+            android:label="@string/poll_detail" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

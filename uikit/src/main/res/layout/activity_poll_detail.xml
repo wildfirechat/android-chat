@@ -4,16 +4,12 @@
     android:layout_height="match_parent"
     android:background="@color/gray5">
 
-    <include
-        android:id="@+id/toolbarLayout"
-        layout="@layout/toolbar" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomBar"
-        android:layout_below="@id/toolbarLayout"
+        android:layout_alignParentTop="true"
         android:clipToPadding="false" />
 
     <!-- 底部操作栏（管理场景显示） -->

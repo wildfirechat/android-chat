@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public class GroupManageFragment extends Fragment {
     private GroupInfo groupInfo;
@@ -52,7 +53,7 @@ public class GroupManageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
         if (groupInfo == null) {
-            getActivity().finish();
+            WfcPageCompat.finishPage(this);
         }
     }
 
@@ -147,8 +148,7 @@ public class GroupManageFragment extends Fragment {
     void showGroupMuteSetting() {
         Intent intent = new Intent(getActivity(), GroupMuteOrAllowActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
-
+        WfcPageCompat.startPage(this, intent);
     }
 
     void showMemberPermissionSetting() {

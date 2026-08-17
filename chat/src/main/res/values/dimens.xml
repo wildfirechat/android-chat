@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      平板双栏主界面左栏（会话列表）宽度。只被 layout/main_pad_activity.xml 引用，
+      而该布局只在双栏下加载，手机端取不到也用不到。
+    -->
+    <dimen name="wfc_pad_left_pane_width">320dp</dimen>
+</resources>

@@ -56,7 +56,7 @@ public class MeetingMinutesMessageContentViewHolder extends NormalMessageContent
             && !TextUtils.isEmpty(content.getMeetingId())) {
             String encodedConferenceId = Uri.encode(content.getMeetingId());
             String url = Config.getMinutesUrl() + "?conferenceId=" + encodedConferenceId;
-            WfcWebViewActivity.loadUrl(fragment.getContext(), "", url);
+            WfcWebViewActivity.loadUrl(fragment, "", url);
         }
     }
 }

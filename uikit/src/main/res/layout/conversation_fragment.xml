@@ -37,10 +37,16 @@
                 android:layout_height="0dp"
                 android:layout_weight="1">
 
+                <!--
+                    左右留白在手机上为 0dp，渲染结果与改造前一致；平板上收窄列表，
+                    避免固定宽度的气泡贴着屏幕两边、中间空出一大片。
+                -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/msgRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:paddingStart="@dimen/wfc_message_list_padding_horizontal"
+                    android:paddingEnd="@dimen/wfc_message_list_padding_horizontal" />
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -72,13 +73,15 @@ public class Utils {
     }
 
     /**
-     * 拍照的方法
+     * 拍照的方法。必须通过 {@link Fragment#startActivityForResult} 发起——用 Activity 发起的话，
+     * 结果只会送到 Activity 自己的 onActivityResult，不会转发给发起请求的子 Fragment。
      */
-    public static void takePhoto(Activity activity, String outputPath, int requestCode) {
+    public static void takePhoto(Fragment fragment, String outputPath, int requestCode) {
+        Activity activity = fragment.requireActivity();
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", new File(outputPath)));
-        activity.startActivityForResult(takePictureIntent, requestCode);
+        fragment.startActivityForResult(takePictureIntent, requestCode);
     }
 
     /**

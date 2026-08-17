@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    宽屏下这些面板不再贴着屏幕底边弹出，而是变成居中对话框（见 WfcSheetDialogCompat），
+    因此四个角都要圆 —— 默认那份只圆了上面两个角，是给贴底形态用的。
+    限定符与 WfcSheetDialogCompat 的判定条件（R.bool.wfc_two_pane，同为 sw600dp）一致，
+    不会出现「圆角按居中排、形态还是贴底」的错配。
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F7F7F7" />
+    <corners android:radius="12dp" />
+</shape>

@@ -170,6 +170,8 @@
     <string name="channel_name_title">频道名称</string>
     <string name="channel_desc_title">频道描述</string>
     <string name="qrcode">二维码</string>
+    <!-- 内嵌网页页面的兜底标题：intent 没带标题、网页也还没加载出标题时显示 -->
+    <string name="web_page">网页</string>
     <string name="search_message">查找聊天记录</string>
 
     <string name="chatroom_details">聊天室详情</string>
@@ -986,4 +988,15 @@
         <item>@string/font_size_xlarge</item>
         <item>@string/font_size_xxlarge</item>
     </string-array>
+    <string name="ptt_toggle_restart_tip">开关对讲功能，重新启动应用生效</string>
+    <!-- 平板双栏工作台 tab 左栏迎宾面板 -->
+    <string name="workspace_greeting_morning">早上好</string>
+    <string name="workspace_greeting_noon">中午好</string>
+    <string name="workspace_greeting_afternoon">下午好</string>
+    <string name="workspace_greeting_evening">晚上好</string>
+    <string name="workspace_greeting_night">夜深了</string>
+    <string name="workspace_greeting_format">%1$s，%2$s</string>
+    <string name="workspace_welcome_subtitle">祝你有美好的一天</string>
+    <string name="workspace_welcome_hint">探索今天的高效工作吧</string>
+    <string name="workspace_welcome_date_format">%1$d年%2$d月%3$d日</string>
 </resources>

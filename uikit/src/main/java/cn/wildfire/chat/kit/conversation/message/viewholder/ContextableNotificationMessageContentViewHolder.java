@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public abstract class ContextableNotificationMessageContentViewHolder extends No
     public void forwardMessage(View itemView, UiMessage message) {
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, priority = 13)

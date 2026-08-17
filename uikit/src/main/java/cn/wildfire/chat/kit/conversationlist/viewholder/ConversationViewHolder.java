@@ -29,6 +29,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.Draft;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
@@ -232,7 +233,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     public void onClick(View itemView) {
         Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
-        fragment.startActivity(intent);
+        ConversationRouter.open(fragment, intent);
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_REMOVE,

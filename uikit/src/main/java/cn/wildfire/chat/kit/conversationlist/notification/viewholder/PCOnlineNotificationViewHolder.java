@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.PCOnlineStatusNotification;
@@ -60,6 +61,6 @@ public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder
     public void showPCSessionInfo() {
         Intent intent = new Intent(fragment.getActivity(), PCSessionActivity.class);
         intent.putExtra("pcOnlineInfo", pcOnlineInfo);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 }

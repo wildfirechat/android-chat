@@ -4,101 +4,32 @@
 
 package cn.wildfire.chat.kit.group;
 
-import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.remote.ChatManager;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 
-public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
-    private TextView confirmTv;
+/**
+ * 「移出群成员」在手机端的宿主壳。整页逻辑住在 {@link RemoveGroupMemberPageFragment}，
+ * 手机端与平板右栏共用同一份，见 {@link BasePickGroupMemberPageFragment}。
+ */
+public class RemoveGroupMemberActivity extends WfcBaseActivity {
+
     public static final int RESULT_REMOVE_SUCCESS = 2;
     public static final int RESULT_REMOVE_FAIL = 3;
-    private GroupViewModel groupViewModel;
-    private List<UIUserInfo> checkedGroupMembers;
 
     @Override
-    protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
-        this.checkedGroupMembers = checkedUserInfos;
-        this.updateMenuStatus();
+    protected int contentLayout() {
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        super.afterViews();
-        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
-        GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
-        if (groupMember.type == GroupMember.GroupMemberType.Manager) {
-            pickUserViewModel.addUncheckableIds(Collections.singletonList(groupInfo.owner));
+        RemoveGroupMemberPageFragment fragment = RemoveGroupMemberPageFragment.fromIntent(getIntent());
+        if (fragment == null) {
+            finish();
+            return;
         }
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
-
-    @Override
-    protected int menu() {
-        return R.menu.group_remove_member;
-    }
-
-    @Override
-    protected void afterMenus(Menu menu) {
-        MenuItem item = menu.findItem(R.id.remove);
-        View actionView = item.getActionView();
-        confirmTv = actionView.findViewById(R.id.confirm_tv);
-        confirmTv.setEnabled(false);
-        confirmTv.setOnClickListener(v -> removeMember(checkedGroupMembers));
-        updateMenuStatus();
-    }
-
-
-    private void updateMenuStatus() {
-        if (checkedGroupMembers == null || checkedGroupMembers.isEmpty()) {
-            confirmTv.setText(R.string.delete);
-            confirmTv.setEnabled(false);
-        } else {
-            confirmTv.setText(getString(R.string.delete_with_count, checkedGroupMembers.size()));
-            confirmTv.setEnabled(true);
-        }
-    }
-
-    void removeMember(List<UIUserInfo> checkedUsers) {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content(R.string.deleting)
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
-        dialog.show();
-        if (checkedUsers != null && !checkedUsers.isEmpty()) {
-            ArrayList<String> checkedIds = new ArrayList<>(checkedUsers.size());
-            for (UIUserInfo user : checkedUsers) {
-                checkedIds.add(user.getUserInfo().uid);
-            }
-            groupViewModel.removeGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0)).observe(this, result -> {
-                dialog.dismiss();
-                if (result) {
-                    Intent intent = new Intent();
-                    intent.putStringArrayListExtra("memberIds", checkedIds);
-                    setResult(RESULT_REMOVE_SUCCESS, intent);
-                    Toast.makeText(this, getString(R.string.del_member_success), Toast.LENGTH_SHORT).show();
-                } else {
-                    setResult(RESULT_REMOVE_FAIL);
-                    Toast.makeText(this, getString(R.string.del_member_fail), Toast.LENGTH_SHORT).show();
-                }
-                finish();
-            });
-
-        }
-    }
-
 }

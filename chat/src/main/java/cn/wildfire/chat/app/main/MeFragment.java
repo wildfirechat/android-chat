@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.request.RequestOptions;
@@ -168,28 +169,28 @@ public class MeFragment extends Fragment {
 
     void fav() {
         Intent intent = new Intent(getActivity(), FavoriteListActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void account() {
         Intent intent = new Intent(getActivity(), AccountActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void files() {
         Intent intent = new Intent(getActivity(), FileRecordListActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
 
     void setting() {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void msgNotifySetting() {
         Intent intent = new Intent(getActivity(), MessageNotifySettingActivity.class);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void conversationSetting() {

@@ -33,6 +33,7 @@ import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.model.GroupInfo;
 
 public class PickConversationTargetFragment extends PickUserFragment {
@@ -133,14 +134,14 @@ public class PickConversationTargetFragment extends PickUserFragment {
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_ORANIZATIONS, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedOrganizations());
 
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         } else if (holder instanceof DepartViewHolder) {
             Organization organization = ((DepartViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
             intent.putExtra(PickOrganizationMemberActivity.PARAM_ORGANIZATION_ID, organization.id);
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_ORANIZATIONS, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedOrganizations());
-            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         }
     }
 

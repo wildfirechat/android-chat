@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
+import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
@@ -31,7 +32,10 @@ public abstract class WfcBaseNoToolbarActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // 手机维持原有的强制竖屏；平板不做限制，交给系统默认（也便于个别页面在 manifest 中单独锁定）。
+        if (!WfcDeviceUtils.isLandscapeAllowed(this)) {
+            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         beforeViews();
         setContentView(contentLayout());
         afterViews();

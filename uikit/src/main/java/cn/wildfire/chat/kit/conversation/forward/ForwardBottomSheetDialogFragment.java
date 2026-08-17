@@ -18,19 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
+import cn.wildfire.chat.kit.widget.WfcBottomSheetDialogFragment;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.model.Conversation;
 
-public class ForwardBottomSheetDialogFragment extends BottomSheetDialogFragment {
+public class ForwardBottomSheetDialogFragment extends WfcBottomSheetDialogFragment {
     private List<Conversation> targetConversations;
     private List<Message> messages;
     private OnSendListener onSendListener;
@@ -82,8 +82,12 @@ public class ForwardBottomSheetDialogFragment extends BottomSheetDialogFragment 
             }
         }
 
-        // Add global layout listener to detect keyboard
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+        // 监听键盘，弹起时把底部那行大按钮收掉、换成输入框里的小发送键。
+        // 这是贴底形态才需要的补救：面板贴着屏幕底边，键盘一上来就把按钮顶没了。
+        // 居中对话框本来就浮在屏幕中间，键盘弹起时窗口整体上移，按钮一直看得见，不用换。
+        if (!isCenteredDialog()) {
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+        }
     }
 
     @Override

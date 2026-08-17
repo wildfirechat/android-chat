@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -51,7 +52,7 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pickUserViewModel = new ViewModelProvider(getActivity()).get(PickUserViewModel.class);
+        pickUserViewModel = new ViewModelProvider(WfcPageCompat.pageScope(this)).get(PickUserViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
     }
 

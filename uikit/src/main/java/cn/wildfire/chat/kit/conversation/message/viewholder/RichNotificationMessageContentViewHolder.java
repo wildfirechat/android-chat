@@ -95,7 +95,7 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
 
     public void onClick(View view) {
         RichNotificationMessageContent rich = (RichNotificationMessageContent) message.message.content;
-        WfcWebViewActivity.loadUrl(fragment.getContext(), "", rich.exUrl);
+        WfcWebViewActivity.loadUrl(fragment, "", rich.exUrl);
     }
 
     @Override

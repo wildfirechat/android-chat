@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2026 WildFireChat. All rights reserved.
+  ~
+  ~ fragment_container_activity 的无标题栏版本，给自带顶部栏的页面（搜索页）当壳用。
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/containerFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5" />

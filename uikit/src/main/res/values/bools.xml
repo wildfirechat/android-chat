@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        是否使用平板双栏（列表 + 会话）布局。
+        默认（手机、以及分屏后宽度不足 600dp 的窗口）为 false，走原有单栏交互。
+        平板取值见 values-sw600dp/bools.xml。
+        读取请统一走 WfcDeviceUtils.isTwoPaneLayout(Context)。
+    -->
+    <bool name="wfc_two_pane">false</bool>
+
+</resources>

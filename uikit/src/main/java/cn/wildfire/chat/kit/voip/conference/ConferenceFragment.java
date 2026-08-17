@@ -55,6 +55,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
@@ -482,7 +483,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         });
         view.findViewById(R.id.chatLinearLayout).setOnClickListener(v -> {
             Intent intent = ConversationActivity.buildChatRoomConversationIntent(getContext(), callSession.getCallId(), 0, callSession.getTitle(), true);
-            getContext().startActivity(intent);
+            ConversationRouter.open(this, intent);
             dialog.dismiss();
         });
         view.findViewById(R.id.handupLinearLayout).setOnClickListener(v -> {

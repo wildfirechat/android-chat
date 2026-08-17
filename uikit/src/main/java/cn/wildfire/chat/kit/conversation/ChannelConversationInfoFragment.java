@@ -34,6 +34,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -74,7 +75,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         assert args != null;
         conversationInfo = args.getParcelable("conversationInfo");
         assert conversationInfo != null;
-        getActivity().setTitle(getString(R.string.channel_details));
+        WfcPageCompat.setPageTitle(this, getString(R.string.channel_details));
     }
 
     @Nullable
@@ -103,7 +104,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
                     Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
-                    startActivity(intent);
+                    ConversationRouter.open(this, intent);
                 })
                 .build()
                 .show();
@@ -160,7 +161,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void clearMessage() {
@@ -182,7 +183,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     void showChannelQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_CHANNEL + channelInfo.channelId;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), getString(R.string.channel_qr_code_title), channelInfo.portrait, qrCodeValue);
-        startActivity(intent);
+        WfcPageCompat.startPage(this, intent);
     }
 
     void fileRecord() {

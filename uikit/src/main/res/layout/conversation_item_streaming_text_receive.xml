@@ -22,7 +22,7 @@
             android:autoLink="phone|email|map|web"
             android:gravity="left|center_vertical"
             android:linksClickable="true"
-            android:maxWidth="240dp"
+            android:maxWidth="@dimen/wfc_text_message_max_width"
             android:minHeight="40dp"
             android:text=""
             android:textColorLink="#3655bf"

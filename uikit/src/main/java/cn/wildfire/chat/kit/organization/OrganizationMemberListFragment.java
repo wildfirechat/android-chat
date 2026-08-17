@@ -8,8 +8,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -22,6 +25,8 @@ import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
+import cn.wildfire.chat.kit.page.WfcPage;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
@@ -30,7 +35,7 @@ import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class OrganizationMemberListFragment extends ProgressFragment implements OrganizationMemberListAdapter.OnOrganizationMemberClickListener, BreadCrumbsView.OnTabListener {
+public class OrganizationMemberListFragment extends ProgressFragment implements OrganizationMemberListAdapter.OnOrganizationMemberClickListener, BreadCrumbsView.OnTabListener, WfcPage {
     private int orgId;
     private boolean pick;
     private RecyclerView recyclerView;
@@ -84,8 +89,8 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
         if (pick) {
             Intent intent = new Intent();
             intent.putExtra("employee", employee);
-            getActivity().setResult(Activity.RESULT_OK, intent);
-            getActivity().finish();
+            WfcPageCompat.setPageResult(this, Activity.RESULT_OK, intent);
+            WfcPageCompat.finishPage(this);
         } else {
             Intent intent = new Intent(getContext(), EmployeeInfoActivity.class);
             UserInfo userInfo = ChatManager.Instance().getUserInfo(employee.employeeId, false);
@@ -99,7 +104,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
         organizationServiceViewModel.getOrganizationEx(orgId).observe(this, new Observer<OrganizationEx>() {
             @Override
             public void onChanged(OrganizationEx organizationEx) {
-                getActivity().setTitle(organizationEx.organization.name);
+                WfcPageCompat.setPageTitle(OrganizationMemberListFragment.this, organizationEx.organization.name);
                 currentOrganizationEx = organizationEx;
                 adapter.setOrganizationEx(organizationEx);
                 adapter.setSearchMode(false);
@@ -178,5 +183,55 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
     @Override
     public void onRemoved(BreadCrumbsView.Tab tab) {
 
+    }
+
+    // ==================== WfcPage：菜单 ====================
+    // 改造前搜索框装配写在 OrganizationMemberListActivity.afterMenus 里，右栏又在 PaneRegistry
+    // 里拷了一份 —— 而右栏那份因为 inflate 时页面 Fragment 尚未 attach，实际从未生效。
+    // 现在装配代码就住在被它操作的那个 Fragment 里，不存在拿不到自己的问题。
+
+    @Override
+    public int pageMenu() {
+        return pick ? 0 : R.menu.organization_member_list;
+    }
+
+    @Override
+    public void onPreparePageMenu(Menu menu) {
+        MenuItem searchItem = menu.findItem(R.id.search);
+        if (searchItem == null || !(searchItem.getActionView() instanceof SearchView)) {
+            return;
+        }
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search_user_in_organization));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.trim().isEmpty()) {
+                    clearSearch();
+                } else {
+                    searchEmployees(newText);
+                }
+                return true;
+            }
+        });
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                clearSearch();
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                cancelSearch();
+                return true;
+            }
+        });
     }
 }

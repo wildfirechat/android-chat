@@ -26,6 +26,7 @@ public class WebViewFragment extends Fragment {
     private String url;
     private String htmlContent;
     private JsApi jsApi;
+    private static final String dsBridgeAgentTag = "WF-DSBridge";
 
     DWebView webView;
 
@@ -56,6 +57,8 @@ public class WebViewFragment extends Fragment {
         htmlContent = bundle.getString("htmlContent");
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        String ua = settings.getUserAgentString();
+        settings.setUserAgentString(ua + " " + dsBridgeAgentTag);
         // WebView 内容不受系统/应用的 fontScale 影响，需单独设置文字缩放，使工作台等页面字体随设置变化
         settings.setTextZoom((int) (FontScaleUtils.getFontScale(webView.getContext()) * 100));
         webView.setWebViewClient(new WebViewClient() {

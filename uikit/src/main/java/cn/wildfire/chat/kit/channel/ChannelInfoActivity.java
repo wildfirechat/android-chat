@@ -1,123 +1,42 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
 package cn.wildfire.chat.kit.channel;
 
-import android.content.Intent;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.lifecycle.ViewModelProvider;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
+import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.ChannelInfo;
 
+/**
+ * 频道详情页的空壳。
+ * <p>
+ * 页面本体在 {@link ChannelInfoFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、菜单、返回都由宿主提供，两端只有这一份实现。
+ */
 public class ChannelInfoActivity extends WfcBaseActivity {
-
-    ImageView portraitImageView;
-    TextView channelTextView;
-    TextView channelDescTextView;
-    Button followChannelButton;
-
-    private boolean isFollowed = false;
-    private ChannelViewModel channelViewModel;
-    private ChannelInfo channelInfo;
 
     @Override
     protected int contentLayout() {
-        return R.layout.channel_info_activity;
-    }
-
-    @Override
-    protected void bindViews() {
-        super.bindViews();
-        portraitImageView = findViewById(R.id.portraitImageView);
-        channelTextView = findViewById(R.id.channelNameTextView);
-        channelDescTextView = findViewById(R.id.channelDescTextView);
-        followChannelButton = findViewById(R.id.followChannelButton);
-    }
-
-    @Override
-    protected void bindEvents() {
-        super.bindEvents();
-        followChannelButton.setOnClickListener(v -> followChannelButtonClick());
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        super.afterViews();
-        init();
-    }
-
-    private void init() {
-        Intent intent = getIntent();
-        channelInfo = intent.getParcelableExtra("channelInfo");
-        channelViewModel =new ViewModelProvider(this).get(ChannelViewModel.class);
-
-        if (channelInfo == null) {
-            String channelId = intent.getStringExtra("channelId");
-            if (!TextUtils.isEmpty(channelId)) {
-                channelInfo = channelViewModel.getChannelInfo(channelId, true);
-            }
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
         }
-        if (channelInfo == null) {
+        Fragment fragment = ChannelInfoFragment.fromIntent(getIntent());
+        if (fragment == null) {
+            // 参数不全，这一页显示不出东西
             finish();
             return;
         }
 
-        // FIXME: 2018/12/24 只有应用launcher icon应当反倒mipmap下面，其他还是应当放到drawable下面
-        Glide.with(this).load(channelInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_chat)).into(portraitImageView);
-        channelTextView.setText(channelInfo.name);
-        channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ?
-            getString(R.string.channel_empty_desc) : channelInfo.desc);
-
-
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        if (channelInfo.owner.equals(userViewModel.getUserId())) {
-            followChannelButton.setVisibility(View.GONE);
-            return;
-        }
-
-        isFollowed = channelViewModel.isListenedChannel(channelInfo.channelId);
-        if (isFollowed) {
-            followChannelButton.setText(R.string.channel_following);
-        } else {
-            followChannelButton.setText(R.string.channel_not_following);
-        }
-    }
-
-    void followChannelButtonClick() {
-        String action = isFollowed ? getString(R.string.channel_following) : getString(R.string.channel_not_following);
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content(getString(R.string.channel_following_status, action))
-            .progress(true, 100)
-            .cancelable(false)
-            .build();
-        dialog.show();
-        channelViewModel.listenChannel(channelInfo.channelId, !isFollowed).observe(this, booleanOperateResult -> {
-            dialog.dismiss();
-            if (booleanOperateResult.isSuccess()) {
-                Toast.makeText(ChannelInfoActivity.this,
-                    getString(R.string.channel_following_success, action),
-                    Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(ChannelInfoActivity.this,
-                    getString(R.string.channel_following_failed, action),
-                    Toast.LENGTH_SHORT).show();
-            }
-        });
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }

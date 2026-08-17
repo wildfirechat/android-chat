@@ -22,6 +22,7 @@ package cn.wildfire.chat.kit.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -247,13 +248,24 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
         return rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270;
     }
 
+    /**
+     * 判断当前是否处于"横向"形态，用于决定键盘高度缓存读写哪个 key
+     * （keyboard_height_landscape / keyboard_height_portrait）。
+     * <p>
+     * 原来取的是物理屏幕的 real metrics，绕开了窗口边界：分屏、双栏下窗口明明是竖的、
+     * 设备却是横的，两个 key 会串，键盘高度记错。这里改为按本控件自身的宽高判断。
+     * 手机全屏时本控件铺满窗口、窗口即屏幕，取值与改造前一致。
+     * <p>
+     * 布局尚未完成（宽高为 0）时退回按 Configuration 判断，避免拿到无意义的 0。
+     */
     private int getDeviceRotation() {
-        if (Build.VERSION.SDK_INT >= 30) {
-            getContext().getDisplay().getRealMetrics(displayMetrics);
-        } else {
-            ServiceUtil.getWindowManager(getContext()).getDefaultDisplay().getRealMetrics(displayMetrics);
+        int width = getWidth();
+        int height = getHeight();
+        if (width > 0 && height > 0) {
+            return width > height ? Surface.ROTATION_90 : Surface.ROTATION_0;
         }
-        return displayMetrics.widthPixels > displayMetrics.heightPixels ? Surface.ROTATION_90 : Surface.ROTATION_0;
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+            ? Surface.ROTATION_90 : Surface.ROTATION_0;
     }
 
     private int getKeyboardLandscapeHeight() {

@@ -376,4 +376,8 @@
     <string name="restored_messages_media">已恢复 %1$d 条消息，%2$d 个媒体文件</string>
     <string name="restore_failed_prefix">恢复失败: %1$s</string>
     <string name="restore_failed_status">恢复失败</string>
+    <!-- 平板双栏右栏未选中会话时的占位文案 -->
+    <string name="pad_select_a_conversation">选择一个会话开始聊天</string>
+    <string name="pad_select_a_contact">选择一位联系人查看资料</string>
+    <string name="pad_select_an_entry">从左侧选择一项</string>
 </resources>

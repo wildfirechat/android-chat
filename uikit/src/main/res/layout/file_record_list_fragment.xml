@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    「文件」入口页的内容布局，与 activity_file_record_list.xml 逐行相同，
+    只去掉了顶部那条 toolbar —— 标题栏由宿主提供（手机端 Activity / 平板右栏 PanePageFragment）。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/allFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:show_arrow_indicator="true"
+        app:title="@string/all_files" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/myFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        app:show_arrow_indicator="true"
+        app:show_divider="false"
+        app:title="@string/my_files" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/conversationFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        app:show_arrow_indicator="true"
+        app:show_divider="false"
+        app:title="@string/conversation_files" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/userFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        app:show_arrow_indicator="true"
+        app:show_divider="false"
+        app:title="@string/user_files" />
+</LinearLayout>

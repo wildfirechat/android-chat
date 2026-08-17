@@ -4,136 +4,34 @@
 
 package cn.wildfire.chat.kit.conversation;
 
-import android.content.Intent;
-import android.widget.Toast;
-
-import androidx.lifecycle.ViewModelProvider;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
-import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.organization.model.Employee;
-import cn.wildfire.chat.kit.organization.model.Organization;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.client.GroupMemberSource;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
 
-public class CreateConversationActivity extends PickConversationTargetActivity {
-    private GroupViewModel groupViewModel;
+/**
+ * 「发起群聊 / 新建会话」在手机端的宿主壳。
+ * <p>
+ * 整页逻辑（选人列表 + 确定菜单 + 建会话）住在 {@link CreateConversationPageFragment}，
+ * 手机端与平板右栏共用同一份。改造前本类继承抽象的 {@link PickConversationTargetActivity}，
+ * 确定菜单在基类、建会话在子类，都挂在 Activity 上，页面因此无法进入右栏。
+ */
+public class CreateConversationActivity extends WfcBaseActivity {
+
+    /**
+     * 进入时已经在会话里、不可取消勾选的成员 id 列表。键名与
+     * {@link PickConversationTargetActivity#CURRENT_PARTICIPANTS} 保持一致，调用方无需改动。
+     */
+    public static final String CURRENT_PARTICIPANTS = PickConversationTargetActivity.CURRENT_PARTICIPANTS;
+
+    @Override
+    protected int contentLayout() {
+        return R.layout.fragment_container_activity;
+    }
 
     @Override
     protected void afterViews() {
-        super.afterViews();
-        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations, List<Employee> employees) {
-        List<String> initialCheckedIds = pickUserViewModel.getInitialCheckedIds();
-        List<UserInfo> userInfos = null;
-        if (initialCheckedIds != null && !initialCheckedIds.isEmpty()) {
-            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-            userInfos = userViewModel.getUserInfos(initialCheckedIds);
-        }
-        userInfos = userInfos == null ? new ArrayList<>() : userInfos;
-
-        if (newlyCheckedUserInfos != null) {
-            for (UIUserInfo uiUserinfo : newlyCheckedUserInfos) {
-                userInfos.add(uiUserinfo.getUserInfo());
-            }
-        }
-        if (employees != null) {
-            for (Employee e : employees) {
-                userInfos.add(e.toUserInfo());
-            }
-        }
-
-        if (organizations != null && !organizations.isEmpty() && Config.ENABLE_SELECT_ORGANIZATION) {
-            OrganizationServiceViewModel organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
-            List<Integer> orgIds = new ArrayList<>();
-            for (Organization org : organizations) {
-                orgIds.add(org.id);
-            }
-            List<UserInfo> finalUserInfos = userInfos;
-            organizationServiceViewModel.getOrganizationEmployees(orgIds, true).observe(this, es -> {
-                if (es != null) {
-                    for (Employee e : es) {
-                        finalUserInfos.add(e.toUserInfo());
-                    }
-                }
-                startConversation(finalUserInfos);
-            });
-        } else {
-            startConversation(userInfos);
-        }
-    }
-
-    private void startConversation(List<UserInfo> userInfos) {
-        if (userInfos == null || userInfos.isEmpty()) {
-            return;
-        }
-        if (userInfos.size() == 1) {
-            Toast.makeText(this, R.string.create_conversation_multi_contact_hint, Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, ConversationActivity.class);
-            Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfos.get(0).uid);
-            intent.putExtra("conversation", conversation);
-            startActivity(intent);
-            finish();
-        } else {
-            MaterialDialog dialog = new MaterialDialog.Builder(this)
-                    .content(R.string.creating_conversation)
-                    .progress(true, 100)
-                    .build();
-            dialog.show();
-
-            Map<String, UserInfo> userMap = new HashMap<>();
-            for (UserInfo info : userInfos) {
-                userMap.put(info.uid, info);
-            }
-
-            String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
-            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
-                dialog.dismiss();
-                if (result.isSuccess()) {
-                    Toast.makeText(this, getString(R.string.create_group_success), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(CreateConversationActivity.this, ConversationActivity.class);
-                    Conversation conversation = new Conversation(Conversation.ConversationType.Group, result.getResult(), 0);
-                    intent.putExtra("conversation", conversation);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, getString(R.string.create_group_fail), Toast.LENGTH_SHORT).show();
-                }
-                finish();
-            });
-        }
-    }
-
-    @Override
-    public void onGroupPicked(List<GroupInfo> groupInfos) {
-        Intent intent = new Intent(this, ConversationActivity.class);
-        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupInfos.get(0).target);
-        intent.putExtra("conversation", conversation);
-        startActivity(intent);
-        finish();
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, CreateConversationPageFragment.fromIntent(getIntent()))
+            .commit();
     }
 }

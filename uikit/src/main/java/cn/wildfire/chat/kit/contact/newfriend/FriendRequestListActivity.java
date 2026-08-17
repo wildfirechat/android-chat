@@ -4,20 +4,13 @@
 
 package cn.wildfire.chat.kit.contact.newfriend;
 
-import android.content.Intent;
-import android.view.MenuItem;
-
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
+/**
+ * 「新的朋友」在手机端的宿主壳。菜单（添加朋友）住在 {@link FriendRequestListFragment}，两端共用。
+ */
 public class FriendRequestListActivity extends WfcBaseActivity {
-
-    @Override
-    protected void afterViews() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, new FriendRequestListFragment())
-                .commit();
-    }
 
     @Override
     protected int contentLayout() {
@@ -25,21 +18,9 @@ public class FriendRequestListActivity extends WfcBaseActivity {
     }
 
     @Override
-    protected int menu() {
-        return R.menu.contact_friend_request;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.add) {
-            addContact();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    void addContact() {
-        Intent intent = new Intent(this, SearchUserActivity.class);
-        startActivity(intent);
+    protected void afterViews() {
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, new FriendRequestListFragment())
+            .commit();
     }
 }

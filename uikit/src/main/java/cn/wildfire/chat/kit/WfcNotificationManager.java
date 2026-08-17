@@ -30,6 +30,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -189,12 +190,15 @@ public class WfcNotificationManager {
             Intent mainIntent = new Intent(context.getPackageName() + ".main");
             Intent conversationIntent = new Intent(context, ConversationActivity.class);
             conversationIntent.putExtra("conversation", message.conversation);
+            // 手机端原样返回 {主界面, 会话页}；平板双栏下只起主界面、会话参数放在 extras 里，
+            // 否则会在双栏之上再压一个全屏会话页
+            Intent[] intents = ConversationRouter.buildTaskIntents(context, mainIntent, conversationIntent);
 
             PendingIntent pendingIntent;
             if (Build.VERSION.SDK_INT >= 23) {
-                pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), intents, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             } else {
-                pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+                pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), intents, PendingIntent.FLAG_UPDATE_CURRENT);
             }
             String tag = "wfc notification tag";
             showNotification(context, tag, notificationId(message.messageUid), title, pushContent, pendingIntent);

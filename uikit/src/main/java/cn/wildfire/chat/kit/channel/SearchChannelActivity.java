@@ -4,15 +4,20 @@
 
 package cn.wildfire.chat.kit.channel;
 
-import java.util.List;
+import android.content.Intent;
 
-import cn.wildfire.chat.kit.search.SearchActivity;
-import cn.wildfire.chat.kit.search.SearchableModule;
-import cn.wildfire.chat.kit.search.module.ChannelSearchModule;
+import androidx.fragment.app.Fragment;
 
-public class SearchChannelActivity extends SearchActivity {
+import cn.wildfire.chat.kit.search.SearchShellActivity;
+
+/**
+ * 「查找频道」在手机端的宿主壳。整页逻辑住在 {@link SearchChannelPageFragment}，
+ * 手机端与平板右栏共用同一份。
+ */
+public class SearchChannelActivity extends SearchShellActivity {
+
     @Override
-    protected void initSearchModule(List<SearchableModule> modules) {
-        modules.add(new ChannelSearchModule());
+    protected Fragment createSearchPage(Intent intent) {
+        return SearchChannelPageFragment.fromIntent(intent);
     }
 }

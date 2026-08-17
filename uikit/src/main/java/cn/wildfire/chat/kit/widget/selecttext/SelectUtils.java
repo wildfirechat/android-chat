@@ -183,10 +183,20 @@ public class SelectUtils {
         return offset > 0 && layout.getLineForOffset(offset) == layout.getLineForOffset(offset - 1) + 1;
     }
 
+    /**
+     * @deprecated 取的是物理屏幕宽度，忽略窗口边界，分屏和平板双栏下会算错。
+     * 当前全仓库无调用方，保留仅为兼容以 AAR 方式集成本模块的外部代码。
+     * 定位控件请改用锚点 View 自身的 {@code getWidth()} / {@code getLocationOnScreen()}。
+     */
+    @Deprecated
     public static int getDisplayWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
+    /**
+     * @deprecated 同 {@link #getDisplayWidth()}。
+     */
+    @Deprecated
     public static int getDisplayHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }

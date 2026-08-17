@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 大屏平板（10 寸以上）左栏放宽，避免会话标题被大量截断 -->
+    <dimen name="wfc_pad_left_pane_width">360dp</dimen>
+</resources>

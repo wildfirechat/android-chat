@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
@@ -43,6 +44,6 @@ public class FavCompositeContentViewHolder extends FavContentViewHolder {
     protected void onClick() {
         Intent intent = new Intent(fragment.getContext(), CompositeMessageContentActivity.class);
         intent.putExtra("message", favoriteItem.toMessage());
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 }

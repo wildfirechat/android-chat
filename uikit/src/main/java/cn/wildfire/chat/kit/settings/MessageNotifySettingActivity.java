@@ -1,132 +1,40 @@
 /*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
+ * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
 package cn.wildfire.chat.kit.settings;
 
-import android.content.SharedPreferences;
-import android.widget.Toast;
+import androidx.fragment.app.Fragment;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
-
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
 
+/**
+ * 新消息通知设置页的空壳。
+ * <p>
+ * 页面本体在 {@link MessageNotifySettingFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、菜单、返回都由宿主提供，两端只有这一份实现。
+ */
 public class MessageNotifySettingActivity extends WfcBaseActivity {
-    SwitchMaterial switchMsgNotification;
-    SwitchMaterial switchVoipNotification;
-    SwitchMaterial switchShowMsgDetail;
-    SwitchMaterial switchUserReceipt;
-    SwitchMaterial switchSyncDraft;
-    SwitchMaterial switchPtt;
-    SwitchMaterial switchAudioMessageAmplification;
-
-    protected void bindViews() {
-        super.bindViews();
-        switchMsgNotification = findViewById(R.id.switchMsgNotification);
-        switchVoipNotification = findViewById(R.id.switchVoipNotification);
-        switchShowMsgDetail = findViewById(R.id.switchShowMsgDetail);
-        switchUserReceipt = findViewById(R.id.switchUserReceipt);
-        switchSyncDraft = findViewById(R.id.switchSyncDraft);
-        switchPtt = findViewById(R.id.switchPtt);
-        switchAudioMessageAmplification = findViewById(R.id.switchAudioMessageAmplification);
-    }
 
     @Override
     protected int contentLayout() {
-        return R.layout.activity_msg_notify_settings;
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSilent());
-        switchShowMsgDetail.setChecked(!ChatManager.Instance().isHiddenNotificationDetail());
-
-        switchMsgNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ChatManager.Instance().setGlobalSilent(!isChecked, new GeneralCallback() {
-                @Override
-                public void onSuccess() {
-
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-                    Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-
-        switchVoipNotification.setChecked(!ChatManager.Instance().isVoipSilent());
-        switchVoipNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ChatManager.Instance().setVoipSilent(!isChecked, new GeneralCallback() {
-                @Override
-                public void onSuccess() {
-
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-                    Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-
-        switchShowMsgDetail.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ChatManager.Instance().setHiddenNotificationDetail(!isChecked, new GeneralCallback() {
-                @Override
-                public void onSuccess() {
-
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-                    Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-
-        switchUserReceipt.setChecked(ChatManager.Instance().isUserEnableReceipt());
-        switchUserReceipt.setOnCheckedChangeListener((compoundButton, b) -> ChatManager.Instance().setUserEnableReceipt(b, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
-            }
-        }));
-
-        switchSyncDraft.setChecked(!ChatManager.Instance().isDisableSyncDraft());
-        switchSyncDraft.setOnCheckedChangeListener((buttonView, isChecked) -> ChatManager.Instance().setDisableSyncDraft(!isChecked, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-
-            }
-        }));
-
-        SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, MODE_PRIVATE);
-        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        switchPtt.setChecked(pttEnabled);
-        switchSyncDraft.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sp.edit().putBoolean("pttEnabled", isChecked).apply();
-            Toast.makeText(this, "开关对讲功能，重新启动应用生效", Toast.LENGTH_SHORT).show();
-        });
-
-        boolean audioMessageAmplificationEnabled = sp.getBoolean("audioMessageAmplificationEnabled", false);
-        switchAudioMessageAmplification.setChecked(audioMessageAmplificationEnabled);
-        switchAudioMessageAmplification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sp.edit().putBoolean("audioMessageAmplificationEnabled", isChecked).apply();
-            Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = isChecked;
-        });
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
+        }
+        Fragment fragment = new MessageNotifySettingFragment();
+        if (fragment == null) {
+            finish();
+            return;
+        }
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }

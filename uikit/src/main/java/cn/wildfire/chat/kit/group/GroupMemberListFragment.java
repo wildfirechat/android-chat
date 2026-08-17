@@ -21,6 +21,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public class GroupMemberListFragment extends ProgressFragment implements GroupMemberListAdapter.OnMemberClickListener {
     private GroupInfo groupInfo;
@@ -41,7 +42,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
         if (groupInfo == null) {
-            getActivity().finish();
+            WfcPageCompat.finishPage(this);
         }
     }
 
@@ -58,7 +59,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         }
         bindViews(view);
         groupMemberListAdapter = new GroupMemberListAdapter(groupInfo);
-        memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
+        memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.wfc_member_grid_span)));
         memberRecyclerView.setAdapter(groupMemberListAdapter);
         groupMemberListAdapter.setOnMemberClickListener(this);
         UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);

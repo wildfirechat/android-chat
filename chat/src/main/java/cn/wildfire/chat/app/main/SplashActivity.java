@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +25,7 @@ import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
+import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfirechat.chat.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -35,6 +37,10 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 本页不继承 WfcBaseActivity，需自行保持与基类一致的策略：手机强制竖屏，平板放开。
+        if (!WfcDeviceUtils.isLandscapeAllowed(this)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_splash);
         hideSystemUI();

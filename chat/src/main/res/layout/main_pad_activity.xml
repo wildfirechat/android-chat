@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  平板双栏主界面。
+
+  左栏与手机版 main_activity.xml 结构、控件 id 完全一致（toolbar / contentLinearLayout /
+  contentViewPager / bottomNavigationView / startingTextView），只是宽度固定，
+  这样 MainActivity 里 appbar 折叠动画、底部导航角标、ViewPager 切换等逻辑一行都不用改。
+
+  右栏只是一个空容器：每个 tab 一条独立的导航栈（PaneStackFragment），栈里每一页自带 toolbar
+  （PanePageFragment）。所以这里既没有公用的会话 toolbar，也没有空状态占位——
+  空状态是各条栈栈底的欢迎页（PaneWelcomeFragment）。
+
+  本布局只在 WfcDeviceUtils.isTwoPaneLayout() 为 true 时使用，手机端不会加载。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal">
+
+    <!-- ===== 左栏：会话列表 / 联系人 / 工作台 / 发现 / 我 ===== -->
+    <LinearLayout
+        android:layout_width="@dimen/wfc_pad_left_pane_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/contentLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/contentViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottomNavigationView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray14"
+                    app:elevation="8dp"
+                    app:itemIconTint="@color/bottom_nav_color"
+                    app:itemTextAppearanceActive="@style/BottomNavTextAppearance"
+                    app:itemTextAppearanceInactive="@style/BottomNavTextAppearance"
+                    app:itemTextColor="@color/bottom_nav_color"
+                    app:labelVisibilityMode="labeled"
+                    app:menu="@menu/main_bottom_navigation" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/startingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="野火IM初始化中" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/line" />
+
+    <!-- ===== 右栏：每个 tab 一条导航栈 ===== -->
+    <FrameLayout
+        android:id="@+id/paneContainerFrameLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/gray4" />
+
+</LinearLayout>

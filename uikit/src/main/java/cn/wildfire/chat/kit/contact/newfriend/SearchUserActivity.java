@@ -4,36 +4,20 @@
 
 package cn.wildfire.chat.kit.contact.newfriend;
 
-import java.util.List;
+import android.content.Intent;
 
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.search.SearchActivity;
-import cn.wildfire.chat.kit.search.SearchableModule;
-import cn.wildfirechat.model.DomainInfo;
+import androidx.fragment.app.Fragment;
 
-public class SearchUserActivity extends SearchActivity {
+import cn.wildfire.chat.kit.search.SearchShellActivity;
 
-    private DomainInfo domainInfo;
-
-    @Override
-    protected void beforeViews() {
-        super.beforeViews();
-        domainInfo = getIntent().getParcelableExtra("domainInfo");
-    }
+/**
+ * 「添加朋友」在手机端的宿主壳。整页逻辑住在 {@link SearchUserPageFragment}，
+ * 手机端与平板右栏共用同一份。
+ */
+public class SearchUserActivity extends SearchShellActivity {
 
     @Override
-    protected void initSearchModule(List<SearchableModule> modules) {
-        modules.add(new UserSearchModule(this.domainInfo));
-    }
-
-    @Override
-    protected String searchTip() {
-        String tip;
-        if (this.domainInfo == null) {
-            tip = getString(R.string.search_user_tip_local);
-        } else {
-            tip = getString(R.string.search_user_tip_domain, domainInfo.name);
-        }
-        return tip;
+    protected Fragment createSearchPage(Intent intent) {
+        return SearchUserPageFragment.fromIntent(intent);
     }
 }

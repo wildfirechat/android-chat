@@ -288,6 +288,22 @@ public class SystemBarTintManager {
     }
 
     /**
+     * 用真实的状态栏高度纠正 tint view——{@link SystemBarConfig#getStatusBarHeight()} 是反射读
+     * 一个静态 {@code status_bar_height} dimen 资源猜出来的，挖孔屏、手势导航等设备上经常比
+     * 真实状态栏矮一截；矮的那一截会露出 decorView 默认背景，看起来就是 titlebar 和状态栏之间
+     * 一条灰线。调用方应在拿到真实 {@code WindowInsets} 后调用本方法。
+     *
+     * @param heightPx 真实状态栏高度（像素），非正值忽略。
+     */
+    public void setStatusBarHeight(int heightPx) {
+        if (mStatusBarAvailable && heightPx > 0 && mStatusBarTintView.getLayoutParams().height != heightPx) {
+            LayoutParams params = (LayoutParams) mStatusBarTintView.getLayoutParams();
+            params.height = heightPx;
+            mStatusBarTintView.setLayoutParams(params);
+        }
+    }
+
+    /**
      * Get the system bar configuration.
      *
      * @return The system bar configuration for the current device configuration.

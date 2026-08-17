@@ -50,6 +50,9 @@ public class ConversationListFragment extends ProgressFragment {
     private StatusNotificationViewModel statusNotificationViewModel;
     private LinearLayoutManager layoutManager;
     private OnClickConversationItemListener onClickConversationItemListener;
+    // 平板双栏的选中态，手机端不使用
+    private Conversation selectedConversation;
+    private boolean hasSelectedConversation;
 
     @Override
     protected int contentLayout() {
@@ -69,6 +72,19 @@ public class ConversationListFragment extends ProgressFragment {
         }
     }
 
+    /**
+     * 平板双栏专用：高亮右栏当前打开的会话。传 null 表示右栏为空。
+     * <p>
+     * 可能在 {@link #init()} 之前被调用（宿主先于列表视图就绪），故先暂存，视图就绪后再应用。
+     */
+    public void setSelectedConversation(Conversation conversation) {
+        this.selectedConversation = conversation;
+        this.hasSelectedConversation = true;
+        if (adapter != null) {
+            adapter.setSelectedConversation(conversation);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -78,6 +94,9 @@ public class ConversationListFragment extends ProgressFragment {
         adapter = new ConversationListAdapter(this);
         if (onClickConversationItemListener != null) {
             adapter.setOnClickConversationItemListener(onClickConversationItemListener);
+        }
+        if (hasSelectedConversation) {
+            adapter.setSelectedConversation(selectedConversation);
         }
         conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(types, lines))
             .get(ConversationListViewModel.class);
@@ -98,12 +117,14 @@ public class ConversationListFragment extends ProgressFragment {
             public void onChanged(List<UserInfo> userInfos) {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
-                adapter.notifyItemRangeChanged(start, end - start + 1);
+                adapter.notifyUserInfosUpdated(userInfos, start, end);
             }
         });
         userViewModel.domainInfoLiveData().observe(this, new Observer<DomainInfo>() {
             @Override
             public void onChanged(DomainInfo domainInfo) {
+                // 域信息影响的是全局展示（外部用户昵称等），出现的频率很低，
+                // 这里仍然刷新整个可见区域即可；用户/群信息已改为按行精准刷新。
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyItemRangeChanged(start, end - start + 1);
@@ -115,7 +136,7 @@ public class ConversationListFragment extends ProgressFragment {
             public void onChanged(List<GroupInfo> groupInfos) {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
-                adapter.notifyItemRangeChanged(start, end - start + 1);
+                adapter.notifyGroupInfosUpdated(groupInfos, start, end);
             }
         });
 

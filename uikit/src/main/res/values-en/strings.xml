@@ -172,6 +172,7 @@
     <string name="channel_name_title">Channel Name</string>
     <string name="channel_desc_title">Channel Description</string>
     <string name="qrcode">QR Code</string>
+    <string name="web_page">Web Page</string>
     <string name="search_message">Search Messages</string>
 
     <string name="chatroom_details">Chatroom Details</string>
@@ -941,4 +942,15 @@
     <string name="font_size_tip">Drag the slider above to adjust the font size</string>
     <string name="font_size_preview_message">Adjusting the font size changes the text in chats, moments and more.</string>
     <string name="font_size_preview_reply">Font size adjusted.</string>
+    <string name="ptt_toggle_restart_tip">Push-to-talk takes effect after restarting the app</string>
+    <!-- Pad two-pane workspace tab left column welcome panel -->
+    <string name="workspace_greeting_morning">Good morning</string>
+    <string name="workspace_greeting_noon">Good afternoon</string>
+    <string name="workspace_greeting_afternoon">Good afternoon</string>
+    <string name="workspace_greeting_evening">Good evening</string>
+    <string name="workspace_greeting_night">Working late</string>
+    <string name="workspace_greeting_format">%1$s, %2$s</string>
+    <string name="workspace_welcome_subtitle">Have a great day</string>
+    <string name="workspace_welcome_hint">Here\'s to a productive day</string>
+    <string name="workspace_welcome_date_format">%2$d/%3$d/%1$d</string>
 </resources>

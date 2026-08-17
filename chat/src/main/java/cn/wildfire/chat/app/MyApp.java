@@ -23,6 +23,9 @@ import cn.wildfirechat.message.PollResultMessageContent;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.app.main.AppPaneRegistry;
+import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.conversation.message.viewholder.CollectionMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
@@ -60,6 +63,11 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             wfcUIKit.init(this);
             wfcUIKit.setEnableNativeNotification(true);
             wfcUIKit.setAppServiceProvider(AppService.Instance());
+            // 告诉 uikit 本 App 的双栏主界面是谁。不注册（uikit 被别的 App 以 aar 集成的默认情况）时，
+            // ConversationRouter 即使在平板上也只会走「startActivity(ConversationActivity)」的原路径。
+            ConversationRouter.setTwoPaneHostActivity(MainActivity.class);
+            // 本 App 自己的页面（设置、关于、账号……）登记到右栏，uikit 看不见它们，只能由这边登记
+            AppPaneRegistry.register();
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(CollectionMessageContentViewHolder.class, R.layout.conversation_item_collection_send, R.layout.conversation_item_collection_receive);

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.message.Message;
 
@@ -96,6 +97,6 @@ public class ConversationMessageByDateFragment extends Fragment {
                 message.messageId
         );
         intent.putExtra("highlightMessageId", message.messageId);
-        startActivity(intent);
+        ConversationRouter.open(this, intent);
     }
 }

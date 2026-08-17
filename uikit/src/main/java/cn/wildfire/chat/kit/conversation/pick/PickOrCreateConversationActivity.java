@@ -41,6 +41,20 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.UserInfo;
 
+/**
+ * 「挑一个会话，或者现建一个」页的旧基类。
+ * <p>
+ * <strong>本仓库内已无子类</strong>：整页下沉到了 {@link PickOrCreateConversationPageFragment}，
+ * 手机端由薄壳 Activity（{@code ForwardActivity}、{@code ConferenceInviteActivity}）装着，
+ * 平板上同一份实现直接进右栏。
+ * <p>
+ * <strong>新增这类页面请继承 {@link PickOrCreateConversationPageFragment}</strong>，别再从这里派生
+ * —— 从 Activity 派生的页面无法进入右栏，且会与 Fragment 那一份各自漂移。
+ * 本类仅为已经继承它的外部集成方保留。
+ *
+ * @deprecated 用 {@link PickOrCreateConversationPageFragment}
+ */
+@Deprecated
 abstract public class PickOrCreateConversationActivity extends WfcBaseActivity {
     private SearchFragment searchFragment;
     private List<SearchableModule> searchableModules;

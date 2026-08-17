@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import cn.wildfire.chat.kit.page.WfcPageCompat;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -31,6 +32,7 @@ import java.util.Map;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -225,7 +227,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public void forwardMessage(View itemView, UiMessage message) {
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
-        fragment.startActivity(intent);
+        WfcPageCompat.startPage(fragment, intent);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, priority = 13)
@@ -236,7 +238,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANNEL_PRIVATE_CHAT, priority = 12)
     public void startChanelPrivateChat(View itemView, UiMessage message) {
         Intent intent = ConversationActivity.buildConversationIntent(fragment.getContext(), Conversation.ConversationType.Channel, message.message.conversation.target, message.message.conversation.line, message.message.sender);
-        fragment.startActivity(intent);
+        ConversationRouter.open(fragment, intent);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_QUOTE, priority = 14)

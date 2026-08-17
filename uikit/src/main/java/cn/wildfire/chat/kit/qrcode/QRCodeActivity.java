@@ -6,34 +6,19 @@ package cn.wildfire.chat.kit.qrcode;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomViewTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.king.zxing.util.CodeUtils;
+import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
+/**
+ * 二维码展示页的空壳。
+ * <p>
+ * 页面本体是 {@link QRCodeFragment}：手机端由本壳装着，平板上同一份实现直接进右栏，
+ * 标题栏、返回都由宿主提供。
+ */
 public class QRCodeActivity extends WfcBaseActivity {
-    private String title;
-    private String logoUrl;
-    private String qrCodeValue;
-
-    ImageView qrCodeImageView;
-
-    protected void bindViews() {
-        super.bindViews();
-        qrCodeImageView = findViewById(R.id.qrCodeImageView);
-    }
 
     public static Intent buildQRCodeIntent(Context context, String title, String logoUrl, String qrCodeValue) {
         Intent intent = new Intent(context, QRCodeActivity.class);
@@ -44,55 +29,24 @@ public class QRCodeActivity extends WfcBaseActivity {
     }
 
     @Override
-    protected void beforeViews() {
-        Intent intent = getIntent();
-        title = intent.getStringExtra("title");
-        qrCodeValue = intent.getStringExtra("qrCodeValue");
-        logoUrl = intent.getStringExtra("logoUrl");
-    }
-
-    @Override
     protected int contentLayout() {
-        return R.layout.qrcode_activity;
+        return R.layout.fragment_container_activity;
     }
 
     @Override
     protected void afterViews() {
-        bindViews();
-        setTitle(title);
-        if (TextUtils.isEmpty(qrCodeValue)) {
+        // 配置变化后 FragmentManager 已经把页面恢复出来了，无条件 add 会再叠一层
+        if (getSupportFragmentManager().findFragmentById(R.id.containerFrameLayout) != null) {
+            return;
+        }
+        Fragment fragment = QRCodeFragment.fromIntent(getIntent());
+        if (fragment == null) {
+            // 没有二维码内容，这一页显示不出东西
             finish();
             return;
         }
-        genQRCode();
-    }
-
-    private void genQRCode() {
-        Glide.with(this)
-            .asBitmap()
-            .load(logoUrl)
-            .placeholder(R.mipmap.ic_launcher)
-            .into(new CustomViewTarget<ImageView, Bitmap>(qrCodeImageView) {
-                @Override
-                public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                    // the errorDrawable will always be bitmapDrawable here
-                    if (errorDrawable instanceof BitmapDrawable) {
-                        Bitmap bitmap = ((BitmapDrawable) errorDrawable).getBitmap();
-                        Bitmap qrBitmap = CodeUtils.createQRCode(qrCodeValue, 400, bitmap);
-                        qrCodeImageView.setImageBitmap(qrBitmap);
-                    }
-                }
-
-                @Override
-                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition transition) {
-                    Bitmap bitmap = CodeUtils.createQRCode(qrCodeValue, 400, resource);
-                    qrCodeImageView.setImageBitmap(bitmap);
-                }
-
-                @Override
-                protected void onResourceCleared(@Nullable Drawable placeholder) {
-
-                }
-            });
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }
