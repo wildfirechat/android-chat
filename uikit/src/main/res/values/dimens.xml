@@ -37,6 +37,15 @@
     <dimen name="wfc_ext_panel_padding_horizontal">0dp</dimen>
 
     <!--
+        文本类消息气泡（文本消息、AIGC 流式文本）内容区最大宽度。
+        与改造前各布局里写死的 android:maxWidth="240dp" 保持一致，手机端零变化。
+        平板取值见 values-sw600dp/dimens.xml。
+    -->
+    <dimen name="wfc_text_message_max_width">240dp</dimen>
+    <!-- 组合（转发合并）消息气泡内容区最大宽度，与改造前写死的 202dp 保持一致。 -->
+    <dimen name="wfc_composite_message_max_width">202dp</dimen>
+
+    <!--
         宽屏下由底部面板改成的居中对话框的最大宽度，见 WfcSheetDialogCompat。
         只在宽屏那条分支上被读到，手机端走的是 BottomSheet，取值与它无关；
         定义在无限定符下是因为它是从代码里按 id 引用的，缺省值必须存在。

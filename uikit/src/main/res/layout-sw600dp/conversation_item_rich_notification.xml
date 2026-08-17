@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    宽屏下 rich notification 卡片限宽居中，避免 match_parent 撑满整个右栏。
+    LinearLayout 本身没有 maxWidth 属性（见 PAD_ADAPTATION_PLAN.md 阶段 2 实施记录），
+    这里改用外层 match_parent 的 FrameLayout 居中承载一个定宽子节点来实现限宽。
+    子节点内容、id 与手机版 layout/conversation_item_rich_notification.xml 完全一致。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/richNotificationContentItemView"
+        android:layout_width="@dimen/wfc_card_max_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            tools:text='产品审核通知' />
+
+        <TextView
+            android:id="@+id/descTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            tools:text="您好，您的SSL证书已审核通过，并成功办理，请关注" />
+
+        <LinearLayout
+            android:id="@+id/dataContainerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/exPortraitImageView"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:shapeAppearance="@style/RoundedCorners_4dp"
+                android:src="@mipmap/logo" />
+
+            <TextView
+                android:id="@+id/exNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:lines="1"
+                android:textSize="12sp"
+                tools:text="证书小助手" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_right_arrow" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

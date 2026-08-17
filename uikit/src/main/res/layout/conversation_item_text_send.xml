@@ -15,7 +15,7 @@
         android:background="@drawable/img_bubble_send"
         android:backgroundTint="@color/lightColorPrimary"
         android:linksClickable="true"
-        android:maxWidth="240dp"
+        android:maxWidth="@dimen/wfc_text_message_max_width"
         android:minHeight="40dp"
         android:paddingLeft="16dp"
         android:paddingTop="12dp"

@@ -15,12 +15,17 @@
         消息列表左右留白。手机为 0dp（见 values/dimens.xml）。
         气泡自身 maxWidth 固定在 240dp 上下，宽屏下不收窄列表，左右气泡之间会拉出大片空档。
     -->
-    <dimen name="wfc_message_list_padding_horizontal">48dp</dimen>
+    <dimen name="wfc_message_list_padding_horizontal">8dp</dimen>
 
     <!-- 会话扩展面板左右留白，避免 8 个图标在宽屏上被等分拉得过于稀疏。 -->
     <dimen name="wfc_ext_panel_padding_horizontal">48dp</dimen>
 
-    <!-- 主界面底部导航在宽屏下限宽居中，否则 4 个 tab 会散在整条屏幕上。阶段 4 侧边栏落地后本项作废。 -->
+    <!-- 主界面底部导航在宽屏下限宽居中，否则 tab 会散在整条屏幕上。 -->
     <dimen name="wfc_bottom_nav_max_width">560dp</dimen>
+
+    <!-- 宽屏下文本类消息气泡（文本消息、AIGC 流式文本）内容区最大宽度，比手机的 240dp 宽一些。 -->
+    <dimen name="wfc_text_message_max_width">380dp</dimen>
+    <!-- 宽屏下组合（转发合并）消息气泡内容区最大宽度，比手机的 202dp 宽一些。 -->
+    <dimen name="wfc_composite_message_max_width">380dp</dimen>
 
 </resources>
