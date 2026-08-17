@@ -328,12 +328,32 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 public void onClick(View v) {
                     int position = viewHolder.getAdapterPosition();
                     ConversationInfo conversationInfo = conversationInfos.get(position - headerCount());
+                    markConversationSelectedOptimistically(conversationInfo.conversation, position, v);
                     onClickConversationItemListener.onClickConversationItem(conversationInfo);
                 }
             });
         } else {
             itemView.setOnClickListener(viewHolder::onClick);
         }
+    }
+
+    /**
+     * 平板双栏：点击时先同步把背景切成选中态，不等右栏 Fragment 事务异步执行完再回调。
+     * 打开右栏页面走的是 FragmentTransaction.commitAllowingStateLoss()，真正执行要等到下一个
+     * Looper 消息；而系统的按压态（selector 的 state_pressed）会在那之前自行褪去，
+     * 露出一帧普通背景后才等到选中态生效，看起来像背景闪了一下。这里提前应用，等
+     * {@link #setSelectedConversation} 真正被调用时会因状态已一致而直接跳过。
+     */
+    private void markConversationSelectedOptimistically(Conversation conversation, int clickedPosition, View clickedItemView) {
+        if (!selectionEnabled || Conversation.equals(selectedConversation, conversation)) {
+            return;
+        }
+        int oldPosition = findConversationPosition(selectedConversation);
+        selectedConversation = conversation;
+        if (oldPosition >= 0 && oldPosition != clickedPosition) {
+            notifyItemChanged(oldPosition);
+        }
+        clickedItemView.setActivated(true);
     }
 
     private static class ContextMenuItemWrapper {

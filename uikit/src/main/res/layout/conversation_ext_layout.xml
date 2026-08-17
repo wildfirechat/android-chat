@@ -130,7 +130,9 @@
         android:id="@+id/container_4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:paddingStart="@dimen/wfc_ext_panel_padding_horizontal"
+        android:paddingEnd="@dimen/wfc_ext_panel_padding_horizontal">
 
         <LinearLayout
             android:id="@+id/rlCall"
