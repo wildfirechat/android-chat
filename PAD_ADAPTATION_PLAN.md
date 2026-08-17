@@ -695,7 +695,8 @@ flutter 端能一行收口（`app_navigator.openPage(context, widget)` 把任意
 | `uikit/.../pane/PaneStackFragment.java` | 一个 tab 的导航栈（一个自带 childFragmentManager 的容器） |
 | `uikit/.../pane/PanePageFragment.java` | 栈里的一页：本页专属 toolbar + 内容 Fragment，`implements ConversationHost` |
 | `uikit/.../pane/PanePage.java` | 页面向右栏申报菜单/标题/返回键/启动参数的接口，全是 default 方法 |
-| `uikit/.../pane/PaneWelcomeFragment.java` | 栈底欢迎页；工作台 tab 的左栏占位也复用它 |
+| `uikit/.../pane/PaneWelcomeFragment.java` | 栈底欢迎页（4 个列表 tab 共用） |
+| `uikit/.../workspace/WorkspaceWelcomeFragment.java` | 工作台 tab 专属左栏迎宾面板（问候语 + 日期），对齐 flutter 端 `pad_workspace_welcome.dart` 的 `PadWorkspaceWelcome`，后于本阶段补齐，见文末索引 |
 | `uikit/.../conversation/ConversationPanePage.java` | `ConversationFragment` + `PanePage`，手机端永不实例化 |
 | `uikit/.../user/UserInfoMenuController.java` | 从 `UserInfoActivity` 抽出的菜单逻辑，两端共用 |
 | `chat/.../main/TwoPaneNavigator.java` | 右栏导航器（取代阶段 4 的 `TwoPaneConversationController`，该文件已删除） |
