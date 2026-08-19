@@ -19,7 +19,7 @@ public class HonorPushService extends HonorMessageService {
     public void onNewToken(String s) {
         super.onNewToken(s);
         Log.d(TAG, "honor onNewToken: " + s);
-        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.HMS);
+        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.Honor);
     }
 
     @Override
