@@ -131,6 +131,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         } else {
             this.messages = new ArrayList<>();
         }
+        // 整体重设数据时也保证生成中的流式消息在末尾
+        pinStreamingGeneratingToBottom();
     }
 
     public void setReadEntries(Map<String, Long> readEntries) {
@@ -185,6 +187,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         messages.add(message);
         notifyItemInserted(messages.size() - 1);
+        // 收到新消息/自己发送消息追加后，把生成中的流式消息钉回列表末尾
+        pinStreamingGeneratingToBottom();
     }
 
     public void addMessagesAtHead(List<UiMessage> newMessages) {
@@ -212,12 +216,16 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         int insertStartPosition = this.messages.size();
         this.messages.addAll(newMessages);
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
+        // 尾部追加（定位模式加载更新消息）后，生成中的流式消息会被顶到中间，钉回末尾
+        pinStreamingGeneratingToBottom();
     }
 
     public void updateMessage(int index, UiMessage message) {
         if (index >= 0) {
             messages.set(index, message);
             notifyItemChanged(index);
+            // 消息内容/状态更新后（含流式分片更新），保证生成中的流式消息仍在末尾
+            pinStreamingGeneratingToBottom();
         }
     }
 
@@ -242,6 +250,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         if (index > -1) {
             notifyItemChanged(index);
+            // 消息内容/状态更新后（含流式分片更新），保证生成中的流式消息仍在末尾
+            pinStreamingGeneratingToBottom();
         }
     }
 
@@ -330,6 +340,42 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 notifyItemRemoved(i);
             }
         }
+    }
+
+    /**
+     * 生成中的流式文本消息（ContentType_Streaming_Text_Generating，类型 14）必须固定在消息列表末尾（最新位置）。
+     * 生成期间用户自己发消息、或其它消息（含最终 type 15 完成消息）插入/替换，都可能把它顶到列表中间。
+     * 这里在每次列表变更后把「最后一条生成中的流式消息」移到列表末尾，其余消息保持相对顺序；
+     * 本来就已在末尾则不动。与 uni-chat-uts store.uts 的 _pinStreamingGeneratingToBottom 语义一致。
+     */
+    public void pinStreamingGeneratingToBottom() {
+        if (messages == null || messages.size() <= 1) {
+            return;
+        }
+        UiMessage last = messages.get(messages.size() - 1);
+        // 底部是加载占位(null)时不动，加载完成追加后 addMessagesAtTail 会再钉底
+        if (last == null || last.message == null) {
+            return;
+        }
+        if (last.message.content instanceof StreamingTextGeneratingMessageContent) {
+            return; // 已在末尾
+        }
+        int idx = -1;
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            UiMessage msg = messages.get(i);
+            if (msg != null && msg.message != null
+                && msg.message.content instanceof StreamingTextGeneratingMessageContent) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx == -1) {
+            return;
+        }
+        // 移到末尾：其余消息保持相对顺序
+        UiMessage generating = messages.remove(idx);
+        messages.add(generating);
+        notifyItemMoved(idx, messages.size() - 1);
     }
 
     private int indexOfMessage(UiMessage message) {
