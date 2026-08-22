@@ -16,6 +16,14 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/dshCommandContainerLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:visibility="gone" />
+
+        <LinearLayout
             android:id="@+id/inputContainerLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

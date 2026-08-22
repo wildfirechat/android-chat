@@ -186,6 +186,7 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
+        <activity android:name="cn.wildfire.chat.kit.conversation.DshPlanDetailActivity" />
         <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity" />
         <!-- label 只是兜底：真正的标题是调用方传进来的「群二维码」「频道二维码」等，
