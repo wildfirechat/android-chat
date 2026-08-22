@@ -40,6 +40,9 @@ public interface MessageContentType {
     // 消息未能送达
     int ContentType_NOT_DELIVERED = 16;
 
+    // 流式文本取消消息（生成无产出/失败时发送，客户端按 streamId 将 generating/generated 删除）
+    int ContentType_Streaming_Text_Cancelled = 20;
+
     // 接龙消息，与iOS MESSAGE_CONTENT_TYPE_COLLECTION 保持一致
     int ContentType_Collection = 17;
 

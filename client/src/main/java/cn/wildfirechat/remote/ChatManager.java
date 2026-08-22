@@ -130,6 +130,7 @@ import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.RawMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
+import cn.wildfirechat.message.StreamingTextCancelledMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.TranscriptionMessageContent;
@@ -743,6 +744,9 @@ public class ChatManager {
             streamingTextGeneratingMessages.put(key, message);
         } else if (message.content instanceof StreamingTextGeneratedMessageContent) {
             // 流式文本生成完成，清空对应会话的生成中消息
+            streamingTextGeneratingMessages.remove(key);
+        } else if (message.content instanceof StreamingTextCancelledMessageContent) {
+            // 流式文本取消：清空对应会话的生成中消息，UI 层按 streamId 删除 14/15 消息
             streamingTextGeneratingMessages.remove(key);
         }
     }
@@ -11252,6 +11256,7 @@ public class ChatManager {
         registerMessageContent(RestoreRequestNotificationContent.class);
         registerMessageContent(RestoreResponseNotificationContent.class);
         registerMessageContent(CollectionMessageContent.class);
+        registerMessageContent(StreamingTextCancelledMessageContent.class);
         registerMessageContent(MeetingMinutesMessageContent.class);
         registerMessageContent(TranscriptionMessageContent.class);
     }

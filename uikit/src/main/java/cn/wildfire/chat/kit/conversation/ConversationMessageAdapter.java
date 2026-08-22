@@ -305,6 +305,33 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+    /**
+     * 取消消息（20）处理：按 streamId 从消息列表移除正在生成(14)/已生成(15)消息，
+     * 界面上的"生成中/生成完成"气泡直接消失（与 PC 端 store._removeStreamingMessage 语义一致）。
+     *
+     * @param streamId 被取消的流式响应 streamId
+     */
+    public void removeStreamingMessage(String streamId) {
+        if (streamId == null || messages == null || messages.isEmpty()) {
+            return;
+        }
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            UiMessage uiMessage = messages.get(i);
+            String msgStreamId;
+            if (uiMessage.message.content instanceof StreamingTextGeneratingMessageContent) {
+                msgStreamId = ((StreamingTextGeneratingMessageContent) uiMessage.message.content).getStreamId();
+            } else if (uiMessage.message.content instanceof StreamingTextGeneratedMessageContent) {
+                msgStreamId = ((StreamingTextGeneratedMessageContent) uiMessage.message.content).getStreamId();
+            } else {
+                continue;
+            }
+            if (TextUtils.equals(msgStreamId, streamId)) {
+                messages.remove(i);
+                notifyItemRemoved(i);
+            }
+        }
+    }
+
     private int indexOfMessage(UiMessage message) {
         if (this.messages != null) {
             for (int i = 0; i < this.messages.size(); i++) {

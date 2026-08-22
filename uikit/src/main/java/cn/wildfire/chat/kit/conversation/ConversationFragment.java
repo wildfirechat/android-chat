@@ -228,6 +228,13 @@ public class ConversationFragment extends Fragment implements
                 }
                 MessageContent content = uiMessage.message.content;
 
+                // 流式文本取消消息（20）：按 streamId 从消息列表删除正在生成(14)/已生成(15)消息，
+                // 取消消息自身不进入消息列表、不落库（Transparent），也不触发刷新
+                if (content instanceof StreamingTextCancelledMessageContent) {
+                    adapter.removeStreamingMessage(((StreamingTextCancelledMessageContent) content).getStreamId());
+                    continue;
+                }
+
                 if (content instanceof MultiCallOngoingMessageContent) {
                     MultiCallOngoingMessageContent ongoingCall = (MultiCallOngoingMessageContent) content;
                     AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
