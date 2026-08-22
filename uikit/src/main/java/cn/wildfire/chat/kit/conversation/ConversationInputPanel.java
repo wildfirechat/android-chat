@@ -52,6 +52,8 @@ import com.lqr.emoji.IEmotionSelectedListener;
 import com.lqr.emoji.StickerItem;
 import com.lqr.emoji.StickerManager;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,6 +72,7 @@ import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.imagerecommend.ImageRecommendManager;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
+import cn.wildfire.chat.kit.utils.DshState;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ImageRecommendView;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
@@ -110,6 +113,24 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private android.widget.PopupWindow mImageRecommendPopup;
 
     LinearLayout channelMenuContainerLinearLayout;
+
+    // DSH '/' 命令浮层：在输入面板上方，仅 DSH 会话启用
+    LinearLayout dshCommandContainerLinearLayout;
+    private JSONObject dshState;
+    private CharSequence defaultInputHint;
+    // 单聊机器人命令（/create-group 等私聊专属命令在群内会被插件拒绝）
+    private static final String[][] DSH_SINGLE_COMMANDS = {
+        {"/help", "命令帮助"}, {"/create-group", "创建 DSH 工作区群"}, {"/workspaces", "列出工作区"},
+        {"/goal", "目标管理"}, {"/jobs", "后台任务"}, {"/model", "切换模型"},
+        {"/effort", "推理等级"}, {"/plan", "计划模式"}, {"/compact", "压缩上下文"},
+        {"/cwd", "切换工作目录"}, {"/ls", "列出目录"}, {"/sandbox", "沙箱模式"}, {"/stop", "停止当前任务"},
+    };
+    // DSH 群聊命令
+    private static final String[][] DSH_GROUP_COMMANDS = {
+        {"/help", "命令帮助"}, {"/cwd", "切换工作目录"}, {"/ls", "列出目录"},
+        {"/model", "切换模型"}, {"/effort", "推理等级"}, {"/plan", "计划模式"},
+        {"/compact", "压缩上下文"}, {"/sandbox", "沙箱模式"}, {"/reset", "重置会话"}, {"/stop", "停止当前任务"},
+    };
 
     KeyboardHeightFrameLayout emotionContainerFrameLayout;
     EmotionLayout emotionLayout;
@@ -331,6 +352,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         extViewPager = findViewById(R.id.conversationExtViewPager);
         refRelativeLayout = findViewById(R.id.refRelativeLayout);
         refEditText = findViewById(R.id.refEditText);
+        dshCommandContainerLinearLayout = findViewById(R.id.dshCommandContainerLinearLayout);
+        defaultInputHint = editText.getHint();
 
         extImageView.setOnClickListener(v -> onExtImageViewClick());
         emotionImageView.setOnClickListener(v -> onEmotionImageViewClick());
@@ -473,6 +496,98 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
         // 检查动态表情推荐
         checkStickerRecommend(editable.toString());
+
+        // DSH '/' 命令浮层（仅 DSH 会话）
+        updateDshCommandPanel(editable.toString());
+    }
+
+    /**
+     * 让会话主输入框获得焦点并弹出键盘（DSH 提问卡片的「自定义回答」用，
+     * 卡片内不嵌输入框，卡片期间用户直接发的文本会被服务端当作该卡片的自定义回答）。
+     */
+    public void focusInput() {
+        editText.requestFocus();
+        rootLinearLayout.showSoftkey(editText);
+    }
+
+    /**
+     * DSH 会话状态变化（由 ConversationFragment 转发）：更新输入框占位。
+     */
+    public void onDshStateChanged(JSONObject state) {
+        this.dshState = state;
+        if (state == null) {
+            editText.setHint(defaultInputHint);
+        } else if (DshState.STATE_WAITING_USER.equals(state.optString("state"))) {
+            editText.setHint("可直接输入文字回答，或点击上方卡片按钮");
+        } else if (DshState.STATE_RUNNING.equals(state.optString("state"))) {
+            editText.setHint("Agent 运行中…");
+        } else {
+            editText.setHint(defaultInputHint);
+        }
+    }
+
+    /**
+     * '/' 命令浮层：文本以 "/" 开头时，在输入面板上方按前缀实时过滤展示命令；
+     * 点选把「命令+空格」填入输入框（不直接发送）。仅 DSH 会话启用。
+     */
+    private void updateDshCommandPanel(String text) {
+        if (conversation == null || !DshState.isDshConversation(conversation)) {
+            hideDshCommandPanel();
+            return;
+        }
+        if (TextUtils.isEmpty(text) || !text.startsWith("/") || text.contains(" ")) {
+            hideDshCommandPanel();
+            return;
+        }
+        String[][] commands = "group".equals(DshState.dshConversationKind(conversation))
+            ? DSH_GROUP_COMMANDS : DSH_SINGLE_COMMANDS;
+        dshCommandContainerLinearLayout.removeAllViews();
+        int matched = 0;
+        for (String[] command : commands) {
+            if (!command[0].startsWith(text)) {
+                continue;
+            }
+            matched++;
+            dshCommandContainerLinearLayout.addView(buildDshCommandItemView(command[0], command[1]));
+        }
+        dshCommandContainerLinearLayout.setVisibility(matched > 0 ? VISIBLE : GONE);
+    }
+
+    private View buildDshCommandItemView(String command, String desc) {
+        LinearLayout row = new LinearLayout(getContext());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding((int) (16 * getResources().getDisplayMetrics().density), 0, 0, 0);
+        row.setMinimumHeight((int) (40 * getResources().getDisplayMetrics().density));
+        row.setBackgroundResource(R.drawable.selector_common_item);
+
+        TextView commandTextView = new TextView(getContext());
+        commandTextView.setText(command);
+        commandTextView.setTypeface(android.graphics.Typeface.MONOSPACE);
+        commandTextView.setTextSize(14);
+        commandTextView.setTextColor(Color.parseColor("#333333"));
+        commandTextView.setMinWidth((int) (130 * getResources().getDisplayMetrics().density));
+        row.addView(commandTextView);
+
+        TextView descTextView = new TextView(getContext());
+        descTextView.setText(desc);
+        descTextView.setTextSize(12);
+        descTextView.setTextColor(Color.parseColor("#B3B3B3"));
+        row.addView(descTextView);
+
+        row.setOnClickListener(v -> {
+            editText.setText(command + " ");
+            editText.setSelection(editText.getText().length());
+            hideDshCommandPanel();
+        });
+        return row;
+    }
+
+    private void hideDshCommandPanel() {
+        if (dshCommandContainerLinearLayout.getVisibility() == VISIBLE) {
+            dshCommandContainerLinearLayout.removeAllViews();
+            dshCommandContainerLinearLayout.setVisibility(GONE);
+        }
     }
 
     public void showChannelMenu() {

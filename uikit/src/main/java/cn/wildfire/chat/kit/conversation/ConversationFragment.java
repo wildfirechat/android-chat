@@ -26,6 +26,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -73,6 +75,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.utils.DshState;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
@@ -89,6 +92,7 @@ import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StreamingTextCancelledMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
+import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -104,6 +108,7 @@ import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.UserSettingScope;
 import cn.wildfirechat.utils.WfcUtils;
 import io.noties.markwon.Markwon;
@@ -151,6 +156,14 @@ public class ConversationFragment extends Fragment implements
     TextView unreadMentionCountTextView;
     private LinearLayout conversationStickyHeaderContainerLinearLayout;
     private TextView joinGroupRequestHeaderTextView;
+
+    // DSH 会话状态：标题栏副标题 + 消息列表上方的细状态横幅（含停止按钮）
+    private LinearLayout dshStatusBannerLinearLayout;
+    private TextView dshStatusTextView;
+    private TextView dshStopButton;
+    private JSONObject dshState;
+    private long lastDshStopClickTime;
+    private final OnSettingUpdateListener dshSettingUpdateListener = () -> refreshDshState();
 
     private ConversationMessageAdapter adapter;
     private OngoingCallAdapter ongoingCallAdapter;
@@ -447,6 +460,8 @@ public class ConversationFragment extends Fragment implements
                 subConversationTitle = null;
                 setTitle();
             }
+            // 机器人信息可能异步拉取，拉取回来后重新判定是否为 DSH 会话
+            refreshDshState();
             int start = layoutManager.findFirstVisibleItemPosition();
             int end = layoutManager.findLastVisibleItemPosition();
             adapter.notifyItemRangeChanged(start, end - start + 1, userInfos);
@@ -490,6 +505,8 @@ public class ConversationFragment extends Fragment implements
                     groupInfo = info;
                     updateGroupConversationInputStatus();
                     setTitle();
+                    // 群 extra 可能异步拉取，拉取回来后重新判定是否为 DSH 会话
+                    refreshDshState();
                     adapter.notifyDataSetChanged();
                     break;
                 }
@@ -557,6 +574,11 @@ public class ConversationFragment extends Fragment implements
 
         conversationStickyHeaderContainerLinearLayout = view.findViewById(R.id.conversationStickyHeaderContainerLinearLayout);
         joinGroupRequestHeaderTextView = view.findViewById(R.id.joinGroupRequestHeaderTextView);
+
+        dshStatusBannerLinearLayout = view.findViewById(R.id.dshStatusBannerLinearLayout);
+        dshStatusTextView = view.findViewById(R.id.dshStatusTextView);
+        dshStopButton = view.findViewById(R.id.dshStopButton);
+        dshStopButton.setOnClickListener(v -> stopDshAgent());
 
         view.findViewById(R.id.contentLayout).setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
         recyclerView.setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
@@ -716,6 +738,9 @@ public class ConversationFragment extends Fragment implements
         settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
 
+        // DSH 会话状态通道（scope=31）走用户设置更新事件，事件驱动，不轮询
+        ChatManager.Instance().addSettingUpdateListener(dshSettingUpdateListener);
+
         isEnableUserOnlineState = ChatManager.Instance().isEnableUserOnlineState();
         if (isEnableUserOnlineState) {
             userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
@@ -780,6 +805,43 @@ public class ConversationFragment extends Fragment implements
         ongoingCalls = null;
 
         setTitle();
+        refreshDshState();
+    }
+
+    /**
+     * 刷新 DSH 会话状态：标题栏副标题 + 状态横幅/停止按钮。
+     * 仅 DSH 会话（单聊机器人 / 群 extra 带 {"dsh":true}）会读到状态；非 DSH 会话恒为 null。
+     */
+    private void refreshDshState() {
+        if (conversation == null || dshStatusBannerLinearLayout == null) {
+            return;
+        }
+        dshState = DshState.getDshState(conversation);
+        if (DshState.isDshConversation(conversation)) {
+            setTitle();
+        }
+        // Toolbar 副标题无法内联按钮，停止按钮放在消息列表上方的细状态横幅里，仅 running 时显示
+        boolean running = dshState != null && DshState.STATE_RUNNING.equals(dshState.optString("state"));
+        dshStatusBannerLinearLayout.setVisibility(running ? View.VISIBLE : View.GONE);
+        if (running) {
+            dshStatusTextView.setText(DshState.stateText(dshState));
+        }
+        inputPanel.onDshStateChanged(dshState);
+    }
+
+    /**
+     * 停止按钮：向当前 DSH 会话发送 /stop 命令文本，中断当前 Agent turn；1.5s 防重复。
+     */
+    private void stopDshAgent() {
+        if (conversation == null) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastDshStopClickTime < 1500) {
+            return;
+        }
+        lastDshStopClickTime = now;
+        messageViewModel.sendMessage(conversation, new TextMessageContent("/stop"));
     }
 
     public void setConversationBackgroundImage(String uri) {
@@ -1034,6 +1096,15 @@ public class ConversationFragment extends Fragment implements
             conversationTitle = userViewModel.getUserDisplayName(userInfo) + getString(R.string.secret_chat_postfix);
         }
 
+        // DSH 会话：副标题显示状态文本（空闲/运行中/等待确认/已完成；phase==tool 时追加工具名）。
+        // 无状态时回退原有副标题（机器人单聊 "Bot"、在线状态等）
+        if (dshState != null) {
+            String dshStateText = DshState.stateText(dshState);
+            if (!TextUtils.isEmpty(dshStateText)) {
+                subConversationTitle = dshStateText;
+            }
+        }
+
         setActivityTitle(conversationTitle, subConversationTitle);
     }
 
@@ -1247,6 +1318,7 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ChatManager.Instance().removeSettingUpdateListener(dshSettingUpdateListener);
         // 与改造前一致：丢弃 toolbar 标题 TextView 的缓存（现在缓存在适配器里）
         wfcBaseActivityHost = null;
     }
