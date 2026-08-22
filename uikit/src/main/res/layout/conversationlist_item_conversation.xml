@@ -103,6 +103,22 @@
                 android:textSize="10sp"
                 android:visibility="gone" />
 
+            <!-- DSH 群标识徽标（群 extra 带 {"dsh":true} 时显示） -->
+            <TextView
+                android:id="@+id/dshBadgeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/shape_dsh_badge_outline"
+                android:paddingLeft="4dp"
+                android:paddingTop="1dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="1dp"
+                android:text="DSH"
+                android:textColor="@color/colorPrimary"
+                android:textSize="9sp"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/timeTextView"
                 android:layout_width="wrap_content"

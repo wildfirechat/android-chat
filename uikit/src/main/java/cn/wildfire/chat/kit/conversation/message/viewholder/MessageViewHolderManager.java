@@ -45,6 +45,12 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(PollMessageContentViewHolder.class, R.layout.conversation_item_poll_send, R.layout.conversation_item_poll_receive);
         registerMessageViewHolder(PollResultMessageContentViewHolder.class, R.layout.conversation_item_poll_result_send, R.layout.conversation_item_poll_result_receive);
         registerMessageViewHolder(MeetingMinutesMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
+        // ============ DSH 结构化交互（200-209，官方预留 AI 交互段） ============
+        registerMessageViewHolder(DshQuestionMessageContentViewHolder.class, R.layout.conversation_item_dsh_question, R.layout.conversation_item_dsh_question);
+        registerMessageViewHolder(DshApprovalMessageContentViewHolder.class, R.layout.conversation_item_dsh_approval, R.layout.conversation_item_dsh_approval);
+        registerMessageViewHolder(DshGoalMessageContentViewHolder.class, R.layout.conversation_item_dsh_goal, R.layout.conversation_item_dsh_goal);
+        // DSH_ANSWER(201) / DSH_APPROVAL_RESULT(203) 是用户侧应答消息，按摘要文本气泡展示
+        registerMessageViewHolder(DshDigestMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();
