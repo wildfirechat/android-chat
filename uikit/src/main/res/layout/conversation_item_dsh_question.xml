@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dshQuestionContentItemView"
+    android:layout_width="260dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_receive"
+    android:backgroundTint="@color/white"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- 【header】 -->
+    <TextView
+        android:id="@+id/dshHeaderTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="【需要你确认】"
+        tools:visibility="visible" />
+
+    <!-- 问题与选项，代码动态填充 -->
+    <LinearLayout
+        android:id="@+id/dshQuestionsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <!-- 自定义回答：点击后聚焦会话主输入框并弹键盘 -->
+    <TextView
+        android:id="@+id/dshCustomAnswerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:minHeight="36dp"
+        android:text="自定义回答"
+        android:textColor="@color/colorPrimary"
+        android:textSize="13sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <!-- 锁定态：已作答/已过期 -->
+    <TextView
+        android:id="@+id/dshStateTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/gray11"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="已作答"
+        tools:visibility="visible" />
+
+</LinearLayout>

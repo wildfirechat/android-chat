@@ -153,5 +153,12 @@ public interface MessageContentType {
     int ContentType_Restore_Request = 610;
     int ContentType_Restore_Response = 611;
 
+    // ============ DSH 结构化交互（200-209，官方预留 AI 交互段，与 PC 端/服务端已定稿） ============
+    int ContentType_Dsh_Question = 200;         // 机器人→用户 提问卡片
+    int ContentType_Dsh_Answer = 201;           // 用户→机器人 结构化回答
+    int ContentType_Dsh_Approval = 202;         // 机器人→用户 工具审批卡片
+    int ContentType_Dsh_Approval_Result = 203;  // 用户→机器人 审批结果
+    int ContentType_Dsh_Goal = 206;             // 机器人→用户 目标进度卡片
+
     //自定义消息type要做1000以上
 }

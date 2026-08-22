@@ -6,12 +6,14 @@ package cn.wildfire.chat.kit.conversationlist.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.emoji2.widget.EmojiTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -21,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.lqr.emoji.EmojiCompatUtils;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +40,7 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
+import cn.wildfire.chat.kit.utils.DshState;
 import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.message.Message;
@@ -68,6 +73,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ImageView statusImageView;
 
     protected ImageView secretChatIndicator;
+    protected TextView dshBadgeTextView;
     protected GroupViewModel groupViewModel;
 
     protected final CenterCrop centerCropTransformation = new CenterCrop();
@@ -97,6 +103,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         promptTextView = itemView.findViewById(R.id.promptTextView);
         statusImageView = itemView.findViewById(R.id.statusImageView);
         secretChatIndicator = itemView.findViewById(R.id.secretChatIndicator);
+        dshBadgeTextView = itemView.findViewById(R.id.dshBadgeTextView);
 
         // 字体放大时按封顶比例放大行高与头像，避免被固定尺寸裁剪
         LayoutScale.scaleViewHeight(itemView, LayoutScale.ROW);
@@ -211,6 +218,41 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             }
             updatePromptText(conversationPromptText);
         }
+
+        updateDshIndicator(conversationInfo);
+    }
+
+    /**
+     * DSH 会话：标题后 8dp 状态圆点（running=主色/waiting_user=#f59e0b/done=#22c55e/其他=#94a3b8），
+     * DSH 群标题旁加描边小徽标；仅 DSH 会话显示。非 DSH 会话不查询 scope=31。
+     */
+    private void updateDshIndicator(ConversationInfo conversationInfo) {
+        if (dshBadgeTextView == null) {
+            return;
+        }
+        Conversation conversation = conversationInfo.conversation;
+        if (!DshState.isDshConversation(conversation)) {
+            nameTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+            dshBadgeTextView.setVisibility(View.GONE);
+            return;
+        }
+        JSONObject state = DshState.getDshState(conversation);
+        if (state != null) {
+            Drawable dot = ContextCompat.getDrawable(fragment.requireContext(), R.drawable.shape_dsh_dot);
+            if (dot != null) {
+                dot = dot.mutate();
+                dot.setTint(DshState.stateColor(state.optString("state")));
+                float density = fragment.getResources().getDisplayMetrics().density;
+                int size = (int) (8 * density);
+                dot.setBounds(0, 0, size, size);
+                nameTextView.setCompoundDrawablePadding((int) (6 * density));
+                nameTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, dot, null);
+            }
+        } else {
+            nameTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        }
+        dshBadgeTextView.setVisibility(
+            conversation.type == Conversation.ConversationType.Group ? View.VISIBLE : View.GONE);
     }
 
 
