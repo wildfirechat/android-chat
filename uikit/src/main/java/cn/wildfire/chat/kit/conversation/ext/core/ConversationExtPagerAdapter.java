@@ -13,14 +13,21 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
+import cn.wildfirechat.model.Conversation;
+
 public class ConversationExtPagerAdapter extends PagerAdapter {
     private SparseArray<ConversationExtPageView> pagers = new SparseArray<>();
     private List<ConversationExt> exts;
     private ConversationExtPageView.OnExtViewClickListener listener;
+    private Conversation conversation;
 
     public ConversationExtPagerAdapter(List<ConversationExt> exts, ConversationExtPageView.OnExtViewClickListener listener) {
         this.exts = exts;
         this.listener = listener;
+    }
+
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
     }
 
     @NonNull
@@ -33,7 +40,7 @@ public class ConversationExtPagerAdapter extends PagerAdapter {
             view.setOnExtViewClickListener(listener);
             int startIndex = ConversationExtPageView.EXT_PER_PAGE * position;
             int end = startIndex + ConversationExtPageView.EXT_PER_PAGE > exts.size() ? exts.size() : startIndex + ConversationExtPageView.EXT_PER_PAGE;
-            view.updateExtViews(exts.subList(startIndex, end));
+            view.updateExtViews(exts.subList(startIndex, end), conversation);
 
             container.addView(view);
             pagers.put(position, view);

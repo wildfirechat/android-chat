@@ -47,6 +47,10 @@ public class ConversationExtension {
     }
 
     private void onConversationExtClick(ConversationExt ext) {
+        // 置灰禁用的扩展（如 AI 不在线时的 "AI 会话设置"）点击不响应
+        if (ext.disabled(this.conversation)) {
+            return;
+        }
         List<ExtMenuItemWrapper> extMenuItems = new ArrayList<>();
         Method[] allMethods = ext.getClass().getDeclaredMethods();
         for (final Method method : allMethods) {
@@ -88,6 +92,10 @@ public class ConversationExtension {
     public void bind(MessageViewModel messageViewModel, Conversation conversation, String targetUser) {
         this.conversation = conversation;
         setupExtViewPager(extViewPager);
+        ConversationExtPagerAdapter adapter = (ConversationExtPagerAdapter) extViewPager.getAdapter();
+        if (adapter != null) {
+            adapter.setConversation(conversation);
+        }
 
         for (int i = 0; i < exts.size(); i++) {
             exts.get(i).onBind(fragment, messageViewModel, conversation, targetUser, this, i);

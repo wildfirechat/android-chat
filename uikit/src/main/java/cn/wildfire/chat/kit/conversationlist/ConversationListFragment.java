@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversationlist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.lifecycle.Observer;
@@ -26,24 +27,33 @@ import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationView
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
+import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
+import cn.wildfire.chat.kit.utils.DshState;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnUserOnlineEventListener;
 import cn.wildfirechat.remote.ChatManager;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 public class ConversationListFragment extends ProgressFragment {
     private RecyclerView recyclerView;
     private ConversationListAdapter adapter;
+    private OnUserOnlineEventListener userOnlineEventListener;
+    private UserOnlineStateViewModel userOnlineStateViewModel;
+    private java.util.List<String> watchedAiOwnerIds = new java.util.ArrayList<>();
     private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
         Conversation.ConversationType.Group,
         Conversation.ConversationType.Channel,
         Conversation.ConversationType.SecretChat);
-    private static final List<Integer> lines = Arrays.asList(0);
+    private static final List<Integer> lines = Arrays.asList(0, 2); // 普通消息 line 0 + AI 消息 line 2
 
     private ConversationListViewModel conversationListViewModel;
     private SettingViewModel settingViewModel;
@@ -103,6 +113,7 @@ public class ConversationListFragment extends ProgressFragment {
         conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> {
             showContent();
             adapter.setConversationInfos(conversationInfos);
+            watchAiOwnersOnlineState(conversationInfos);
         });
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -137,6 +148,33 @@ public class ConversationListFragment extends ProgressFragment {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyGroupInfosUpdated(groupInfos, start, end);
+            }
+        });
+
+        // AI 在线状态变化（含 AI 群群主上线/下线）：刷新可见行——DSH 状态圆点/徽标按在线状态置灰
+        userOnlineEventListener = userOnlineStateMap -> {
+            if (adapter == null || layoutManager == null) {
+                return;
+            }
+            int start = layoutManager.findFirstVisibleItemPosition();
+            int end = layoutManager.findLastVisibleItemPosition();
+            if (start >= 0 && end >= start) {
+                adapter.notifyItemRangeChanged(start, end - start + 1);
+            }
+        };
+        ChatManager.Instance().addUserOnlineEventListener(userOnlineEventListener);
+
+        // AI 群（line 2）：列表级订阅群主（AI 机器人）在线状态，AI 不在线时状态圆点/徽标置灰；
+        // 回调 LiveData 刷新可见行（初始无缓存时也能拿到状态）
+        userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
+        userOnlineStateViewModel.getUserOnlineStateLiveData().observe(this, userOnlineStateMap -> {
+            if (adapter == null || layoutManager == null) {
+                return;
+            }
+            int start = layoutManager.findFirstVisibleItemPosition();
+            int end = layoutManager.findLastVisibleItemPosition();
+            if (start >= 0 && end >= start) {
+                adapter.notifyItemRangeChanged(start, end - start + 1);
             }
         });
 
@@ -232,8 +270,46 @@ public class ConversationListFragment extends ProgressFragment {
         conversationListViewModel.reloadConversationUnreadStatus();
     }
 
-    @Override
+    /**
+     * AI 群（line 2）：收集当前列表的 AI 群主批量订阅在线状态（先退订旧的）。
+     */
+    private void watchAiOwnersOnlineState(List<ConversationInfo> conversationInfos) {
+        if (userOnlineStateViewModel == null || conversationInfos == null) {
+            return;
+        }
+        List<String> owners = new java.util.ArrayList<>();
+        for (ConversationInfo info : conversationInfos) {
+            Conversation conv = info.conversation;
+            if (conv == null || !DshState.isDshConversation(conv) || conv.type != Conversation.ConversationType.Group) {
+                continue;
+            }
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conv.target, false);
+            if (groupInfo != null && !TextUtils.isEmpty(groupInfo.owner) && !owners.contains(groupInfo.owner)) {
+                owners.add(groupInfo.owner);
+            }
+        }
+        if (!watchedAiOwnerIds.isEmpty()) {
+            userOnlineStateViewModel.unwatchOnlineState(Conversation.ConversationType.Single.getValue(),
+                watchedAiOwnerIds.toArray(new String[0]));
+            watchedAiOwnerIds.clear();
+        }
+        if (!owners.isEmpty()) {
+            userOnlineStateViewModel.watchUserOnlineState(Conversation.ConversationType.Single.getValue(),
+                owners.toArray(new String[0]));
+            watchedAiOwnerIds.addAll(owners);
+        }
+    }
+
     public void onDestroyView() {
+        if (userOnlineEventListener != null) {
+            ChatManager.Instance().removeUserOnlineEventListener(userOnlineEventListener);
+            userOnlineEventListener = null;
+        }
+        if (userOnlineStateViewModel != null && !watchedAiOwnerIds.isEmpty()) {
+            userOnlineStateViewModel.unwatchOnlineState(Conversation.ConversationType.Single.getValue(),
+                watchedAiOwnerIds.toArray(new String[0]));
+            watchedAiOwnerIds.clear();
+        }
         super.onDestroyView();
     }
 

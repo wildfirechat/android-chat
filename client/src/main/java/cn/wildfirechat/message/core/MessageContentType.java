@@ -159,6 +159,8 @@ public interface MessageContentType {
     int ContentType_Dsh_Approval = 202;         // 机器人→用户 工具审批卡片
     int ContentType_Dsh_Approval_Result = 203;  // 用户→机器人 审批结果
     int ContentType_Dsh_Goal = 206;             // 机器人→用户 目标进度卡片
+    int ContentType_Dsh_Command = 207;          // 用户→机器人 AI 面板静默指令（透明，不显示；op=query 组合查询 / op=set 更新）
+    int ContentType_Dsh_TaskProgress = 208;     // 机器人→用户 任务进度卡片（subagent/workflow 派生任务，首次 sendCard 后续 updateMessage 原地更新）
 
     //自定义消息type要做1000以上
 }

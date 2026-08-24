@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dshTaskProgressContentItemView"
+    android:layout_width="260dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_receive"
+    android:backgroundTint="@color/white"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🧩 任务进度"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dshTaskProgressSummaryTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/shape_dsh_phase_badge"
+            android:paddingLeft="8dp"
+            android:paddingTop="1dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="1dp"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="共 2 个 · 1 运行中"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <!-- 空任务占位 -->
+    <TextView
+        android:id="@+id/dshTaskProgressEmptyTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="暂无任务"
+        android:textColor="@color/gray11"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <!-- 任务列表，代码按行填充 -->
+    <LinearLayout
+        android:id="@+id/dshTaskProgressListContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+</LinearLayout>

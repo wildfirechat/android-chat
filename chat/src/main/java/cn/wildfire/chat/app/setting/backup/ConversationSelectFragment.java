@@ -92,7 +92,7 @@ public class ConversationSelectFragment extends Fragment {
                 Conversation.ConversationType.Group,
                 Conversation.ConversationType.Channel
         );
-        ChatManagerHolder.gChatManager.getConversationListAsync(types, Arrays.asList(0), new GetConversationListCallback() {
+        ChatManagerHolder.gChatManager.getConversationListAsync(types, Arrays.asList(0, 2), new GetConversationListCallback() {
             @Override
             public void onSuccess(List<ConversationInfo> conversationInfos) {
                 allConversations = conversationInfos;
