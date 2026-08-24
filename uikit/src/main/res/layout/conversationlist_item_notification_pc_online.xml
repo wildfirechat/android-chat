@@ -2,23 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:background="@drawable/selector_stick_top_item">
+    android:layout_height="44dp"
+    android:background="@drawable/selector_stick_top_item"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
+    <!-- 多端登录图标：单台=对应平台灰色图标，多台=电脑灰色图标，由 ViewHolder 设置 -->
     <ImageView
         android:id="@+id/pc_image_view"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:src="@mipmap/pc"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_pc_computer"
         app:tint="#7C7C7C" />
 
     <TextView
         android:id="@+id/statusTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
         android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textColor="#666666"
+        android:textSize="15sp"
         android:text="pc online" />
 </LinearLayout>

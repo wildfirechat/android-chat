@@ -447,6 +447,15 @@
     <string name="wx_online">WeChat Mini Program Online</string>
     <string name="pad_online">Pad Online</string>
     <string name="notification_muted_when_pc_online">, Mobile notifications disabled</string>
+    <string name="pc_devices_logged_in">%1$d devices logged in</string>
+    <string name="pc_session_title">Logged-in Devices</string>
+    <string name="pc_logout_success">Logged Out</string>
+    <string name="pc_device_computer">Computer</string>
+    <string name="pc_device_pad">Tablet</string>
+    <string name="pc_device_web">Web</string>
+    <string name="pc_device_mini_program">Mini Program</string>
+    <string name="pc_device_watch">Watch</string>
+    <string name="pc_device_tv">TV</string>
     <string name="delete_conversation">Delete Conversation</string>
     <string name="stick_on_top">Pin</string>
     <string name="cancel_stick_on_top">Unpin</string>
@@ -633,6 +642,8 @@
     <string name="search_tip">Enter keywords to start searching</string>
     <string name="search_no_result">No search results</string>
     <string name="mute_mobile">Mute Mobile</string>
+    <string name="pc_session_phone_notify">Phone Notifications</string>
+    <string name="pc_session_lock">Lock</string>
     <string name="send_file">Send File</string>
     <string name="logout_pc">Logout PC</string>
     <string name="create_conversation">Create Conversation</string>

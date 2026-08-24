@@ -443,6 +443,15 @@
     <string name="wx_online">微信小程序 在线</string>
     <string name="pad_online">Pad 在线</string>
     <string name="notification_muted_when_pc_online">，手机通知已关闭</string>
+    <string name="pc_devices_logged_in">%1$d个设备已经登录</string>
+    <string name="pc_session_title">已登录的设备</string>
+    <string name="pc_logout_success">已退出登录</string>
+    <string name="pc_device_computer">电脑</string>
+    <string name="pc_device_pad">平板</string>
+    <string name="pc_device_web">Web</string>
+    <string name="pc_device_mini_program">小程序</string>
+    <string name="pc_device_watch">手表</string>
+    <string name="pc_device_tv">电视</string>
     <string name="delete_conversation">删除会话</string>
     <string name="stick_on_top">置顶</string>
     <string name="cancel_stick_on_top">取消置顶</string>
@@ -643,6 +652,8 @@
     <string name="search_no_result">没有搜索结果</string>
     <string name="mute_mobile">手机静音</string>
     <string name="lock_pc">锁定电脑</string>
+    <string name="pc_session_phone_notify">手机通知</string>
+    <string name="pc_session_lock">锁定</string>
     <string name="send_file">传文件</string>
     <string name="logout_pc">退出电脑登录</string>
     <string name="create_conversation">创建会话</string>

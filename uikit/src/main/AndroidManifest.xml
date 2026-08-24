@@ -266,11 +266,11 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity" />
-        <!-- label 只是兜底：真正的标题是「Windows 已登录」这种按平台拼出来的，
+        <!-- label 只是兜底：真正的标题是「已登录的设备」，
              由 PCSessionFragment.pageTitle() 给出 -->
         <activity
             android:name="cn.wildfire.chat.kit.pc.PCSessionActivity"
-            android:label="@string/pc_online" />
+            android:label="@string/pc_session_title" />
         <activity
             android:name=".third.location.ui.activity.MyLocationActivity"
             android:label="@string/location" />

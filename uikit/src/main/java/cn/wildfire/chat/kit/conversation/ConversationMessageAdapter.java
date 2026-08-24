@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
@@ -126,6 +128,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void setMessages(List<UiMessage> messages) {
+        // 加载历史消息时按 streamId 归一化去重，避免切换会话后同一 AI 回复的多条「生成中(14)」重复显示
+        messages = normalizeStreamingMessages(messages);
         if (messages != null && !messages.isEmpty()) {
             this.messages = messages;
         } else {
@@ -197,7 +201,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 filteredMsgs.add(m);
             }
         }
-        newMessages = filteredMsgs;
+        // 向上翻页加载更早历史消息时，同样按 streamId 归一化去重（与 setMessages 一致）
+        newMessages = normalizeStreamingMessages(filteredMsgs);
         if (newMessages.isEmpty()) {
             return;
         }
@@ -330,6 +335,73 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 notifyItemRemoved(i);
             }
         }
+    }
+
+    /**
+     * 加载历史消息时对流式消息按 streamId 归一化去重（与 HarmonyOS 版 ConversationPage.normalizeStreaming 逻辑一致）。
+     * <p>
+     * 背景：AI 机器人流式回复时，会逐字推送多条同 streamId 的「生成中(14) StreamingTextGeneratingMessageContent」
+     * 更新消息（每条都入库），最后推送「已生成(15) StreamingTextGeneratedMessageContent」。实时接收时已按 streamId
+     * 替换/移除（见 {@link #removeStreamingMessage(String)}），但切换会话后重新加载历史消息时，数据库里同 streamId
+     * 的多条消息会重复显示成多条"生成中"气泡。这里在整体设置消息列表时统一归一化：
+     * <ul>
+     *   <li>同 streamId 组内存在「已生成(15)」→ 丢弃组内所有「生成中(14)」，只保留最终结果；</li>
+     *   <li>同 streamId 只有「生成中(14)」→ 只保留组内最后一条（最新文本）；</li>
+     *   <li>非 streaming 消息全部保留；保持原有相对顺序。</li>
+     * </ul>
+     *
+     * @param messages 待设置的消息列表（UiMessage）
+     * @return 归一化去重后的消息列表；没有 streaming 消息时返回原列表引用，避免无谓拷贝
+     */
+    private List<UiMessage> normalizeStreamingMessages(List<UiMessage> messages) {
+        if (messages == null || messages.isEmpty()) {
+            return messages;
+        }
+        // 第一遍：按 streamId 统计「已生成」是否存在、该组最后一条「生成中」的下标
+        Map<String, Boolean> hasGenerated = new HashMap<>();
+        Map<String, Integer> lastGeneratingIndex = new HashMap<>();
+        List<String> streamIds = new ArrayList<>();
+        for (int i = 0; i < messages.size(); i++) {
+            UiMessage uiMessage = messages.get(i);
+            MessageContent content = uiMessage.message.content;
+            String streamId = null;
+            if (content instanceof StreamingTextGeneratingMessageContent) {
+                streamId = ((StreamingTextGeneratingMessageContent) content).getStreamId();
+            } else if (content instanceof StreamingTextGeneratedMessageContent) {
+                streamId = ((StreamingTextGeneratedMessageContent) content).getStreamId();
+            }
+            if (TextUtils.isEmpty(streamId)) {
+                continue;
+            }
+            if (!hasGenerated.containsKey(streamId)) {
+                hasGenerated.put(streamId, false);
+                lastGeneratingIndex.put(streamId, -1);
+                streamIds.add(streamId);
+            }
+            if (content instanceof StreamingTextGeneratedMessageContent) {
+                hasGenerated.put(streamId, true);
+            } else if (content instanceof StreamingTextGeneratingMessageContent) {
+                lastGeneratingIndex.put(streamId, i);
+            }
+        }
+        if (streamIds.isEmpty()) {
+            return messages;
+        }
+        // 第二遍：过滤重复的「生成中」，非 streaming 消息与「已生成」消息原样保留
+        List<UiMessage> result = new ArrayList<>(messages.size());
+        for (int i = 0; i < messages.size(); i++) {
+            UiMessage uiMessage = messages.get(i);
+            MessageContent content = uiMessage.message.content;
+            if (content instanceof StreamingTextGeneratingMessageContent) {
+                String streamId = ((StreamingTextGeneratingMessageContent) content).getStreamId();
+                Integer lastIndex = lastGeneratingIndex.get(streamId);
+                if (Boolean.TRUE.equals(hasGenerated.get(streamId)) || lastIndex == null || lastIndex != i) {
+                    continue;
+                }
+            }
+            result.add(uiMessage);
+        }
+        return result;
     }
 
     private int indexOfMessage(UiMessage message) {

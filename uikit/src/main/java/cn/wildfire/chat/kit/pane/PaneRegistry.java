@@ -14,6 +14,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -652,11 +653,19 @@ public final class PaneRegistry {
         register(CompositeMessageContentActivity.class,
             (context, intent) -> CompositeMessageContentFragment.fromIntent(intent));
 
-        // PC 端会话管理，挂在会话列表顶部那条在线横幅上。按 clientId 去重。
+        // 多端登录页，挂在会话列表顶部那条在线横幅上。按全部 clientId 拼 key 去重：
+        // 同一组设备只保留一页，设备列表变化（踢掉一台）后 key 变化，重新开一页。
         register(PCSessionActivity.class, (context, intent) -> PCSessionFragment.fromIntent(intent),
             intent -> {
-                PCOnlineInfo info = intent.getParcelableExtra("pcOnlineInfo");
-                return info == null ? null : "pcSession:" + info.getClientId();
+                ArrayList<PCOnlineInfo> infos = intent.getParcelableArrayListExtra("pcOnlineInfos");
+                if (infos == null || infos.isEmpty()) {
+                    return null;
+                }
+                StringBuilder sb = new StringBuilder("pcSession:");
+                for (PCOnlineInfo info : infos) {
+                    sb.append(info.getClientId()).append(',');
+                }
+                return sb.toString();
             });
 
         // 扫群码之后的入群落地页（不是群设置页，那个是 ConversationInfoActivity）。按群去重。

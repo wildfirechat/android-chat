@@ -1,156 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
     android:orientation="vertical">
 
     <!-- 标题栏不在这里：本布局现在由页面 Fragment 使用，标题栏由宿主提供
-         （手机端是壳 Activity 的 fragment_container_activity，平板是右栏的 PanePageFragment）。 -->
+         （手机端是壳 Activity 的 fragment_container_activity，平板是右栏的 PanePageFragment）。
+         顶部「手机静音」行与底部「传文件」行已移入每台设备卡片的展开区，此页只剩卡片列表。 -->
 
-    <LinearLayout
+    <!-- 设备卡片列表（手风琴：第一张默认展开） -->
+    <ScrollView
+        android:id="@+id/deviceCardScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="false"
+        android:scrollbars="none">
 
-        <!-- PC 图标和状态 -->
         <LinearLayout
+            android:id="@+id/deviceCardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:paddingTop="30dp">
-
-            <ImageView
-                android:id="@+id/pcImageView"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@mipmap/pc" />
-
-            <TextView
-                android:id="@+id/descTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textColor="#666666"
-                android:textSize="16sp"
-                tools:text="PC端已登录" />
-        </LinearLayout>
-
-        <!-- 功能列表 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:background="@android:color/white"
-            android:orientation="vertical">
-
-            <!-- 静音 -->
-            <LinearLayout
-                android:id="@+id/muteLayout"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/mute_mobile"
-                    android:textColor="#333333"
-                    android:textSize="16sp" />
-
-                <Switch
-                    android:id="@+id/muteSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="16dp"
-                android:background="#E0E0E0" />
-
-            <!-- 锁定 -->
-            <LinearLayout
-                android:id="@+id/lockLayout"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/lock_pc"
-                    android:textColor="#333333"
-                    android:textSize="16sp" />
-
-                <Switch
-                    android:id="@+id/lockSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="16dp"
-                android:background="#E0E0E0" />
-
-            <!-- 文件助手 -->
-            <LinearLayout
-                android:id="@+id/fileHelperLayout"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/send_file"
-                    android:textColor="#333333"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_chevron_right"
-                    android:tint="#999999" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/kickOffPCButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginBottom="40dp"
-            android:backgroundTint="@android:color/holo_red_light"
-            android:text="@string/logout_pc"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-
-    </LinearLayout>
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp" />
+    </ScrollView>
 
 </LinearLayout>

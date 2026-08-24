@@ -215,13 +215,12 @@ public class ConversationListFragment extends ProgressFragment {
         List<PCOnlineInfo> pcOnlineInfos = ChatManager.Instance().getPCOnlineInfos();
         statusNotificationViewModel.clearStatusNotificationByType(PCOnlineStatusNotification.class);
         if (pcOnlineInfos != null && !pcOnlineInfos.isEmpty()) {
-            for (PCOnlineInfo info : pcOnlineInfos) {
-                PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
-                statusNotificationViewModel.showStatusNotification(notification);
+            // 与 HarmonyOS 版一致：全部在线设备合并成一条提醒，点击后传入完整列表
+            PCOnlineStatusNotification notification = new PCOnlineStatusNotification(pcOnlineInfos);
+            statusNotificationViewModel.showStatusNotification(notification);
 
-                SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
-                sp.edit().putBoolean("wfc_uikit_had_pc_session", true).commit();
-            }
+            SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
+            sp.edit().putBoolean("wfc_uikit_had_pc_session", true).commit();
         }
     }
 
