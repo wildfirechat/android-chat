@@ -39,7 +39,8 @@ import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
  * 选项垂直排列、整行可点（≥40dp）；单选点击即答并立即本地置灰；多选勾选 + 底部「提交」；
  * 「自定义回答」点击后聚焦会话主输入框并弹键盘（卡片内不嵌输入框，卡片期间用户直接发的
  * 文本会被服务端当作该卡片的自定义回答）；plan-review 的 detail 不内联展开，走
- * {@link DshPlanDetailActivity} 全屏计划详情页；锁定态显示 已作答/已过期。
+ * {@link DshPlanDetailActivity} 全屏计划详情页；锁定态显示 已作答/已过期，
+ * answered 时附用户选择（"已作答（选择内容）"）。
  * </p>
  */
 @MessageContentType(DshQuestionMessageContent.class)
@@ -108,10 +109,59 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
         customAnswerTextView.setVisibility(locked ? View.GONE : View.VISIBLE);
         if (locked) {
             stateTextView.setVisibility(View.VISIBLE);
-            stateTextView.setText("expired".equals(questionContent.getState()) ? "已过期" : "已作答");
+            stateTextView.setText(stateText());
         } else {
             stateTextView.setVisibility(View.GONE);
         }
+    }
+
+    private String stateText() {
+        if ("expired".equals(questionContent.getState())) {
+            return "已过期";
+        }
+        // answered（或本地已作答）：附上服务端 updateMessage 写入的用户选择
+        return "已作答" + mySelectionText();
+    }
+
+    /**
+     * 服务端更新后的用户选择（插件 updateMessage 写入 content.answers）：
+     * answers[].selected 以「、」连接、或 answers[].custom 自定义文本；多题答案以「；」分隔。
+     * 仅 content.state=answered 时展示，与 PC 端 DshQuestionContentView 保持一致。
+     */
+    private String mySelectionText() {
+        if (!"answered".equals(questionContent.getState())) {
+            return "";
+        }
+        JSONArray answers = questionContent.getContentJson().optJSONArray("answers");
+        if (answers == null) {
+            return "";
+        }
+        List<String> parts = new ArrayList<>();
+        for (int i = 0; i < answers.length(); i++) {
+            JSONObject answer = answers.optJSONObject(i);
+            if (answer == null) {
+                continue;
+            }
+            JSONArray selected = answer.optJSONArray("selected");
+            List<String> labels = new ArrayList<>();
+            if (selected != null) {
+                for (int j = 0; j < selected.length(); j++) {
+                    String label = selected.optString(j);
+                    if (!TextUtils.isEmpty(label)) {
+                        labels.add(label);
+                    }
+                }
+            }
+            if (!labels.isEmpty()) {
+                parts.add(TextUtils.join("、", labels));
+            } else {
+                String custom = answer.optString("custom");
+                if (!TextUtils.isEmpty(custom)) {
+                    parts.add(custom);
+                }
+            }
+        }
+        return parts.isEmpty() ? "" : "（" + TextUtils.join("；", parts) + "）";
     }
 
     private boolean isLocked() {

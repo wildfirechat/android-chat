@@ -964,4 +964,31 @@
     <string name="workspace_welcome_subtitle">Have a great day</string>
     <string name="workspace_welcome_hint">Here\'s to a productive day</string>
     <string name="workspace_welcome_date_format">%2$d/%3$d/%1$d</string>
+    <!-- DSH AI session settings panel -->
+    <string name="dsh_ai_settings">AI Session Settings</string>
+    <string name="dsh_ai_title">🤖 AI Session Settings</string>
+    <string name="dsh_ai_loading">Reading session state…</string>
+    <string name="dsh_ai_model">Model</string>
+    <string name="dsh_ai_effort">Reasoning effort</string>
+    <string name="dsh_ai_cwd">Working directory</string>
+    <string name="dsh_ai_cwd_current">Current: %1$s</string>
+    <string name="dsh_ai_cwd_switch">Switch</string>
+    <string name="dsh_ai_cwd_list_loading">Fetching directory list…</string>
+    <string name="dsh_ai_cwd_list_empty">No directories found, try again later</string>
+    <string name="dsh_ai_cwd_list_timeout">Timed out fetching directory list, try again</string>
+    <string name="dsh_ai_cwd_tip">Switching directory starts a new session (context cleared)</string>
+    <string name="dsh_ai_sandbox">Sandbox mode</string>
+    <string name="dsh_ai_sandbox_read_only">Read-only</string>
+    <string name="dsh_ai_sandbox_workspace_write">Write workspace</string>
+    <string name="dsh_ai_sandbox_danger">Full access</string>
+    <string name="dsh_ai_plan">Plan mode</string>
+    <string name="dsh_ai_plan_on">On (review before acting)</string>
+    <string name="dsh_ai_plan_off">Off</string>
+    <string name="dsh_ai_compact">Compact context</string>
+    <string name="dsh_ai_reset">Reset session</string>
+    <string name="dsh_ai_destroy">Destroy session</string>
+    <string name="dsh_ai_compact_confirm">Compact the session context (fold history to reduce token usage). Continue?</string>
+    <string name="dsh_ai_reset_confirm">Resetting the session clears all context (working directory is kept). Continue?</string>
+    <string name="dsh_ai_destroy_confirm">Destroying the session will dissolve this group, delete the workspace directory and all session data, and cannot be undone!\n\nAre you sure you want to destroy it?</string>
+    <string name="dsh_ai_applying">Command sent…</string>
 </resources>

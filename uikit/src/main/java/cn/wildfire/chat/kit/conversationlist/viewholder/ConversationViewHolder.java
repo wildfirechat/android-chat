@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversationlist.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
@@ -41,6 +42,10 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.DshState;
+import cn.wildfirechat.model.ClientState;
+import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfire.chat.kit.utils.LayoutScale;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.message.Message;
@@ -223,7 +228,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * DSH 会话：标题后 8dp 状态圆点（running=主色/waiting_user=#f59e0b/done=#22c55e/其他=#94a3b8），
+     * DSH 会话：标题后 8dp 状态圆点（running=主色/waiting_user=#f59e0b/idle、done 及其他=#22c55e），
      * DSH 群标题旁加描边小徽标；仅 DSH 会话显示。非 DSH 会话不查询 scope=31。
      */
     private void updateDshIndicator(ConversationInfo conversationInfo) {
@@ -236,12 +241,14 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             dshBadgeTextView.setVisibility(View.GONE);
             return;
         }
+        // AI 群群主（AI 机器人）不在线：状态圆点/徽标置灰（不显示运行态颜色）
+        boolean aiOffline = isAiOffline(conversation);
         JSONObject state = DshState.getDshState(conversation);
         if (state != null) {
             Drawable dot = ContextCompat.getDrawable(fragment.requireContext(), R.drawable.shape_dsh_dot);
             if (dot != null) {
                 dot = dot.mutate();
-                dot.setTint(DshState.stateColor(state.optString("state")));
+                dot.setTint(aiOffline ? Color.GRAY : DshState.stateColor(state.optString("state")));
                 float density = fragment.getResources().getDisplayMetrics().density;
                 int size = (int) (8 * density);
                 dot.setBounds(0, 0, size, size);
@@ -253,6 +260,35 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         }
         dshBadgeTextView.setVisibility(
             conversation.type == Conversation.ConversationType.Group ? View.VISIBLE : View.GONE);
+        dshBadgeTextView.setAlpha(aiOffline ? 0.35f : 1.0f);
+    }
+
+    /**
+     * AI 群（line 2）群主（AI 机器人）是否不在线：clientStates 中无 state==0 的在线客户端。
+     * 判定与 DshAiExt.disabled() / ConversationFragment.aiOwnerOnline() 一致。
+     */
+    private boolean isAiOffline(Conversation conversation) {
+        if (conversation.type != Conversation.ConversationType.Group || conversation.line != 2) {
+            return false;
+        }
+        GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conversation.target, false);
+        if (groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
+            return false;
+        }
+        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(groupInfo.owner);
+        if (ownerState == null) {
+            return true;
+        }
+        ClientState[] states = ownerState.getClientStates();
+        if (states == null || states.length == 0) {
+            return true;
+        }
+        for (ClientState cs : states) {
+            if (cs.getPlatform() >= 1 && cs.getPlatform() <= 9 && cs.getState() == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

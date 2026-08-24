@@ -118,18 +118,20 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     LinearLayout dshCommandContainerLinearLayout;
     private JSONObject dshState;
     private CharSequence defaultInputHint;
-    // 单聊机器人命令（/create-group 等私聊专属命令在群内会被插件拒绝）
+    // 单聊机器人命令（/create 等私聊专属命令在群内会被插件拒绝；单聊无 AI 面板，命令保留）
     private static final String[][] DSH_SINGLE_COMMANDS = {
-        {"/help", "命令帮助"}, {"/create-group", "创建 DSH 工作区群"}, {"/workspaces", "列出工作区"},
+        {"/help", "命令帮助"}, {"/create", "创建 DSH 工作区群"}, {"/workspaces", "列出工作区"},
         {"/goal", "目标管理"}, {"/jobs", "后台任务"}, {"/model", "切换模型"},
         {"/effort", "推理等级"}, {"/plan", "计划模式"}, {"/compact", "压缩上下文"},
         {"/cwd", "切换工作目录"}, {"/ls", "列出目录"}, {"/sandbox", "沙箱模式"}, {"/stop", "停止当前任务"},
     };
-    // DSH 群聊命令
+    // DSH 群聊命令（精简：model/effort/cwd/sandbox/plan/compact/reset/ls 已由 AI 面板
+    // 通过 207 静默通道覆盖，不再出现在 '/' 菜单；保留 help/stop 与群管理命令，
+    // 群管理命令仅 AI 群内、创建者/管理员可执行）
     private static final String[][] DSH_GROUP_COMMANDS = {
-        {"/help", "命令帮助"}, {"/cwd", "切换工作目录"}, {"/ls", "列出目录"},
-        {"/model", "切换模型"}, {"/effort", "推理等级"}, {"/plan", "计划模式"},
-        {"/compact", "压缩上下文"}, {"/sandbox", "沙箱模式"}, {"/reset", "重置会话"}, {"/stop", "停止当前任务"},
+        {"/help", "命令帮助"}, {"/members", "查看群成员"}, {"/kick", "踢出群成员"},
+        {"/invite", "邀请加入群聊"}, {"/mute", "禁言群成员"}, {"/unmute", "解除禁言"},
+        {"/stop", "停止当前任务"},
     };
 
     KeyboardHeightFrameLayout emotionContainerFrameLayout;

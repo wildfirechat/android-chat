@@ -398,7 +398,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         checkVersion();
         initView();
 
-        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
+        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0, 2)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 

@@ -107,6 +107,7 @@ import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.model.ClientState;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.UserSettingScope;
@@ -162,6 +163,8 @@ public class ConversationFragment extends Fragment implements
     private TextView dshStatusTextView;
     private TextView dshStopButton;
     private JSONObject dshState;
+    // Token 统计（scope=31 type=2 独立通道，回合结束必推，含出错/取消）；与运行状态分开读
+    private JSONObject dshMetrics;
     private long lastDshStopClickTime;
     private final OnSettingUpdateListener dshSettingUpdateListener = () -> refreshDshState();
 
@@ -172,6 +175,8 @@ public class ConversationFragment extends Fragment implements
     private SettingViewModel settingViewModel;
     private boolean isEnableUserOnlineState;
     private UserOnlineStateViewModel userOnlineStateViewModel;
+    // AI 群（line==2，群主=AI 机器人）：已订阅在线状态的群主 id，用于避免重复订阅
+    private String aiOwnerOnlineStateSubscribedUserId;
     private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
@@ -474,7 +479,9 @@ public class ConversationFragment extends Fragment implements
             if (conversation == null) {
                 return;
             }
-            if (conversation.type == Conversation.ConversationType.Single) {
+            // 单聊 / AI 群（line==2）：在线状态变化时刷新标题（AI 群为群主在线状态）
+            if (conversation.type == Conversation.ConversationType.Single
+                || (conversation.type == Conversation.ConversationType.Group && conversation.line == 2)) {
                 conversationTitle = null;
                 subConversationTitle = null;
                 setTitle();
@@ -504,6 +511,8 @@ public class ConversationFragment extends Fragment implements
                 if (info.target.equals(groupInfo.target)) {
                     groupInfo = info;
                     updateGroupConversationInputStatus();
+                    // AI 群：群信息异步拉回（可能补上 owner）后补订群主在线状态
+                    watchAiOwnerOnlineState();
                     setTitle();
                     // 群 extra 可能异步拉取，拉取回来后重新判定是否为 DSH 会话
                     refreshDshState();
@@ -627,6 +636,8 @@ public class ConversationFragment extends Fragment implements
                 if (this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target)) {
                     userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
                 }
+                // AI 群（line==2，群主=AI 机器人）：离开会话时取消订阅群主在线状态
+                unwatchAiOwnerOnlineState();
             }
             this.adapter = new ConversationMessageAdapter(this);
             this.recyclerView.setAdapter(this.adapter);
@@ -769,6 +780,9 @@ public class ConversationFragment extends Fragment implements
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
+            // AI 群（line==2，群主=AI 机器人）：进入会话时订阅群主在线状态
+            watchAiOwnerOnlineState();
+
             updateGroupConversationInputStatus();
             updateJoinGroupRequestHeader();
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
@@ -810,22 +824,28 @@ public class ConversationFragment extends Fragment implements
 
     /**
      * 刷新 DSH 会话状态：标题栏副标题 + 状态横幅/停止按钮。
-     * 仅 DSH 会话（单聊机器人 / 群 extra 带 {"dsh":true}）会读到状态；非 DSH 会话恒为 null。
+     * 运行状态（type=1）与 Token 统计（type=2）都随本端已有的用户设置更新事件刷新
+     * （type=2 变化也会触发同一事件，见 {@link #dshSettingUpdateListener}）。
+     * 仅 DSH 会话（群聊 line==2）会读到状态；非 DSH 会话恒为 null。
      */
     private void refreshDshState() {
         if (conversation == null || dshStatusBannerLinearLayout == null) {
             return;
         }
         dshState = DshState.getDshState(conversation);
+        // Token 统计走 type=2 独立通道（回合结束必推，含出错/取消），与运行状态分开读
+        dshMetrics = DshState.getDshMetrics(conversation);
         if (DshState.isDshConversation(conversation)) {
             setTitle();
         }
-        // Toolbar 副标题无法内联按钮，停止按钮放在消息列表上方的细状态横幅里，仅 running 时显示
-        boolean running = dshState != null && DshState.STATE_RUNNING.equals(dshState.optString("state"));
+        // Toolbar 副标题无法内联按钮，停止按钮放在消息列表上方的细状态横幅里，仅 running 时显示；
+        // AI 群群主不在线时不显示（AI 状态整体隐藏，由 "AI 不在线" 替代）
+        boolean running = dshState != null && DshState.STATE_RUNNING.equals(dshState.optString("state")) && !isAiOwnerOffline();
         dshStatusBannerLinearLayout.setVisibility(running ? View.VISIBLE : View.GONE);
         if (running) {
             dshStatusTextView.setText(DshState.stateText(dshState));
         }
+        // Token/上下文计量已并入副标题（见 aiOwnerStatusLine），此处无需单独渲染
         inputPanel.onDshStateChanged(dshState);
     }
 
@@ -842,6 +862,154 @@ public class ConversationFragment extends Fragment implements
         }
         lastDshStopClickTime = now;
         messageViewModel.sendMessage(conversation, new TextMessageContent("/stop"));
+    }
+
+    /**
+     * AI 群（line==2，群主=AI 机器人）的群主在线状态描述，格式 "AI 在线/离线"。
+     * <p>
+     * 复用现有用户在线状态（{@link UserOnlineState#desc()}，文案如 "Android 在线"/"忙碌"/
+     * "不久前在线"）；离线/未获取到状态时回退 "AI 离线"。非 AI 群、未启用在线状态或群主未知时返回 null。
+     */
+    private String aiOwnerOnlineStateDesc() {
+        if (!isEnableUserOnlineState || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
+            return null;
+        }
+        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(groupInfo.owner);
+        String desc = ownerState == null ? "" : ownerState.desc();
+        if (TextUtils.isEmpty(desc)) {
+            desc = "离线";
+        }
+        return "AI " + desc;
+    }
+
+    /**
+     * AI 群（line==2）群主（AI 机器人）是否在线：在线状态存在且 clientStates 中存在 state==0。
+     * 无状态/未取到（getUserOnlineStateMap 无记录或 clientStates 为空）视为不在线。
+     * 非 AI 群/未启用在线状态/群主未知返回 true（不影响原逻辑）。
+     */
+    private boolean aiOwnerOnline() {
+        if (!isEnableUserOnlineState || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
+            return true;
+        }
+        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(groupInfo.owner);
+        if (ownerState == null) {
+            return false;
+        }
+        ClientState[] states = ownerState.getClientStates();
+        if (states == null || states.length == 0) {
+            return false;
+        }
+        for (ClientState cs : states) {
+            if (cs.getPlatform() >= 1 && cs.getPlatform() <= 9 && cs.getState() == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** AI 群（line==2）群主（AI 机器人）是否不在线。 */
+    private boolean isAiOwnerOffline() {
+        return !aiOwnerOnline();
+    }
+
+    /**
+     * AI 群（line==2）标题副标题合并行：AI 在线状态 + 运行态提示（type=1）+
+     * 最近变更 lastChange（type=1）+ Token 统计（type=2）合并为一行，
+     * 如 "AI 在线 · 🤔 等待确认 · 模型 → deepseek-official/deepseek-v4-pro · 上下文 0.8% · 缓存 98%"
+     * （参考 PC 端 conversationStatusLine：非空段用 " · " 连接，各自为空则跳过，都空返回 null；
+     * lastChange 插在提示与统计之间）。
+     * <p>
+     * AI 群群主（AI 机器人）不在线：去掉所有 AI 状态段（运行提示/lastChange/统计），
+     * 只显示 "AI 不在线"。
+     * online 来自 {@link #aiOwnerOnlineStateDesc()}；hint 来自
+     * {@link DshState#dshStatusHint(JSONObject)}（type=1 状态里的 waiting_user+interaction /
+     * reason=error+error / reason=cancelled）；lastChange 来自 type=1 状态的 lastChange 字段
+     * （207 set 执行后插件写入，如 "模型 → deepseek-official/deepseek-v4-pro"，变更可见）；
+     * metrics 来自 {@link #dshMetricsTextForCurrentSession()}（type=2 统计对象，无统计信息或
+     * 统计属于其他会话时为空串）。
+     * </p>
+     */
+    private String aiOwnerStatusLine() {
+        if (isAiOwnerOffline()) {
+            return "AI 不在线";
+        }
+        String online = aiOwnerOnlineStateDesc();
+        String hint = DshState.dshStatusHint(dshState);
+        String lastChange = dshState != null ? dshState.optString("lastChange", "") : "";
+        String metrics = dshMetricsTextForCurrentSession();
+        List<String> parts = new ArrayList<>(4);
+        if (!TextUtils.isEmpty(online)) {
+            parts.add(online);
+        }
+        if (!TextUtils.isEmpty(hint)) {
+            parts.add(hint);
+        }
+        if (!TextUtils.isEmpty(lastChange)) {
+            parts.add(lastChange);
+        }
+        if (!TextUtils.isEmpty(metrics)) {
+            parts.add(metrics);
+        }
+        return parts.isEmpty() ? null : TextUtils.join(" · ", parts);
+    }
+
+    /**
+     * Token 统计段文本（type=2 统计对象）——带 sessionId 校验：统计只在属于当前 DSH 会话时显示。
+     * <p>
+     * 插件（已部署）在 type=2 统计对象里带 {@code sessionId}（统计所属会话），type=1 状态
+     * （{@code dshState}）也带 {@code sessionId}（当前会话）。切目录后旧会话统计可能残留
+     * （type=2 未随 resetMetrics 清掉或推送时序差），此处对比两者：统计对象含 sessionId 且
+     * 当前状态也有 sessionId 且两者不相等 → 统计文本返回空（不显示统计段；AI 在线/运行提示/
+     * lastChange 仍正常显示，见 {@link #aiOwnerStatusLine()}）。sessionId 缺失（旧数据）时不拦截，
+     * 按现状显示。
+     * </p>
+     */
+    private String dshMetricsTextForCurrentSession() {
+        if (dshMetrics == null) {
+            return "";
+        }
+        // 统计属于当前会话才显示：type=2 统计的 sessionId 与 type=1 状态的 sessionId 不一致
+        // （切目录后旧会话统计残留）则不显示统计段；任一侧 sessionId 缺失时不拦截（旧数据兼容）
+        String metricsSessionId = dshMetrics.optString("sessionId");
+        String stateSessionId = dshState != null ? dshState.optString("sessionId") : "";
+        if (!TextUtils.isEmpty(metricsSessionId) && !TextUtils.isEmpty(stateSessionId)
+            && !TextUtils.equals(metricsSessionId, stateSessionId)) {
+            return "";
+        }
+        return DshState.dshMetricsText(dshMetrics);
+    }
+
+    /**
+     * 进入 AI 群（line==2）会话时订阅群主（AI 机器人）在线状态。
+     * <p>
+     * 在线状态按用户维度订阅（{@link Conversation.ConversationType#Single}，与单聊一致）。
+     * 群主信息可能异步拉回（此时 {@code groupInfo.owner} 暂为空），等
+     * {@link #groupInfosUpdateLiveDataObserver} 拉到群信息后会自动补订；群主变化时先退订旧群主再订新群主。
+     */
+    private void watchAiOwnerOnlineState() {
+        if (!isEnableUserOnlineState || userOnlineStateViewModel == null || conversation == null
+            || conversation.type != Conversation.ConversationType.Group || conversation.line != 2
+            || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
+            return;
+        }
+        if (TextUtils.equals(groupInfo.owner, aiOwnerOnlineStateSubscribedUserId)) {
+            return;
+        }
+        if (aiOwnerOnlineStateSubscribedUserId != null) {
+            userOnlineStateViewModel.unwatchOnlineState(Conversation.ConversationType.Single.getValue(), new String[]{aiOwnerOnlineStateSubscribedUserId});
+        }
+        userOnlineStateViewModel.watchUserOnlineState(Conversation.ConversationType.Single.getValue(), new String[]{groupInfo.owner});
+        aiOwnerOnlineStateSubscribedUserId = groupInfo.owner;
+    }
+
+    /**
+     * 离开/销毁 AI 群会话时取消订阅群主在线状态（未订阅时为空操作）。
+     */
+    private void unwatchAiOwnerOnlineState() {
+        if (userOnlineStateViewModel != null && aiOwnerOnlineStateSubscribedUserId != null) {
+            userOnlineStateViewModel.unwatchOnlineState(Conversation.ConversationType.Single.getValue(), new String[]{aiOwnerOnlineStateSubscribedUserId});
+            aiOwnerOnlineStateSubscribedUserId = null;
+        }
     }
 
     public void setConversationBackgroundImage(String uri) {
@@ -1069,6 +1237,15 @@ public class ConversationFragment extends Fragment implements
                 if (groupInfo.type == GroupInfo.GroupType.Organization) {
                     subConversationTitle = getString(R.string.official);
                 }
+                // AI 群（line==2，群主=AI 机器人）：副标题显示合并行
+                // （AI 在线 + 运行态提示 + Token 统计，如 "AI 在线 · 🤔 等待确认 · 上下文 0.8%"，
+                // 有 DSH 状态时前面还会拼状态文本，见下）
+                if (conversation.line == 2) {
+                    String aiStatusLine = aiOwnerStatusLine();
+                    if (!TextUtils.isEmpty(aiStatusLine)) {
+                        subConversationTitle = aiStatusLine;
+                    }
+                }
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             ChannelViewModel channelViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
@@ -1096,11 +1273,21 @@ public class ConversationFragment extends Fragment implements
             conversationTitle = userViewModel.getUserDisplayName(userInfo) + getString(R.string.secret_chat_postfix);
         }
 
-        // DSH 会话：副标题显示状态文本（空闲/运行中/等待确认/已完成；phase==tool 时追加工具名）。
-        // 无状态时回退原有副标题（机器人单聊 "Bot"、在线状态等）
-        if (dshState != null) {
+        // DSH 会话：副标题显示状态文本（空闲/运行中/等待确认/已完成；phase==tool 时追加工具名），
+        // 之后追加合并行（AI 在线 + 运行态提示 + Token 统计），如 "运行中 · AI 在线 · 上下文 0.8% · 缓存 98%"。
+        // 运行态提示（🤔 等待确认/🔐 等待审批/⚠️ 错误/已取消）已并入合并行，含义覆盖状态文本
+        // （如 waiting_user → "🤔 等待确认"）时不再重复拼接状态文本（参考 PC 端 conversationStatusLine）。
+        // 无状态文本时直接显示合并行；均无时回退原有副标题。
+        // AI 群群主不在线时状态文本/合并行整体隐藏，由 line==2 分支的 "AI 不在线" 替代。
+        if (dshState != null && !isAiOwnerOffline()) {
             String dshStateText = DshState.stateText(dshState);
-            if (!TextUtils.isEmpty(dshStateText)) {
+            String aiStatusLine = aiOwnerStatusLine();
+            if (!TextUtils.isEmpty(aiStatusLine)) {
+                boolean hintCoversState = !TextUtils.isEmpty(DshState.dshStatusHint(dshState));
+                subConversationTitle = (!TextUtils.isEmpty(dshStateText) && !hintCoversState)
+                        ? dshStateText + " · " + aiStatusLine
+                        : aiStatusLine;
+            } else if (!TextUtils.isEmpty(dshStateText)) {
                 subConversationTitle = dshStateText;
             }
         }
@@ -1337,6 +1524,8 @@ public class ConversationFragment extends Fragment implements
                 }
             } else if (conversation.type == Conversation.ConversationType.Group) {
                 //当群超级大时，订阅群成员在线状态非常消耗资源。因此进入会话时不能订阅状态，只有在展示列表时订阅。
+                // AI 群（line==2，群主=AI 机器人）：仅订阅群主一人在线状态，销毁时取消订阅
+                unwatchAiOwnerOnlineState();
             }
         }
 

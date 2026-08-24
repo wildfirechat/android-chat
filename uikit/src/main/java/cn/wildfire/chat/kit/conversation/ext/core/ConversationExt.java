@@ -71,6 +71,17 @@ public abstract class ConversationExt {
     }
 
     /**
+     * 当前会话此扩展是否置灰禁用（如 AI 不在线时的 "AI 会话设置" 入口）。
+     * 禁用时扩展面板渲染为灰色且点击不响应。
+     *
+     * @param conversation 会话
+     * @return true=置灰禁用
+     */
+    public boolean disabled(Conversation conversation) {
+        return false;
+    }
+
+    /**
      * 和会话界面绑定之后调用
      *
      * @param fragment

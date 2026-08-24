@@ -20,11 +20,6 @@ import cn.wildfire.chat.app.poll.PollServiceImpl;
 import cn.wildfire.chat.kit.archive.service.ArchiveServiceProvider;
 import cn.wildfirechat.message.PollMessageContent;
 import cn.wildfirechat.message.PollResultMessageContent;
-import cn.wildfirechat.message.dsh.DshAnswerMessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalMessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalResultMessageContent;
-import cn.wildfirechat.message.dsh.DshGoalMessageContent;
-import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -80,13 +75,6 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             // 注册投票消息内容类型
             ChatManager.Instance().registerMessageContent(PollMessageContent.class);
             ChatManager.Instance().registerMessageContent(PollResultMessageContent.class);
-
-            // 注册 DSH 结构化交互消息内容类型（200-209，官方预留 AI 交互段）
-            ChatManager.Instance().registerMessageContent(DshQuestionMessageContent.class);
-            ChatManager.Instance().registerMessageContent(DshAnswerMessageContent.class);
-            ChatManager.Instance().registerMessageContent(DshApprovalMessageContent.class);
-            ChatManager.Instance().registerMessageContent(DshApprovalResultMessageContent.class);
-            ChatManager.Instance().registerMessageContent(DshGoalMessageContent.class);
 
             // 初始化接龙服务
             if (!TextUtils.isEmpty(Config.COLLECTION_SERVER_ADDRESS) || !TextUtils.isEmpty(Config.COLLECTION_SERVER_BACKUP_ADDRESS)) {
