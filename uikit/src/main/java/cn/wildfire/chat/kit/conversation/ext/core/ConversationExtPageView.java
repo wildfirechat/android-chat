@@ -19,10 +19,12 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.model.Conversation;
 
 public class ConversationExtPageView extends LinearLayout implements View.OnClickListener {
     private OnExtViewClickListener listener;
     private int pageIndex;
+    private Conversation conversation;
     public static final int EXT_PER_PAGE = 8;
 
     public ConversationExtPageView(Context context) {
@@ -52,6 +54,11 @@ public class ConversationExtPageView extends LinearLayout implements View.OnClic
     }
 
     public void updateExtViews(List<ConversationExt> exts) {
+        updateExtViews(exts, null);
+    }
+
+    public void updateExtViews(List<ConversationExt> exts, Conversation conversation) {
+        this.conversation = conversation;
         int[][] states = new int[][]{
             new int[]{android.R.attr.state_pressed},  // pressed
             new int[]{}
@@ -61,9 +68,18 @@ public class ConversationExtPageView extends LinearLayout implements View.OnClic
             ImageView iconImageView = findViewWithTag("icon_" + index);
             iconImageView.setImageResource(exts.get(index).iconResId());
 
-            iconImageView.setOnClickListener(this);
             TextView titleTextView = findViewWithTag("title_" + index);
             titleTextView.setText(exts.get(index).title(getContext()));
+            // 置灰禁用：icon 半透明、标题变灰、点击不响应（如 AI 不在线时的 "AI 会话设置"）
+            if (exts.get(index).disabled(this.conversation)) {
+                iconImageView.setAlpha(0.35f);
+                titleTextView.setAlpha(0.35f);
+                iconImageView.setOnClickListener(null);
+            } else {
+                iconImageView.setAlpha(1.0f);
+                titleTextView.setAlpha(1.0f);
+                iconImageView.setOnClickListener(this);
+            }
         }
 
         if(exts.size() < EXT_PER_PAGE){

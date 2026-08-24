@@ -70,6 +70,11 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
+            <!--
+                DSH Token/上下文计量已合并进 toolbar 副标题（与 AI 在线状态同行，
+                如 "运行中 · AI 在线 · 上下文 0.8% · 缓存 98%"），不再单独占一行。
+            -->
+
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"

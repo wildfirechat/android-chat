@@ -49,6 +49,7 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(DshQuestionMessageContentViewHolder.class, R.layout.conversation_item_dsh_question, R.layout.conversation_item_dsh_question);
         registerMessageViewHolder(DshApprovalMessageContentViewHolder.class, R.layout.conversation_item_dsh_approval, R.layout.conversation_item_dsh_approval);
         registerMessageViewHolder(DshGoalMessageContentViewHolder.class, R.layout.conversation_item_dsh_goal, R.layout.conversation_item_dsh_goal);
+        registerMessageViewHolder(DshTaskProgressMessageContentViewHolder.class, R.layout.conversation_item_dsh_task_progress, R.layout.conversation_item_dsh_task_progress);
         // DSH_ANSWER(201) / DSH_APPROVAL_RESULT(203) 是用户侧应答消息，按摘要文本气泡展示
         registerMessageViewHolder(DshDigestMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
     }
