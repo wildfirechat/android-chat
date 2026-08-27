@@ -20,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,6 +48,10 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContent
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.dsh.DshApprovalMessageContent;
+import cn.wildfirechat.message.dsh.DshGoalMessageContent;
+import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
+import cn.wildfirechat.message.dsh.DshTaskProgressMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
@@ -135,8 +142,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         } else {
             this.messages = new ArrayList<>();
         }
-        // 整体重设数据时也保证生成中的流式消息在末尾
-        pinStreamingGeneratingToBottom();
+        // 整体重设数据时也保证进行中的 AI 交互元素在末尾
+        pinLiveAIToBottom();
     }
 
     public void setReadEntries(Map<String, Long> readEntries) {
@@ -191,8 +198,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         messages.add(message);
         notifyItemInserted(messages.size() - 1);
-        // 收到新消息/自己发送消息追加后，把生成中的流式消息钉回列表末尾
-        pinStreamingGeneratingToBottom();
+        // 收到新消息/自己发送消息追加后，把进行中的 AI 交互元素钉回列表末尾
+        pinLiveAIToBottom();
     }
 
     public void addMessagesAtHead(List<UiMessage> newMessages) {
@@ -221,16 +228,16 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         int insertStartPosition = this.messages.size();
         this.messages.addAll(newMessages);
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
-        // 尾部追加（定位模式加载更新消息）后，生成中的流式消息会被顶到中间，钉回末尾
-        pinStreamingGeneratingToBottom();
+        // 尾部追加（定位模式加载更新消息）后，进行中的 AI 交互元素会被顶到中间，钉回末尾
+        pinLiveAIToBottom();
     }
 
     public void updateMessage(int index, UiMessage message) {
         if (index >= 0) {
             messages.set(index, message);
             notifyItemChanged(index);
-            // 消息内容/状态更新后（含流式分片更新），保证生成中的流式消息仍在末尾
-            pinStreamingGeneratingToBottom();
+            // 消息内容/状态更新后（含流式分片更新、卡片状态流转），保证进行中的 AI 交互元素仍在末尾
+            pinLiveAIToBottom();
         }
     }
 
@@ -255,8 +262,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         if (index > -1) {
             notifyItemChanged(index);
-            // 消息内容/状态更新后（含流式分片更新），保证生成中的流式消息仍在末尾
-            pinStreamingGeneratingToBottom();
+            // 消息内容/状态更新后（含流式分片更新、卡片状态流转），保证进行中的 AI 交互元素仍在末尾
+            pinLiveAIToBottom();
         }
     }
 
@@ -415,12 +422,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     /**
-     * 生成中的流式文本消息（ContentType_Streaming_Text_Generating，类型 14）必须固定在消息列表末尾（最新位置）。
-     * 生成期间用户自己发消息、或其它消息（含最终 type 15 完成消息）插入/替换，都可能把它顶到列表中间。
-     * 这里在每次列表变更后把「最后一条生成中的流式消息」移到列表末尾，其余消息保持相对顺序；
-     * 本来就已在末尾则不动。与 uni-chat-uts store.uts 的 _pinStreamingGeneratingToBottom 语义一致。
+     * 进行中的 AI 交互元素（流式生成中、任务进度卡、选择/审批卡等）固定在消息列表末尾（最新位置）。
+     * 交互进行期间用户自己发消息、或其它消息（含最终 type 15 完成消息）插入/替换，都可能把它们顶到列表中间。
+     * 这里在每次列表变更后把所有「进行中的 AI 交互元素」整体移到列表末尾，元素之间及其余消息之间保持相对顺序；
+     * 本来就已在末尾连续一段（顺序一致）则不动。与 HarmonyOS 版 ConversationPage.pinLiveAIToBottom 语义一致。
      */
-    public void pinStreamingGeneratingToBottom() {
+    public void pinLiveAIToBottom() {
         if (messages == null || messages.size() <= 1) {
             return;
         }
@@ -429,25 +436,85 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (last == null || last.message == null) {
             return;
         }
-        if (last.message.content instanceof StreamingTextGeneratingMessageContent) {
-            return; // 已在末尾
+        // 分成 live（进行中的 AI 交互元素）与 rest 两组，各自保持相对顺序
+        List<UiMessage> live = new ArrayList<>();
+        List<UiMessage> rest = new ArrayList<>();
+        for (UiMessage msg : messages) {
+            if (msg != null && msg.message != null && isLiveAIMessage(msg)) {
+                live.add(msg);
+            } else {
+                rest.add(msg);
+            }
         }
-        int idx = -1;
-        for (int i = messages.size() - 1; i >= 0; i--) {
+        if (live.isEmpty()) {
+            return;
+        }
+        // 尾部连续一段正好是 live 组（顺序一致）则已满足，不动
+        int start = messages.size() - live.size();
+        boolean alreadyPinned = true;
+        for (int i = start; i < messages.size(); i++) {
             UiMessage msg = messages.get(i);
-            if (msg != null && msg.message != null
-                && msg.message.content instanceof StreamingTextGeneratingMessageContent) {
-                idx = i;
+            if (msg == null || msg.message == null || !isLiveAIMessage(msg)) {
+                alreadyPinned = false;
                 break;
             }
         }
-        if (idx == -1) {
+        if (alreadyPinned) {
             return;
         }
-        // 移到末尾：其余消息保持相对顺序
-        UiMessage generating = messages.remove(idx);
-        messages.add(generating);
-        notifyItemMoved(idx, messages.size() - 1);
+        // 移到末尾：rest 在前、live 在后，各自保持相对顺序
+        if (live.size() == 1) {
+            int idx = messages.indexOf(live.get(0));
+            messages.remove(idx);
+            messages.add(live.get(0));
+            notifyItemMoved(idx, messages.size() - 1);
+        } else {
+            messages.clear();
+            messages.addAll(rest);
+            messages.addAll(live);
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 判断消息是否为「进行中的 AI 交互元素」（与 HarmonyOS 版 ConversationPage.isLiveAIMessage 语义一致）：
+     * <ul>
+     *   <li>流式生成中（类型 14 {@link StreamingTextGeneratingMessageContent}）→ true；</li>
+     *   <li>提问卡片（200 {@link DshQuestionMessageContent}）state == "pending"（等待用户选择）→ true；</li>
+     *   <li>审批卡片（202 {@link DshApprovalMessageContent}）state == "pending"（等待用户审批）→ true；</li>
+     *   <li>目标进度卡片（206 {@link DshGoalMessageContent}）phase != "complete"（目标未完成）→ true；</li>
+     *   <li>任务进度卡片（208 {@link DshTaskProgressMessageContent}）tasks 中任一 status == "running" → true。</li>
+     * </ul>
+     *
+     * @param message 待判断的消息，调用方需保证非 null
+     * @return 该消息是否为进行中的 AI 交互元素
+     */
+    private boolean isLiveAIMessage(UiMessage message) {
+        MessageContent content = message.message.content;
+        if (content instanceof StreamingTextGeneratingMessageContent) {
+            return true;
+        }
+        if (content instanceof DshQuestionMessageContent) {
+            return TextUtils.equals(((DshQuestionMessageContent) content).getState(), "pending");
+        }
+        if (content instanceof DshApprovalMessageContent) {
+            return TextUtils.equals(((DshApprovalMessageContent) content).getState(), "pending");
+        }
+        if (content instanceof DshGoalMessageContent) {
+            return !TextUtils.equals(((DshGoalMessageContent) content).getPhase(), "complete");
+        }
+        if (content instanceof DshTaskProgressMessageContent) {
+            JSONArray tasks = ((DshTaskProgressMessageContent) content).getTasks();
+            if (tasks != null) {
+                for (int i = 0; i < tasks.length(); i++) {
+                    JSONObject task = tasks.optJSONObject(i);
+                    if (task != null && TextUtils.equals(task.optString("status"), "running")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private int indexOfMessage(UiMessage message) {
