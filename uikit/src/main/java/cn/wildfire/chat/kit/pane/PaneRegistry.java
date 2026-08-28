@@ -139,6 +139,8 @@ import cn.wildfire.chat.kit.search.link.ConversationLinkRecordActivity;
 import cn.wildfire.chat.kit.search.link.ConversationLinkRecordFragment;
 import cn.wildfire.chat.kit.search.media.ConversationMediaActivity;
 import cn.wildfire.chat.kit.search.media.ConversationMediaFragment;
+import cn.wildfire.chat.kit.settings.ChatSettingActivity;
+import cn.wildfire.chat.kit.settings.ChatSettingFragment;
 import cn.wildfire.chat.kit.settings.FontSizeActivity;
 import cn.wildfire.chat.kit.settings.FontSizeFragment;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
@@ -610,6 +612,8 @@ public final class PaneRegistry {
             intent -> PrivacyFindMeSettingActivity.class.getName());
         register(MessageNotifySettingActivity.class, (context, intent) -> new MessageNotifySettingFragment(),
             intent -> MessageNotifySettingActivity.class.getName());
+        register(ChatSettingActivity.class, (context, intent) -> new ChatSettingFragment(),
+            intent -> ChatSettingActivity.class.getName());
         register(FontSizeActivity.class, (context, intent) -> new FontSizeFragment(),
             intent -> FontSizeActivity.class.getName());
 

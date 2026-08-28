@@ -528,6 +528,9 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 语音播放方式可以从两个地方改：本页语音消息的长按菜单，以及设置 → 聊天里的开关。
+        // 不管从哪儿改，标题上的听筒图标都要跟着变，所以统一监听。
+        AudioPlayModeUtils.addOnAudioPlayModeChangedListener(audioPlayModeChangedListener);
     }
 
     @Nullable
@@ -1125,6 +1128,9 @@ public class ConversationFragment extends Fragment implements
         return conversationInfo != null && conversationInfo.isSilent;
     }
 
+    private final AudioPlayModeUtils.OnAudioPlayModeChangedListener audioPlayModeChangedListener =
+        earpiece -> onAudioPlayModeChanged();
+
     /**
      * 语音播放方式（扬声器/听筒）切换后，刷新标题上的耳朵图标。
      */
@@ -1254,6 +1260,7 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
+        AudioPlayModeUtils.removeOnAudioPlayModeChangedListener(audioPlayModeChangedListener);
         if (conversation == null) {
             return;
         }

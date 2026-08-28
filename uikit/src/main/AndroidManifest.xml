@@ -135,6 +135,9 @@
             android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
             android:label="@string/privacy_setting" />
         <activity
+            android:name="cn.wildfire.chat.kit.settings.ChatSettingActivity"
+            android:label="@string/chat_setting" />
+        <activity
             android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
             android:label="@string/find_me_ways" />
         <activity

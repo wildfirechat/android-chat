@@ -795,6 +795,8 @@
     <string name="audio_play_mode_speaker_toast">Switched to speaker</string>
     <string name="audio_play_mode_earpiece_toast">Switched to earpiece</string>
     <string name="audio_earpiece_playing_hint">Earpiece mode, hold the phone to your ear</string>
+    <string name="chat_setting">Chat</string>
+    <string name="play_audio_message_in_earpiece">Play voice messages through earpiece</string>
     <string name="file_url_invalid">The file link address is empty</string>
     <string name="local_preview_failed_tip">"No application was found to open this file. Preview online "</string>
     <string name="local_preview_failed">No application was found to open this file.</string>

@@ -53,6 +53,12 @@
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/chatSettingOptionItemView"
+            style="@style/OptionItem"
+            app:show_arrow_indicator="true"
+            app:title="@string/chat_setting" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/privacySettingOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"

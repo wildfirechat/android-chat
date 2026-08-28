@@ -808,6 +808,8 @@
     <string name="audio_play_mode_speaker_toast">已切换为扬声器播放</string>
     <string name="audio_play_mode_earpiece_toast">已切换为听筒播放</string>
     <string name="audio_earpiece_playing_hint">听筒播放，请贴近手机聆听</string>
+    <string name="chat_setting">聊天</string>
+    <string name="play_audio_message_in_earpiece">使用听筒播放语音消息</string>
     <string name="file_url_invalid">文件链接地址为空</string>
     <string name="local_preview_failed_tip">找不到能打开此文件的应用，在线预览</string>
     <string name="local_preview_failed">找不到能打开此文件的应用</string>

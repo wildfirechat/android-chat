@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
+import cn.wildfire.chat.kit.settings.ChatSettingActivity;
 import cn.wildfire.chat.kit.settings.FontSizeActivity;
 import cn.wildfire.chat.kit.settings.PrivacySettingActivity;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
@@ -71,6 +72,7 @@ public class SettingFragment extends Fragment {
         view.findViewById(R.id.languageOptionItemView).setOnClickListener(v -> selectLanguage());
         view.findViewById(R.id.fontSizeOptionItemView).setOnClickListener(v -> fontSize());
         view.findViewById(R.id.exitOptionItemView).setOnClickListener(v -> exit());
+        view.findViewById(R.id.chatSettingOptionItemView).setOnClickListener(v -> chatSetting());
         view.findViewById(R.id.privacySettingOptionItemView).setOnClickListener(v -> privacySetting());
         view.findViewById(R.id.diagnoseOptionItemView).setOnClickListener(v -> diagnose());
         view.findViewById(R.id.uploadLogOptionItemView).setOnClickListener(v -> uploadLog());
@@ -174,6 +176,10 @@ public class SettingFragment extends Fragment {
         startActivity(intent);
         // CLEAR_TASK 已经把整个任务栈清掉了，这里的 finish 只是让当前界面立刻消失
         requireActivity().finish();
+    }
+
+    private void chatSetting() {
+        WfcPageCompat.startPage(this, new Intent(getActivity(), ChatSettingActivity.class));
     }
 
     private void privacySetting() {

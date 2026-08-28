@@ -221,7 +221,8 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         // 切换播放方式后停止当前播放，下次播放即按新方式生效
         messageViewModel.stopPlayAudio();
         Toast.makeText(context, !earpiece ? R.string.audio_play_mode_earpiece_toast : R.string.audio_play_mode_speaker_toast, Toast.LENGTH_SHORT).show();
-        fragment.onAudioPlayModeChanged();
+        // 标题上的听筒图标不在这里刷：会话页自己监听 AudioPlayModeUtils，
+        // 这样从设置 → 聊天里改的时候也一样会刷新
     }
 
     @Override
