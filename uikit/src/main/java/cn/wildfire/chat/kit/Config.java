@@ -246,6 +246,23 @@ public class Config {
     public static boolean ENABLE_SELECT_ORGANIZATION = false;
 
     /**
+     * 普通电话（系统电话）接通或拨出时，是否自动打断正在进行的音视频通话。
+     * <p>
+     * 需要 {@code READ_PHONE_STATE} 权限才能及时、准确地感知电话状态；未授予权限时会降级为轮询音频模式，
+     * 可靠性略低。集成方需要自行申请该权限，参考 demo 中 MainActivity#requestOptionalPhoneStatePermission。
+     */
+    public static boolean ENABLE_PSTN_CALL_INTERRUPT = true;
+
+    /**
+     * 会议被普通电话打断时的行为。
+     * <p>
+     * true：只静音本地麦克风，普通电话结束后自动恢复；false：和单聊/多人通话一样直接结束会议。
+     * <p>
+     * 单聊和多人通话不受此配置影响，一律直接挂断。
+     */
+    public static boolean PSTN_INTERRUPT_MUTE_CONFERENCE_ONLY = true;
+
+    /**
      * 根据当前网络状态在主/备地址之间选择。
      *
      * @param main   主网地址

@@ -44,6 +44,11 @@
     <string name="permission_location_denied_title">位置权限未开启</string>
     <string name="permission_location_denied_desc">在设置-应用-%s-权限中开启位置权限，以发送位置消息。</string>
 
+    <string name="permission_phone_state_title">%s 申请获取电话状态权限</string>
+    <string name="permission_phone_state_desc">在下方弹窗中选择允许后，你接听或拨打普通电话时，正在进行的音视频通话会自动挂断，不会互相干扰。我们不会读取你的通话记录和电话号码。</string>
+    <string name="permission_phone_state_denied_title">电话状态权限未开启</string>
+    <string name="permission_phone_state_denied_desc">在设置-应用-%s-权限中开启电话权限，以便接听普通电话时自动挂断音视频通话。</string>
+
     <string name="permission_general_title">%s 申请 %s 权限</string>
     <string name="permission_general_desc">允许后，可实现相关功能</string>
     <string name="permission_general_denied_title">%s 权限未授权</string>

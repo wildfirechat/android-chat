@@ -68,8 +68,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
-    <!-- 音视频通话时， 允许普通电话打断音视频通话 -->
-    <!--    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />-->
+    <!--
+        音视频通话时，允许普通电话打断音视频通话，由 PstnCallMonitor 实现，依赖上面的 READ_PHONE_STATE 权限。
+        不要使用 PROCESS_OUTGOING_CALLS 权限和 ACTION_NEW_OUTGOING_CALL 广播，二者在 API 29 已废弃，
+        Android 10 及以上不再投递给三方应用。
+    -->
 
     <application
         android:name="cn.wildfire.chat.app.MyApp"

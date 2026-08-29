@@ -393,6 +393,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             Intent intent = new Intent(context, MultiCallActivity.class);
             startActivity(context, intent);
+
+            // 和 singleCall 保持一致，通话界面起不来时（如无后台弹窗权限）也能保证前台服务在跑
+            VoipCallService.start(context, false);
         }
     }
 

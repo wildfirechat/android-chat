@@ -68,12 +68,20 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     private String focusTargetId;
 
     private final Handler handler = new Handler();
+    // 必须持有同一个 Runnable 实例，方法引用每次都会新建对象，removeCallbacks 会失效，导致轮询链重复叠加
+    private final Runnable checkCallStateRunnable = this::checkCallState;
+
+    private PstnCallMonitor pstnCallMonitor;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d("VoipService", "onCreate");
         ChatManager.Instance().addOnReceiveMessageListener(this);
+
+        // 普通电话接通/拨出时打断音视频通话
+        pstnCallMonitor = new PstnCallMonitor(this);
+        pstnCallMonitor.start();
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
 
@@ -256,8 +264,8 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
                 broadcastCallOngoing(session);
             }
 
-            handler.removeCallbacks(this::checkCallState);
-            handler.postDelayed(this::checkCallState, 1000);
+            handler.removeCallbacks(checkCallStateRunnable);
+            handler.postDelayed(checkCallStateRunnable, 1000);
         }
     }
 
@@ -320,6 +328,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public void onDestroy() {
         super.onDestroy();
+        handler.removeCallbacks(checkCallStateRunnable);
+        if (pstnCallMonitor != null) {
+            pstnCallMonitor.stop();
+            pstnCallMonitor = null;
+        }
         if (wm != null && view != null) {
             wm.removeView(view);
         }

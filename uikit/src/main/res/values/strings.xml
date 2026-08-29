@@ -637,6 +637,8 @@
     <string name="start_screen_sharing">开始屏幕共享</string>
     <!-- VoIP -->
     <string name="voip_permission_required">需要录音、摄像头等权限，才能进行音视频通话</string>
+    <string name="pstn_interrupt_conference_muted">正在进行普通电话，已自动关闭会议麦克风</string>
+    <string name="pstn_interrupt_conference_unmuted">普通电话已结束，已恢复会议麦克风</string>
     <string name="screen_share_not_supported">系统不支持屏幕共享</string>
     <string name="screen_share_permission_denied">屏幕共享授权失败</string>
     <string name="your_network_poor">您的网络不好</string>

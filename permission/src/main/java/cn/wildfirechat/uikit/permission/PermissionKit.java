@@ -41,6 +41,14 @@ public class PermissionKit extends DialogFragment {
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
     public static void checkThenRequestPermission(Activity context, FragmentManager fragmentManager, PermissionReqTuple[] permissionReqTuples, RequestPermissionResultCallback callback) {
+        checkThenRequestPermission(context, fragmentManager, permissionReqTuples, true, callback);
+    }
+
+    /**
+     * @param showDeniedDialog 权限被拒绝时，是否弹出引导用户去设置页开启权限的对话框。
+     *                         非必需的权限（拒绝后功能降级，而不是不可用）应该传 false，避免打扰用户。
+     */
+    public static void checkThenRequestPermission(Activity context, FragmentManager fragmentManager, PermissionReqTuple[] permissionReqTuples, boolean showDeniedDialog, RequestPermissionResultCallback callback) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             if (callback != null) {
                 callback.onRequestPermissionResult(true);
@@ -55,7 +63,9 @@ public class PermissionKit extends DialogFragment {
                 public void onActivityResult(Boolean o) {
                     if (!o) {
                         // fail fast
-                        showPermissionDeniedDialog(context, tuple[0].denyTitle, tuple[0].denyDesc);
+                        if (showDeniedDialog) {
+                            showPermissionDeniedDialog(context, tuple[0].denyTitle, tuple[0].denyDesc);
+                        }
                         if (callback != null) {
                             callback.onRequestPermissionResult(false);
                         }
@@ -141,6 +151,13 @@ public class PermissionKit extends DialogFragment {
                         context.getString(R.string.permission_read_video_denied_title),
                         context.getString(R.string.permission_read_video_denied_desc, appName));
 
+                    break;
+                case Manifest.permission.READ_PHONE_STATE:
+                    tuple = new PermissionReqTuple(Manifest.permission.READ_PHONE_STATE,
+                        context.getString(R.string.permission_phone_state_title, appName),
+                        context.getString(R.string.permission_phone_state_desc),
+                        context.getString(R.string.permission_phone_state_denied_title),
+                        context.getString(R.string.permission_phone_state_denied_desc, appName));
                     break;
                 case Manifest.permission.ACCESS_FINE_LOCATION:
                     tuple = new PermissionReqTuple(Manifest.permission.ACCESS_FINE_LOCATION,

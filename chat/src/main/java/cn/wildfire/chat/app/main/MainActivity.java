@@ -10,6 +10,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -1056,9 +1057,38 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
             String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
             PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
             PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
-                // do nothing
+                requestOptionalPhoneStatePermission();
             });
+        } else {
+            requestOptionalPhoneStatePermission();
         }
+    }
+
+    /**
+     * 申请电话状态权限，用于普通电话接通/拨出时打断音视频通话，参考 {@code PstnCallMonitor}。
+     * <p>
+     * 是可选权限：拒绝后音视频通话仍然可以正常使用，打断功能会降级为轮询音频模式。所以只在第一次询问，
+     * 拒绝了也不弹「去设置」引导。
+     */
+    private void requestOptionalPhoneStatePermission() {
+        if(!Config.ENABLE_PSTN_CALL_INTERRUPT){
+            return;
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+            || checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        if (sp.getBoolean("requestedReadPhoneStatePermission", false)) {
+            return;
+        }
+        sp.edit().putBoolean("requestedReadPhoneStatePermission", true).apply();
+
+        String[] permissions = new String[]{Manifest.permission.READ_PHONE_STATE};
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+        PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, false, o -> {
+            // do nothing
+        });
     }
 
     private void setCurrentViewPagerItem(int item, boolean smoothScroll) {

@@ -620,6 +620,8 @@
     <string name="start_screen_sharing">Start Screen Sharing</string>
     <!-- VoIP -->
     <string name="voip_permission_required">Audio and camera permissions are required for voice and video calls</string>
+    <string name="pstn_interrupt_conference_muted">Microphone muted because a phone call is in progress</string>
+    <string name="pstn_interrupt_conference_unmuted">Phone call ended, microphone restored</string>
     <string name="screen_share_not_supported">Your system does not support screen sharing</string>
     <string name="screen_share_permission_denied">Screen sharing permission denied</string>
     <string name="your_network_poor">Your network connection is poor</string>
