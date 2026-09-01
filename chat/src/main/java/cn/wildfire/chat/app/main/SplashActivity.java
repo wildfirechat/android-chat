@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
+import cn.wildfire.chat.app.login.PadLoginActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
@@ -84,7 +85,8 @@ public class SplashActivity extends AppCompatActivity {
 
     private void showLogin() {
         Intent intent;
-        intent = new Intent(this, LoginActivity.class);
+        // 平板走卡片式登录页（含扫码登录），手机维持原登录页
+        intent = new Intent(this, WfcDeviceUtils.isTwoPaneLayout(this) ? PadLoginActivity.class : LoginActivity.class);
         intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
         startActivity(intent);
         finish();

@@ -60,6 +60,13 @@
     <string name="login_register">注册</string>
     <string name="login_button_text">登录</string>
 
+    <!-- Pad 扫码登录（参考 iOS/PC 端） -->
+    <string name="scan_code_login">扫码登录</string>
+    <string name="use_password_or_code_login">使用密码/验证码登录</string>
+    <string name="qr_login_waiting">使用野火手机端扫码登录</string>
+    <string name="qr_login_scanned">%1$s已扫码，请在手机上确认登录</string>
+    <string name="qr_code_generate_failed">生成二维码失败，点击二维码重试</string>
+
     <!--Main-->
     <string name="chat">聊天</string>
     <string name="discover">发现</string>

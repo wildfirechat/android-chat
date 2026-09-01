@@ -110,6 +110,10 @@
         <activity
             android:name="cn.wildfire.chat.app.login.LoginActivity" />
         <activity
+            android:name="cn.wildfire.chat.app.login.PadLoginActivity" />
+        <activity
+            android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
+        <activity
             android:name="cn.wildfire.chat.app.setting.SettingActivity"
             android:label="@string/setting" />
         <activity

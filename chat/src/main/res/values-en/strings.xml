@@ -63,6 +63,13 @@
     <string name="login_register">Register</string>
     <string name="login_button_text">Login</string>
 
+    <!-- Pad Scan Code Login (refer to iOS/PC) -->
+    <string name="scan_code_login">Scan Code Login</string>
+    <string name="use_password_or_code_login">Use Password/Verification Code Login</string>
+    <string name="qr_login_waiting">Scan the QR code with the WildFireChat mobile app</string>
+    <string name="qr_login_scanned">%1$s scanned the code. Please confirm login on your phone</string>
+    <string name="qr_code_generate_failed">Failed to generate QR code. Tap to retry</string>
+
     <!--Main-->
     <string name="chat">Chat</string>
     <string name="discover">Discover</string>

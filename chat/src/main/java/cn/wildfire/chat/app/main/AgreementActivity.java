@@ -16,9 +16,11 @@ import android.widget.Toast;
 import androidx.core.app.ActivityOptionsCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
+import cn.wildfire.chat.app.login.PadLoginActivity;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfirechat.chat.R;
 
 public class AgreementActivity extends WfcBaseNoToolbarActivity {
@@ -68,7 +70,8 @@ public class AgreementActivity extends WfcBaseNoToolbarActivity {
 
     private void showLogin() {
         Intent intent;
-        intent = new Intent(this, LoginActivity.class);
+        // 平板走卡片式登录页（含扫码登录），手机维持原登录页
+        intent = new Intent(this, WfcDeviceUtils.isTwoPaneLayout(this) ? PadLoginActivity.class : LoginActivity.class);
         intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
             android.R.anim.fade_in, android.R.anim.fade_out).toBundle();

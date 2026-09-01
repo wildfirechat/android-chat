@@ -46,6 +46,7 @@ import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceQuota;
 import cn.wildfirechat.chat.BuildConfig;
+import cn.wildfirechat.client.Platform;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserIdNamePortrait;
 import cn.wildfirechat.client.ConnectionStatus;
@@ -1208,5 +1209,117 @@ public class AppService implements AppServiceProvider {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    // ==================== 扫码登录（平板端展示二维码，手机端扫码确认） ====================
+
+    public interface PCLoginSessionCallback {
+        void onSuccess(@NonNull String token);
+
+        void onFailure(int code, String msg);
+    }
+
+    /**
+     * 创建 PC 登录会话（本端为被扫码端）：token 拼成二维码内容 wildfirechat://pcsession/&lt;token&gt; 供手机端扫描。
+     * 与 iOS 端 createPCLoginSession 保持一致（POST /pc_session）。
+     */
+    public void createPCLoginSession(String userId, @NonNull PCLoginSessionCallback callback) {
+        String url = appServerAddress() + "/pc_session";
+        Map<String, Object> params = new HashMap<>(4);
+        params.put("flag", 1);
+        params.put("device_name", "pad");
+        params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
+        params.put("platform", Platform.PlatformType_APad.value());
+        if (!TextUtils.isEmpty(userId)) {
+            params.put("userId", userId);
+        }
+        OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
+            @Override
+            public void onUiSuccess(Map<String, Object> result) {
+                if (result == null) {
+                    callback.onFailure(-1, "返回数据为空");
+                    return;
+                }
+                Object token = result.get("token");
+                if (token == null || TextUtils.isEmpty(token.toString())) {
+                    callback.onFailure(-1, "返回数据为空");
+                    return;
+                }
+                callback.onSuccess(token.toString());
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFailure(code, msg);
+            }
+        });
+    }
+
+    public interface PCLoginPollCallback {
+        /**
+         * code 0：登录成功
+         */
+        void onSuccess(@NonNull String userId, @NonNull String token);
+
+        /**
+         * code 9：已被手机端扫码，等待手机端确认
+         */
+        void onScanned(String userName, String portrait);
+
+        /**
+         * code 18：手机端取消了登录
+         */
+        void onCanceled();
+
+        void onFailure(int code, String msg);
+    }
+
+    /**
+     * 轮询扫码登录状态（POST /session_login/&lt;token&gt;）。
+     * code 0 登录成功；9 已被扫码（返回扫码用户信息，等手机端确认）；18 已取消。
+     * 与 iOS 端 loginWithPCLoginSession 保持一致。
+     */
+    public void loginWithPCLoginSession(String token, @NonNull PCLoginPollCallback callback) {
+        String url = appServerAddress() + "/session_login/" + token;
+        // 用 String 类型拿原始 JSON：code 9 需要携带 result 里的用户信息，走 ResultWrapper 会丢失
+        OKHttpHelper.post(url, null, new SimpleCallback<String>() {
+            @Override
+            public void onUiSuccess(String body) {
+                try {
+                    JSONObject json = new JSONObject(body);
+                    int code = json.optInt("code", -1);
+                    if (code == 0) {
+                        JSONObject result = json.optJSONObject("result");
+                        if (result == null) {
+                            callback.onFailure(-1, "返回数据为空");
+                            return;
+                        }
+                        String userId = result.optString("userId");
+                        String imToken = result.optString("token");
+                        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(imToken)) {
+                            callback.onFailure(-1, "返回数据为空");
+                            return;
+                        }
+                        callback.onSuccess(userId, imToken);
+                    } else if (code == 9) {
+                        JSONObject result = json.optJSONObject("result");
+                        callback.onScanned(result == null ? null : result.optString("userName"),
+                            result == null ? null : result.optString("portrait"));
+                    } else if (code == 18) {
+                        callback.onCanceled();
+                    } else {
+                        callback.onFailure(code, json.optString("message", ""));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.onFailure(-1, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFailure(code, msg);
+            }
+        });
     }
 }
