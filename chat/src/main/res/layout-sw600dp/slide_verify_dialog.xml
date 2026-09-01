@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    平板（sw600dp）专用的滑动验证码对话框。
+    与 layout/slide_verify_dialog.xml 相比有两点差别：
+      1. 卡片限制最大宽度（wfc_form_max_width）并居中 —— 避免验证码图片被拉伸到整个平板宽度；
+      2. backgroundContainer 高度用 wrap_content 而非手机版的固定 150dp —— 手机版固定高度下
+         图片按高度受限缩放（fitCenter），恰与 Java 按宽度比例缩放滑块的结果接近；宽屏上
+         两者严重错位（拼图尺寸和位置都对不上）。wrap_content 让视图长宽比跟随图片本身，
+         缩放比例恒等于宽度比例，Java 无需任何改动即精确对齐。
+    控件 id 与手机版完全一致，SlideVerifyDialog 无需任何改动。
+    ⚠️ 修改手机版布局的控件时，请同步本文件。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:forceDarkAllowed="true">
+
+    <LinearLayout
+        android:id="@+id/containerView"
+        android:layout_width="@dimen/wfc_form_max_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/shape_rounded_white">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="安全验证"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <FrameLayout
+            android:id="@+id/backgroundContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/backgroundImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:shapeAppearance="@style/RoundedCorners_4dp"
+                android:scaleType="fitCenter"/>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/sliderImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:shapeAppearance="@style/RoundedCorners_4dp"
+                android:scaleType="fitCenter"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/sliderTrackContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/slide_verify_track_bg">
+
+            <TextView
+                android:id="@+id/sliderHintText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="向右滑动完成验证"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:gravity="center"/>
+
+            <View
+                android:id="@+id/sliderButton"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/slide_verify_button_bg"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
