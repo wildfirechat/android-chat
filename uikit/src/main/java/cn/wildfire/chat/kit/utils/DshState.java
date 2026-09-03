@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
@@ -54,22 +55,41 @@ public class DshState {
     private DshState() {
     }
 
-    public static String dshStateKey(Conversation conversation) {
-        return conversation.type.getValue() + "-" + conversation.line + "-" + conversation.target + "_" + DSH_STATE_TYPE;
+    /**
+     * scope=31 会话设置键前缀：{@code <convType>-<line>-<target>_<type>_}（含尾随 "_"）。
+     * <p>
+     * 服务端写入 scope=31 的键统一为 {@code <convType>-<line>-<target>_<type>_<机器人uid>}
+     * （uid 后缀，不再写无后缀旧键），读取时以该前缀匹配会话内的 type 槽位。
+     * </p>
+     */
+    public static String dshSettingKeyPrefix(Conversation conversation, int type) {
+        return conversation.type.getValue() + "-" + conversation.line + "-" + conversation.target + "_" + type + "_";
     }
 
     /**
-     * Token 统计键（type=2 独立通道）：{@code <convType>-<line>-<target>_2}。
+     * 读 scope=31 中当前会话指定 type 槽位的设置值（键带机器人 uid 后缀）。
+     * <p>
+     * 列出该 scope 全部会话设置（{@link ChatManager#getUserSettings(int)}），取首个键以
+     * {@code <convType>-<line>-<target>_<type>_} 开头的条目（同一会话同 type 只应有一份，
+     * 有多个 uid 前缀命中时取首个）。找不到/出错返回 null。仍由设置更新事件驱动刷新，不轮询。
+     * </p>
      */
-    public static String dshMetricsKey(Conversation conversation) {
-        return conversation.type.getValue() + "-" + conversation.line + "-" + conversation.target + "_" + DSH_METRICS_TYPE;
-    }
-
-    /**
-     * AI 面板数据键（type=3 组合查询结果）：{@code <convType>-<line>-<target>_3}。
-     */
-    public static String dshPanelKey(Conversation conversation) {
-        return conversation.type.getValue() + "-" + conversation.line + "-" + conversation.target + "_" + DSH_PANEL_TYPE;
+    private static String dshSettingValue(Conversation conversation, int type) {
+        String prefix = dshSettingKeyPrefix(conversation, type);
+        try {
+            Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
+            if (settings == null || settings.isEmpty()) {
+                return null;
+            }
+            for (Map.Entry<String, String> entry : settings.entrySet()) {
+                if (entry.getKey() != null && entry.getKey().startsWith(prefix)) {
+                    return entry.getValue();
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 
     /**
@@ -122,7 +142,7 @@ public class DshState {
             return null;
         }
         try {
-            String raw = ChatManager.Instance().getUserSetting(UserSettingScope.Conversation_User_Setting, dshStateKey(conversation));
+            String raw = dshSettingValue(conversation, DSH_STATE_TYPE);
             if (TextUtils.isEmpty(raw)) {
                 return null;
             }
@@ -146,7 +166,7 @@ public class DshState {
             return null;
         }
         try {
-            String raw = ChatManager.Instance().getUserSetting(UserSettingScope.Conversation_User_Setting, dshMetricsKey(conversation));
+            String raw = dshSettingValue(conversation, DSH_METRICS_TYPE);
             if (TextUtils.isEmpty(raw)) {
                 return null;
             }
@@ -173,7 +193,7 @@ public class DshState {
             return null;
         }
         try {
-            String raw = ChatManager.Instance().getUserSetting(UserSettingScope.Conversation_User_Setting, dshPanelKey(conversation));
+            String raw = dshSettingValue(conversation, DSH_PANEL_TYPE);
             if (TextUtils.isEmpty(raw)) {
                 return null;
             }

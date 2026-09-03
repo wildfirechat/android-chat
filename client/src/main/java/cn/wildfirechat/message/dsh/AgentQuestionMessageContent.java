@@ -17,7 +17,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Question;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Question;
 
 /**
  * DSH 提问卡片消息（机器人→用户）。
@@ -30,14 +30,14 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Qu
  * state ∈ pending/answered/expired，由机器人侧 updateMessage 更新。
  * </p>
  */
-@ContentTag(type = ContentType_Dsh_Question, flag = PersistFlag.Persist)
-public class DshQuestionMessageContent extends MessageContent {
+@ContentTag(type = ContentType_Agent_Question, flag = PersistFlag.Persist)
+public class AgentQuestionMessageContent extends MessageContent {
     // 结构化数据原文（JSON 字符串），按需解析
     private String content;
 
     private JSONObject contentJson;
 
-    public DshQuestionMessageContent() {
+    public AgentQuestionMessageContent() {
     }
 
     public JSONObject getContentJson() {
@@ -101,20 +101,20 @@ public class DshQuestionMessageContent extends MessageContent {
         dest.writeString(this.content);
     }
 
-    protected DshQuestionMessageContent(Parcel in) {
+    protected AgentQuestionMessageContent(Parcel in) {
         super(in);
         this.content = in.readString();
     }
 
-    public static final Creator<DshQuestionMessageContent> CREATOR = new Creator<DshQuestionMessageContent>() {
+    public static final Creator<AgentQuestionMessageContent> CREATOR = new Creator<AgentQuestionMessageContent>() {
         @Override
-        public DshQuestionMessageContent createFromParcel(Parcel source) {
-            return new DshQuestionMessageContent(source);
+        public AgentQuestionMessageContent createFromParcel(Parcel source) {
+            return new AgentQuestionMessageContent(source);
         }
 
         @Override
-        public DshQuestionMessageContent[] newArray(int size) {
-            return new DshQuestionMessageContent[size];
+        public AgentQuestionMessageContent[] newArray(int size) {
+            return new AgentQuestionMessageContent[size];
         }
     };
 }

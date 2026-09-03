@@ -23,7 +23,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.message.dsh.DshAnswerMessageContent;
+import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
 import cn.wildfirechat.model.Conversation;
 
 /**
@@ -93,7 +93,7 @@ public class DshPlanDetailActivity extends WfcBaseActivity {
             answer.put("id", questionId);
             answer.put("selected", new JSONArray().put(label));
             JSONArray answers = new JSONArray().put(answer);
-            DshAnswerMessageContent content = new DshAnswerMessageContent(qid, answers);
+            AgentAnswerMessageContent content = new AgentAnswerMessageContent(qid, answers);
             new ViewModelProvider(this).get(MessageViewModel.class).sendMessage(conversation, content);
         } catch (JSONException e) {
             e.printStackTrace();

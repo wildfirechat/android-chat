@@ -17,7 +17,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_TaskProgress;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_TaskProgress;
 
 /**
  * DSH 任务进度卡片消息（机器人→用户），纯展示。
@@ -30,14 +30,14 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Ta
  * 由插件首次 sendCard 发送、之后 updateMessage 原地更新。
  * </p>
  */
-@ContentTag(type = ContentType_Dsh_TaskProgress, flag = PersistFlag.Persist)
-public class DshTaskProgressMessageContent extends MessageContent {
+@ContentTag(type = ContentType_Agent_TaskProgress, flag = PersistFlag.Persist)
+public class AgentTaskProgressMessageContent extends MessageContent {
     // 结构化数据原文（JSON 字符串），按需解析
     private String content;
 
     private JSONObject contentJson;
 
-    public DshTaskProgressMessageContent() {
+    public AgentTaskProgressMessageContent() {
     }
 
     public JSONObject getContentJson() {
@@ -151,20 +151,20 @@ public class DshTaskProgressMessageContent extends MessageContent {
         dest.writeString(this.content);
     }
 
-    protected DshTaskProgressMessageContent(Parcel in) {
+    protected AgentTaskProgressMessageContent(Parcel in) {
         super(in);
         this.content = in.readString();
     }
 
-    public static final Creator<DshTaskProgressMessageContent> CREATOR = new Creator<DshTaskProgressMessageContent>() {
+    public static final Creator<AgentTaskProgressMessageContent> CREATOR = new Creator<AgentTaskProgressMessageContent>() {
         @Override
-        public DshTaskProgressMessageContent createFromParcel(Parcel source) {
-            return new DshTaskProgressMessageContent(source);
+        public AgentTaskProgressMessageContent createFromParcel(Parcel source) {
+            return new AgentTaskProgressMessageContent(source);
         }
 
         @Override
-        public DshTaskProgressMessageContent[] newArray(int size) {
-            return new DshTaskProgressMessageContent[size];
+        public AgentTaskProgressMessageContent[] newArray(int size) {
+            return new AgentTaskProgressMessageContent[size];
         }
     };
 

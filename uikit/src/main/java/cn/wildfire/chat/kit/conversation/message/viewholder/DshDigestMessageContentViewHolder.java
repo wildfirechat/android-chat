@@ -13,8 +13,8 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.DshAnswerMessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalResultMessageContent;
+import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
+import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
 
 /**
  * DSH 应答类消息（201 回答 / 203 审批结果）的摘要文本 ViewHolder。
@@ -23,8 +23,8 @@ import cn.wildfirechat.message.dsh.DshApprovalResultMessageContent;
  * </p>
  */
 @MessageContentType(value = {
-    DshAnswerMessageContent.class,
-    DshApprovalResultMessageContent.class
+    AgentAnswerMessageContent.class,
+    AgentApprovalResultMessageContent.class
 })
 @EnableContextMenu
 public class DshDigestMessageContentViewHolder extends NormalMessageContentViewHolder {

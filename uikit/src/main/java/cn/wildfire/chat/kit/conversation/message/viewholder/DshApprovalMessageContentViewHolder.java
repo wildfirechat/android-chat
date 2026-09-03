@@ -18,8 +18,8 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.DshApprovalMessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalResultMessageContent;
+import cn.wildfirechat.message.dsh.AgentApprovalMessageContent;
+import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
 
 /**
  * DSH 工具审批卡片（202）。
@@ -28,7 +28,7 @@ import cn.wildfirechat.message.dsh.DshApprovalResultMessageContent;
  * 锁定态（approved/rejected/expired 或本地已决）显示状态文本。
  * </p>
  */
-@MessageContentType(DshApprovalMessageContent.class)
+@MessageContentType(AgentApprovalMessageContent.class)
 @EnableContextMenu
 public class DshApprovalMessageContentViewHolder extends NormalMessageContentViewHolder {
     // 本地已决策的消息 id：点击后立即置灰，不依赖服务端 updateMessage 推送的实时性。
@@ -42,7 +42,7 @@ public class DshApprovalMessageContentViewHolder extends NormalMessageContentVie
     TextView rejectButton;
     TextView stateTextView;
 
-    private DshApprovalMessageContent approvalContent;
+    private AgentApprovalMessageContent approvalContent;
     private String decidedAction;
 
     public DshApprovalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
@@ -61,13 +61,13 @@ public class DshApprovalMessageContentViewHolder extends NormalMessageContentVie
     }
 
     private void bindEvents(View itemView) {
-        approveButton.setOnClickListener(v -> decide(DshApprovalResultMessageContent.ACTION_APPROVE));
-        rejectButton.setOnClickListener(v -> decide(DshApprovalResultMessageContent.ACTION_REJECT));
+        approveButton.setOnClickListener(v -> decide(AgentApprovalResultMessageContent.ACTION_APPROVE));
+        rejectButton.setOnClickListener(v -> decide(AgentApprovalResultMessageContent.ACTION_REJECT));
     }
 
     @Override
     protected void onBind(UiMessage message) {
-        approvalContent = (DshApprovalMessageContent) message.message.content;
+        approvalContent = (AgentApprovalMessageContent) message.message.content;
 
         toolNameTextView.setTypeface(Typeface.MONOSPACE);
         toolNameTextView.setText(approvalContent.getToolName());
@@ -99,7 +99,7 @@ public class DshApprovalMessageContentViewHolder extends NormalMessageContentVie
     private String stateText() {
         String state = approvalContent.getState();
         if (locallyDecidedMessageIds.contains(message.message.messageId)) {
-            return DshApprovalResultMessageContent.ACTION_APPROVE.equals(decidedAction) ? "已同意" : "已拒绝";
+            return AgentApprovalResultMessageContent.ACTION_APPROVE.equals(decidedAction) ? "已同意" : "已拒绝";
         }
         if ("approved".equals(state)) {
             return "已同意";
@@ -114,7 +114,7 @@ public class DshApprovalMessageContentViewHolder extends NormalMessageContentVie
         if (isLocked()) {
             return;
         }
-        DshApprovalResultMessageContent content = new DshApprovalResultMessageContent(approvalContent.getAid(), action);
+        AgentApprovalResultMessageContent content = new AgentApprovalResultMessageContent(approvalContent.getAid(), action);
         messageViewModel.sendMessage(message.message.conversation, content);
         locallyDecidedMessageIds.add(message.message.messageId);
         decidedAction = action;

@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,18 +17,23 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.DshGoalMessageContent;
+import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
 
 /**
- * DSH 目标进度卡片（206），纯展示：phase 彩色徽标 + objective + 已执行轮数。
+ * DSH 目标进度卡片（206），纯展示：阶段彩色徽标 + 目标标题 + 已执行轮数（+ ver:2 stage）。
+ * <p>
+ * 兼容 ver:2 目标消息：objective 缺失时用 title，phase 缺失时用 state，
+ * stage 存在时追加一行「阶段：…」（如 "阶段：round 3"）。
+ * </p>
  */
-@MessageContentType(DshGoalMessageContent.class)
+@MessageContentType(AgentGoalMessageContent.class)
 @EnableContextMenu
 public class DshGoalMessageContentViewHolder extends NormalMessageContentViewHolder {
 
     TextView phaseBadgeTextView;
     TextView objectiveTextView;
     TextView roundsTextView;
+    TextView stageTextView;
 
     public DshGoalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -38,19 +44,31 @@ public class DshGoalMessageContentViewHolder extends NormalMessageContentViewHol
         phaseBadgeTextView = itemView.findViewById(R.id.dshPhaseBadgeTextView);
         objectiveTextView = itemView.findViewById(R.id.dshObjectiveTextView);
         roundsTextView = itemView.findViewById(R.id.dshRoundsTextView);
+        stageTextView = itemView.findViewById(R.id.dshStageTextView);
     }
 
     @Override
     protected void onBind(UiMessage message) {
-        DshGoalMessageContent content = (DshGoalMessageContent) message.message.content;
+        AgentGoalMessageContent content = (AgentGoalMessageContent) message.message.content;
 
-        String phase = content.getPhase();
+        // v1 phase 优先，缺失（ver:2）时回退 state
+        String phase = content.getDisplayPhase();
         phaseBadgeTextView.setText(phaseText(phase));
         Drawable badge = phaseBadgeTextView.getBackground().mutate();
         badge.setTint(phaseColor(phase));
 
-        objectiveTextView.setText(content.getObjective());
+        // v1 objective 优先，缺失（ver:2）时回退 title
+        objectiveTextView.setText(content.getDisplayTitle());
         roundsTextView.setText("已执行 " + content.getRoundsStarted() + " 轮");
+
+        // ver:2 stage 文本（如 "round 3"），无则不占行
+        String stage = content.getStage();
+        if (TextUtils.isEmpty(stage)) {
+            stageTextView.setVisibility(View.GONE);
+        } else {
+            stageTextView.setText("阶段：" + stage);
+            stageTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     private String phaseText(String phase) {
