@@ -1698,6 +1698,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public Map<String, String> getUserSettingsLike(int scope, String prefix) throws RemoteException {
+            return ProtoLogic.getUserSettingsLike(scope, prefix);
+        }
+
+        @Override
         public void setUserSetting(int scope, String key, String value, final IGeneralCallback callback) throws RemoteException {
             if (key == null) {
                 key = "";

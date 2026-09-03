@@ -189,6 +189,7 @@ interface IRemoteClient {
 
     String getUserSetting(in int scope, in String key);
     Map getUserSettings(in int scope);
+    Map getUserSettingsLike(in int scope, in String prefix);
     oneway void setUserSetting(in int scope, in String key, in String value, in IGeneralCallback callback);
     oneway void startLog();
     oneway void stopLog();

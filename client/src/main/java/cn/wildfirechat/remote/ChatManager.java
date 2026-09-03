@@ -8862,6 +8862,26 @@ public class ChatManager {
     }
 
     /**
+     * 获取用户设置
+     *
+     * @param scope 可选值参考{@link UserSettingScope}
+     * @param keyPrefix key的前缀
+     * @return
+     */
+    public Map<String, String> getUserSettingsLike(int scope, String keyPrefix) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return (Map<String, String>) mClient.getUserSettingsLike(scope, keyPrefix);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取保存到通讯录的群组信息
      *
      * @param callback
