@@ -56,4 +56,15 @@
         android:textSize="12sp"
         tools:text="已执行 3 轮" />
 
+    <TextView
+        android:id="@+id/dshStageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/gray11"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="阶段：round 3"
+        tools:visibility="visible" />
+
 </LinearLayout>

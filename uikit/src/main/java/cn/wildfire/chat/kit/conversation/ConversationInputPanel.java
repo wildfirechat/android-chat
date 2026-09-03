@@ -120,7 +120,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private CharSequence defaultInputHint;
     // 单聊机器人命令（/create 等私聊专属命令在群内会被插件拒绝；单聊无 AI 面板，命令保留）
     private static final String[][] DSH_SINGLE_COMMANDS = {
-        {"/help", "命令帮助"}, {"/create", "创建 DSH 工作区群"}, {"/workspaces", "列出工作区"},
+        {"/help", "命令帮助"}, {"/create", "创建 AI 工作区群"}, {"/workspaces", "列出工作区"},
         {"/goal", "目标管理"}, {"/jobs", "后台任务"}, {"/model", "切换模型"},
         {"/effort", "推理等级"}, {"/plan", "计划模式"}, {"/compact", "压缩上下文"},
         {"/cwd", "切换工作目录"}, {"/ls", "列出目录"}, {"/sandbox", "沙箱模式"}, {"/stop", "停止当前任务"},

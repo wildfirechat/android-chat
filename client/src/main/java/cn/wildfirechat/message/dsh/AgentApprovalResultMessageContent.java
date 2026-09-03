@@ -15,7 +15,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Approval_Result;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Approval_Result;
 
 /**
  * DSH 审批结果消息（用户→机器人），渲染时按摘要文本展示。
@@ -24,8 +24,8 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Ap
  * payload.content 为 JSON 字符串：{"aid":"uuid","action":"approve"|"reject"}
  * </p>
  */
-@ContentTag(type = ContentType_Dsh_Approval_Result, flag = PersistFlag.Persist)
-public class DshApprovalResultMessageContent extends MessageContent {
+@ContentTag(type = ContentType_Agent_Approval_Result, flag = PersistFlag.Persist)
+public class AgentApprovalResultMessageContent extends MessageContent {
     public static final String ACTION_APPROVE = "approve";
     public static final String ACTION_REJECT = "reject";
 
@@ -33,10 +33,10 @@ public class DshApprovalResultMessageContent extends MessageContent {
 
     private JSONObject contentJson;
 
-    public DshApprovalResultMessageContent() {
+    public AgentApprovalResultMessageContent() {
     }
 
-    public DshApprovalResultMessageContent(String aid, String action) {
+    public AgentApprovalResultMessageContent(String aid, String action) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("aid", aid != null ? aid : "");
@@ -93,20 +93,20 @@ public class DshApprovalResultMessageContent extends MessageContent {
         dest.writeString(this.content);
     }
 
-    protected DshApprovalResultMessageContent(Parcel in) {
+    protected AgentApprovalResultMessageContent(Parcel in) {
         super(in);
         this.content = in.readString();
     }
 
-    public static final Creator<DshApprovalResultMessageContent> CREATOR = new Creator<DshApprovalResultMessageContent>() {
+    public static final Creator<AgentApprovalResultMessageContent> CREATOR = new Creator<AgentApprovalResultMessageContent>() {
         @Override
-        public DshApprovalResultMessageContent createFromParcel(Parcel source) {
-            return new DshApprovalResultMessageContent(source);
+        public AgentApprovalResultMessageContent createFromParcel(Parcel source) {
+            return new AgentApprovalResultMessageContent(source);
         }
 
         @Override
-        public DshApprovalResultMessageContent[] newArray(int size) {
-            return new DshApprovalResultMessageContent[size];
+        public AgentApprovalResultMessageContent[] newArray(int size) {
+            return new AgentApprovalResultMessageContent[size];
         }
     };
 }

@@ -21,14 +21,14 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.DshTaskProgressMessageContent;
+import cn.wildfirechat.message.dsh.AgentTaskProgressMessageContent;
 
 /**
  * DSH 任务进度卡片（208），纯展示：
  * 标题「🧩 任务进度」+ 摘要角标（共 N 个 · M 运行中 / 全部完成 / N 失败），
  * 每行 = 状态图标 + 标签（label 或 id 短前缀）+ 状态文字（失败附原因）。
  */
-@MessageContentType(DshTaskProgressMessageContent.class)
+@MessageContentType(AgentTaskProgressMessageContent.class)
 @EnableContextMenu
 public class DshTaskProgressMessageContentViewHolder extends NormalMessageContentViewHolder {
 
@@ -51,7 +51,7 @@ public class DshTaskProgressMessageContentViewHolder extends NormalMessageConten
 
     @Override
     protected void onBind(UiMessage message) {
-        DshTaskProgressMessageContent content = (DshTaskProgressMessageContent) message.message.content;
+        AgentTaskProgressMessageContent content = (AgentTaskProgressMessageContent) message.message.content;
 
         String summary = content.getSummary();
         if (TextUtils.isEmpty(summary)) {
@@ -74,14 +74,14 @@ public class DshTaskProgressMessageContentViewHolder extends NormalMessageConten
         emptyTextView.setVisibility(View.GONE);
         listContainer.setVisibility(View.VISIBLE);
         for (int i = 0; i < total; i++) {
-            DshTaskProgressMessageContent.Task task = DshTaskProgressMessageContent.Task.from(tasks.optJSONObject(i));
+            AgentTaskProgressMessageContent.Task task = AgentTaskProgressMessageContent.Task.from(tasks.optJSONObject(i));
             if (task != null) {
                 listContainer.addView(buildTaskRow(task));
             }
         }
     }
 
-    private View buildTaskRow(DshTaskProgressMessageContent.Task task) {
+    private View buildTaskRow(AgentTaskProgressMessageContent.Task task) {
         View row = LayoutInflater.from(fragment.getContext()).inflate(R.layout.dsh_task_progress_item, listContainer, false);
 
         TextView iconTextView = row.findViewById(R.id.dshTaskProgressIconTextView);

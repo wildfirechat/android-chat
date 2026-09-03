@@ -33,7 +33,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.DshState;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.WfcSheetDialogCompat;
-import cn.wildfirechat.message.dsh.DshCommandMessageContent;
+import cn.wildfirechat.message.dsh.AgentCommandMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
@@ -369,7 +369,7 @@ public class DshAiSettingsDialog {
         if (destroyed || conversation == null || messageViewModel == null) {
             return;
         }
-        DshCommandMessageContent content = new DshCommandMessageContent(op, cmd, ++commandSeq);
+        AgentCommandMessageContent content = new AgentCommandMessageContent(op, cmd, ++commandSeq);
         messageViewModel.sendMessage(conversation, content);
         if ("set".equals(op)) {
             applying = true;

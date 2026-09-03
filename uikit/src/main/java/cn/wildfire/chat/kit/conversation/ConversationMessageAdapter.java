@@ -48,10 +48,10 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContent
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalMessageContent;
-import cn.wildfirechat.message.dsh.DshGoalMessageContent;
-import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
-import cn.wildfirechat.message.dsh.DshTaskProgressMessageContent;
+import cn.wildfirechat.message.dsh.AgentApprovalMessageContent;
+import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
+import cn.wildfirechat.message.dsh.AgentQuestionMessageContent;
+import cn.wildfirechat.message.dsh.AgentTaskProgressMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
@@ -480,10 +480,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
      * 判断消息是否为「进行中的 AI 交互元素」（与 HarmonyOS 版 ConversationPage.isLiveAIMessage 语义一致）：
      * <ul>
      *   <li>流式生成中（类型 14 {@link StreamingTextGeneratingMessageContent}）→ true；</li>
-     *   <li>提问卡片（200 {@link DshQuestionMessageContent}）state == "pending"（等待用户选择）→ true；</li>
-     *   <li>审批卡片（202 {@link DshApprovalMessageContent}）state == "pending"（等待用户审批）→ true；</li>
-     *   <li>目标进度卡片（206 {@link DshGoalMessageContent}）phase != "complete"（目标未完成）→ true；</li>
-     *   <li>任务进度卡片（208 {@link DshTaskProgressMessageContent}）tasks 中任一 status == "running" → true。</li>
+     *   <li>提问卡片（200 {@link AgentQuestionMessageContent}）state == "pending"（等待用户选择）→ true；</li>
+     *   <li>审批卡片（202 {@link AgentApprovalMessageContent}）state == "pending"（等待用户审批）→ true；</li>
+     *   <li>目标进度卡片（206 {@link AgentGoalMessageContent}）phase != "complete"（目标未完成）→ true；</li>
+     *   <li>任务进度卡片（208 {@link AgentTaskProgressMessageContent}）tasks 中任一 status == "running" → true。</li>
      * </ul>
      *
      * @param message 待判断的消息，调用方需保证非 null
@@ -494,17 +494,17 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (content instanceof StreamingTextGeneratingMessageContent) {
             return true;
         }
-        if (content instanceof DshQuestionMessageContent) {
-            return TextUtils.equals(((DshQuestionMessageContent) content).getState(), "pending");
+        if (content instanceof AgentQuestionMessageContent) {
+            return TextUtils.equals(((AgentQuestionMessageContent) content).getState(), "pending");
         }
-        if (content instanceof DshApprovalMessageContent) {
-            return TextUtils.equals(((DshApprovalMessageContent) content).getState(), "pending");
+        if (content instanceof AgentApprovalMessageContent) {
+            return TextUtils.equals(((AgentApprovalMessageContent) content).getState(), "pending");
         }
-        if (content instanceof DshGoalMessageContent) {
-            return !TextUtils.equals(((DshGoalMessageContent) content).getPhase(), "complete");
+        if (content instanceof AgentGoalMessageContent) {
+            return !TextUtils.equals(((AgentGoalMessageContent) content).getPhase(), "complete");
         }
-        if (content instanceof DshTaskProgressMessageContent) {
-            JSONArray tasks = ((DshTaskProgressMessageContent) content).getTasks();
+        if (content instanceof AgentTaskProgressMessageContent) {
+            JSONArray tasks = ((AgentTaskProgressMessageContent) content).getTasks();
             if (tasks != null) {
                 for (int i = 0; i < tasks.length(); i++) {
                     JSONObject task = tasks.optJSONObject(i);

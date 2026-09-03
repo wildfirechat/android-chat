@@ -143,13 +143,13 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.message.dsh.DshAnswerMessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalMessageContent;
-import cn.wildfirechat.message.dsh.DshApprovalResultMessageContent;
-import cn.wildfirechat.message.dsh.DshCommandMessageContent;
-import cn.wildfirechat.message.dsh.DshGoalMessageContent;
-import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
-import cn.wildfirechat.message.dsh.DshTaskProgressMessageContent;
+import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
+import cn.wildfirechat.message.dsh.AgentApprovalMessageContent;
+import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
+import cn.wildfirechat.message.dsh.AgentCommandMessageContent;
+import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
+import cn.wildfirechat.message.dsh.AgentQuestionMessageContent;
+import cn.wildfirechat.message.dsh.AgentTaskProgressMessageContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.BackupRequestNotificationContent;
 import cn.wildfirechat.message.notification.BackupResponseNotificationContent;
@@ -11268,15 +11268,15 @@ public class ChatManager {
         registerMessageContent(TranscriptionMessageContent.class);
 
         // 注册 DSH 结构化交互消息内容类型（200-209，官方预留 AI 交互段）
-        ChatManager.Instance().registerMessageContent(DshQuestionMessageContent.class);
-        ChatManager.Instance().registerMessageContent(DshAnswerMessageContent.class);
-        ChatManager.Instance().registerMessageContent(DshApprovalMessageContent.class);
-        ChatManager.Instance().registerMessageContent(DshApprovalResultMessageContent.class);
-        ChatManager.Instance().registerMessageContent(DshGoalMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentQuestionMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentAnswerMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentApprovalMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentApprovalResultMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentGoalMessageContent.class);
         // 207 DSH_Command：AI 面板静默指令（透明消息，不显示；query 组合查询 / set 更新）
-        ChatManager.Instance().registerMessageContent(DshCommandMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentCommandMessageContent.class);
         // 208 DSH_TaskProgress：任务进度卡片（subagent/workflow 派生任务，首次 sendCard 后续 updateMessage 原地更新）
-        ChatManager.Instance().registerMessageContent(DshTaskProgressMessageContent.class);
+        ChatManager.Instance().registerMessageContent(AgentTaskProgressMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
