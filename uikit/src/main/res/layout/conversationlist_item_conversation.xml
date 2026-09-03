@@ -114,7 +114,7 @@
                 android:paddingTop="1dp"
                 android:paddingRight="4dp"
                 android:paddingBottom="1dp"
-                android:text="DSH"
+                android:text="AI"
                 android:textColor="@color/colorPrimary"
                 android:textSize="9sp"
                 android:visibility="gone" />

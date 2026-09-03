@@ -30,8 +30,8 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.DshPlanDetailActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.DshAnswerMessageContent;
-import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
+import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
+import cn.wildfirechat.message.dsh.AgentQuestionMessageContent;
 
 /**
  * DSH 提问卡片（200）。
@@ -43,7 +43,7 @@ import cn.wildfirechat.message.dsh.DshQuestionMessageContent;
  * answered 时附用户选择（"已作答（选择内容）"）。
  * </p>
  */
-@MessageContentType(DshQuestionMessageContent.class)
+@MessageContentType(AgentQuestionMessageContent.class)
 @EnableContextMenu
 public class DshQuestionMessageContentViewHolder extends NormalMessageContentViewHolder {
     // 本地已作答的消息 id：点击后立即置灰，不依赖服务端 updateMessage 推送的实时性。
@@ -55,7 +55,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
     TextView customAnswerTextView;
     TextView stateTextView;
 
-    private DshQuestionMessageContent questionContent;
+    private AgentQuestionMessageContent questionContent;
     // questionId -> 已选中的 label 列表（多选）
     private final Map<String, List<String>> localSelected = new HashMap<>();
 
@@ -81,7 +81,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
 
     @Override
     protected void onBind(UiMessage message) {
-        questionContent = (DshQuestionMessageContent) message.message.content;
+        questionContent = (AgentQuestionMessageContent) message.message.content;
         localSelected.clear();
 
         boolean locked = isLocked();
@@ -430,7 +430,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
         if (isLocked()) {
             return;
         }
-        DshAnswerMessageContent content = new DshAnswerMessageContent(questionContent.getQid(), answers);
+        AgentAnswerMessageContent content = new AgentAnswerMessageContent(questionContent.getQid(), answers);
         messageViewModel.sendMessage(message.message.conversation, content);
         locallyAnsweredMessageIds.add(message.message.messageId);
         onBind(message);

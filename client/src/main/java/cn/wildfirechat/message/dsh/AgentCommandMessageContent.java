@@ -15,7 +15,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Command;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Command;
 
 /**
  * DSH_Command（207）AI 面板静默指令消息（用户→机器人）。
@@ -31,11 +31,11 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Co
  *       /reset）。插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，
  *       变更可见）并刷新 type=3。</li>
  * </ul>
- * seq 为递增序号，用于防重复/幂等（参考 PC 端 DshCommandMessageContent）。
+ * seq 为递增序号，用于防重复/幂等（参考 PC 端 AgentCommandMessageContent）。
  * </p>
  */
-@ContentTag(type = ContentType_Dsh_Command, flag = PersistFlag.Transparent)
-public class DshCommandMessageContent extends MessageContent {
+@ContentTag(type = ContentType_Agent_Command, flag = PersistFlag.Transparent)
+public class AgentCommandMessageContent extends MessageContent {
 
     /** op：query（组合查询）/ set（更新） */
     private String op;
@@ -44,10 +44,10 @@ public class DshCommandMessageContent extends MessageContent {
     /** 递增序号，防重复/幂等 */
     private long seq;
 
-    public DshCommandMessageContent() {
+    public AgentCommandMessageContent() {
     }
 
-    public DshCommandMessageContent(String op, String cmd, long seq) {
+    public AgentCommandMessageContent(String op, String cmd, long seq) {
         this.op = op;
         this.cmd = cmd;
         this.seq = seq;
@@ -114,22 +114,22 @@ public class DshCommandMessageContent extends MessageContent {
         dest.writeLong(this.seq);
     }
 
-    protected DshCommandMessageContent(Parcel in) {
+    protected AgentCommandMessageContent(Parcel in) {
         super(in);
         this.op = in.readString();
         this.cmd = in.readString();
         this.seq = in.readLong();
     }
 
-    public static final Creator<DshCommandMessageContent> CREATOR = new Creator<DshCommandMessageContent>() {
+    public static final Creator<AgentCommandMessageContent> CREATOR = new Creator<AgentCommandMessageContent>() {
         @Override
-        public DshCommandMessageContent createFromParcel(Parcel source) {
-            return new DshCommandMessageContent(source);
+        public AgentCommandMessageContent createFromParcel(Parcel source) {
+            return new AgentCommandMessageContent(source);
         }
 
         @Override
-        public DshCommandMessageContent[] newArray(int size) {
-            return new DshCommandMessageContent[size];
+        public AgentCommandMessageContent[] newArray(int size) {
+            return new AgentCommandMessageContent[size];
         }
     };
 }

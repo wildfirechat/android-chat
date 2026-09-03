@@ -20,7 +20,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_Answer;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Answer;
 
 /**
  * DSH 结构化回答消息（用户→机器人），渲染时按摘要文本展示。
@@ -29,16 +29,16 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Dsh_An
  * payload.content 为 JSON 字符串：{"qid":"uuid","answers":[{"id":"q1","selected":["是"],"custom":"可选补充"}]}
  * </p>
  */
-@ContentTag(type = ContentType_Dsh_Answer, flag = PersistFlag.Persist)
-public class DshAnswerMessageContent extends MessageContent {
+@ContentTag(type = ContentType_Agent_Answer, flag = PersistFlag.Persist)
+public class AgentAnswerMessageContent extends MessageContent {
     private String content;
 
     private JSONObject contentJson;
 
-    public DshAnswerMessageContent() {
+    public AgentAnswerMessageContent() {
     }
 
-    public DshAnswerMessageContent(String qid, JSONArray answers) {
+    public AgentAnswerMessageContent(String qid, JSONArray answers) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("qid", qid != null ? qid : "");
@@ -120,20 +120,20 @@ public class DshAnswerMessageContent extends MessageContent {
         dest.writeString(this.content);
     }
 
-    protected DshAnswerMessageContent(Parcel in) {
+    protected AgentAnswerMessageContent(Parcel in) {
         super(in);
         this.content = in.readString();
     }
 
-    public static final Creator<DshAnswerMessageContent> CREATOR = new Creator<DshAnswerMessageContent>() {
+    public static final Creator<AgentAnswerMessageContent> CREATOR = new Creator<AgentAnswerMessageContent>() {
         @Override
-        public DshAnswerMessageContent createFromParcel(Parcel source) {
-            return new DshAnswerMessageContent(source);
+        public AgentAnswerMessageContent createFromParcel(Parcel source) {
+            return new AgentAnswerMessageContent(source);
         }
 
         @Override
-        public DshAnswerMessageContent[] newArray(int size) {
-            return new DshAnswerMessageContent[size];
+        public AgentAnswerMessageContent[] newArray(int size) {
+            return new AgentAnswerMessageContent[size];
         }
     };
 }
