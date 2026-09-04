@@ -387,4 +387,33 @@
     <string name="pad_select_a_conversation">选择一个会话开始聊天</string>
     <string name="pad_select_a_contact">选择一位联系人查看资料</string>
     <string name="pad_select_an_entry">从左侧选择一项</string>
+
+    <!-- 扫码配网（ESP32 设备，协议见 esp 工程 main/app_net.c） -->
+    <string name="esp_provision_title">配置设备联网</string>
+    <string name="esp_provision_intro">设备 %1$s 还没有联网。先把手机连到它的热点，再为它选择要接入的 Wi-Fi。</string>
+    <string name="esp_provision_connect">连接设备热点</string>
+    <string name="esp_provision_joining">正在连接设备热点…</string>
+    <string name="esp_provision_joined">已连上设备，正在读取它能看到的网络…</string>
+    <string name="esp_provision_pick">选择设备要接入的 Wi-Fi（下面是设备自己扫到的，只有 2.4G）</string>
+    <string name="esp_provision_ap_row">%1$s   %2$d dBm</string>
+    <string name="esp_provision_manual">其它网络（手动输入）</string>
+    <string name="esp_provision_ssid_hint">Wi-Fi 名称</string>
+    <string name="esp_provision_password_hint">Wi-Fi 密码，没有密码就留空</string>
+    <string name="esp_provision_sending">正在把网络发给设备…</string>
+    <string name="esp_provision_waiting">设备正在连接 %1$s…</string>
+    <string name="esp_provision_done">设备已联网。接下来在设备屏幕上会出现登录二维码，再扫一次就能把账号给它。</string>
+    <string name="esp_provision_failed">设备没能连上：%1$s</string>
+    <string name="esp_provision_timeout">等设备连接超时了，重试一次或者换个网络</string>
+    <string name="esp_provision_unreachable">连不上设备，请确认手机连的是热点 %1$s</string>
+    <string name="esp_provision_join_manually">请到系统设置里连接热点 %1$s（密码 %2$s），连好后回到这一页继续</string>
+    <string name="esp_provision_open_settings">去设置</string>
+    <string name="esp_provision_continue">我已连接，继续</string>
+    <string name="esp_provision_retry">重试</string>
+    <string name="esp_provision_rescan">刷新网络列表</string>
+    <string name="esp_provision_finish">完成</string>
+    <string name="esp_provision_reason_no_ap">没找到这个网络</string>
+    <string name="esp_provision_reason_password">密码不对</string>
+    <string name="esp_provision_reason_auth">加密方式对不上</string>
+    <string name="esp_provision_reason_weak">信号太弱</string>
+    <string name="esp_provision_reason_other">错误码 %1$d</string>
 </resources>

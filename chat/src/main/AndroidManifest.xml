@@ -160,6 +160,11 @@
         </activity>
 
         <activity
+            android:name="cn.wildfire.chat.app.iot.DeviceProvisionActivity"
+            android:exported="false"
+            android:label="@string/esp_provision_title" />
+
+        <activity
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
             android:exported="false"
             android:label="@string/pc_login">

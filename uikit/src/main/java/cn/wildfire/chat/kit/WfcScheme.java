@@ -30,6 +30,11 @@ public class WfcScheme {
     public final static String QR_CODE_PREFIX_GROUP = "wildfirechat://group/";
     public final static String QR_CODE_PREFIX_CHANNEL = "wildfirechat://channel/";
     public final static String QR_CODE_PREFIX_CONFERENCE = "wildfirechat://conference/";
+    /**
+     * 设备配网：值是设备自己开的热点名，pwd 是热点密码。
+     * 设备端在没有 Wi-Fi 配置时把它画在屏幕上（esp 工程 main/app_net.c）。
+     */
+    public final static String QR_CODE_PREFIX_ESP_WIFI = "wildfirechat://espwifi/";
 
     public static String buildConferenceScheme(String conferenceId, String password) {
         String value = QR_CODE_PREFIX_CONFERENCE + conferenceId;
@@ -82,6 +87,21 @@ public class WfcScheme {
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                         Toast.makeText(context, "PC login not supported", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
+                case WfcScheme.QR_CODE_PREFIX_ESP_WIFI:
+                    // 和 PC 扫码登录一样反射拿 app 层的页面：uikit 不依赖 chat 模块，
+                    // 没有这个页面的集成方扫到设备码时给一句提示而不是崩掉。
+                    try {
+                        Class<?> provisionClass =
+                            Class.forName("cn.wildfire.chat.app.iot.DeviceProvisionActivity");
+                        intent = new Intent(context, provisionClass)
+                            .putExtra("ssid", value)
+                            .putExtra("pwd", (String) params.get("pwd"));
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                        Toast.makeText(context, "Device provisioning not supported", Toast.LENGTH_SHORT).show();
                     }
                     break;
 
