@@ -17,17 +17,17 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/dshAiTitle"
+            android:id="@+id/agentAiTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/dsh_ai_title"
+            android:text="@string/agent_ai_title"
             android:textColor="@color/gray0"
             android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/dshAiClose"
+            android:id="@+id/agentAiClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -39,19 +39,19 @@
 
     <!-- 加载中提示 -->
     <TextView
-        android:id="@+id/dshAiLoading"
+        android:id="@+id/agentAiLoading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="@string/dsh_ai_loading"
+        android:text="@string/agent_ai_loading"
         android:textColor="@color/gray12"
         android:textSize="13sp"
         android:visibility="gone" />
 
     <!-- 可滚动内容区（小屏可滚动） -->
     <ScrollView
-        android:id="@+id/dshAiScrollView"
+        android:id="@+id/agentAiScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
@@ -65,34 +65,34 @@
 
             <!-- 模型：下拉选择（type=3 model.options / model.current） -->
             <TextView
-                style="@style/dsh_ai_label"
-                android:text="@string/dsh_ai_model" />
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_model" />
             <Spinner
-                android:id="@+id/dshAiModelSpinner"
+                android:id="@+id/agentAiModelSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:background="@drawable/shape_dsh_input_bg"
+                android:background="@drawable/shape_agent_input_bg"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:spinnerMode="dropdown" />
 
             <!-- 推理等级：下拉选择（type=3 effort.options / effort.current） -->
             <TextView
-                style="@style/dsh_ai_label"
-                android:text="@string/dsh_ai_effort" />
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_effort" />
             <Spinner
-                android:id="@+id/dshAiEffortSpinner"
+                android:id="@+id/agentAiEffortSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:background="@drawable/shape_dsh_input_bg"
+                android:background="@drawable/shape_agent_input_bg"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:spinnerMode="dropdown" />
 
             <!-- 工作目录：当前值（只读）+ 切换按钮（目录候选来自 type=3 dirs，选择弹窗） -->
             <TextView
-                style="@style/dsh_ai_label"
-                android:text="@string/dsh_ai_cwd" />
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_cwd" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/dshAiCwdCurrent"
+                    android:id="@+id/agentAiCwdCurrent"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -110,13 +110,13 @@
                     android:textSize="12sp" />
 
                 <Button
-                    android:id="@+id/dshAiCwdSwitch"
+                    android:id="@+id/agentAiCwdSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/shape_dsh_btn_secondary"
+                    android:background="@drawable/shape_agent_btn_secondary"
                     android:minWidth="64dp"
-                    android:text="@string/dsh_ai_cwd_switch"
+                    android:text="@string/agent_ai_cwd_switch"
                     android:textAllCaps="false"
                     android:textColor="@color/gray0"
                     android:textSize="13sp" />
@@ -124,53 +124,53 @@
 
             <!-- 目录候选列表（type=3 dirs）：loading 提示 + 列表容器 + 空/超时提示 -->
             <TextView
-                android:id="@+id/dshAiCwdListLoading"
+                android:id="@+id/agentAiCwdListLoading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/dsh_ai_cwd_list_loading"
+                android:text="@string/agent_ai_cwd_list_loading"
                 android:textColor="@color/gray12"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
             <LinearLayout
-                android:id="@+id/dshAiCwdList"
+                android:id="@+id/agentAiCwdList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:background="@drawable/shape_dsh_input_bg"
+                android:background="@drawable/shape_agent_input_bg"
                 android:orientation="vertical"
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/dshAiCwdListEmpty"
+                android:id="@+id/agentAiCwdListEmpty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/dsh_ai_cwd_list_empty"
+                android:text="@string/agent_ai_cwd_list_empty"
                 android:textColor="@color/gray12"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/dshAiCwdTip"
+                android:id="@+id/agentAiCwdTip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="@string/dsh_ai_cwd_tip"
+                android:text="@string/agent_ai_cwd_tip"
                 android:textColor="@color/gray12"
                 android:textSize="11sp" />
 
             <!-- 沙箱模式 -->
             <TextView
-                style="@style/dsh_ai_label"
-                android:text="@string/dsh_ai_sandbox" />
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_sandbox" />
             <RadioGroup
-                android:id="@+id/dshAiSandboxGroup"
+                android:id="@+id/agentAiSandboxGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -179,21 +179,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:tag="read-only"
-                    android:text="@string/dsh_ai_sandbox_read_only" />
+                    android:text="@string/agent_ai_sandbox_read_only" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:tag="workspace-write"
-                    android:text="@string/dsh_ai_sandbox_workspace_write" />
+                    android:text="@string/agent_ai_sandbox_workspace_write" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:tag="danger-full-access"
-                    android:text="@string/dsh_ai_sandbox_danger" />
+                    android:text="@string/agent_ai_sandbox_danger" />
             </RadioGroup>
 
             <!-- 计划模式 -->
@@ -208,20 +208,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/dsh_ai_plan"
+                    android:text="@string/agent_ai_plan"
                     android:textColor="@color/gray0"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/dshAiPlanText"
+                    android:id="@+id/agentAiPlanText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/gray12"
                     android:textSize="12sp" />
 
                 <Switch
-                    android:id="@+id/dshAiPlanSwitch"
+                    android:id="@+id/agentAiPlanSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp" />
@@ -235,36 +235,36 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/dshAiCompact"
+                    android:id="@+id/agentAiCompact"
                     android:layout_width="0dp"
                     android:layout_height="42dp"
                     android:layout_weight="1"
-                    android:background="@drawable/shape_dsh_btn_secondary"
-                    android:text="@string/dsh_ai_compact"
+                    android:background="@drawable/shape_agent_btn_secondary"
+                    android:text="@string/agent_ai_compact"
                     android:textAllCaps="false"
                     android:textColor="@color/gray0"
                     android:textSize="14sp" />
 
                 <Button
-                    android:id="@+id/dshAiReset"
+                    android:id="@+id/agentAiReset"
                     android:layout_width="0dp"
                     android:layout_height="42dp"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/shape_dsh_btn_stop"
-                    android:text="@string/dsh_ai_reset"
+                    android:background="@drawable/shape_agent_btn_stop"
+                    android:text="@string/agent_ai_reset"
                     android:textAllCaps="false"
                     android:textColor="@color/red0"
                     android:textSize="14sp" />
 
                 <Button
-                    android:id="@+id/dshAiDestroy"
+                    android:id="@+id/agentAiDestroy"
                     android:layout_width="0dp"
                     android:layout_height="42dp"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/shape_dsh_btn_destroy"
-                    android:text="@string/dsh_ai_destroy"
+                    android:background="@drawable/shape_agent_btn_destroy"
+                    android:text="@string/agent_ai_destroy"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
@@ -272,12 +272,12 @@
 
             <!-- 指令已发送提示 -->
             <TextView
-                android:id="@+id/dshAiApplying"
+                android:id="@+id/agentAiApplying"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="@string/dsh_ai_applying"
+                android:text="@string/agent_ai_applying"
                 android:textColor="@color/colorPrimary"
                 android:textSize="11sp"
                 android:visibility="gone" />

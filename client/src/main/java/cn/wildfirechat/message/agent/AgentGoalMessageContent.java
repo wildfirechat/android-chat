@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message.dsh;
+package cn.wildfirechat.message.agent;
 
 import android.os.Parcel;
 import android.text.TextUtils;
@@ -19,7 +19,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Goal;
 
 /**
- * DSH 目标进度卡片消息（机器人→用户），纯展示。
+ * Agent 目标进度卡片消息（机器人→用户），纯展示。
  * <p>
  * 消息类型: 206。
  * payload.content 为 JSON 字符串，v1：

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/dshQuestionContentItemView"
+    android:id="@+id/agentQuestionContentItemView"
     android:layout_width="260dp"
     android:layout_height="wrap_content"
     android:background="@drawable/img_bubble_receive"
@@ -11,7 +11,7 @@
 
     <!-- 【header】 -->
     <TextView
-        android:id="@+id/dshHeaderTextView"
+        android:id="@+id/agentHeaderTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
@@ -23,14 +23,14 @@
 
     <!-- 问题与选项，代码动态填充 -->
     <LinearLayout
-        android:id="@+id/dshQuestionsContainer"
+        android:id="@+id/agentQuestionsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" />
 
     <!-- 自定义回答：点击后聚焦会话主输入框并弹键盘 -->
     <TextView
-        android:id="@+id/dshCustomAnswerTextView"
+        android:id="@+id/agentCustomAnswerTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -44,7 +44,7 @@
 
     <!-- 锁定态：已作答/已过期 -->
     <TextView
-        android:id="@+id/dshStateTextView"
+        android:id="@+id/agentStateTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

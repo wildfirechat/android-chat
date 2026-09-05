@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message.dsh;
+package cn.wildfirechat.message.agent;
 
 import android.os.Parcel;
 import android.text.TextUtils;
@@ -23,7 +23,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Answer;
 
 /**
- * DSH 结构化回答消息（用户→机器人），渲染时按摘要文本展示。
+ * Agent 结构化回答消息（用户→机器人），渲染时按摘要文本展示。
  * <p>
  * 消息类型: 201。
  * payload.content 为 JSON 字符串：{"qid":"uuid","answers":[{"id":"q1","selected":["是"],"custom":"可选补充"}]}

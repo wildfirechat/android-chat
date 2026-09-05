@@ -53,6 +53,7 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
+import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.group.GroupMemberListActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -454,12 +455,14 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void manageGroup() {
         Intent intent = new Intent(getActivity(), GroupManageActivity.class);
         intent.putExtra("groupInfo", groupInfo);
+        intent.putExtra(BasePickGroupMemberActivity.LINE, conversationInfo.conversation.line);
         WfcPageCompat.startPage(this, intent);
     }
 
     void showAllGroupMember() {
         Intent intent = new Intent(getActivity(), GroupMemberListActivity.class);
         intent.putExtra("groupInfo", groupInfo);
+        intent.putExtra(BasePickGroupMemberActivity.LINE, conversationInfo.conversation.line);
         WfcPageCompat.startPage(this, intent);
     }
 
@@ -597,6 +600,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     public void onAddMemberClick() {
         Intent intent = new Intent(getActivity(), AddGroupMemberActivity.class);
         intent.putExtra("groupInfo", groupInfo);
+        intent.putExtra(BasePickGroupMemberActivity.LINE, conversationInfo.conversation.line);
         WfcPageCompat.startPage(this, intent);
     }
 
@@ -605,6 +609,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (groupInfo != null) {
             Intent intent = new Intent(getActivity(), RemoveGroupMemberActivity.class);
             intent.putExtra("groupInfo", groupInfo);
+            intent.putExtra(BasePickGroupMemberActivity.LINE, conversationInfo.conversation.line);
             WfcPageCompat.startPage(this, intent);
         }
     }

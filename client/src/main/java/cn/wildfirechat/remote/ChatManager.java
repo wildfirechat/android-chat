@@ -143,13 +143,13 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
-import cn.wildfirechat.message.dsh.AgentApprovalMessageContent;
-import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
-import cn.wildfirechat.message.dsh.AgentCommandMessageContent;
-import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
-import cn.wildfirechat.message.dsh.AgentQuestionMessageContent;
-import cn.wildfirechat.message.dsh.AgentTaskProgressMessageContent;
+import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalResultMessageContent;
+import cn.wildfirechat.message.agent.AgentCommandMessageContent;
+import cn.wildfirechat.message.agent.AgentGoalMessageContent;
+import cn.wildfirechat.message.agent.AgentQuestionMessageContent;
+import cn.wildfirechat.message.agent.AgentTaskProgressMessageContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.BackupRequestNotificationContent;
 import cn.wildfirechat.message.notification.BackupResponseNotificationContent;
@@ -315,10 +315,14 @@ public class ChatManager {
     private Map<String, UserOnlineState> userOnlineStateMap;
 
     /**
-     * 记录每个会话的最后一个流式文本生成中的消息
-     * key: conversationKey (targetId_line), value: Message
+     * 记录每个会话所有「正在流式生成中」的消息（多 agent / 多 streamId 各自独立，两级缓存）
+     * key: conversationKey (targetId_line), value: Map<streamId, Message>
+     * <p>
+     * 一个机器人的一个回合占用一个 streamId；同一 streamId 的生成中更新消息（14）原地覆盖；
+     * 生成完成(15)/取消(20)只删除自己 streamId，会话内最后一个 stream 结束时才整会话删除，
+     * 保证一个 agent 的 15/20 不会影响其它 agent 仍在生成的 14。
      */
-    private Map<String, Message> streamingTextGeneratingMessages = new ConcurrentHashMap<>();
+    private Map<String, Map<String, Message>> streamingTextGeneratingMessages = new ConcurrentHashMap<>();
 
     private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
     private Class<? extends UrlRedirector> urlRedirectorClazz;
@@ -743,18 +747,51 @@ public class ChatManager {
 
     /**
      * 处理流式文本消息
+     * <p>
+     * 流式缓存采用两级结构：会话(conversationKey) → streamId → Message。
+     * 多 agent 并发时同一会话会同时存在多条不同 streamId 的 14 消息（每个 streamId 属于某个
+     * 机器人的一个回合）：14 按 streamId upsert；15/20 只删除对应 streamId 的消息，会话级 Map
+     * 仅在空时整体删除，保证一个 agent 的 15/20 不影响其它 agent 仍在生成的 14。
      */
     private void handleStreamingTextMessage(Message message) {
         String key = conversationKey(message.conversation);
         if (message.content instanceof StreamingTextGeneratingMessageContent) {
-            // 流式文本正在生成，保存消息
-            streamingTextGeneratingMessages.put(key, message);
+            // 流式文本正在生成，按 streamId 保存/覆盖消息
+            String streamId = ((StreamingTextGeneratingMessageContent) message.content).getStreamId();
+            if (streamId == null || streamId.isEmpty()) {
+                return;
+            }
+            Map<String, Message> streams = streamingTextGeneratingMessages.get(key);
+            if (streams == null) {
+                streams = new ConcurrentHashMap<>();
+                Map<String, Message> old = streamingTextGeneratingMessages.putIfAbsent(key, streams);
+                if (old != null) {
+                    streams = old;
+                }
+            }
+            streams.put(streamId, message);
         } else if (message.content instanceof StreamingTextGeneratedMessageContent) {
-            // 流式文本生成完成，清空对应会话的生成中消息
-            streamingTextGeneratingMessages.remove(key);
+            // 流式文本生成完成：只删除对应 streamId，会话级 Map 空时整体删除
+            removeStreamingTextGeneratingMessage(key, ((StreamingTextGeneratedMessageContent) message.content).getStreamId());
         } else if (message.content instanceof StreamingTextCancelledMessageContent) {
-            // 流式文本取消：清空对应会话的生成中消息，UI 层按 streamId 删除 14/15 消息
-            streamingTextGeneratingMessages.remove(key);
+            // 流式文本取消：只删除对应 streamId，会话级 Map 空时整体删除；UI 层按 streamId 删除 14/15 消息
+            removeStreamingTextGeneratingMessage(key, ((StreamingTextCancelledMessageContent) message.content).getStreamId());
+        }
+    }
+
+    /**
+     * 从会话缓存中删除指定 streamId 的生成中消息；会话内没有其它仍在生成的 stream 时删除整个会话缓存
+     */
+    private void removeStreamingTextGeneratingMessage(String key, String streamId) {
+        if (streamId == null || streamId.isEmpty()) {
+            return;
+        }
+        Map<String, Message> streams = streamingTextGeneratingMessages.get(key);
+        if (streams != null) {
+            streams.remove(streamId);
+            if (streams.isEmpty()) {
+                streamingTextGeneratingMessages.remove(key, streams);
+            }
         }
     }
 
@@ -9395,23 +9432,55 @@ public class ChatManager {
     }
 
     /**
-     * 获取会话的流式文本生成中的消息
+     * 获取会话的流式文本生成中的消息（旧接口，兼容单 agent 场景）
      *
      * @param conversation 会话
-     * @return 流式文本生成中的消息，如果没有或已过期则返回null
+     * @return 流式文本生成中的消息，如果没有或已过期则返回null。
+     * 多 agent 并发时同一会话可能同时存在多条不同 streamId 的生成中消息，本接口只返回其中一条
+     * （返回顺序不保证），需要全部时请使用 {@link #getAllStreamingTextGeneratingMessages(Conversation)}。
      */
     public Message getStreamingTextGeneratingMessage(Conversation conversation) {
+        List<Message> generatingMessages = getAllStreamingTextGeneratingMessages(conversation);
+        if (generatingMessages.isEmpty()) {
+            return null;
+        }
+        return generatingMessages.get(generatingMessages.size() - 1);
+    }
+
+    /**
+     * 获取会话所有流式文本生成中的消息（多 agent / 多 streamId）
+     * <p>
+     * 同一会话可同时存在多条不同 streamId 的 14 消息（每个 streamId 属于某个机器人的一个回合），
+     * 返回该会话全部仍在生成的消息。逐条应用 1 分钟过期语义：生成时间超过 1 分钟的 stream 视为
+     * 过期并删除；该会话没有任何仍在生成的 stream 时返回空列表并清理会话级缓存。
+     *
+     * @param conversation 会话
+     * @return 该会话仍在生成的流式消息列表（无则空列表，永不为 null）
+     */
+    public List<Message> getAllStreamingTextGeneratingMessages(Conversation conversation) {
+        List<Message> result = new ArrayList<>();
+        if (conversation == null) {
+            return result;
+        }
         String key = conversationKey(conversation);
-        Message message = streamingTextGeneratingMessages.get(key);
-        if (message != null) {
-            // 如果消息生成时间超过1分钟，则认为是过期的，返回null
-            long now = System.currentTimeMillis();
-            if (now - message.serverTime > 60 * 1000) {
-                streamingTextGeneratingMessages.remove(key);
-                return null;
+        Map<String, Message> streams = streamingTextGeneratingMessages.get(key);
+        if (streams == null || streams.isEmpty()) {
+            return result;
+        }
+        long now = System.currentTimeMillis();
+        for (Iterator<Map.Entry<String, Message>> it = streams.entrySet().iterator(); it.hasNext(); ) {
+            Message message = it.next().getValue();
+            // 如果消息生成时间超过1分钟，则认为是过期的，移除
+            if (message == null || now - message.serverTime > 60 * 1000) {
+                it.remove();
+            } else {
+                result.add(message);
             }
         }
-        return message;
+        if (streams.isEmpty()) {
+            streamingTextGeneratingMessages.remove(key, streams);
+        }
+        return result;
     }
 
     /**
@@ -11287,15 +11356,15 @@ public class ChatManager {
         registerMessageContent(MeetingMinutesMessageContent.class);
         registerMessageContent(TranscriptionMessageContent.class);
 
-        // 注册 DSH 结构化交互消息内容类型（200-209，官方预留 AI 交互段）
+        // 注册 Agent 结构化交互消息内容类型（200-209，官方预留 AI 交互段）
         ChatManager.Instance().registerMessageContent(AgentQuestionMessageContent.class);
         ChatManager.Instance().registerMessageContent(AgentAnswerMessageContent.class);
         ChatManager.Instance().registerMessageContent(AgentApprovalMessageContent.class);
         ChatManager.Instance().registerMessageContent(AgentApprovalResultMessageContent.class);
         ChatManager.Instance().registerMessageContent(AgentGoalMessageContent.class);
-        // 207 DSH_Command：AI 面板静默指令（透明消息，不显示；query 组合查询 / set 更新）
+        // 207 Agent_Command：AI 面板静默指令（透明消息，不显示；query 组合查询 / set 更新）
         ChatManager.Instance().registerMessageContent(AgentCommandMessageContent.class);
-        // 208 DSH_TaskProgress：任务进度卡片（subagent/workflow 派生任务，首次 sendCard 后续 updateMessage 原地更新）
+        // 208 Agent_TaskProgress：任务进度卡片（subagent/workflow 派生任务，首次 sendCard 后续 updateMessage 原地更新）
         ChatManager.Instance().registerMessageContent(AgentTaskProgressMessageContent.class);
     }
 

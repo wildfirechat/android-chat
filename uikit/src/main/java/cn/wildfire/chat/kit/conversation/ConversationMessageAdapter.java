@@ -48,10 +48,10 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContent
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.dsh.AgentApprovalMessageContent;
-import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
-import cn.wildfirechat.message.dsh.AgentQuestionMessageContent;
-import cn.wildfirechat.message.dsh.AgentTaskProgressMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalMessageContent;
+import cn.wildfirechat.message.agent.AgentGoalMessageContent;
+import cn.wildfirechat.message.agent.AgentQuestionMessageContent;
+import cn.wildfirechat.message.agent.AgentTaskProgressMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
@@ -481,10 +481,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
      * <ul>
      *   <li>流式生成中（类型 14 {@link StreamingTextGeneratingMessageContent}）→ true；</li>
      *   <li>提问卡片（200 {@link AgentQuestionMessageContent}）state == "pending"（等待用户选择）→ true；</li>
-     *   <li>审批卡片（202 {@link AgentApprovalMessageContent}）state == "pending"（等待用户审批）→ true；</li>
-     *   <li>目标进度卡片（206 {@link AgentGoalMessageContent}）phase != "complete"（目标未完成）→ true；</li>
-     *   <li>任务进度卡片（208 {@link AgentTaskProgressMessageContent}）tasks 中任一 status == "running" → true。</li>
+     *   <li>审批卡片（202 {@link AgentApprovalMessageContent}）state == "pending"（等待用户审批）→ true。</li>
      * </ul>
+     * （goal 206 / 任务 208 等其余消息按默认排序，不参与钉底）
      *
      * @param message 待判断的消息，调用方需保证非 null
      * @return 该消息是否为进行中的 AI 交互元素
@@ -499,20 +498,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         if (content instanceof AgentApprovalMessageContent) {
             return TextUtils.equals(((AgentApprovalMessageContent) content).getState(), "pending");
-        }
-        if (content instanceof AgentGoalMessageContent) {
-            return !TextUtils.equals(((AgentGoalMessageContent) content).getPhase(), "complete");
-        }
-        if (content instanceof AgentTaskProgressMessageContent) {
-            JSONArray tasks = ((AgentTaskProgressMessageContent) content).getTasks();
-            if (tasks != null) {
-                for (int i = 0; i < tasks.length(); i++) {
-                    JSONObject task = tasks.optJSONObject(i);
-                    if (task != null && TextUtils.equals(task.optString("status"), "running")) {
-                        return true;
-                    }
-                }
-            }
         }
         return false;
     }

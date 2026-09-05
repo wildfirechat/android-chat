@@ -75,7 +75,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.DownloadManager;
-import cn.wildfire.chat.kit.utils.DshState;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
@@ -91,6 +91,7 @@ import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StreamingTextCancelledMessageContent;
+import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
@@ -158,15 +159,17 @@ public class ConversationFragment extends Fragment implements
     private LinearLayout conversationStickyHeaderContainerLinearLayout;
     private TextView joinGroupRequestHeaderTextView;
 
-    // DSH 会话状态：标题栏副标题 + 消息列表上方的细状态横幅（含停止按钮）
-    private LinearLayout dshStatusBannerLinearLayout;
-    private TextView dshStatusTextView;
-    private TextView dshStopButton;
-    private JSONObject dshState;
+    // Agent 会话状态：标题栏副标题 + 消息列表上方的细状态横幅（含停止按钮）
+    private LinearLayout agentStatusBannerLinearLayout;
+    private TextView agentStatusTextView;
+    private TextView agentStopButton;
+    private JSONObject agentState;
     // Token 统计（scope=31 type=2 独立通道，回合结束必推，含出错/取消）；与运行状态分开读
-    private JSONObject dshMetrics;
-    private long lastDshStopClickTime;
-    private final OnSettingUpdateListener dshSettingUpdateListener = () -> refreshDshState();
+    private JSONObject agentMetrics;
+    /** 多机器人：按机器人分组的（type=1 状态 + type=2 计量）列表（仅含有效状态的机器人） */
+    private List<AgentState.RobotState> agentRobotStates = new ArrayList<>();
+    private long lastAgentStopClickTime;
+    private final OnSettingUpdateListener agentSettingUpdateListener = () -> refreshAgentState();
 
     private ConversationMessageAdapter adapter;
     private OngoingCallAdapter ongoingCallAdapter;
@@ -465,8 +468,8 @@ public class ConversationFragment extends Fragment implements
                 subConversationTitle = null;
                 setTitle();
             }
-            // 机器人信息可能异步拉取，拉取回来后重新判定是否为 DSH 会话
-            refreshDshState();
+            // 机器人信息可能异步拉取，拉取回来后重新判定是否为 Agent 会话
+            refreshAgentState();
             int start = layoutManager.findFirstVisibleItemPosition();
             int end = layoutManager.findLastVisibleItemPosition();
             adapter.notifyItemRangeChanged(start, end - start + 1, userInfos);
@@ -514,8 +517,8 @@ public class ConversationFragment extends Fragment implements
                     // AI 群：群信息异步拉回（可能补上 owner）后补订群主在线状态
                     watchAiOwnerOnlineState();
                     setTitle();
-                    // 群 extra 可能异步拉取，拉取回来后重新判定是否为 DSH 会话
-                    refreshDshState();
+                    // 群 extra 可能异步拉取，拉取回来后重新判定是否为 Agent 会话
+                    refreshAgentState();
                     adapter.notifyDataSetChanged();
                     break;
                 }
@@ -587,10 +590,10 @@ public class ConversationFragment extends Fragment implements
         conversationStickyHeaderContainerLinearLayout = view.findViewById(R.id.conversationStickyHeaderContainerLinearLayout);
         joinGroupRequestHeaderTextView = view.findViewById(R.id.joinGroupRequestHeaderTextView);
 
-        dshStatusBannerLinearLayout = view.findViewById(R.id.dshStatusBannerLinearLayout);
-        dshStatusTextView = view.findViewById(R.id.dshStatusTextView);
-        dshStopButton = view.findViewById(R.id.dshStopButton);
-        dshStopButton.setOnClickListener(v -> stopDshAgent());
+        agentStatusBannerLinearLayout = view.findViewById(R.id.agentStatusBannerLinearLayout);
+        agentStatusTextView = view.findViewById(R.id.agentStatusTextView);
+        agentStopButton = view.findViewById(R.id.agentStopButton);
+        agentStopButton.setOnClickListener(v -> stopAgent());
 
         view.findViewById(R.id.contentLayout).setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
         recyclerView.setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
@@ -752,8 +755,8 @@ public class ConversationFragment extends Fragment implements
         settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
 
-        // DSH 会话状态通道（scope=31）走用户设置更新事件，事件驱动，不轮询
-        ChatManager.Instance().addSettingUpdateListener(dshSettingUpdateListener);
+        // Agent 会话状态通道（scope=31）走用户设置更新事件，事件驱动，不轮询
+        ChatManager.Instance().addSettingUpdateListener(agentSettingUpdateListener);
 
         isEnableUserOnlineState = ChatManager.Instance().isEnableUserOnlineState();
         if (isEnableUserOnlineState) {
@@ -822,48 +825,50 @@ public class ConversationFragment extends Fragment implements
         ongoingCalls = null;
 
         setTitle();
-        refreshDshState();
+        refreshAgentState();
     }
 
     /**
-     * 刷新 DSH 会话状态：标题栏副标题 + 状态横幅/停止按钮。
+     * 刷新 Agent 会话状态：标题栏副标题 + 状态横幅/停止按钮。
      * 运行状态（type=1）与 Token 统计（type=2）都随本端已有的用户设置更新事件刷新
-     * （type=2 变化也会触发同一事件，见 {@link #dshSettingUpdateListener}）。
-     * 仅 DSH 会话（群聊 line==2）会读到状态；非 DSH 会话恒为 null。
+     * （type=2 变化也会触发同一事件，见 {@link #agentSettingUpdateListener}）。
+     * 仅 Agent 会话（群聊 line==2）会读到状态；非 Agent 会话恒为 null。
      */
-    private void refreshDshState() {
-        if (conversation == null || dshStatusBannerLinearLayout == null) {
+    private void refreshAgentState() {
+        if (conversation == null || agentStatusBannerLinearLayout == null) {
             return;
         }
-        dshState = DshState.getDshState(conversation);
+        agentState = AgentState.getAgentState(conversation);
         // Token 统计走 type=2 独立通道（回合结束必推，含出错/取消），与运行状态分开读
-        dshMetrics = DshState.getDshMetrics(conversation);
-        if (DshState.isDshConversation(conversation)) {
+        agentMetrics = AgentState.getAgentMetrics(conversation);
+        // 多机器人：按机器人分组状态（仅含有效状态的机器人；标题副标题按 agent 多段展示用）
+        agentRobotStates = AgentState.getAgentRobotStates(conversation);
+        if (AgentState.isAgentConversation(conversation)) {
             setTitle();
         }
         // Toolbar 副标题无法内联按钮，停止按钮放在消息列表上方的细状态横幅里，仅 running 时显示；
         // AI 群群主不在线时不显示（AI 状态整体隐藏，由 "AI 不在线" 替代）
-        boolean running = dshState != null && DshState.STATE_RUNNING.equals(dshState.optString("state")) && !isAiOwnerOffline();
-        dshStatusBannerLinearLayout.setVisibility(running ? View.VISIBLE : View.GONE);
+        boolean running = agentState != null && AgentState.STATE_RUNNING.equals(agentState.optString("state")) && !isAiOwnerOffline();
+        agentStatusBannerLinearLayout.setVisibility(running ? View.VISIBLE : View.GONE);
         if (running) {
-            dshStatusTextView.setText(DshState.stateText(dshState));
+            agentStatusTextView.setText(AgentState.stateText(agentState));
         }
         // Token/上下文计量已并入副标题（见 aiOwnerStatusLine），此处无需单独渲染
-        inputPanel.onDshStateChanged(dshState);
+        inputPanel.onAgentStateChanged(agentState);
     }
 
     /**
-     * 停止按钮：向当前 DSH 会话发送 /stop 命令文本，中断当前 Agent turn；1.5s 防重复。
+     * 停止按钮：向当前 Agent 会话发送 /stop 命令文本，中断当前 Agent turn；1.5s 防重复。
      */
-    private void stopDshAgent() {
+    private void stopAgent() {
         if (conversation == null) {
             return;
         }
         long now = System.currentTimeMillis();
-        if (now - lastDshStopClickTime < 1500) {
+        if (now - lastAgentStopClickTime < 1500) {
             return;
         }
-        lastDshStopClickTime = now;
+        lastAgentStopClickTime = now;
         messageViewModel.sendMessage(conversation, new TextMessageContent("/stop"));
     }
 
@@ -925,10 +930,10 @@ public class ConversationFragment extends Fragment implements
      * AI 群群主（AI 机器人）不在线：去掉所有 AI 状态段（运行提示/lastChange/统计），
      * 只显示 "AI 不在线"。
      * online 来自 {@link #aiOwnerOnlineStateDesc()}；hint 来自
-     * {@link DshState#dshStatusHint(JSONObject)}（type=1 状态里的 waiting_user+interaction /
+     * {@link AgentState#agentStatusHint(JSONObject)}（type=1 状态里的 waiting_user+interaction /
      * reason=error+error / reason=cancelled）；lastChange 来自 type=1 状态的 lastChange 字段
      * （207 set 执行后插件写入，如 "模型 → deepseek-official/deepseek-v4-pro"，变更可见）；
-     * metrics 来自 {@link #dshMetricsTextForCurrentSession()}（type=2 统计对象，无统计信息或
+     * metrics 来自 {@link #agentMetricsTextForCurrentSession()}（type=2 统计对象，无统计信息或
      * 统计属于其他会话时为空串）。
      * </p>
      */
@@ -937,9 +942,9 @@ public class ConversationFragment extends Fragment implements
             return "AI 不在线";
         }
         String online = aiOwnerOnlineStateDesc();
-        String hint = DshState.dshStatusHint(dshState);
-        String lastChange = dshState != null ? dshState.optString("lastChange", "") : "";
-        String metrics = dshMetricsTextForCurrentSession();
+        String hint = AgentState.agentStatusHint(agentState);
+        String lastChange = agentState != null ? agentState.optString("lastChange", "") : "";
+        String metrics = agentMetricsTextForCurrentSession();
         List<String> parts = new ArrayList<>(4);
         if (!TextUtils.isEmpty(online)) {
             parts.add(online);
@@ -957,29 +962,49 @@ public class ConversationFragment extends Fragment implements
     }
 
     /**
-     * Token 统计段文本（type=2 统计对象）——带 sessionId 校验：统计只在属于当前 DSH 会话时显示。
+     * 多机器人状态行（标题副标题按 agent 逐段展示）：每个有状态的机器人一段
+     * 「机器人显示名:简短状态词」，段间用 " · " 连接（参考 PC 端 robotStatusRows
+     * 逐列展示 robotShort:robotText）。返回 null 表示无需多段展示（走单机器人合并行）。
+     */
+    private String agentRobotStatusLine() {
+        if (agentRobotStates == null || agentRobotStates.size() <= 1) {
+            return null;
+        }
+        List<String> columns = new ArrayList<>(agentRobotStates.size());
+        for (AgentState.RobotState robot : agentRobotStates) {
+            String name = AgentState.agentRobotName(robot.uid);
+            String text = AgentState.robotStateText(robot.state);
+            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(text)) {
+                columns.add(name + ":" + text);
+            }
+        }
+        return columns.isEmpty() ? null : TextUtils.join(" · ", columns);
+    }
+
+    /**
+     * Token 统计段文本（type=2 统计对象）——带 sessionId 校验：统计只在属于当前 Agent 会话时显示。
      * <p>
      * 插件（已部署）在 type=2 统计对象里带 {@code sessionId}（统计所属会话），type=1 状态
-     * （{@code dshState}）也带 {@code sessionId}（当前会话）。切目录后旧会话统计可能残留
+     * （{@code agentState}）也带 {@code sessionId}（当前会话）。切目录后旧会话统计可能残留
      * （type=2 未随 resetMetrics 清掉或推送时序差），此处对比两者：统计对象含 sessionId 且
      * 当前状态也有 sessionId 且两者不相等 → 统计文本返回空（不显示统计段；AI 在线/运行提示/
      * lastChange 仍正常显示，见 {@link #aiOwnerStatusLine()}）。sessionId 缺失（旧数据）时不拦截，
      * 按现状显示。
      * </p>
      */
-    private String dshMetricsTextForCurrentSession() {
-        if (dshMetrics == null) {
+    private String agentMetricsTextForCurrentSession() {
+        if (agentMetrics == null) {
             return "";
         }
         // 统计属于当前会话才显示：type=2 统计的 sessionId 与 type=1 状态的 sessionId 不一致
         // （切目录后旧会话统计残留）则不显示统计段；任一侧 sessionId 缺失时不拦截（旧数据兼容）
-        String metricsSessionId = dshMetrics.optString("sessionId");
-        String stateSessionId = dshState != null ? dshState.optString("sessionId") : "";
+        String metricsSessionId = agentMetrics.optString("sessionId");
+        String stateSessionId = agentState != null ? agentState.optString("sessionId") : "";
         if (!TextUtils.isEmpty(metricsSessionId) && !TextUtils.isEmpty(stateSessionId)
             && !TextUtils.equals(metricsSessionId, stateSessionId)) {
             return "";
         }
-        return DshState.dshMetricsText(dshMetrics);
+        return AgentState.agentMetricsText(agentMetrics);
     }
 
     /**
@@ -1053,12 +1078,10 @@ public class ConversationFragment extends Fragment implements
         messages.observe(getViewLifecycleOwner(), uiMessages -> {
             swipeRefreshLayout.setRefreshing(false);
 
-            // 检查是否有正在生成的流式文本消息
-            Message generatingMessage = ChatManager.Instance().getStreamingTextGeneratingMessage(conversation);
-            if (generatingMessage != null) {
-                UiMessage uiGeneratingMessage = new UiMessage(generatingMessage);
-                uiMessages.add(uiGeneratingMessage);
-            }
+            // 多 agent：会话打开/历史加载后把所有仍在生成的流式回合（每个 agent 一条）补到消息列表末尾，
+            // 列表里已存在同一 streamId 的 14/15 时不重复补；补齐后由 adapter.setMessages 内部的
+            // pinLiveAIToBottom 统一把 live 元素钉到最新位置（与 PC 端 _appendCachedStreamingMessages 语义一致）
+            appendCachedStreamingMessages(uiMessages);
 
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
@@ -1077,6 +1100,56 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         });
+    }
+
+    /**
+     * 会话打开/历史加载后，把该会话缓存中所有「仍在生成」的流式回合（多 agent 各自一条）补齐到消息列表末尾。
+     * 列表里已存在同一 streamId 的 14/15 时不重复补；补齐后由 adapter.setMessages 内部的
+     * pinLiveAIToBottom 统一把 live 元素钉到最新位置。与 PC 端 store._appendCachedStreamingMessages 语义一致。
+     *
+     * @param uiMessages 当前待显示的消息列表（可修改，来自数据库/归档加载）
+     */
+    private void appendCachedStreamingMessages(List<UiMessage> uiMessages) {
+        if (conversation == null || uiMessages == null) {
+            return;
+        }
+        List<Message> generatingMessages = ChatManager.Instance().getAllStreamingTextGeneratingMessages(conversation);
+        if (generatingMessages.isEmpty()) {
+            return;
+        }
+        for (Message generatingMessage : generatingMessages) {
+            String streamId = streamIdOf(generatingMessage);
+            if (streamId == null || streamId.isEmpty()) {
+                continue;
+            }
+            // 已存在同一 streamId 的 14/15 不重复补
+            boolean exists = false;
+            for (UiMessage uiMessage : uiMessages) {
+                if (streamId.equals(streamIdOf(uiMessage.message))) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                uiMessages.add(new UiMessage(generatingMessage));
+            }
+        }
+    }
+
+    /**
+     * 取流式文本消息（14/15）的 streamId；非流式消息返回 null
+     */
+    private String streamIdOf(Message message) {
+        if (message == null || message.content == null) {
+            return null;
+        }
+        if (message.content instanceof StreamingTextGeneratingMessageContent) {
+            return ((StreamingTextGeneratingMessageContent) message.content).getStreamId();
+        }
+        if (message.content instanceof StreamingTextGeneratedMessageContent) {
+            return ((StreamingTextGeneratedMessageContent) message.content).getStreamId();
+        }
+        return null;
     }
 
     private void updateGroupConversationInputStatus() {
@@ -1242,7 +1315,7 @@ public class ConversationFragment extends Fragment implements
                 }
                 // AI 群（line==2，群主=AI 机器人）：副标题显示合并行
                 // （AI 在线 + 运行态提示 + Token 统计，如 "AI 在线 · 🤔 等待确认 · 上下文 0.8%"，
-                // 有 DSH 状态时前面还会拼状态文本，见下）
+                // 有 Agent 状态时前面还会拼状态文本，见下）
                 if (conversation.line == 2) {
                     String aiStatusLine = aiOwnerStatusLine();
                     if (!TextUtils.isEmpty(aiStatusLine)) {
@@ -1276,22 +1349,34 @@ public class ConversationFragment extends Fragment implements
             conversationTitle = userViewModel.getUserDisplayName(userInfo) + getString(R.string.secret_chat_postfix);
         }
 
-        // DSH 会话：副标题显示状态文本（空闲/运行中/等待确认/已完成；phase==tool 时追加工具名），
+        // 多机器人（>1 个有状态推送的机器人）：副标题整行替换为按 agent 逐段展示的
+        // 「机器人名:状态」（参考 PC 端 robotStatusRows；单机器人/无状态时走下方合并行）。
+        // 有状态机器人才会进入 agentRobotStates，与 AI 群主在线状态无关（参考 PC 端展示）。
+        if (agentRobotStates != null && agentRobotStates.size() > 1) {
+            String multiRobotLine = agentRobotStatusLine();
+            if (!TextUtils.isEmpty(multiRobotLine)) {
+                subConversationTitle = multiRobotLine;
+                setActivityTitle(conversationTitle, subConversationTitle);
+                return;
+            }
+        }
+
+        // Agent 会话：副标题显示状态文本（空闲/运行中/等待确认/已完成；phase==tool 时追加工具名），
         // 之后追加合并行（AI 在线 + 运行态提示 + Token 统计），如 "运行中 · AI 在线 · 上下文 0.8% · 缓存 98%"。
         // 运行态提示（🤔 等待确认/🔐 等待审批/⚠️ 错误/已取消）已并入合并行，含义覆盖状态文本
         // （如 waiting_user → "🤔 等待确认"）时不再重复拼接状态文本（参考 PC 端 conversationStatusLine）。
         // 无状态文本时直接显示合并行；均无时回退原有副标题。
         // AI 群群主不在线时状态文本/合并行整体隐藏，由 line==2 分支的 "AI 不在线" 替代。
-        if (dshState != null && !isAiOwnerOffline()) {
-            String dshStateText = DshState.stateText(dshState);
+        if (agentState != null && !isAiOwnerOffline()) {
+            String agentStateText = AgentState.stateText(agentState);
             String aiStatusLine = aiOwnerStatusLine();
             if (!TextUtils.isEmpty(aiStatusLine)) {
-                boolean hintCoversState = !TextUtils.isEmpty(DshState.dshStatusHint(dshState));
-                subConversationTitle = (!TextUtils.isEmpty(dshStateText) && !hintCoversState)
-                        ? dshStateText + " · " + aiStatusLine
+                boolean hintCoversState = !TextUtils.isEmpty(AgentState.agentStatusHint(agentState));
+                subConversationTitle = (!TextUtils.isEmpty(agentStateText) && !hintCoversState)
+                        ? agentStateText + " · " + aiStatusLine
                         : aiStatusLine;
-            } else if (!TextUtils.isEmpty(dshStateText)) {
-                subConversationTitle = dshStateText;
+            } else if (!TextUtils.isEmpty(agentStateText)) {
+                subConversationTitle = agentStateText;
             }
         }
 
@@ -1511,7 +1596,7 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ChatManager.Instance().removeSettingUpdateListener(dshSettingUpdateListener);
+        ChatManager.Instance().removeSettingUpdateListener(agentSettingUpdateListener);
         // 与改造前一致：丢弃 toolbar 标题 TextView 的缓存（现在缓存在适配器里）
         wfcBaseActivityHost = null;
     }
@@ -1604,6 +1689,8 @@ public class ConversationFragment extends Fragment implements
 
     private void reloadMessage() {
         conversationViewModel.getMessages(conversation, targetUser, true).observe(this, uiMessages -> {
+            // 多 agent：整体重载消息列表后同样把该会话所有仍在生成的流式回合补回（已存在的 streamId 不重复补）
+            appendCachedStreamingMessages(uiMessages);
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
         });

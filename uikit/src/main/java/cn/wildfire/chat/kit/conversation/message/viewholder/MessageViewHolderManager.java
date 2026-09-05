@@ -45,13 +45,13 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(PollMessageContentViewHolder.class, R.layout.conversation_item_poll_send, R.layout.conversation_item_poll_receive);
         registerMessageViewHolder(PollResultMessageContentViewHolder.class, R.layout.conversation_item_poll_result_send, R.layout.conversation_item_poll_result_receive);
         registerMessageViewHolder(MeetingMinutesMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
-        // ============ DSH 结构化交互（200-209，官方预留 AI 交互段） ============
-        registerMessageViewHolder(DshQuestionMessageContentViewHolder.class, R.layout.conversation_item_dsh_question, R.layout.conversation_item_dsh_question);
-        registerMessageViewHolder(DshApprovalMessageContentViewHolder.class, R.layout.conversation_item_dsh_approval, R.layout.conversation_item_dsh_approval);
-        registerMessageViewHolder(DshGoalMessageContentViewHolder.class, R.layout.conversation_item_dsh_goal, R.layout.conversation_item_dsh_goal);
-        registerMessageViewHolder(DshTaskProgressMessageContentViewHolder.class, R.layout.conversation_item_dsh_task_progress, R.layout.conversation_item_dsh_task_progress);
-        // DSH_ANSWER(201) / DSH_APPROVAL_RESULT(203) 是用户侧应答消息，按摘要文本气泡展示
-        registerMessageViewHolder(DshDigestMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
+        // ============ Agent 结构化交互（200-209，官方预留 AI 交互段） ============
+        registerMessageViewHolder(AgentQuestionMessageContentViewHolder.class, R.layout.conversation_item_agent_question, R.layout.conversation_item_agent_question);
+        registerMessageViewHolder(AgentApprovalMessageContentViewHolder.class, R.layout.conversation_item_agent_approval, R.layout.conversation_item_agent_approval);
+        registerMessageViewHolder(AgentGoalMessageContentViewHolder.class, R.layout.conversation_item_agent_goal, R.layout.conversation_item_agent_goal);
+        registerMessageViewHolder(AgentTaskProgressMessageContentViewHolder.class, R.layout.conversation_item_agent_task_progress, R.layout.conversation_item_agent_task_progress);
+        // Agent_ANSWER(201) / Agent_APPROVAL_RESULT(203) 是用户侧应答消息，按摘要文本气泡展示
+        registerMessageViewHolder(AgentDigestMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();

@@ -80,6 +80,7 @@ import cn.wildfire.chat.kit.group.GroupMemberMessageHistoryActivity;
 import cn.wildfire.chat.kit.group.GroupMemberMessageHistoryFragment;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
 import cn.wildfire.chat.kit.group.AddGroupMemberPageFragment;
+import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.PickGroupMemberPageFragment;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
@@ -413,11 +414,13 @@ public final class PaneRegistry {
         }, PaneRegistry::groupInfoKey);
         register(GroupManageActivity.class, (context, intent) -> {
             GroupInfo groupInfo = intent.getParcelableExtra("groupInfo");
-            return groupInfo == null ? null : GroupManageFragment.newInstance(groupInfo);
+            int line = intent.getIntExtra(BasePickGroupMemberActivity.LINE, 0);
+            return groupInfo == null ? null : GroupManageFragment.newInstance(groupInfo, line);
         }, PaneRegistry::groupInfoKey);
         register(GroupManagerListActivity.class, (context, intent) -> {
             GroupInfo groupInfo = intent.getParcelableExtra("groupInfo");
-            return groupInfo == null ? null : GroupManagerListFragment.newInstance(groupInfo);
+            int line = intent.getIntExtra(BasePickGroupMemberActivity.LINE, 0);
+            return groupInfo == null ? null : GroupManagerListFragment.newInstance(groupInfo, line);
         }, PaneRegistry::groupInfoKey);
         register(GroupMemberPermissionActivity.class, (context, intent) -> {
             GroupInfo groupInfo = intent.getParcelableExtra("groupInfo");

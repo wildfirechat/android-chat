@@ -14,7 +14,7 @@
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/dshPlanTextView"
+            android:id="@+id/agentPlanTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -33,23 +33,23 @@
         android:padding="12dp">
 
         <TextView
-            android:id="@+id/dshPlanApproveButton"
+            android:id="@+id/agentPlanApproveButton"
             android:layout_width="0dp"
             android:layout_height="44dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_dsh_btn_primary"
+            android:background="@drawable/shape_agent_btn_primary"
             android:gravity="center"
             android:text="批准"
             android:textColor="@color/white"
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/dshPlanRejectButton"
+            android:id="@+id/agentPlanRejectButton"
             android:layout_width="0dp"
             android:layout_height="44dp"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_dsh_btn_reject"
+            android:background="@drawable/shape_agent_btn_reject"
             android:gravity="center"
             android:text="拒绝"
             android:textColor="@color/white"

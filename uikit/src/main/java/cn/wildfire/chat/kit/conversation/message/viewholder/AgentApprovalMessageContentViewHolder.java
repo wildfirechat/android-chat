@@ -18,19 +18,19 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.AgentApprovalMessageContent;
-import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalResultMessageContent;
 
 /**
- * DSH 工具审批卡片（202）。
+ * Agent 工具审批卡片（202）。
  * <p>
- * 「同意」（主色）/「拒绝」（红）并排大按钮；点击发送 DSH_ApprovalResult 并立即本地置灰；
+ * 「同意」（主色）/「拒绝」（红）并排大按钮；点击发送 Agent_ApprovalResult 并立即本地置灰；
  * 锁定态（approved/rejected/expired 或本地已决）显示状态文本。
  * </p>
  */
 @MessageContentType(AgentApprovalMessageContent.class)
 @EnableContextMenu
-public class DshApprovalMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class AgentApprovalMessageContentViewHolder extends NormalMessageContentViewHolder {
     // 本地已决策的消息 id：点击后立即置灰，不依赖服务端 updateMessage 推送的实时性。
     // 重新进入会话时以 content.state 为准（服务端会 updateMessage）。
     private static final Set<Long> locallyDecidedMessageIds = new HashSet<>();
@@ -45,19 +45,19 @@ public class DshApprovalMessageContentViewHolder extends NormalMessageContentVie
     private AgentApprovalMessageContent approvalContent;
     private String decidedAction;
 
-    public DshApprovalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public AgentApprovalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         bindViews(itemView);
         bindEvents(itemView);
     }
 
     private void bindViews(View itemView) {
-        toolNameTextView = itemView.findViewById(R.id.dshToolNameTextView);
-        reasonTextView = itemView.findViewById(R.id.dshReasonTextView);
-        actionsLinearLayout = itemView.findViewById(R.id.dshActionsLinearLayout);
-        approveButton = itemView.findViewById(R.id.dshApproveButton);
-        rejectButton = itemView.findViewById(R.id.dshRejectButton);
-        stateTextView = itemView.findViewById(R.id.dshStateTextView);
+        toolNameTextView = itemView.findViewById(R.id.agentToolNameTextView);
+        reasonTextView = itemView.findViewById(R.id.agentReasonTextView);
+        actionsLinearLayout = itemView.findViewById(R.id.agentActionsLinearLayout);
+        approveButton = itemView.findViewById(R.id.agentApproveButton);
+        rejectButton = itemView.findViewById(R.id.agentRejectButton);
+        stateTextView = itemView.findViewById(R.id.agentStateTextView);
     }
 
     private void bindEvents(View itemView) {

@@ -13,11 +13,11 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
-import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
+import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalResultMessageContent;
 
 /**
- * DSH 应答类消息（201 回答 / 203 审批结果）的摘要文本 ViewHolder。
+ * Agent 应答类消息（201 回答 / 203 审批结果）的摘要文本 ViewHolder。
  * <p>
  * 这两类是用户侧应答消息，按普通文本气泡渲染 content.digest()。
  * </p>
@@ -27,9 +27,9 @@ import cn.wildfirechat.message.dsh.AgentApprovalResultMessageContent;
     AgentApprovalResultMessageContent.class
 })
 @EnableContextMenu
-public class DshDigestMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class AgentDigestMessageContentViewHolder extends NormalMessageContentViewHolder {
 
-    public DshDigestMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public AgentDigestMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
     }
 

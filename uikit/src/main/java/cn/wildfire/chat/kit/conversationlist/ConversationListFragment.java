@@ -28,7 +28,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
-import cn.wildfire.chat.kit.utils.DshState;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
@@ -151,7 +151,7 @@ public class ConversationListFragment extends ProgressFragment {
             }
         });
 
-        // AI 在线状态变化（含 AI 群群主上线/下线）：刷新可见行——DSH 状态圆点/徽标按在线状态置灰
+        // AI 在线状态变化（含 AI 群群主上线/下线）：刷新可见行——Agent 状态圆点/徽标按在线状态置灰
         userOnlineEventListener = userOnlineStateMap -> {
             if (adapter == null || layoutManager == null) {
                 return;
@@ -280,7 +280,7 @@ public class ConversationListFragment extends ProgressFragment {
         List<String> owners = new java.util.ArrayList<>();
         for (ConversationInfo info : conversationInfos) {
             Conversation conv = info.conversation;
-            if (conv == null || !DshState.isDshConversation(conv) || conv.type != Conversation.ConversationType.Group) {
+            if (conv == null || !AgentState.isAgentConversation(conv) || conv.type != Conversation.ConversationType.Group) {
                 continue;
             }
             GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conv.target, false);

@@ -32,9 +32,9 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
-            <!-- DSH 状态横幅：仅 DSH 会话 running 时显示（状态文本 + 红色描边停止按钮一体） -->
+            <!-- Agent 状态横幅：仅 Agent 会话 running 时显示（状态文本 + 红色描边停止按钮一体） -->
             <LinearLayout
-                android:id="@+id/dshStatusBannerLinearLayout"
+                android:id="@+id/agentStatusBannerLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
@@ -48,7 +48,7 @@
                 tools:visibility="visible">
 
                 <TextView
-                    android:id="@+id/dshStatusTextView"
+                    android:id="@+id/agentStatusTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -57,10 +57,10 @@
                     tools:text="运行中 · bash" />
 
                 <TextView
-                    android:id="@+id/dshStopButton"
+                    android:id="@+id/agentStopButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shape_dsh_btn_stop"
+                    android:background="@drawable/shape_agent_btn_stop"
                     android:paddingLeft="12dp"
                     android:paddingTop="4dp"
                     android:paddingRight="12dp"
@@ -71,7 +71,7 @@
             </LinearLayout>
 
             <!--
-                DSH Token/上下文计量已合并进 toolbar 副标题（与 AI 在线状态同行，
+                Agent Token/上下文计量已合并进 toolbar 副标题（与 AI 在线状态同行，
                 如 "运行中 · AI 在线 · 上下文 0.8% · 缓存 98%"），不再单独占一行。
             -->
 

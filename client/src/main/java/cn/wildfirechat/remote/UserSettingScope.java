@@ -60,7 +60,7 @@ public interface UserSettingScope {
     //不能直接使用，协议栈内会使用此值
     int LockPC = 30;
 
-    // 会话级用户设置，DSH 会话状态通道（与机器人服务端约定的保留值）：key = convType-line-target_type（type 为业务类型，1=状态）。
+    // 会话级用户设置，Agent 会话状态通道（与机器人服务端约定的保留值）：key = convType-line-target_type（type 为业务类型，1=状态）。
     // 注意：第三方自定义 scope 仍须 ≥1000（见下方 kUserSettingCustomBegin），不可复用 31。
     int Conversation_User_Setting = 31;
     

@@ -17,10 +17,10 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
+import cn.wildfirechat.message.agent.AgentGoalMessageContent;
 
 /**
- * DSH 目标进度卡片（206），纯展示：阶段彩色徽标 + 目标标题 + 已执行轮数（+ ver:2 stage）。
+ * Agent 目标进度卡片（206），纯展示：阶段彩色徽标 + 目标标题 + 已执行轮数（+ ver:2 stage）。
  * <p>
  * 兼容 ver:2 目标消息：objective 缺失时用 title，phase 缺失时用 state，
  * stage 存在时追加一行「阶段：…」（如 "阶段：round 3"）。
@@ -28,23 +28,23 @@ import cn.wildfirechat.message.dsh.AgentGoalMessageContent;
  */
 @MessageContentType(AgentGoalMessageContent.class)
 @EnableContextMenu
-public class DshGoalMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class AgentGoalMessageContentViewHolder extends NormalMessageContentViewHolder {
 
     TextView phaseBadgeTextView;
     TextView objectiveTextView;
     TextView roundsTextView;
     TextView stageTextView;
 
-    public DshGoalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public AgentGoalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         bindViews(itemView);
     }
 
     private void bindViews(View itemView) {
-        phaseBadgeTextView = itemView.findViewById(R.id.dshPhaseBadgeTextView);
-        objectiveTextView = itemView.findViewById(R.id.dshObjectiveTextView);
-        roundsTextView = itemView.findViewById(R.id.dshRoundsTextView);
-        stageTextView = itemView.findViewById(R.id.dshStageTextView);
+        phaseBadgeTextView = itemView.findViewById(R.id.agentPhaseBadgeTextView);
+        objectiveTextView = itemView.findViewById(R.id.agentObjectiveTextView);
+        roundsTextView = itemView.findViewById(R.id.agentRoundsTextView);
+        stageTextView = itemView.findViewById(R.id.agentStageTextView);
     }
 
     @Override

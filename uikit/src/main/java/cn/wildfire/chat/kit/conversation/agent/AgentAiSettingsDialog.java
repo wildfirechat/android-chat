@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.conversation.dsh;
+package cn.wildfire.chat.kit.conversation.agent;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -30,25 +30,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.utils.DshState;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.WfcSheetDialogCompat;
-import cn.wildfirechat.message.dsh.AgentCommandMessageContent;
+import cn.wildfirechat.message.agent.AgentCommandMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetUserInfoCallback;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 
 /**
  * AI 会话设置面板（手机端 BottomSheet / 底部弹窗，宽屏自动变居中对话框，见
  * {@link WfcSheetDialogCompat}；内容区可滚动，适配小屏）。
  * <p>
+ * 多机器人（多 agent）会话：面板先经调用方选好目标机器人（完整 uid 绑定到
+ * {@link #robotUid}），标题显示机器人显示名（{@link AgentState#agentRobotName}），
+ * type=3 面板数据按 uid 精确读取（{@link AgentState#getAgentPanelDataFor}），
+ * 207 指令带目标 robotId（仅该机器人执行）。
+ * </p>
+ * <p>
  * 静默通道：所有交互不落消息流（不显示在界面上）。
- * 打开面板发 207 DSH_Command（op=query）组合查询 → 插件聚合面板数据
+ * 打开面板发 207 Agent_Command（op=query）组合查询 → 插件聚合面板数据
  * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId / dirs）写入
- * scope=31 type=3（键 convType-line-target_3，不回复消息）→ 本面板读 type=3 渲染：
+ * scope=31 type=3（键 convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
  * 模型/推理等级为下拉（model.options / effort.options + current）、沙箱为单选、
  * 计划为开关、工作目录为 cwd + dirs 列表选择弹窗。
- * 所有操作发 207 DSH_Command（op=set，cmd=命令文本，如 "/model deepseek-official/xxx"）；
+ * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/model deepseek-official/xxx"）；
  * 插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，变更可见）
  * 并刷新 type=3，本面板监听本端已有的用户设置更新事件（{@link OnSettingUpdateListener}）重读 type=3。
  * 不再发送 /model /effort /sandbox /plan /ls 等文本命令、不再解析机器人回复文本
@@ -56,7 +64,7 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * 207 为透明消息（PersistFlag.Transparent，digest 空）：不持久化、不显示。
  * </p>
  */
-public class DshAiSettingsDialog {
+public class AgentAiSettingsDialog {
 
     /** 发送指令后控件禁用的时长（防连点），与 PC 端一致 */
     private static final long FLASH_MILLIS = 1500L;
@@ -79,9 +87,12 @@ public class DshAiSettingsDialog {
     private final Dialog dialog;
     private final Conversation conversation;
     private final MessageViewModel messageViewModel;
+    /** 目标机器人 uid（完整 uid，多机器人会话寻址；空=会话默认机器人） */
+    private final String robotUid;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private TextView loadingView;
+    private TextView titleView;
     private Spinner modelSpinner;
     private Spinner effortSpinner;
     private RadioGroup sandboxGroup;
@@ -139,16 +150,21 @@ public class DshAiSettingsDialog {
             return;
         }
         cwdListLoadingView.setVisibility(View.GONE);
-        cwdListEmptyView.setText(R.string.dsh_ai_cwd_list_timeout);
+        cwdListEmptyView.setText(R.string.agent_ai_cwd_list_timeout);
         cwdListEmptyView.setVisibility(View.VISIBLE);
         updateEnabledState();
     };
 
-    public DshAiSettingsDialog(Context context, Conversation conversation, MessageViewModel messageViewModel) {
+    public AgentAiSettingsDialog(Context context, Conversation conversation, MessageViewModel messageViewModel) {
+        this(context, conversation, messageViewModel, null);
+    }
+
+    public AgentAiSettingsDialog(Context context, Conversation conversation, MessageViewModel messageViewModel, String robotUid) {
         this.dialog = WfcSheetDialogCompat.create(context);
         this.conversation = conversation;
         this.messageViewModel = messageViewModel;
-        View view = LayoutInflater.from(context).inflate(R.layout.dsh_ai_settings_dialog, null);
+        this.robotUid = robotUid;
+        View view = LayoutInflater.from(context).inflate(R.layout.agent_ai_settings_dialog, null);
         dialog.setContentView(view);
         bindViews(view);
         dialog.setOnDismissListener(d -> destroy());
@@ -167,25 +183,32 @@ public class DshAiSettingsDialog {
     }
 
     private void bindViews(View view) {
-        loadingView = view.findViewById(R.id.dshAiLoading);
-        modelSpinner = view.findViewById(R.id.dshAiModelSpinner);
-        effortSpinner = view.findViewById(R.id.dshAiEffortSpinner);
-        sandboxGroup = view.findViewById(R.id.dshAiSandboxGroup);
-        cwdCurrentView = view.findViewById(R.id.dshAiCwdCurrent);
-        cwdListLoadingView = view.findViewById(R.id.dshAiCwdListLoading);
-        cwdListContainer = view.findViewById(R.id.dshAiCwdList);
-        cwdListEmptyView = view.findViewById(R.id.dshAiCwdListEmpty);
-        cwdSwitchBtn = view.findViewById(R.id.dshAiCwdSwitch);
-        planSwitch = view.findViewById(R.id.dshAiPlanSwitch);
-        planText = view.findViewById(R.id.dshAiPlanText);
-        compactBtn = view.findViewById(R.id.dshAiCompact);
-        resetBtn = view.findViewById(R.id.dshAiReset);
-        destroyBtn = view.findViewById(R.id.dshAiDestroy);
-        applyingView = view.findViewById(R.id.dshAiApplying);
+        loadingView = view.findViewById(R.id.agentAiLoading);
+        titleView = view.findViewById(R.id.agentAiTitle);
+        modelSpinner = view.findViewById(R.id.agentAiModelSpinner);
+        effortSpinner = view.findViewById(R.id.agentAiEffortSpinner);
+        sandboxGroup = view.findViewById(R.id.agentAiSandboxGroup);
+        cwdCurrentView = view.findViewById(R.id.agentAiCwdCurrent);
+        cwdListLoadingView = view.findViewById(R.id.agentAiCwdListLoading);
+        cwdListContainer = view.findViewById(R.id.agentAiCwdList);
+        cwdListEmptyView = view.findViewById(R.id.agentAiCwdListEmpty);
+        cwdSwitchBtn = view.findViewById(R.id.agentAiCwdSwitch);
+        planSwitch = view.findViewById(R.id.agentAiPlanSwitch);
+        planText = view.findViewById(R.id.agentAiPlanText);
+        compactBtn = view.findViewById(R.id.agentAiCompact);
+        resetBtn = view.findViewById(R.id.agentAiReset);
+        destroyBtn = view.findViewById(R.id.agentAiDestroy);
+        applyingView = view.findViewById(R.id.agentAiApplying);
 
-        TextView closeView = view.findViewById(R.id.dshAiClose);
+        TextView closeView = view.findViewById(R.id.agentAiClose);
         closeView.setText("×");
         closeView.setOnClickListener(v -> dialog.dismiss());
+
+        // 多机器人：标题显示目标机器人的显示名（用户信息缺失时回退完整 uid）
+        if (!TextUtils.isEmpty(robotUid)) {
+            updateTitle(AgentState.agentRobotName(robotUid));
+            refreshRobotTitleAsync();
+        }
 
         modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -258,27 +281,71 @@ public class DshAiSettingsDialog {
             openCwdList();
         });
 
-        compactBtn.setOnClickListener(v -> confirmAndSend(R.string.dsh_ai_compact_confirm, "/compact"));
-        resetBtn.setOnClickListener(v -> confirmAndSend(R.string.dsh_ai_reset_confirm, "/reset"));
+        compactBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_compact_confirm, "/compact"));
+        resetBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_reset_confirm, "/reset"));
         // 销毁会话：毁灭性操作，不受操作冷却禁用，始终可点（点击弹强警告，确认后才发送）
-        destroyBtn.setOnClickListener(v -> confirmAndSend(R.string.dsh_ai_destroy_confirm, "/destroy"));
+        destroyBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_destroy_confirm, "/destroy"));
     }
 
     /**
      * 重读 scope=31 type=3 面板数据并渲染（设置更新事件驱动；
      * 插件执行 query 组合查询 / set 更新后写 type=3 触发）。
+     * 多机器人会话按目标机器人 uid 精确读取（{@link AgentState#getAgentPanelDataFor}）。
      */
     private void refreshPanelData() {
         if (destroyed || conversation == null) {
             return;
         }
         try {
-            JSONObject data = DshState.getDshPanelData(conversation);
+            JSONObject data = AgentState.getAgentPanelDataFor(conversation, robotUid);
             if (data != null) {
                 applyPanelData(data);
             }
         } catch (Exception ignored) {
             // 读取失败保持旧数据，下次设置更新会重读
+        }
+    }
+
+    /** 面板标题：绑定机器人时显示「🤖 机器人名 · AI 会话设置」；未绑定时用布局默认标题。 */
+    private void updateTitle(String robotName) {
+        if (titleView == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(robotName)) {
+            titleView.setText(R.string.agent_ai_title);
+        } else {
+            titleView.setText(dialog.getContext().getString(R.string.agent_ai_title_robot, robotName));
+        }
+    }
+
+    /**
+     * 后台刷新目标机器人用户信息：本地未缓存时标题先显示完整 uid，拉回显示名后回填标题。
+     */
+    private void refreshRobotTitleAsync() {
+        if (TextUtils.isEmpty(robotUid)) {
+            return;
+        }
+        try {
+            ChatManager.Instance().getUserInfo(robotUid, true, new GetUserInfoCallback() {
+                @Override
+                public void onSuccess(UserInfo userInfo) {
+                    if (destroyed || userInfo == null) {
+                        return;
+                    }
+                    String name = !TextUtils.isEmpty(userInfo.displayName) ? userInfo.displayName
+                        : !TextUtils.isEmpty(userInfo.name) ? userInfo.name : "";
+                    if (!TextUtils.isEmpty(name)) {
+                        handler.post(() -> updateTitle(name));
+                    }
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    // 拉取失败保持完整 uid 回退展示
+                }
+            });
+        } catch (Exception ignored) {
+            // 用户信息刷新失败不影响面板
         }
     }
 
@@ -361,15 +428,17 @@ public class DshAiSettingsDialog {
     }
 
     /**
-     * 发送 207 DSH_Command 面板指令（透明消息，不显示在消息流）。
+     * 发送 207 Agent_Command 面板指令（透明消息，不显示在消息流）。
      * op=query 组合查询（cmd 空）；op=set 更新（cmd=命令文本，如 "/model deepseek-official/xxx"）。
+     * 绑定目标机器人时 207 带 robotId（完整 uid）：多机器人会话仅该机器人执行
+     * （服务端插件已支持 robotId 寻址）。
      * set 发送后控件短暂禁用（防连点）。
      */
     private void sendCommand(String op, String cmd) {
         if (destroyed || conversation == null || messageViewModel == null) {
             return;
         }
-        AgentCommandMessageContent content = new AgentCommandMessageContent(op, cmd, ++commandSeq);
+        AgentCommandMessageContent content = new AgentCommandMessageContent(op, cmd, ++commandSeq, robotUid);
         messageViewModel.sendMessage(conversation, content);
         if ("set".equals(op)) {
             applying = true;
@@ -450,15 +519,15 @@ public class DshAiSettingsDialog {
 
     private void renderPlan() {
         planSwitch.setChecked(planOn);
-        planText.setText(planOn ? R.string.dsh_ai_plan_on : R.string.dsh_ai_plan_off);
+        planText.setText(planOn ? R.string.agent_ai_plan_on : R.string.agent_ai_plan_off);
     }
 
     /** 工作目录：当前值只读展示 */
     private void renderCwd() {
         if (TextUtils.isEmpty(currentCwd)) {
-            cwdCurrentView.setText(dialog.getContext().getString(R.string.dsh_ai_cwd_current, "未设置"));
+            cwdCurrentView.setText(dialog.getContext().getString(R.string.agent_ai_cwd_current, "未设置"));
         } else {
-            cwdCurrentView.setText(dialog.getContext().getString(R.string.dsh_ai_cwd_current, currentCwd));
+            cwdCurrentView.setText(dialog.getContext().getString(R.string.agent_ai_cwd_current, currentCwd));
         }
         cwdCurrentView.setVisibility(View.VISIBLE);
         // 目录列表打开中：用最新 dirs 重建（type=3 刷新可能带新目录）
@@ -468,7 +537,7 @@ public class DshAiSettingsDialog {
             handler.removeCallbacks(cwdListTimeoutRunnable);
             if (cwdCandidates.isEmpty()) {
                 cwdListContainer.setVisibility(View.GONE);
-                cwdListEmptyView.setText(R.string.dsh_ai_cwd_list_empty);
+                cwdListEmptyView.setText(R.string.agent_ai_cwd_list_empty);
                 cwdListEmptyView.setVisibility(View.VISIBLE);
             } else {
                 cwdListEmptyView.setVisibility(View.GONE);

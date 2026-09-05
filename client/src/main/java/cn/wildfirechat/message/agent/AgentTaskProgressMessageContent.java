@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message.dsh;
+package cn.wildfirechat.message.agent;
 
 import android.os.Parcel;
 import android.text.TextUtils;
@@ -20,7 +20,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_TaskProgress;
 
 /**
- * DSH 任务进度卡片消息（机器人→用户），纯展示。
+ * Agent 任务进度卡片消息（机器人→用户），纯展示。
  * <p>
  * 消息类型: 208。
  * payload.content 为 JSON 字符串：
@@ -60,7 +60,7 @@ public class AgentTaskProgressMessageContent extends MessageContent {
     }
 
     /**
-     * 摘要角标文案（与 PC 端 DshTaskProgressContentView 一致）：
+     * 摘要角标文案（与 PC 端 AgentTaskProgressContentView 一致）：
      * 共 N 个 · M 运行中 / 共 N 个 · F 失败 / 共 N 个 · 全部完成；空任务返回空串。
      */
     public String getSummary() {

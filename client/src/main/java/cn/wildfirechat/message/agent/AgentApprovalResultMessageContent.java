@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message.dsh;
+package cn.wildfirechat.message.agent;
 
 import android.os.Parcel;
 
@@ -18,7 +18,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Approval_Result;
 
 /**
- * DSH 审批结果消息（用户→机器人），渲染时按摘要文本展示。
+ * Agent 审批结果消息（用户→机器人），渲染时按摘要文本展示。
  * <p>
  * 消息类型: 203。
  * payload.content 为 JSON 字符串：{"aid":"uuid","action":"approve"|"reject"}

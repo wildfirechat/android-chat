@@ -38,6 +38,11 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     public static final String UNCHECKABLE_MEMBER_IDS = "unCheckableMemberIds";
     public static final String CHECKED_MEMBER_IDS = "checkedMemberIds";
     public static final String MAX_COUNT = "maxCount";
+    /**
+     * 群成员管理操作所在会话的 line（AI 群聊会话 line=2）：发起页（群设置）把当前会话的
+     * line 一路带到执行 SDK 调用的页面，群通知按此 line 下发。缺失/普通群默认 0。
+     */
+    public static final String LINE = "line";
 
     protected PickUserViewModel pickUserViewModel;
     private Observer<Object> userCheckStatusUpdateLiveDataObserver = new Observer<Object>() {
