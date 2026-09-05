@@ -28,24 +28,24 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
-import cn.wildfire.chat.kit.conversation.DshPlanDetailActivity;
+import cn.wildfire.chat.kit.conversation.AgentPlanDetailActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
-import cn.wildfirechat.message.dsh.AgentQuestionMessageContent;
+import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
+import cn.wildfirechat.message.agent.AgentQuestionMessageContent;
 
 /**
- * DSH 提问卡片（200）。
+ * Agent 提问卡片（200）。
  * <p>
  * 选项垂直排列、整行可点（≥40dp）；单选点击即答并立即本地置灰；多选勾选 + 底部「提交」；
  * 「自定义回答」点击后聚焦会话主输入框并弹键盘（卡片内不嵌输入框，卡片期间用户直接发的
  * 文本会被服务端当作该卡片的自定义回答）；plan-review 的 detail 不内联展开，走
- * {@link DshPlanDetailActivity} 全屏计划详情页；锁定态显示 已作答/已过期，
+ * {@link AgentPlanDetailActivity} 全屏计划详情页；锁定态显示 已作答/已过期，
  * answered 时附用户选择（"已作答（选择内容）"）。
  * </p>
  */
 @MessageContentType(AgentQuestionMessageContent.class)
 @EnableContextMenu
-public class DshQuestionMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class AgentQuestionMessageContentViewHolder extends NormalMessageContentViewHolder {
     // 本地已作答的消息 id：点击后立即置灰，不依赖服务端 updateMessage 推送的实时性。
     // 重新进入会话时以 content.state 为准（服务端会 updateMessage）。
     private static final Set<Long> locallyAnsweredMessageIds = new HashSet<>();
@@ -59,17 +59,17 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
     // questionId -> 已选中的 label 列表（多选）
     private final Map<String, List<String>> localSelected = new HashMap<>();
 
-    public DshQuestionMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public AgentQuestionMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         bindViews(itemView);
         bindEvents(itemView);
     }
 
     private void bindViews(View itemView) {
-        headerTextView = itemView.findViewById(R.id.dshHeaderTextView);
-        questionsContainer = itemView.findViewById(R.id.dshQuestionsContainer);
-        customAnswerTextView = itemView.findViewById(R.id.dshCustomAnswerTextView);
-        stateTextView = itemView.findViewById(R.id.dshStateTextView);
+        headerTextView = itemView.findViewById(R.id.agentHeaderTextView);
+        questionsContainer = itemView.findViewById(R.id.agentQuestionsContainer);
+        customAnswerTextView = itemView.findViewById(R.id.agentCustomAnswerTextView);
+        stateTextView = itemView.findViewById(R.id.agentStateTextView);
     }
 
     private void bindEvents(View itemView) {
@@ -126,7 +126,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
     /**
      * 服务端更新后的用户选择（插件 updateMessage 写入 content.answers）：
      * answers[].selected 以「、」连接、或 answers[].custom 自定义文本；多题答案以「；」分隔。
-     * 仅 content.state=answered 时展示，与 PC 端 DshQuestionContentView 保持一致。
+     * 仅 content.state=answered 时展示，与 PC 端 AgentQuestionContentView 保持一致。
      */
     private String mySelectionText() {
         if (!"answered".equals(questionContent.getState())) {
@@ -198,7 +198,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
                     if (isLocked()) {
                         return;
                     }
-                    DshPlanDetailActivity.showPlan(fragment, message.message.conversation, detail,
+                    AgentPlanDetailActivity.showPlan(fragment, message.message.conversation, detail,
                         questionContent.getQid(), question.optString("id"),
                         approveLabel(question, options), rejectLabel(question, options));
                 });
@@ -257,7 +257,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
         optionView.setMinHeight(dp(40));
         optionView.setGravity(android.view.Gravity.CENTER_VERTICAL);
         optionView.setPadding(dp(12), 0, dp(12), 0);
-        optionView.setBackgroundResource(R.drawable.shape_dsh_option_row);
+        optionView.setBackgroundResource(R.drawable.shape_agent_option_row);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.topMargin = dp(6);
@@ -285,7 +285,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
             row.setGravity(android.view.Gravity.CENTER_VERTICAL);
             row.setMinimumHeight(dp(40));
             row.setPadding(dp(12), 0, dp(12), 0);
-            row.setBackgroundResource(R.drawable.shape_dsh_option_row);
+            row.setBackgroundResource(R.drawable.shape_agent_option_row);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.topMargin = dp(6);
@@ -320,7 +320,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
         }
 
         TextView submitButton = buildButton("提交", true);
-        submitButton.setTag("dshSubmitButton");
+        submitButton.setTag("agentSubmitButton");
         submitButton.setEnabled(false);
         submitButton.setAlpha(0.5f);
         submitButton.setOnClickListener(v -> {
@@ -349,7 +349,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
     }
 
     private void updateSubmitButton(LinearLayout container) {
-        View submitButton = container.findViewWithTag("dshSubmitButton");
+        View submitButton = container.findViewWithTag("agentSubmitButton");
         if (submitButton == null) {
             return;
         }
@@ -369,7 +369,7 @@ public class DshQuestionMessageContentViewHolder extends NormalMessageContentVie
         button.setGravity(android.view.Gravity.CENTER);
         button.setMinHeight(dp(40));
         button.setPadding(dp(12), 0, dp(12), 0);
-        button.setBackgroundResource(primary ? R.drawable.shape_dsh_btn_primary : R.drawable.shape_dsh_btn_secondary);
+        button.setBackgroundResource(primary ? R.drawable.shape_agent_btn_primary : R.drawable.shape_agent_btn_secondary);
         button.setTextColor(primary ? 0xFFFFFFFF : 0xFF000000);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

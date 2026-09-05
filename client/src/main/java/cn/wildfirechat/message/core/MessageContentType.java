@@ -153,7 +153,7 @@ public interface MessageContentType {
     int ContentType_Restore_Request = 610;
     int ContentType_Restore_Response = 611;
 
-    // ============ DSH 结构化交互（200-209，官方预留 AI 交互段，与 PC 端/服务端已定稿） ============
+    // ============ Agent 结构化交互（200-209，官方预留 AI 交互段，与 PC 端/服务端已定稿） ============
     int ContentType_Agent_Question = 200;         // 机器人→用户 提问卡片
     int ContentType_Agent_Answer = 201;           // 用户→机器人 结构化回答
     int ContentType_Agent_Approval = 202;         // 机器人→用户 工具审批卡片

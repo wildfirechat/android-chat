@@ -33,10 +33,17 @@ public class GroupManagerListFragment extends BaseUserListFragment {
     private GroupViewModel groupViewModel;
     private GroupInfo groupInfo;
     private GroupMember groupMember;
+    /** 设置管理员操作所在会话的 line（AI 群聊会话 line=2），随 intent/arguments 一路传下来；默认 0。 */
+    private int line;
 
     public static GroupManagerListFragment newInstance(GroupInfo groupInfo) {
+        return newInstance(groupInfo, 0);
+    }
+
+    public static GroupManagerListFragment newInstance(GroupInfo groupInfo, int line) {
         Bundle args = new Bundle();
         args.putParcelable("groupInfo", groupInfo);
+        args.putInt(BasePickGroupMemberActivity.LINE, line);
         GroupManagerListFragment fragment = new GroupManagerListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -46,6 +53,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        line = getArguments().getInt(BasePickGroupMemberActivity.LINE, 0);
         showQuickIndexBar(false);
 
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
@@ -84,7 +92,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
             new MaterialDialog.Builder(getActivity())
                 .items(Collections.singleton(getString(R.string.remove_group_manager)))
                 .itemsCallback((dialog, itemView, position, text) -> {
-                    groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                    groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(line));
                 })
                 .cancelable(true)
                 .build()
@@ -96,6 +104,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
     public void onFooterClick(int index) {
         Intent intent = new Intent(getActivity(), AddGroupManagerActivity.class);
         intent.putExtra(BasePickGroupMemberActivity.GROUP_INFO, groupInfo);
+        intent.putExtra(BasePickGroupMemberActivity.LINE, line);
 
         ArrayList<String> uncheckableMemberIds = new ArrayList<>();
         uncheckableMemberIds.add(groupInfo.owner);

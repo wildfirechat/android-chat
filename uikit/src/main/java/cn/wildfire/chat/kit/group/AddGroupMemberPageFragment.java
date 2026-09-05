@@ -53,13 +53,22 @@ public class AddGroupMemberPageFragment extends AddGroupMemberFragment implement
 
     private TextView confirmTextView;
     private GroupInfo groupInfo;
+    /**
+     * 加人操作所在会话的 line（AI 群聊会话 line=2），随 intent/arguments 一路传下来；默认 0。
+     */
+    private int line;
     private GroupViewModel groupViewModel;
 
     private final Observer<Object> checkStatusObserver = obj -> updateConfirmStatus();
 
     public static AddGroupMemberPageFragment newInstance(GroupInfo groupInfo) {
+        return newInstance(groupInfo, 0);
+    }
+
+    public static AddGroupMemberPageFragment newInstance(GroupInfo groupInfo, int line) {
         Bundle args = new Bundle();
         args.putParcelable("groupInfo", groupInfo);
+        args.putInt(BasePickGroupMemberActivity.LINE, line);
         AddGroupMemberPageFragment fragment = new AddGroupMemberPageFragment();
         fragment.setArguments(args);
         return fragment;
@@ -68,13 +77,17 @@ public class AddGroupMemberPageFragment extends AddGroupMemberFragment implement
     @Nullable
     public static AddGroupMemberPageFragment fromIntent(Intent intent) {
         GroupInfo groupInfo = intent.getParcelableExtra("groupInfo");
-        return groupInfo == null ? null : newInstance(groupInfo);
+        if (groupInfo == null) {
+            return null;
+        }
+        return newInstance(groupInfo, intent.getIntExtra(BasePickGroupMemberActivity.LINE, 0));
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments() == null ? null : getArguments().getParcelable("groupInfo");
+        line = getArguments() == null ? 0 : getArguments().getInt(BasePickGroupMemberActivity.LINE, 0);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(checkStatusObserver);
     }
@@ -181,7 +194,7 @@ public class AddGroupMemberPageFragment extends AddGroupMemberFragment implement
         }
         String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(
             GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
-        groupViewModel.addGroupMemberEx(groupInfo, userIds, null, Collections.singletonList(0), memberExtra)
+        groupViewModel.addGroupMemberEx(groupInfo, userIds, null, Collections.singletonList(line), memberExtra)
             .observe(getViewLifecycleOwner(), result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {

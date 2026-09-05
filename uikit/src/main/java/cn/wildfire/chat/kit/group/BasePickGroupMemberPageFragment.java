@@ -44,6 +44,11 @@ public abstract class BasePickGroupMemberPageFragment extends PickGroupMemberFra
 
     protected GroupInfo groupInfo;
     /**
+     * 群成员管理操作所在会话的 line（AI 群聊会话 line=2），随 intent/arguments 一路传下来；
+     * 无 line 的调用（如发起点不在会话里）默认 0。
+     */
+    protected int line;
+    /**
      * 当前勾选的成员。未勾选任何人时为 null 或空表，子类的确认逻辑要自行判空。
      */
     protected List<UIUserInfo> checkedGroupMembers;
@@ -87,10 +92,13 @@ public abstract class BasePickGroupMemberPageFragment extends PickGroupMemberFra
         if (groupInfo == null) {
             return null;
         }
-        return buildArgs(groupInfo,
+        Bundle args = buildArgs(groupInfo,
             intent.getStringArrayListExtra(BasePickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS),
             intent.getStringArrayListExtra(BasePickGroupMemberActivity.CHECKED_MEMBER_IDS),
             intent.getIntExtra(BasePickGroupMemberActivity.MAX_COUNT, Integer.MAX_VALUE));
+        args.putInt(BasePickGroupMemberActivity.LINE,
+            intent.getIntExtra(BasePickGroupMemberActivity.LINE, 0));
+        return args;
     }
 
     @Override
@@ -100,6 +108,8 @@ public abstract class BasePickGroupMemberPageFragment extends PickGroupMemberFra
         super.onCreate(savedInstanceState);
         groupInfo = getArguments() == null ? null
             : getArguments().getParcelable(BasePickGroupMemberActivity.GROUP_INFO);
+        line = getArguments() == null ? 0
+            : getArguments().getInt(BasePickGroupMemberActivity.LINE, 0);
         applyPickConstraints();
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(checkStatusObserver);
     }

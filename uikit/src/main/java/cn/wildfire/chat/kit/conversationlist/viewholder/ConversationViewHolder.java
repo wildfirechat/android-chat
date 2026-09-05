@@ -41,7 +41,7 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
-import cn.wildfire.chat.kit.utils.DshState;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfirechat.model.ClientState;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserOnlineState;
@@ -78,7 +78,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ImageView statusImageView;
 
     protected ImageView secretChatIndicator;
-    protected TextView dshBadgeTextView;
+    protected TextView agentBadgeTextView;
     protected GroupViewModel groupViewModel;
 
     protected final CenterCrop centerCropTransformation = new CenterCrop();
@@ -108,7 +108,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         promptTextView = itemView.findViewById(R.id.promptTextView);
         statusImageView = itemView.findViewById(R.id.statusImageView);
         secretChatIndicator = itemView.findViewById(R.id.secretChatIndicator);
-        dshBadgeTextView = itemView.findViewById(R.id.dshBadgeTextView);
+        agentBadgeTextView = itemView.findViewById(R.id.agentBadgeTextView);
 
         // 字体放大时按封顶比例放大行高与头像，避免被固定尺寸裁剪
         LayoutScale.scaleViewHeight(itemView, LayoutScale.ROW);
@@ -224,31 +224,31 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             updatePromptText(conversationPromptText);
         }
 
-        updateDshIndicator(conversationInfo);
+        updateAgentIndicator(conversationInfo);
     }
 
     /**
-     * DSH 会话：标题后 8dp 状态圆点（running=主色/waiting_user=#f59e0b/idle、done 及其他=#22c55e），
-     * DSH 群标题旁加描边小徽标；仅 DSH 会话显示。非 DSH 会话不查询 scope=31。
+     * Agent 会话：标题后 8dp 状态圆点（running=主色/waiting_user=#f59e0b/idle、done 及其他=#22c55e），
+     * Agent 群标题旁加描边小徽标；仅 Agent 会话显示。非 Agent 会话不查询 scope=31。
      */
-    private void updateDshIndicator(ConversationInfo conversationInfo) {
-        if (dshBadgeTextView == null) {
+    private void updateAgentIndicator(ConversationInfo conversationInfo) {
+        if (agentBadgeTextView == null) {
             return;
         }
         Conversation conversation = conversationInfo.conversation;
-        if (!DshState.isDshConversation(conversation)) {
+        if (!AgentState.isAgentConversation(conversation)) {
             nameTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            dshBadgeTextView.setVisibility(View.GONE);
+            agentBadgeTextView.setVisibility(View.GONE);
             return;
         }
         // AI 群群主（AI 机器人）不在线：状态圆点/徽标置灰（不显示运行态颜色）
         boolean aiOffline = isAiOffline(conversation);
-        JSONObject state = DshState.getDshState(conversation);
+        JSONObject state = AgentState.getAgentState(conversation);
         if (state != null) {
-            Drawable dot = ContextCompat.getDrawable(fragment.requireContext(), R.drawable.shape_dsh_dot);
+            Drawable dot = ContextCompat.getDrawable(fragment.requireContext(), R.drawable.shape_agent_dot);
             if (dot != null) {
                 dot = dot.mutate();
-                dot.setTint(aiOffline ? Color.GRAY : DshState.stateColor(state.optString("state")));
+                dot.setTint(aiOffline ? Color.GRAY : AgentState.stateColor(state.optString("state")));
                 float density = fragment.getResources().getDisplayMetrics().density;
                 int size = (int) (8 * density);
                 dot.setBounds(0, 0, size, size);
@@ -258,14 +258,14 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         } else {
             nameTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         }
-        dshBadgeTextView.setVisibility(
+        agentBadgeTextView.setVisibility(
             conversation.type == Conversation.ConversationType.Group ? View.VISIBLE : View.GONE);
-        dshBadgeTextView.setAlpha(aiOffline ? 0.35f : 1.0f);
+        agentBadgeTextView.setAlpha(aiOffline ? 0.35f : 1.0f);
     }
 
     /**
      * AI 群（line 2）群主（AI 机器人）是否不在线：clientStates 中无 state==0 的在线客户端。
-     * 判定与 DshAiExt.disabled() / ConversationFragment.aiOwnerOnline() 一致。
+     * 判定与 AgentAiExt.disabled() / ConversationFragment.aiOwnerOnline() 一致。
      */
     private boolean isAiOffline(Conversation conversation) {
         if (conversation.type != Conversation.ConversationType.Group || conversation.line != 2) {

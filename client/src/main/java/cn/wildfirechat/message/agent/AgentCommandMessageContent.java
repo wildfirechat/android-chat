@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message.dsh;
+package cn.wildfirechat.message.agent;
 
 import android.os.Parcel;
 
@@ -18,19 +18,21 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Command;
 
 /**
- * DSH_Command（207）AI 面板静默指令消息（用户→机器人）。
+ * Agent_Command（207）AI 面板静默指令消息（用户→机器人）。
  * <p>
  * 透明消息（{@link PersistFlag#Transparent}）：不存储、不计未读、不在消息流显示
  * （digest 返回空串）。payload.content 为 JSON 字符串，形如：
- * {"op":"query"} 或 {"op":"set","cmd":"/model deepseek-official/xxx","seq":123}
+ * {"op":"query"} 或 {"op":"set","cmd":"/model deepseek-official/xxx","seq":123}；
+ * 多机器人会话寻址时带目标机器人：{"op":"query","robotId":"robot_xxx_yyy"}（完整 uid）。
  * <ul>
  *   <li>op=query：组合查询。插件聚合面板数据（model 当前值+目录 / effort / sandbox /
  *       plan / cwd / sessionId / dirs 根目录子目录）写入 scope=31 type=3
- *       （键为 convType-line-target_3），不回复消息；</li>
+ *       （键为 convType-line-target_3_&lt;robotId&gt;），不回复消息；</li>
  *   <li>op=set：更新。cmd 为命令文本（/model /effort /cwd /sandbox /plan /compact
  *       /reset）。插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，
  *       变更可见）并刷新 type=3。</li>
  * </ul>
+ * robotId 存在（非空）时仅该机器人执行，为空/缺失时按会话默认机器人执行（服务端插件已支持）。
  * seq 为递增序号，用于防重复/幂等（参考 PC 端 AgentCommandMessageContent）。
  * </p>
  */
@@ -43,14 +45,21 @@ public class AgentCommandMessageContent extends MessageContent {
     private String cmd;
     /** 递增序号，防重复/幂等 */
     private long seq;
+    /** 目标机器人 uid（多机器人会话寻址，完整 uid；空=会话默认机器人） */
+    private String robotId;
 
     public AgentCommandMessageContent() {
     }
 
     public AgentCommandMessageContent(String op, String cmd, long seq) {
+        this(op, cmd, seq, null);
+    }
+
+    public AgentCommandMessageContent(String op, String cmd, long seq, String robotId) {
         this.op = op;
         this.cmd = cmd;
         this.seq = seq;
+        this.robotId = robotId;
     }
 
     public String getOp() {
@@ -65,6 +74,10 @@ public class AgentCommandMessageContent extends MessageContent {
         return seq;
     }
 
+    public String getRobotId() {
+        return robotId;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -73,6 +86,9 @@ public class AgentCommandMessageContent extends MessageContent {
             json.put("op", op != null ? op : "");
             json.put("cmd", cmd != null ? cmd : "");
             json.put("seq", seq);
+            if (robotId != null && !robotId.isEmpty()) {
+                json.put("robotId", robotId);
+            }
         } catch (JSONException e) {
             // JSONObject.put(String, Object) 不会抛 JSONException，理论不可达
         }
@@ -90,6 +106,7 @@ public class AgentCommandMessageContent extends MessageContent {
             this.op = json.optString("op");
             this.cmd = json.optString("cmd");
             this.seq = json.optLong("seq");
+            this.robotId = json.has("robotId") ? json.optString("robotId") : null;
         } catch (JSONException e) {
             // 非 JSON 内容忽略（保持默认值）
         }
@@ -112,6 +129,7 @@ public class AgentCommandMessageContent extends MessageContent {
         dest.writeString(this.op);
         dest.writeString(this.cmd);
         dest.writeLong(this.seq);
+        dest.writeString(this.robotId);
     }
 
     protected AgentCommandMessageContent(Parcel in) {
@@ -119,6 +137,7 @@ public class AgentCommandMessageContent extends MessageContent {
         this.op = in.readString();
         this.cmd = in.readString();
         this.seq = in.readLong();
+        this.robotId = in.readString();
     }
 
     public static final Creator<AgentCommandMessageContent> CREATOR = new Creator<AgentCommandMessageContent>() {

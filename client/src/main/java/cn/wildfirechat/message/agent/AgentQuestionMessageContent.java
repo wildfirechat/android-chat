@@ -2,7 +2,7 @@
  * Copyright (c) 2026 WildFireChat. All rights reserved.
  */
 
-package cn.wildfirechat.message.dsh;
+package cn.wildfirechat.message.agent;
 
 import android.os.Parcel;
 import android.text.TextUtils;
@@ -20,7 +20,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Question;
 
 /**
- * DSH 提问卡片消息（机器人→用户）。
+ * Agent 提问卡片消息（机器人→用户）。
  * <p>
  * 消息类型: 200（200-209 为官方预留 AI 交互段，与 PC 端/服务端已定稿）。
  * payload.content 为 JSON 字符串：

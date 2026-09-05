@@ -23,13 +23,13 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.message.dsh.AgentAnswerMessageContent;
+import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
 import cn.wildfirechat.model.Conversation;
 
 /**
- * DSH plan-review 全屏计划详情页：等宽字体、可滚动，底部固定 批准/拒绝 按钮。
+ * Agent plan-review 全屏计划详情页：等宽字体、可滚动，底部固定 批准/拒绝 按钮。
  */
-public class DshPlanDetailActivity extends WfcBaseActivity {
+public class AgentPlanDetailActivity extends WfcBaseActivity {
 
     private Conversation conversation;
     private String qid;
@@ -39,7 +39,7 @@ public class DshPlanDetailActivity extends WfcBaseActivity {
 
     public static void showPlan(Fragment from, Conversation conversation, String planText,
                                 String qid, String questionId, String approveLabel, String rejectLabel) {
-        Intent intent = new Intent(from.requireContext(), DshPlanDetailActivity.class);
+        Intent intent = new Intent(from.requireContext(), AgentPlanDetailActivity.class);
         intent.putExtra("conversation", conversation);
         intent.putExtra("planText", planText);
         intent.putExtra("qid", qid);
@@ -51,7 +51,7 @@ public class DshPlanDetailActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.dsh_plan_detail_activity;
+        return R.layout.agent_plan_detail_activity;
     }
 
     @Override
@@ -66,13 +66,13 @@ public class DshPlanDetailActivity extends WfcBaseActivity {
         approveLabel = intent.getStringExtra("approveLabel");
         rejectLabel = intent.getStringExtra("rejectLabel");
 
-        TextView planTextView = findViewById(R.id.dshPlanTextView);
+        TextView planTextView = findViewById(R.id.agentPlanTextView);
         planTextView.setTypeface(Typeface.MONOSPACE);
         planTextView.setText(planText);
         planTextView.setMovementMethod(new ScrollingMovementMethod());
 
-        TextView approveButton = findViewById(R.id.dshPlanApproveButton);
-        TextView rejectButton = findViewById(R.id.dshPlanRejectButton);
+        TextView approveButton = findViewById(R.id.agentPlanApproveButton);
+        TextView rejectButton = findViewById(R.id.agentPlanRejectButton);
         approveButton.setText(approveLabel != null ? approveLabel : "批准");
         approveButton.setOnClickListener(v -> decide(approveLabel != null ? approveLabel : "批准"));
         if (rejectLabel != null) {

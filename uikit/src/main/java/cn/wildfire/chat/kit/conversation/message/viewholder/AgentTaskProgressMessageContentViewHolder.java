@@ -21,16 +21,16 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.dsh.AgentTaskProgressMessageContent;
+import cn.wildfirechat.message.agent.AgentTaskProgressMessageContent;
 
 /**
- * DSH 任务进度卡片（208），纯展示：
+ * Agent 任务进度卡片（208），纯展示：
  * 标题「🧩 任务进度」+ 摘要角标（共 N 个 · M 运行中 / 全部完成 / N 失败），
  * 每行 = 状态图标 + 标签（label 或 id 短前缀）+ 状态文字（失败附原因）。
  */
 @MessageContentType(AgentTaskProgressMessageContent.class)
 @EnableContextMenu
-public class DshTaskProgressMessageContentViewHolder extends NormalMessageContentViewHolder {
+public class AgentTaskProgressMessageContentViewHolder extends NormalMessageContentViewHolder {
 
     private static final int SUMMARY_BADGE_COLOR = Color.parseColor("#4f8ff7"); // 与 PC 端摘要角标一致
 
@@ -38,15 +38,15 @@ public class DshTaskProgressMessageContentViewHolder extends NormalMessageConten
     TextView emptyTextView;
     LinearLayout listContainer;
 
-    public DshTaskProgressMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public AgentTaskProgressMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         bindViews(itemView);
     }
 
     private void bindViews(View itemView) {
-        summaryTextView = itemView.findViewById(R.id.dshTaskProgressSummaryTextView);
-        emptyTextView = itemView.findViewById(R.id.dshTaskProgressEmptyTextView);
-        listContainer = itemView.findViewById(R.id.dshTaskProgressListContainer);
+        summaryTextView = itemView.findViewById(R.id.agentTaskProgressSummaryTextView);
+        emptyTextView = itemView.findViewById(R.id.agentTaskProgressEmptyTextView);
+        listContainer = itemView.findViewById(R.id.agentTaskProgressListContainer);
     }
 
     @Override
@@ -82,11 +82,11 @@ public class DshTaskProgressMessageContentViewHolder extends NormalMessageConten
     }
 
     private View buildTaskRow(AgentTaskProgressMessageContent.Task task) {
-        View row = LayoutInflater.from(fragment.getContext()).inflate(R.layout.dsh_task_progress_item, listContainer, false);
+        View row = LayoutInflater.from(fragment.getContext()).inflate(R.layout.agent_task_progress_item, listContainer, false);
 
-        TextView iconTextView = row.findViewById(R.id.dshTaskProgressIconTextView);
-        TextView labelTextView = row.findViewById(R.id.dshTaskProgressLabelTextView);
-        TextView metaTextView = row.findViewById(R.id.dshTaskProgressMetaTextView);
+        TextView iconTextView = row.findViewById(R.id.agentTaskProgressIconTextView);
+        TextView labelTextView = row.findViewById(R.id.agentTaskProgressLabelTextView);
+        TextView metaTextView = row.findViewById(R.id.agentTaskProgressMetaTextView);
 
         iconTextView.setText(statusIcon(task.status));
         labelTextView.setText(task.displayLabel());

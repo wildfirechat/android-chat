@@ -67,7 +67,7 @@ public class AddGroupManagerPageFragment extends BasePickGroupMemberPageFragment
             .cancelable(false)
             .build();
         dialog.show();
-        groupViewModel.setGroupManager(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
+        groupViewModel.setGroupManager(groupInfo.target, true, memberIds, null, Collections.singletonList(line))
             .observe(getViewLifecycleOwner(), result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {

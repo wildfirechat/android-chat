@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/dshApprovalContentItemView"
+    android:id="@+id/agentApprovalContentItemView"
     android:layout_width="260dp"
     android:layout_height="wrap_content"
     android:background="@drawable/img_bubble_receive"
@@ -10,7 +10,7 @@
     android:padding="12dp">
 
     <TextView
-        android:id="@+id/dshTitleTextView"
+        android:id="@+id/agentTitleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="🔐 工具审批"
@@ -19,7 +19,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/dshToolNameTextView"
+        android:id="@+id/agentToolNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
@@ -29,7 +29,7 @@
         tools:text="bash" />
 
     <TextView
-        android:id="@+id/dshReasonTextView"
+        android:id="@+id/agentReasonTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -40,30 +40,30 @@
         tools:visibility="visible" />
 
     <LinearLayout
-        android:id="@+id/dshActionsLinearLayout"
+        android:id="@+id/agentActionsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/dshApproveButton"
+            android:id="@+id/agentApproveButton"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_dsh_btn_primary"
+            android:background="@drawable/shape_agent_btn_primary"
             android:gravity="center"
             android:text="同意"
             android:textColor="@color/white"
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/dshRejectButton"
+            android:id="@+id/agentRejectButton"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_dsh_btn_reject"
+            android:background="@drawable/shape_agent_btn_reject"
             android:gravity="center"
             android:text="拒绝"
             android:textColor="@color/white"
@@ -72,7 +72,7 @@
 
     <!-- 锁定态：已同意/已拒绝/已过期 -->
     <TextView
-        android:id="@+id/dshStateTextView"
+        android:id="@+id/agentStateTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

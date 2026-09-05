@@ -85,7 +85,7 @@ public class RemoveGroupMemberPageFragment extends BasePickGroupMemberPageFragme
             .cancelable(false)
             .build();
         dialog.show();
-        groupViewModel.removeGroupMember(groupInfo, memberIds, null, Collections.singletonList(0))
+        groupViewModel.removeGroupMember(groupInfo, memberIds, null, Collections.singletonList(line))
             .observe(getViewLifecycleOwner(), result -> {
                 dialog.dismiss();
                 if (result) {

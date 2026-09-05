@@ -25,6 +25,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.GroupInfo;
@@ -32,6 +33,8 @@ import cn.wildfire.chat.kit.page.WfcPageCompat;
 
 public class GroupManageFragment extends Fragment {
     private GroupInfo groupInfo;
+    /** 发起本页所在会话的 line（AI 群聊会话 line=2），继续传给子页；默认 0。 */
+    private int line;
     OptionItemView joinOptionItemView;
     OptionItemView searchOptionItemView;
     OptionItemView historyOptionItemView;
@@ -41,8 +44,13 @@ public class GroupManageFragment extends Fragment {
     private GroupViewModel groupViewModel;
 
     public static GroupManageFragment newInstance(GroupInfo groupInfo) {
+        return newInstance(groupInfo, 0);
+    }
+
+    public static GroupManageFragment newInstance(GroupInfo groupInfo, int line) {
         Bundle args = new Bundle();
         args.putParcelable("groupInfo", groupInfo);
+        args.putInt(BasePickGroupMemberActivity.LINE, line);
         GroupManageFragment fragment = new GroupManageFragment();
         fragment.setArguments(args);
         return fragment;
@@ -52,6 +60,7 @@ public class GroupManageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        line = getArguments().getInt(BasePickGroupMemberActivity.LINE, 0);
         if (groupInfo == null) {
             WfcPageCompat.finishPage(this);
         }
@@ -142,6 +151,7 @@ public class GroupManageFragment extends Fragment {
     void showGroupManagerSetting() {
         Intent intent = new Intent(getActivity(), GroupManagerListActivity.class);
         intent.putExtra("groupInfo", groupInfo);
+        intent.putExtra(BasePickGroupMemberActivity.LINE, line);
         startActivity(intent);
     }
 

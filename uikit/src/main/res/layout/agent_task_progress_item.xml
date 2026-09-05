@@ -9,7 +9,7 @@
     android:paddingBottom="5dp">
 
     <TextView
-        android:id="@+id/dshTaskProgressIconTextView"
+        android:id="@+id/agentTaskProgressIconTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -23,7 +23,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/dshTaskProgressLabelTextView"
+            android:id="@+id/agentTaskProgressLabelTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
@@ -31,7 +31,7 @@
             tools:text="子任务 a1b2c3d4" />
 
         <TextView
-            android:id="@+id/dshTaskProgressMetaTextView"
+            android:id="@+id/agentTaskProgressMetaTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/gray11"
