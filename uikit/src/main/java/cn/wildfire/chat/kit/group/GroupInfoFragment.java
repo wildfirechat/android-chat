@@ -195,7 +195,7 @@ public class GroupInfoFragment extends Fragment {
             sendJoinGroupRequest();
         } else {
             groupViewModel.addGroupMemberEx(groupInfo, Collections.singletonList(userId), null,
-                    Collections.singletonList(0), memberExtra)
+                    Collections.singletonList(Conversation.LINE_DEFAULT), memberExtra)
                 .observe(getViewLifecycleOwner(), booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
                         openConversationAndFinish();

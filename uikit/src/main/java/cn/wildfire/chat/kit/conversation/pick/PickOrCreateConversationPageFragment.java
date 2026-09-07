@@ -202,7 +202,7 @@ public abstract class PickOrCreateConversationPageFragment extends Fragment impl
         module.setOnResultItemListener(new OnResultItemClickListener<UserInfo>() {
             @Override
             public void onResultItemClick(Fragment fragment, View itemView, View view, UserInfo userInfo) {
-                Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
+                Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, Conversation.LINE_DEFAULT);
                 if (isMultiSelectMode) {
                     onSearchResultClicked(conversation, userInfo.displayName, userInfo.portrait);
                 } else {
@@ -216,7 +216,7 @@ public abstract class PickOrCreateConversationPageFragment extends Fragment impl
         module.setOnResultItemListener(new OnResultItemClickListener<GroupSearchResult>() {
             @Override
             public void onResultItemClick(Fragment fragment, View itemView, View view, GroupSearchResult gr) {
-                Conversation conversation = new Conversation(Conversation.ConversationType.Group, gr.groupInfo.target, 0);
+                Conversation conversation = new Conversation(Conversation.ConversationType.Group, gr.groupInfo.target, Conversation.LINE_DEFAULT);
                 if (isMultiSelectMode) {
                     String name = !TextUtils.isEmpty(gr.groupInfo.remark) ? gr.groupInfo.remark : gr.groupInfo.name;
                     onSearchResultClicked(conversation, name, gr.groupInfo.portrait);

@@ -26,7 +26,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.utils.WfcUtils;
 
-@ConversationInfoType(type = Conversation.ConversationType.Group, line = 0)
+@ConversationInfoType(type = Conversation.ConversationType.Group, line = Conversation.LINE_DEFAULT)
 @EnableContextMenu
 public class GroupConversationViewHolder extends ConversationViewHolder implements Observer<Pair<GroupInfo, Integer>> {
     private LiveData<Pair<GroupInfo, Integer>> groupLiveData = null;

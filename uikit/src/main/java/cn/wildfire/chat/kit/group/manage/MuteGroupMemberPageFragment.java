@@ -22,6 +22,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberPageFragment;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
+import cn.wildfirechat.model.Conversation;
 
 /**
  * 「禁言群成员 / 加白名单」整页。逐行搬自 {@link MuteGroupMemberActivity}。
@@ -94,10 +95,10 @@ public class MuteGroupMemberPageFragment extends BasePickGroupMemberPageFragment
             }
         };
         if (groupMuted) {
-            groupViewModel.allowGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
+            groupViewModel.allowGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(Conversation.LINE_DEFAULT))
                 .observe(getViewLifecycleOwner(), observer);
         } else {
-            groupViewModel.muteGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
+            groupViewModel.muteGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(Conversation.LINE_DEFAULT))
                 .observe(getViewLifecycleOwner(), observer);
         }
     }

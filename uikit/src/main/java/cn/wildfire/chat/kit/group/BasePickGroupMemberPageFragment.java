@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.page.WfcPage;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 
 /**
@@ -97,7 +98,7 @@ public abstract class BasePickGroupMemberPageFragment extends PickGroupMemberFra
             intent.getStringArrayListExtra(BasePickGroupMemberActivity.CHECKED_MEMBER_IDS),
             intent.getIntExtra(BasePickGroupMemberActivity.MAX_COUNT, Integer.MAX_VALUE));
         args.putInt(BasePickGroupMemberActivity.LINE,
-            intent.getIntExtra(BasePickGroupMemberActivity.LINE, 0));
+            intent.getIntExtra(BasePickGroupMemberActivity.LINE, Conversation.LINE_DEFAULT));
         return args;
     }
 

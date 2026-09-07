@@ -53,7 +53,7 @@ public class ConversationListFragment extends ProgressFragment {
         Conversation.ConversationType.Group,
         Conversation.ConversationType.Channel,
         Conversation.ConversationType.SecretChat);
-    private static final List<Integer> lines = Arrays.asList(0, 2); // 普通消息 line 0 + AI 消息 line 2
+    private static final List<Integer> lines = Arrays.asList(Conversation.LINE_DEFAULT, Conversation.LINE_AGENT); // 普通消息 line 0 + AI 消息 line 2
 
     private ConversationListViewModel conversationListViewModel;
     private SettingViewModel settingViewModel;

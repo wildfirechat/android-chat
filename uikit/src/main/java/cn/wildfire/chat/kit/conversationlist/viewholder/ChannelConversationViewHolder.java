@@ -21,7 +21,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-@ConversationInfoType(type = Conversation.ConversationType.Channel, line = 0)
+@ConversationInfoType(type = Conversation.ConversationType.Channel, line = Conversation.LINE_DEFAULT)
 @EnableContextMenu
 public class ChannelConversationViewHolder extends ConversationViewHolder {
 

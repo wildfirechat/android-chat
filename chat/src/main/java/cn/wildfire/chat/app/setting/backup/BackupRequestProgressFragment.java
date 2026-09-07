@@ -150,7 +150,7 @@ public class BackupRequestProgressFragment extends Fragment {
         Conversation conversation = new Conversation();
         conversation.type = Conversation.ConversationType.Single;
         conversation.target = currentUserId;
-        conversation.line = 0;
+        conversation.line = Conversation.LINE_DEFAULT;
 
         // 创建Message对象
         Message msg = new Message();

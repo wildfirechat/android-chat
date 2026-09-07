@@ -17,7 +17,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 
-@ConversationInfoType(type = Conversation.ConversationType.Single, line = 0)
+@ConversationInfoType(type = Conversation.ConversationType.Single, line = Conversation.LINE_DEFAULT)
 @EnableContextMenu
 public class UnknownConversationViewHolder extends ConversationViewHolder {
     public UnknownConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {

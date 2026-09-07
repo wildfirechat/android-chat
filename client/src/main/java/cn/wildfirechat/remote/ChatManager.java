@@ -4704,7 +4704,7 @@ public class ChatManager {
         try {
             int convType = 0;
             String target = "";
-            int line = 0;
+            int line = Conversation.LINE_DEFAULT;
             if (conversation != null) {
                 convType = conversation.type.getValue();
                 target = conversation.target;
@@ -4734,7 +4734,7 @@ public class ChatManager {
         try {
             int convType = 0;
             String target = "";
-            int line = 0;
+            int line = Conversation.LINE_DEFAULT;
             if (conversation != null) {
                 convType = conversation.type.getValue();
                 target = conversation.target;
@@ -10667,7 +10667,7 @@ public class ChatManager {
         try {
             SecretChatInfo secretChatInfo = mClient.getSecretChatInfo(targetId);
             if (secretChatInfo == null) {
-                removeConversation(new Conversation(Conversation.ConversationType.SecretChat, targetId, 0), true);
+                removeConversation(new Conversation(Conversation.ConversationType.SecretChat, targetId, Conversation.LINE_DEFAULT), true);
             }
             return secretChatInfo;
         } catch (RemoteException e) {
@@ -10976,7 +10976,7 @@ public class ChatManager {
     }
 
     private void reportBadgeNumber() {
-        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel, SecretChat), List.of(0));
+        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel, SecretChat), List.of(Conversation.LINE_DEFAULT));
         int unreadFriendRequest = ChatManager.Instance().getUnreadFriendRequestStatus();
         int count = totalUnreadCount.unread + unreadFriendRequest;
         uploadBadgeNumber(count);

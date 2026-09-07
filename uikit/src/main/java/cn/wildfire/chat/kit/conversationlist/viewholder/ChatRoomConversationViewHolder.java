@@ -14,7 +14,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 
-@ConversationInfoType(type = Conversation.ConversationType.ChatRoom, line = 0)
+@ConversationInfoType(type = Conversation.ConversationType.ChatRoom, line = Conversation.LINE_DEFAULT)
 @EnableContextMenu
 public class ChatRoomConversationViewHolder extends ConversationViewHolder {
 

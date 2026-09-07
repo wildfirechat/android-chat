@@ -269,7 +269,7 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
         ChatManager.Instance().deleteFriend(userId, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                ChatManager.Instance().removeConversation(new Conversation(Conversation.ConversationType.Single, userId, 0), true);
+                ChatManager.Instance().removeConversation(new Conversation(Conversation.ConversationType.Single, userId, Conversation.LINE_DEFAULT), true);
                 result.postValue(new OperateResult<>(0));
             }
 

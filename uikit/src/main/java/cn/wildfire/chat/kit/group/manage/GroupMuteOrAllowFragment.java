@@ -22,6 +22,7 @@ import java.util.Collections;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 
 /**
@@ -86,7 +87,7 @@ public class GroupMuteOrAllowFragment extends Fragment {
 
         switchButton.setChecked(groupInfo.mute == 1);
         switchButton.setOnCheckedChangeListener((buttonView, isChecked) ->
-            groupViewModel.muteAll(groupInfo.target, isChecked, null, Collections.singletonList(0))
+            groupViewModel.muteAll(groupInfo.target, isChecked, null, Collections.singletonList(Conversation.LINE_DEFAULT))
                 .observe(getViewLifecycleOwner(), booleanOperateResult -> {
                     if (!booleanOperateResult.isSuccess()) {
                         switchButton.setChecked(!isChecked);

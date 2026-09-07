@@ -121,7 +121,7 @@ public class PCRestoreListActivity extends WfcBaseActivity {
         Conversation conversation = new Conversation();
         conversation.type = Conversation.ConversationType.Single;
         conversation.target = currentUserId;
-        conversation.line = 0;
+        conversation.line = Conversation.LINE_DEFAULT;
 
         RestoreRequestNotificationContent content = new RestoreRequestNotificationContent();
         content.setTimestamp(System.currentTimeMillis());

@@ -92,7 +92,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.itemView = itemView;
         this.adapter = adapter;
         bindViews(itemView);
-        conversationListViewModel = new ViewModelProvider(fragment, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat, Conversation.ConversationType.ChatRoom), Arrays.asList(0)))
+        conversationListViewModel = new ViewModelProvider(fragment, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat, Conversation.ConversationType.ChatRoom), Arrays.asList(Conversation.LINE_DEFAULT)))
             .get(ConversationListViewModel.class);
         conversationViewModel = new ViewModelProvider(fragment).get(ConversationViewModel.class);
     }
@@ -268,7 +268,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
      * 判定与 AgentAiExt.disabled() / ConversationFragment.aiOwnerOnline() 一致。
      */
     private boolean isAiOffline(Conversation conversation) {
-        if (conversation.type != Conversation.ConversationType.Group || conversation.line != 2) {
+        if (conversation.type != Conversation.ConversationType.Group || conversation.line != Conversation.LINE_AGENT) {
             return false;
         }
         GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conversation.target, false);

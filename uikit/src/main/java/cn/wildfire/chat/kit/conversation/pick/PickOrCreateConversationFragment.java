@@ -99,7 +99,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
 
         List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
             Conversation.ConversationType.Group);
-        List<Integer> liens = Arrays.asList(0);
+        List<Integer> liens = Arrays.asList(Conversation.LINE_DEFAULT);
         ChatManager.Instance().getConversationListAsync(types, liens, new GetConversationListCallback() {
             @Override
             public void onSuccess(List<ConversationInfo> conversationInfos) {
@@ -144,11 +144,11 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
             Conversation conversation = null;
             GroupInfo groupInfo = data.getParcelableExtra("groupInfo");
             if (groupInfo != null) {
-                conversation = new Conversation(Conversation.ConversationType.Group, groupInfo.target, 0);
+                conversation = new Conversation(Conversation.ConversationType.Group, groupInfo.target, Conversation.LINE_DEFAULT);
             } else {
                 UserInfo userInfo = data.getParcelableExtra("userInfo");
                 if (userInfo != null) {
-                    conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
+                    conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, Conversation.LINE_DEFAULT);
                 }
             }
             if (listener != null && conversation != null) {

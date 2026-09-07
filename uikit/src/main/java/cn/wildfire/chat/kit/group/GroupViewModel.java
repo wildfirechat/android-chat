@@ -38,6 +38,7 @@ import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.ModifyGroupSettingsNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -667,7 +668,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
             ChatManager.Instance().uploadMediaFile(localImagePath, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                 @Override
                 public void onSuccess(String result) {
-                    ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Portrait, result, Collections.singletonList(0), null, new GeneralCallback() {
+                    ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Portrait, result, Collections.singletonList(Conversation.LINE_DEFAULT), null, new GeneralCallback() {
                         @Override
                         public void onSuccess() {
                             resultLiveData.setValue(new OperateResult<>(true, 0));

@@ -46,7 +46,7 @@ public class ContactSearchModule extends SearchableModule<UserInfo, UserViewHold
     @Override
     public void onClick(Fragment fragment, UserViewHolder holder, View view, UserInfo userInfo) {
         Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
-        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
+        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, Conversation.LINE_DEFAULT);
         intent.putExtra("conversation", conversation);
         openConversationAndFinishSearch(fragment, intent);
     }

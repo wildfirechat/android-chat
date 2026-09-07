@@ -2792,7 +2792,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoMessage[] protoMessages;
             int convType = 0;
             String target = "";
-            int line = 0;
+            int line = Conversation.LINE_DEFAULT;
 
             if (conversation != null) {
                 convType = conversation.type.getValue();

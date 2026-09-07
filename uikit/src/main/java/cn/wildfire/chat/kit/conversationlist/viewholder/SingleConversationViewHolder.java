@@ -22,7 +22,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UserInfo;
 
-@ConversationInfoType(type = Conversation.ConversationType.Single, line = 0)
+@ConversationInfoType(type = Conversation.ConversationType.Single, line = Conversation.LINE_DEFAULT)
 @EnableContextMenu
 public class SingleConversationViewHolder extends ConversationViewHolder implements Observer<UserInfo> {
     private LiveData<UserInfo> userInfoLiveData;

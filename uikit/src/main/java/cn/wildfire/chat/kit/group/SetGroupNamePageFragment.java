@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.page.TextEditPageFragment;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 
@@ -90,7 +91,7 @@ public class SetGroupNamePageFragment extends TextEditPageFragment {
             .build();
         dialog.show();
         groupViewModel.modifyGroupInfo(groupInfo.target, ModifyGroupInfoType.Modify_Group_Name,
-                groupInfo.name, null, Collections.singletonList(0))
+                groupInfo.name, null, Collections.singletonList(Conversation.LINE_DEFAULT))
             .observe(getViewLifecycleOwner(), result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {

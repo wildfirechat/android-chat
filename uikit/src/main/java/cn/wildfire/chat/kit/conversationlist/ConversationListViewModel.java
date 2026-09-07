@@ -153,7 +153,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     public void reloadConversationUnreadStatus() {
         ChatManager.Instance().getWorkHandler().post(() -> {
-            UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(0));
+            UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(Conversation.LINE_DEFAULT));
             if (unreadCountLiveData == null) {
                 return;
             }

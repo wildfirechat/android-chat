@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
@@ -90,9 +91,9 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
             .items(Collections.singleton(groupMuted ? getString(R.string.remove_whitelist) : getString(R.string.unmute_member)))
             .itemsCallback((dialog, itemView, position, text) -> {
                 if (groupMuted) {
-                    groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                    groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(Conversation.LINE_DEFAULT));
                 } else {
-                    groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                    groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(Conversation.LINE_DEFAULT));
                 }
             })
             .cancelable(true)
@@ -108,7 +109,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
             .negativeText(getString(R.string.cancel))
             .onPositive((dialog, which) -> {
                 if (!groupMuted) {
-                    groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0))
+                    groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(Conversation.LINE_DEFAULT))
                         .observe(this, booleanOperateResult -> {
                             if (!booleanOperateResult.isSuccess()) {
                                 Toast.makeText(getActivity(), getString(R.string.operation_failed), Toast.LENGTH_SHORT).show();
@@ -117,7 +118,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
                             }
                         });
                 } else {
-                    groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0))
+                    groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(Conversation.LINE_DEFAULT))
                         .observe(this, booleanOperateResult -> {
                             if (!booleanOperateResult.isSuccess()) {
                                 Toast.makeText(getActivity(), getString(R.string.operation_failed), Toast.LENGTH_SHORT).show();

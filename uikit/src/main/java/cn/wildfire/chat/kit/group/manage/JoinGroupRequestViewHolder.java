@@ -17,6 +17,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.JoinGroupRequest;
 import cn.wildfirechat.model.UserInfo;
 
@@ -59,7 +60,7 @@ public class JoinGroupRequestViewHolder extends RecyclerView.ViewHolder {
             acceptStatusTextView.setVisibility(View.GONE);
             acceptButton.setOnClickListener(v -> {
                 GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
-                groupViewModel.handleJoinGroupRequest(request.groupId, request.memberId, request.requestUserId, 1, null, Collections.singletonList(0)).observe(fragment, result -> {
+                groupViewModel.handleJoinGroupRequest(request.groupId, request.memberId, request.requestUserId, 1, null, Collections.singletonList(Conversation.LINE_DEFAULT)).observe(fragment, result -> {
                     if (result.isSuccess()) {
                         acceptButton.setVisibility(View.GONE);
                         acceptStatusTextView.setVisibility(View.VISIBLE);

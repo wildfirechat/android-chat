@@ -35,6 +35,7 @@ import cn.wildfire.chat.kit.page.WfcPage;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.client.GroupMemberSource;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -80,7 +81,7 @@ public class AddGroupMemberPageFragment extends AddGroupMemberFragment implement
         if (groupInfo == null) {
             return null;
         }
-        return newInstance(groupInfo, intent.getIntExtra(BasePickGroupMemberActivity.LINE, 0));
+        return newInstance(groupInfo, intent.getIntExtra(BasePickGroupMemberActivity.LINE, Conversation.LINE_DEFAULT));
     }
 
     @Override

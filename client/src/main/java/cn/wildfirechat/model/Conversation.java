@@ -19,6 +19,21 @@ import android.os.Parcelable;
 public class Conversation implements Parcelable {
 
     /**
+     * 默认会话线
+     */
+    public static final int LINE_DEFAULT = 0;
+
+    /**
+     * 朋友圈会话线
+     */
+    public static final int LINE_MOMENT = 1;
+
+    /**
+     * agent会话线
+     */
+    public static final int LINE_AGENT = 2;
+
+    /**
      * 会话类型枚举
      */
     public enum ConversationType {
@@ -140,7 +155,7 @@ public class Conversation implements Parcelable {
     public Conversation(ConversationType type, String target) {
         this.type = type;
         this.target = target;
-        this.line = 0;
+        this.line = LINE_DEFAULT;
     }
 
 

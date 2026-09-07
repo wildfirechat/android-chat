@@ -217,12 +217,12 @@ public class CreateConversationPageFragment extends PickConversationTargetFragme
         String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(
             GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
         groupViewModel.createGroup(getActivity(), new ArrayList<>(userMap.values()), null,
-                Collections.singletonList(0), null, memberExtra)
+                Collections.singletonList(Conversation.LINE_DEFAULT), null, memberExtra)
             .observe(getViewLifecycleOwner(), result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     Toast.makeText(getActivity(), getString(R.string.create_group_success), Toast.LENGTH_SHORT).show();
-                    openConversation(new Conversation(Conversation.ConversationType.Group, result.getResult(), 0));
+                    openConversation(new Conversation(Conversation.ConversationType.Group, result.getResult(), Conversation.LINE_DEFAULT));
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.create_group_fail), Toast.LENGTH_SHORT).show();
                     WfcPageCompat.finishPage(this);

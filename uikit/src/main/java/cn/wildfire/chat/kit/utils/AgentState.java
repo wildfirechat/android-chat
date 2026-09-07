@@ -107,7 +107,7 @@ public class AgentState {
             return null;
         }
         // AI 会话 = 群聊 + line 2；单聊不判 AI（控制面板）
-        if (conversation.type != Conversation.ConversationType.Group || conversation.line != 2) {
+        if (conversation.type != Conversation.ConversationType.Group || conversation.line != Conversation.LINE_AGENT) {
             return null;
         }
         return "group";

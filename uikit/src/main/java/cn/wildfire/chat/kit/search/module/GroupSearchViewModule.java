@@ -39,7 +39,7 @@ public class GroupSearchViewModule extends SearchableModule<GroupSearchResult, G
     @Override
     public void onClick(Fragment fragment, GroupViewHolder holder, View view, GroupSearchResult groupSearchResult) {
         Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
-        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupSearchResult.groupInfo.target, 0);
+        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupSearchResult.groupInfo.target, Conversation.LINE_DEFAULT);
         intent.putExtra("conversation", conversation);
         openConversationAndFinishSearch(fragment, intent);
     }

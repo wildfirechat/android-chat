@@ -477,7 +477,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     return;
                 }
 
-                groupViewModel.modifyMyGroupAlias(groupInfo.target, input.toString().trim(), null, Collections.singletonList(0))
+                groupViewModel.modifyMyGroupAlias(groupInfo.target, input.toString().trim(), null, Collections.singletonList(Conversation.LINE_DEFAULT))
                     .observe(GroupConversationInfoFragment.this, operateResult -> {
                         if (operateResult.isSuccess()) {
                             selfGroupMember.alias = input.toString().trim();
@@ -515,7 +515,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             .setMessage(content)
             .setPositiveButton(getString(R.string.action_confirm), (dialog, which) -> {
                 if (userViewModel.getUserId().equals(groupInfo.owner)) {
-                    groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
+                    groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(Conversation.LINE_DEFAULT), null).observe(this, aBoolean -> {
                         if (aBoolean != null && aBoolean) {
                             Intent intent = new Intent(getContext().getPackageName() + ".main");
                             startActivity(intent);
@@ -524,7 +524,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                         }
                     });
                 } else {
-                    groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
+                    groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(Conversation.LINE_DEFAULT), null).observe(this, aBoolean -> {
                         if (aBoolean != null && aBoolean) {
                             Intent intent = new Intent(getContext().getPackageName() + ".main");
                             startActivity(intent);
@@ -642,7 +642,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     private void stickTop(boolean top) {
-        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(Conversation.LINE_DEFAULT)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
         conversationInfo.top = top ? 1 : 0;

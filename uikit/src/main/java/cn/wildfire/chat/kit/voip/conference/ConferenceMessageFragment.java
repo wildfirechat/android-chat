@@ -68,7 +68,7 @@ public class ConferenceMessageFragment extends Fragment {
                     }
                     Conversation conversation = uiMessage.message.conversation;
                     ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
-                    if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == 0 && conversation.target.equals(conferenceInfo.getConferenceId())) {
+                    if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == Conversation.LINE_DEFAULT && conversation.target.equals(conferenceInfo.getConferenceId())) {
                         if (!contains(uiMessage)) {
                             messages.add(uiMessage);
                             messageAdapter.notifyItemInserted(messages.size() - 1);

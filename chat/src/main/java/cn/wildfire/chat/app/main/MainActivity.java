@@ -399,7 +399,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         checkVersion();
         initView();
 
-        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0, 2)))
+        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(Conversation.LINE_DEFAULT, Conversation.LINE_AGENT)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
@@ -448,7 +448,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
             return;
         }
-        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(1), Arrays.asList(MessageStatus.Unread), 0, true, 100, null);
+        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(Conversation.LINE_MOMENT), Arrays.asList(MessageStatus.Unread), 0, true, 100, null);
         int count = messages == null ? 0 : messages.size();
         if (count > 0) {
             if (discoveryBadgeView == null) {

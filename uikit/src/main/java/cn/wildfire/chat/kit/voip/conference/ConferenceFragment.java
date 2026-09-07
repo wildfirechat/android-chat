@@ -214,7 +214,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
         for (Message msg : messages) {
             if (msg.conversation.type == Conversation.ConversationType.ChatRoom
-                && msg.conversation.line == 0
+                && msg.conversation.line == Conversation.LINE_DEFAULT
                 && msg.conversation.target.equals(conferenceInfo.getConferenceId())
                 && msg.content instanceof TranscriptionMessageContent) {
                 UiMessage uiMessage = new UiMessage(msg);

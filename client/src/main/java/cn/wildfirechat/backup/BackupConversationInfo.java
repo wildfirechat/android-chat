@@ -25,7 +25,7 @@ public class BackupConversationInfo {
     private String draft;
 
     public BackupConversationInfo() {
-        this.line = 0;
+        this.line = Conversation.LINE_DEFAULT;
     }
 
     public BackupConversationInfo(Conversation conversation, String directory) {

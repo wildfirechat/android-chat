@@ -157,7 +157,7 @@ public class WfcNotificationManager {
                 continue;
             }
             // 朋友圈取消点赞
-            if (message.conversation.line == 1 && message.content.getMessageContentType() == MessageContentType.ContentType_Recall) {
+            if (message.conversation.line == Conversation.LINE_MOMENT && message.content.getMessageContentType() == MessageContentType.ContentType_Recall) {
                 continue;
             }
             ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
@@ -246,7 +246,7 @@ public class WfcNotificationManager {
     }
 
     private int totalUnreadCount() {
-        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel), List.of(0));
+        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel), List.of(Conversation.LINE_DEFAULT));
         int unreadFriendRequest = ChatManager.Instance().getUnreadFriendRequestStatus();
         return totalUnreadCount.unread + unreadFriendRequest;
     }

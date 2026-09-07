@@ -40,6 +40,7 @@ import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.page.WfcPage;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfirechat.client.GroupMemberSource;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -208,7 +209,7 @@ public class PickOrCreateConversationTargetPageFragment extends PickConversation
         String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(
             GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
         groupViewModel.createGroup(getActivity(), new ArrayList<>(userMap.values()), null,
-                Collections.singletonList(0), null, memberExtra)
+                Collections.singletonList(Conversation.LINE_DEFAULT), null, memberExtra)
             .observe(getViewLifecycleOwner(), result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {

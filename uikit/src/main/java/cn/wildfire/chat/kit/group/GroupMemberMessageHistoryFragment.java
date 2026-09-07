@@ -81,7 +81,7 @@ public class GroupMemberMessageHistoryFragment extends Fragment {
 
     private void init() {
         this.loading = true;
-        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId, 0);
+        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId, Conversation.LINE_DEFAULT);
         ChatManager.Instance().getUserMessages(groupMemberId, conversation, 0, true, 20, new GetMessageCallback() {
             @Override
             public void onSuccess(List<Message> messages, boolean hasMore) {
@@ -110,7 +110,7 @@ public class GroupMemberMessageHistoryFragment extends Fragment {
 
         long oldestMessageId = messages.get(messages.size() - 1).messageId;
 
-        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId, 0);
+        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId, Conversation.LINE_DEFAULT);
         ChatManager.Instance().getUserMessages(groupMemberId, conversation, oldestMessageId, true, 20, new GetMessageCallback() {
             @Override
             public void onSuccess(List<Message> messages, boolean hasMore) {

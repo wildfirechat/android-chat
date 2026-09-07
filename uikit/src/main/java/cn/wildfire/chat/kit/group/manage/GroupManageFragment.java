@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 
@@ -171,7 +172,7 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_join_type)
             .itemsCallback((dialog, itemView, position, text) -> {
-                groupViewModel.setGroupJoinType(groupInfo.target, position, null, Collections.singletonList(0))
+                groupViewModel.setGroupJoinType(groupInfo.target, position, null, Collections.singletonList(Conversation.LINE_DEFAULT))
                     .observe(GroupManageFragment.this, booleanOperateResult -> {
                         if (booleanOperateResult.isSuccess()) {
                             joinOptionItemView.setDesc((String) text);
@@ -187,7 +188,7 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_search_type)
             .itemsCallback((dialog, itemView, position, text) -> {
-                groupViewModel.setGroupSearchType(groupInfo.target, position, null, Collections.singletonList(0))
+                groupViewModel.setGroupSearchType(groupInfo.target, position, null, Collections.singletonList(Conversation.LINE_DEFAULT))
                     .observe(GroupManageFragment.this, booleanOperateResult -> {
                         if (booleanOperateResult.isSuccess()) {
                             searchOptionItemView.setDesc((String) text);
@@ -203,7 +204,7 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_history_message)
             .itemsCallback((dialog, itemView, position, text) -> {
-                groupViewModel.setGroupHistoryMessage(groupInfo.target, position, null, Collections.singletonList(0))
+                groupViewModel.setGroupHistoryMessage(groupInfo.target, position, null, Collections.singletonList(Conversation.LINE_DEFAULT))
                     .observe(GroupManageFragment.this, new Observer<OperateResult<Boolean>>() {
                         @Override
                         public void onChanged(OperateResult<Boolean> booleanOperateResult) {

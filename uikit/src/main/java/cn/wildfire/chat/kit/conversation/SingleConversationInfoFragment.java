@@ -201,7 +201,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     }
 
     private void stickTop(boolean top) {
-        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(Conversation.LINE_DEFAULT)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
         conversationInfo.top = top ? 1 : 0;

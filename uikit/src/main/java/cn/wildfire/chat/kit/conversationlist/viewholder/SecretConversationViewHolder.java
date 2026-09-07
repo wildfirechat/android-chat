@@ -24,7 +24,7 @@ import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-@ConversationInfoType(type = Conversation.ConversationType.SecretChat, line = 0)
+@ConversationInfoType(type = Conversation.ConversationType.SecretChat, line = Conversation.LINE_DEFAULT)
 @EnableContextMenu
 public class SecretConversationViewHolder extends ConversationViewHolder {
 

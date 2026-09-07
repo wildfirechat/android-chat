@@ -25,6 +25,7 @@ import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.ConversationViewHolder;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationSearchResult;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -75,6 +76,6 @@ public class ConversationSearchModule extends SearchableModule<ConversationSearc
 
     @Override
     public List<ConversationSearchResult> search(String keyword) {
-        return ChatManager.Instance().searchConversation(keyword, Arrays.asList(Single, Group), Arrays.asList(0, 1));
+        return ChatManager.Instance().searchConversation(keyword, Arrays.asList(Single, Group), Arrays.asList(Conversation.LINE_DEFAULT, Conversation.LINE_MOMENT));
     }
 }

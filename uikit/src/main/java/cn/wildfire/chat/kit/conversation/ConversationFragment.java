@@ -484,7 +484,7 @@ public class ConversationFragment extends Fragment implements
             }
             // 单聊 / AI 群（line==2）：在线状态变化时刷新标题（AI 群为群主在线状态）
             if (conversation.type == Conversation.ConversationType.Single
-                || (conversation.type == Conversation.ConversationType.Group && conversation.line == 2)) {
+                || (conversation.type == Conversation.ConversationType.Group && conversation.line == Conversation.LINE_AGENT)) {
                 conversationTitle = null;
                 subConversationTitle = null;
                 setTitle();
@@ -1016,7 +1016,7 @@ public class ConversationFragment extends Fragment implements
      */
     private void watchAiOwnerOnlineState() {
         if (!isEnableUserOnlineState || userOnlineStateViewModel == null || conversation == null
-            || conversation.type != Conversation.ConversationType.Group || conversation.line != 2
+            || conversation.type != Conversation.ConversationType.Group || conversation.line != Conversation.LINE_AGENT
             || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
             return;
         }
@@ -1316,7 +1316,7 @@ public class ConversationFragment extends Fragment implements
                 // AI 群（line==2，群主=AI 机器人）：副标题显示合并行
                 // （AI 在线 + 运行态提示 + Token 统计，如 "AI 在线 · 🤔 等待确认 · 上下文 0.8%"，
                 // 有 Agent 状态时前面还会拼状态文本，见下）
-                if (conversation.line == 2) {
+                if (conversation.line == Conversation.LINE_AGENT) {
                     String aiStatusLine = aiOwnerStatusLine();
                     if (!TextUtils.isEmpty(aiStatusLine)) {
                         subConversationTitle = aiStatusLine;

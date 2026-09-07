@@ -291,7 +291,7 @@ public class UserInfoFragment extends Fragment implements WfcPage {
 
     void chat() {
         Intent intent = new Intent(getActivity(), ConversationActivity.class);
-        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
+        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, Conversation.LINE_DEFAULT);
         intent.putExtra("conversation", conversation);
         ConversationRouter.open(this, intent);
         WfcPageCompat.finishAfterOpeningPage(this);

@@ -21,6 +21,7 @@ import java.util.Collections;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupMemberPermissionFragment extends Fragment {
@@ -64,7 +65,7 @@ public class GroupMemberPermissionFragment extends Fragment {
         privateChatSwitchButton.setChecked(groupInfo.privateChat == 0);
         privateChatSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
-            groupViewModel.enablePrivateChat(groupInfo.target, isChecked, null, Collections.singletonList(0)).observe(this, booleanOperateResult -> {
+            groupViewModel.enablePrivateChat(groupInfo.target, isChecked, null, Collections.singletonList(Conversation.LINE_DEFAULT)).observe(this, booleanOperateResult -> {
                 if (!booleanOperateResult.isSuccess()) {
                     privateChatSwitchButton.setChecked(!isChecked);
                     Toast.makeText(getActivity(), getString(R.string.set_group_permission_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
