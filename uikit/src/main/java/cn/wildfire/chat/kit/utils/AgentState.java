@@ -31,8 +31,9 @@ import cn.wildfirechat.remote.UserSettingScope;
  * {@code <convType>-<line>-<target>_1}（运行状态）；Token 统计
  * （usage/turn/context/cacheHitRatePct/speed/metricsAt）写到 type=2 独立通道
  * {@code <convType>-<line>-<target>_2}（回合结束必推，含出错/取消），两者独立推送。
- * AI 面板数据（组合查询结果：model 当前值+目录 / effort / sandbox / plan / cwd /
- * sessionId / dirs）写到 type=3 {@code <convType>-<line>-<target>_3}，面板打开/更新后刷新。
+ * AI 面板数据（组合查询结果：model 当前值 / effort / sandbox / plan / cwd /
+ * sessionId；目录候选 dirs 已改走 209 按需应答，见 getAgentPanelData 注释）
+ * 写到 type=3 {@code <convType>-<line>-<target>_3}，面板打开/更新后刷新。
  * 群成员都能收到该会话级设置。
  * 标题栏、会话列表、输入面板共用此处的判定/读取/文案与颜色。
  * </p>
@@ -74,27 +75,22 @@ public class AgentState {
     /**
      * 读 scope=31 中当前会话指定 type 槽位的设置值（键带机器人 uid 后缀）。
      * <p>
-     * 列出该 scope 全部会话设置（{@link ChatManager#getUserSettings(int)}），取首个键以
-     * {@code <convType>-<line>-<target>_<type>_} 开头的条目（同一会话同 type 只应有一份，
-     * 有多个 uid 前缀命中时取首个）。找不到/出错返回 null。仍由设置更新事件驱动刷新，不轮询。
+     * 按 key 前缀查询该 scope 的设置表（{@link ChatManager#getUserSettingsLike(int, String)}，
+     * native 只返回 key 以 prefix 开头的条目，避免拉全量再自行筛选）；同一会话同 type 只应有
+     * 一份，有多个 uid 前缀命中时取首个条目。找不到/出错返回 null。仍由设置更新事件驱动刷新，不轮询。
      * </p>
      */
     private static String agentSettingValue(Conversation conversation, int type) {
         String prefix = agentSettingKeyPrefix(conversation, type);
         try {
-            Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
+            Map<String, String> settings = ChatManager.Instance().getUserSettingsLike(UserSettingScope.Conversation_User_Setting, prefix);
             if (settings == null || settings.isEmpty()) {
                 return null;
             }
-            for (Map.Entry<String, String> entry : settings.entrySet()) {
-                if (entry.getKey() != null && entry.getKey().startsWith(prefix)) {
-                    return entry.getValue();
-                }
-            }
+            return settings.entrySet().iterator().next().getValue();
         } catch (Exception e) {
             return null;
         }
-        return null;
     }
 
     /**
@@ -166,12 +162,16 @@ public class AgentState {
      * 读取会话的 AI 面板数据（scope=31 type=3 组合查询结果），未设置/非法/非 Agent 会话时返回 null。
      * <p>
      * 静默通道：面板打开时发 207 Agent_Command（op=query）组合查询，插件聚合面板数据
-     * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId / dirs 根目录子目录）
+     * （model 当前值 / effort / sandbox / plan / cwd / sessionId）
      * 写入 type=3（不回复消息）；本端读 type=3 渲染面板，不解析机器人回复文本。
+     * 目录候选 {@code dirs} 已从 type=3 移除（v2.3，避免 scope=31 单值超限），
+     * 改为面板发 207 op=dirs、插件用 209 Agent_Command_Result 透明消息回传；
+     * 老插件仍带 {@code dirs} 时客户端直接使用（兼容）。
      * 返回对象结构：{@code {"model":{"current":"provider/id","options":[{"value":..,"label":..}]},
      * "effort":{"current":"high","options":["low","medium","high"]},
      * "sandbox":{"current":"workspace-write","options":["read-only","workspace-write","danger-full-access"]},
-     * "plan":{"on":true},"cwd":"/abs/path","sessionId":"wildfire-...","dirs":["server","vue-pc-chat",...]}}
+     * "plan":{"on":true},"cwd":"/abs/path","sessionId":"wildfire-..."}}
+     * （老插件可能仍含 {@code "dirs":["server","vue-pc-chat",...]}）
      * </p>
      */
     public static JSONObject getAgentPanelData(Conversation conversation) {
@@ -414,8 +414,9 @@ public class AgentState {
     /**
      * 列出会话内机器人 uid（完整 uid）列表。
      * <p>
-     * 主来源：扫描 scope=31 本地设置表，取键以 {@code <convType>-<line>-<target>_1_}
-     * 开头的条目（type=1 状态槽位），后缀即机器人 uid——只有推送过状态的机器人会出现。
+     * 主来源：按 key 前缀 {@code <convType>-<line>-<target>_1_} 查询 scope=31 本地设置表
+     * （{@link ChatManager#getUserSettingsLike(int, String)}），键后缀即机器人 uid——只有推送过
+     * 状态的机器人会出现。
      * 兜底：群聊会话额外按“机器人成员”（memberId 以 robot_/robot- 开头）补齐，
      * 让尚未推送过状态、但已在群里的机器人也能出现在选择列表。
      * </p>
@@ -430,7 +431,7 @@ public class AgentState {
         Set<String> uids = new LinkedHashSet<>();
         String prefix = agentSettingKeyPrefix(conversation, Agent_STATE_TYPE);
         try {
-            Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
+            Map<String, String> settings = ChatManager.Instance().getUserSettingsLike(UserSettingScope.Conversation_User_Setting, prefix);
             if (settings != null) {
                 for (Map.Entry<String, String> entry : settings.entrySet()) {
                     String key = entry.getKey();
@@ -485,35 +486,40 @@ public class AgentState {
         String p1 = agentSettingKeyPrefix(conversation, Agent_STATE_TYPE);
         String p2 = agentSettingKeyPrefix(conversation, Agent_METRICS_TYPE);
         try {
-            Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
-            if (settings != null) {
-                for (Map.Entry<String, String> entry : settings.entrySet()) {
+            // type=1 状态 / type=2 计量分别按前缀查询（native 已过滤，避免拉全量再筛选）
+            Map<String, String> stateSettings = ChatManager.Instance().getUserSettingsLike(UserSettingScope.Conversation_User_Setting, p1);
+            if (stateSettings != null) {
+                for (Map.Entry<String, String> entry : stateSettings.entrySet()) {
                     String key = entry.getKey();
-                    if (key == null) {
+                    if (key == null || !key.startsWith(p1)) {
                         continue;
                     }
-                    String uid = null;
-                    int type;
-                    if (key.startsWith(p1)) {
-                        uid = key.substring(p1.length());
-                        type = Agent_STATE_TYPE;
-                    } else if (key.startsWith(p2)) {
-                        uid = key.substring(p2.length());
-                        type = Agent_METRICS_TYPE;
-                    } else {
-                        continue;
-                    }
+                    String uid = key.substring(p1.length());
                     if (TextUtils.isEmpty(uid)) {
                         continue;
                     }
                     uids.add(uid);
                     JSONObject value = parseSettingJson(entry.getValue());
                     if (value != null) {
-                        if (type == Agent_STATE_TYPE) {
-                            stateByUid.put(uid, value);
-                        } else {
-                            metricsByUid.put(uid, value);
-                        }
+                        stateByUid.put(uid, value);
+                    }
+                }
+            }
+            Map<String, String> metricsSettings = ChatManager.Instance().getUserSettingsLike(UserSettingScope.Conversation_User_Setting, p2);
+            if (metricsSettings != null) {
+                for (Map.Entry<String, String> entry : metricsSettings.entrySet()) {
+                    String key = entry.getKey();
+                    if (key == null || !key.startsWith(p2)) {
+                        continue;
+                    }
+                    String uid = key.substring(p2.length());
+                    if (TextUtils.isEmpty(uid)) {
+                        continue;
+                    }
+                    uids.add(uid);
+                    JSONObject value = parseSettingJson(entry.getValue());
+                    if (value != null) {
+                        metricsByUid.put(uid, value);
                     }
                 }
             }
@@ -545,23 +551,19 @@ public class AgentState {
         }
         String prefix = agentSettingKeyPrefix(conversation, Agent_PANEL_TYPE);
         try {
-            Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
-            if (settings == null || settings.isEmpty()) {
-                return null;
+            if (!TextUtils.isEmpty(robotUid)) {
+                // 精确匹配：单键查询，避免全量读取再筛选
+                String raw = ChatManager.Instance().getUserSetting(UserSettingScope.Conversation_User_Setting, prefix + robotUid);
+                return parseSettingJson(raw);
             }
-            for (Map.Entry<String, String> entry : settings.entrySet()) {
-                String key = entry.getKey();
-                if (key == null) {
-                    continue;
-                }
-                if (!TextUtils.isEmpty(robotUid)) {
-                    // 精确匹配：目标机器人 uid 的 type=3 面板数据
-                    if (key.equals(prefix + robotUid)) {
+            // 默认：取首个命中前缀的面板数据（兼容旧单机器人键）
+            Map<String, String> settings = ChatManager.Instance().getUserSettingsLike(UserSettingScope.Conversation_User_Setting, prefix);
+            if (settings != null && !settings.isEmpty()) {
+                for (Map.Entry<String, String> entry : settings.entrySet()) {
+                    String key = entry.getKey();
+                    if (key != null && key.startsWith(prefix)) {
                         return parseSettingJson(entry.getValue());
                     }
-                } else if (key.startsWith(prefix)) {
-                    // 默认：首个命中前缀的面板数据（兼容旧单机器人键）
-                    return parseSettingJson(entry.getValue());
                 }
             }
         } catch (Exception e) {

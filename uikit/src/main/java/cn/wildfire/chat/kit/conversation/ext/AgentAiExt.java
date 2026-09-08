@@ -32,8 +32,9 @@ import cn.wildfirechat.remote.ChatManager;
  * 机器人 uid 绑定到面板；单机器人/尚无状态推送的会话直接打开默认面板。
  * 面板：模型 / 推理等级 / 工作目录 / 沙箱模式 / 计划模式。
  * 静默通道：打开发 207 Agent_Command（op=query，带目标 robotId）组合查询，
- * 读 scope=31 type=3 面板数据渲染（模型/effort 下拉、沙箱单选、计划开关、cwd + dirs
- * 目录选择）；所有操作发 207 Agent_Command（op=set，cmd=命令文本，如
+ * 读 scope=31 type=3 面板数据渲染（模型/effort 下拉、沙箱单选、计划开关、cwd）；
+ * 目录候选按需获取（点「切换」发 207 op=dirs，插件用 209 Agent_Command_Result 透明消息回传）；
+ * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如
  * "/model deepseek-official/xxx"，带目标 robotId），不再发送 /model /effort /cwd /sandbox
  * /plan /compact /reset 文本命令、不解析回复。207 为透明消息，不落消息流。
  * </p>

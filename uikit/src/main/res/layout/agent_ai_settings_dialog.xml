@@ -89,7 +89,7 @@
                 android:paddingEnd="10dp"
                 android:spinnerMode="dropdown" />
 
-            <!-- 工作目录：当前值（只读）+ 切换按钮（目录候选来自 type=3 dirs，选择弹窗） -->
+            <!-- 工作目录：当前值（只读）+ 切换按钮（目录候选按需获取：207 op=dirs → 209 应答）+ 手动输入兜底 -->
             <TextView
                 style="@style/agent_ai_label"
                 android:text="@string/agent_ai_cwd" />
@@ -110,6 +110,18 @@
                     android:textSize="12sp" />
 
                 <Button
+                    android:id="@+id/agentAiCwdManual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/shape_agent_btn_secondary"
+                    android:minWidth="64dp"
+                    android:text="@string/agent_ai_cwd_manual"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray0"
+                    android:textSize="13sp" />
+
+                <Button
                     android:id="@+id/agentAiCwdSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -122,7 +134,7 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- 目录候选列表（type=3 dirs）：loading 提示 + 列表容器 + 空/超时提示 -->
+            <!-- 目录候选列表（207 op=dirs → 209 应答，TTL 60s 缓存）：loading 提示 + 列表容器 + 空/失败提示 -->
             <TextView
                 android:id="@+id/agentAiCwdListLoading"
                 android:layout_width="match_parent"

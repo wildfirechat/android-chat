@@ -978,9 +978,9 @@
     <string name="workspace_welcome_hint">Here\'s to a productive day</string>
     <string name="workspace_welcome_date_format">%2$d/%3$d/%1$d</string>
     <!-- Agent AI session settings panel -->
-    <string name="agent_ai_settings">AI Session Settings</string>
-    <string name="agent_ai_title">🤖 AI Session Settings</string>
-    <string name="agent_ai_title_robot">🤖 %1$s · AI Session Settings</string>
+    <string name="agent_ai_settings">AI Settings</string>
+    <string name="agent_ai_title">🤖 AI Settings</string>
+    <string name="agent_ai_title_robot">🤖 %1$s · AI Settings</string>
     <string name="agent_ai_choose_robot">Choose AI Robot</string>
     <string name="agent_ai_loading">Reading session state…</string>
     <string name="agent_ai_model">Model</string>
@@ -991,6 +991,12 @@
     <string name="agent_ai_cwd_list_loading">Fetching directory list…</string>
     <string name="agent_ai_cwd_list_empty">No directories found, try again later</string>
     <string name="agent_ai_cwd_list_timeout">Timed out fetching directory list, try again</string>
+    <string name="agent_ai_cwd_list_failed">Failed to fetch directories, please retry</string>
+    <string name="agent_ai_cwd_list_truncated">Too many directories, showing the first %1$d</string>
+    <string name="agent_ai_cwd_root">Root: %1$s</string>
+    <string name="agent_ai_cwd_manual">Manual input</string>
+    <string name="agent_ai_cwd_manual_title">Enter working directory</string>
+    <string name="agent_ai_cwd_manual_hint">Absolute path, e.g. /Users/rain/Workspace/robot-gateway</string>
     <string name="agent_ai_cwd_tip">Switching directory starts a new session (context cleared)</string>
     <string name="agent_ai_sandbox">Sandbox mode</string>
     <string name="agent_ai_sandbox_read_only">Read-only</string>
