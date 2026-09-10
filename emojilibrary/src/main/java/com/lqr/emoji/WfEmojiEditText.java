@@ -22,6 +22,14 @@ public class WfEmojiEditText extends EmojiEditText {
 
     private static final String TAG = "WfEmojiEditText";
     private boolean isProcessing = false;
+    private OnSelectionChangedListener onSelectionChangedListener;
+
+    /**
+     * 光标位置或选中范围变化监听
+     */
+    public interface OnSelectionChangedListener {
+        void onSelectionChanged(int selStart, int selEnd);
+    }
 
     public WfEmojiEditText(@NonNull Context context) {
         super(context);
@@ -86,6 +94,19 @@ public class WfEmojiEditText extends EmojiEditText {
             super.setText(text, type);
         } finally {
             isProcessing = false;
+        }
+    }
+
+    public void setOnSelectionChangedListener(@Nullable OnSelectionChangedListener listener) {
+        this.onSelectionChangedListener = listener;
+    }
+
+    @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        super.onSelectionChanged(selStart, selEnd);
+        // 父类构造函数中也会回调，此时 listener 还没有设置
+        if (onSelectionChangedListener != null) {
+            onSelectionChangedListener.onSelectionChanged(selStart, selEnd);
         }
     }
 

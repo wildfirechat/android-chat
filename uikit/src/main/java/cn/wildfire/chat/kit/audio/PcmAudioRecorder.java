@@ -19,17 +19,17 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 /**
- * PCM 音频录制器，用于 FunASR 语音识别
+ * PCM 音频录制器，用于实时语音识别
  * 采集 16kHz, 16-bit, 单声道 PCM 音频数据
  */
 public class PcmAudioRecorder implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "PcmAudioRecorder";
 
-    // 音频参数配置（与 FunASR 要求一致）
+    // 音频参数配置（与 wf-voice 要求一致）
     private static final int SAMPLE_RATE = 16000;  // 16kHz 采样率
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;  // 单声道
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;  // 16-bit
-    private static final int CHUNK_SIZE = 960;  // 每次读取的字节数（对应 60ms 音频）
+    private static final int CHUNK_SIZE = 960;  // 每次读取的字节数（对应 30ms 音频）
 
     private Context context;
     private AudioManager audioManager;
@@ -156,11 +156,9 @@ public class PcmAudioRecorder implements AudioManager.OnAudioFocusChangeListener
             } catch (IllegalStateException e) {
                 Log.e(TAG, "停止录音失败", e);
             }
-            audioRecord.release();
-            audioRecord = null;
         }
 
-        // 等待录音线程结束
+        // 等待录音线程结束后再释放 AudioRecord，避免录音线程访问已释放的 AudioRecord
         if (recordingThread != null) {
             try {
                 recordingThread.join(500);  // 最多等待 500ms
@@ -168,6 +166,11 @@ public class PcmAudioRecorder implements AudioManager.OnAudioFocusChangeListener
                 Log.e(TAG, "等待录音线程结束被中断", e);
             }
             recordingThread = null;
+        }
+
+        if (audioRecord != null) {
+            audioRecord.release();
+            audioRecord = null;
         }
 
         releaseAudioFocus();

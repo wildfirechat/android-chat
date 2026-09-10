@@ -125,6 +125,25 @@ public class Config {
     public static String ASR_SERVER_BACKUP_URL = null;
 
     /**
+     * 实时语音输入服务地址，即 wf-voice 的 WebSocket 地址（默认端口 12436），配置之后，输入框右侧会显示麦克风按钮。
+     * <p>
+     * wf-voice 本身没有鉴权，也不支持 wss，请勿直接暴露到公网。上线前请部署在带鉴权的 wss 反向代理之后，或者设置为 null
+     */
+    public static String ASR_STREAM_SERVER_URL = "ws://192.168.2.235:12436";
+
+    /**
+     * 实时语音输入服务备选地址，双网环境下使用。
+     */
+    public static String ASR_STREAM_SERVER_BACKUP_URL = null;
+
+    /**
+     * 实时语音输入是否边说边出字。开启时说话过程中实时显示正在说的这句话，说完后修正为这句的最终结果；关闭时每说完一句才显示这句话。
+     * <p>
+     * 开启后 wf-voice 会在说话过程中反复识别正在说的这句话，服务端 CPU 占用更高。旧版本 wf-voice 不支持，开启后效果和关闭一样
+     */
+    public static boolean ENABLE_ASR_PARTIAL_RESULT = true;
+
+    /**
      * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
      * 请注意，不能写应用服务地址
      */
@@ -307,6 +326,10 @@ public class Config {
 
     public static String getAsrServerUrl() {
         return selectServer(ASR_SERVER_URL, ASR_SERVER_BACKUP_URL);
+    }
+
+    public static String getAsrStreamServerUrl() {
+        return selectServer(ASR_STREAM_SERVER_URL, ASR_STREAM_SERVER_BACKUP_URL);
     }
 
     public static String getMinutesUrl() {

@@ -42,7 +42,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.emoji2.widget.EmojiEditText;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -52,6 +51,7 @@ import com.lqr.emoji.IEmotionExtClickListener;
 import com.lqr.emoji.IEmotionSelectedListener;
 import com.lqr.emoji.StickerItem;
 import com.lqr.emoji.StickerManager;
+import com.lqr.emoji.WfEmojiEditText;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,6 +62,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.asr.AsrManager;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
 import cn.wildfire.chat.kit.audio.PttPanel;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
@@ -102,7 +103,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     ImageView pttImageView;
     ImageView asrImageView;
     Button audioButton;
-    EmojiEditText editText;
+    WfEmojiEditText editText;
     ImageView emotionImageView;
     ImageView extImageView;
     Button sendButton;
@@ -132,8 +133,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private FragmentActivity activity;
     private AudioRecorderPanel audioRecorderPanel;
     private PttPanel pttPanel;
-    private cn.wildfire.chat.kit.asr.FunAsrManager asrManager;
+    private AsrManager asrManager;
     private boolean isAsrRecording = false;
+    // 语音识别文本在输入框中的范围 [asrTextStart, asrTextEnd)，识别结果会替换这个范围内的文本
+    private int asrTextStart;
+    private int asrTextEnd;
+    // 是否正在把识别结果写入输入框，用于区分用户自己的编辑和光标移动
+    private boolean isAsrUpdatingText = false;
     private int keyboardHeight;
 
     private long lastTypingTime;
@@ -201,11 +207,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             pttPanel = new PttPanel(getContext());
         }
 
-        // 显示 ASR 语音输入按钮（默认启用）
+        // 配置了实时语音输入服务时，显示 ASR 语音输入按钮（默认启用）
         boolean asrEnabled = sp.getBoolean("asrEnabled", true);
-        if (asrEnabled) {
-            asrImageView.setVisibility(View.VISIBLE);
-        }
+        asrImageView.setVisibility(asrEnabled && !TextUtils.isEmpty(Config.getAsrStreamServerUrl()) ? View.VISIBLE : View.GONE);
     }
 
     private QuoteInfo quoteInfo;
@@ -255,7 +259,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         // 清理 ASR 资源
         if (asrManager != null) {
             asrManager.cancelRecognition();
-            asrManager.release();
             asrManager = null;
         }
         if (asrImageView != null) {
@@ -376,6 +379,22 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             @Override
             public void afterTextChanged(Editable s) {
                 afterInputTextChanged(s);
+            }
+        });
+
+        // 语音输入过程中，用户编辑文本或移动光标时结束语音输入
+        editText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!isAsrUpdatingText) {
+                    cancelAsrRecognition();
+                }
+            }
+        });
+        editText.setOnSelectionChangedListener((selStart, selEnd) -> {
+            // 光标仍在识别文本末尾时不算用户移动光标
+            if (!isAsrUpdatingText && !(selStart == selEnd && selEnd == asrTextEnd)) {
+                cancelAsrRecognition();
             }
         });
 
@@ -596,6 +615,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (isAsrRecording) {
             // 正在录音，停止识别
             stopAsrRecognition();
+        } else if (asrManager != null && asrManager.isRecognizing()) {
+            // 已停止录音，正在等待剩余识别结果
+            Log.d("ConversationInputPanel", "正在等待识别结果，忽略点击");
         } else {
             // 没有录音，开始识别
             // 检查录音权限
@@ -627,7 +649,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
      */
     private void startAsrRecognition() {
         if (asrManager == null) {
-            asrManager = new cn.wildfire.chat.kit.asr.FunAsrManager(getContext());
+            asrManager = new AsrManager(getContext());
         }
 
         isAsrRecording = true;
@@ -647,120 +669,97 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             asrImageView.startAnimation(animation);
         }
 
-        // 保存当前输入框的内容
-        String currentText = editText.getText() != null ? editText.getText().toString() : "";
+        // 识别结果写入开始识别时的光标处，有选中的文本时替换选中的文本
+        int selectionStart = Math.max(editText.getSelectionStart(), 0);
+        int selectionEnd = Math.max(editText.getSelectionEnd(), 0);
+        asrTextStart = Math.min(selectionStart, selectionEnd);
+        asrTextEnd = Math.max(selectionStart, selectionEnd);
 
         // 开始识别
-        asrManager.startRecognition(new cn.wildfire.chat.kit.asr.FunAsrManager.RecognitionCallback() {
+        asrManager.startRecognition(new AsrManager.RecognitionCallback() {
             @Override
-            public void onStartRecording() {
-                // 录音已开始
+            public void onPartialResult(@NonNull String text) {
+                updateAsrText(text);
             }
 
             @Override
-            public void onPartialResult(String text) {
-                // 中间结果，追加到输入框
-                if (text != null && !text.isEmpty()) {
-                    // 保留原有内容，追加新的识别结果
-                    editText.setText(currentText + text);
-                    // 移动光标到末尾
-                    editText.setSelection(editText.getText().length());
+            public void onFinalResult(@NonNull String text) {
+                // 没有识别出文字时，保留原来选中的文本
+                if (!text.isEmpty()) {
+                    updateAsrText(text);
                 }
+                resetAsrState();
             }
 
             @Override
-            public void onFinalResult(String text) {
-                // 最终结果
-                if (text != null && !text.isEmpty()) {
-                    editText.setText(currentText + text);
-                    editText.setSelection(editText.getText().length());
-                }
-                // 识别完成，停止录音状态
-                stopAsrRecognition();
+            public void onError(@NonNull String message) {
+                Toast.makeText(getContext(), "语音识别错误: " + message, Toast.LENGTH_SHORT).show();
+                resetAsrState();
             }
 
             @Override
-            public void onStopRecording() {
-                // 录音已停止
-            }
-
-            @Override
-            public void onError(String message) {
-                // 错误
-                android.widget.Toast.makeText(getContext(), "语音识别错误: " + message, android.widget.Toast.LENGTH_SHORT).show();
-                stopAsrRecognition();
-            }
-
-            @Override
-            public void onHotwordDetected(String hotword, String text) {
-                // 检测到热词（如 "Over"）
+            public void onHotwordDetected(@NonNull String hotword, @NonNull String text) {
+                // 检测到热词（如 "Over"），识别已结束
                 Log.d("ConversationInputPanel", "检测到热词: " + hotword + ", 文本: " + text);
-
-                // 停止录音和动画
-                isAsrRecording = false;
-                if (asrImageView != null) {
-                    asrImageView.clearAnimation();
-                }
+                resetAsrState();
 
                 // 填充文本到输入框（不包含热词）
-                if (text != null && !text.isEmpty()) {
-                    editText.setText(currentText + text);
-                    editText.setSelection(editText.getText().length());
-                }
+                updateAsrText(text);
 
                 // 自动发送消息
                 sendMessage();
-
-                // 停止识别
-                if (asrManager != null) {
-                    asrManager.cancelRecognition();
-                }
             }
         });
     }
 
     /**
-     * 停止 ASR 语音识别
+     * 用识别文本替换输入框中语音识别的文本范围，并把光标移到识别文本末尾
+     */
+    private void updateAsrText(@NonNull String text) {
+        Editable editable = editText.getText();
+        int start = Math.min(asrTextStart, editable.length());
+        int end = Math.min(Math.max(asrTextEnd, start), editable.length());
+        int lengthBefore = editable.length();
+        isAsrUpdatingText = true;
+        try {
+            editable.replace(start, end, text);
+            // InputFilter 可能改变实际写入的长度，按长度变化计算识别文本的末尾
+            asrTextEnd = end + editable.length() - lengthBefore;
+            editText.setSelection(asrTextEnd);
+        } finally {
+            isAsrUpdatingText = false;
+        }
+    }
+
+    /**
+     * 停止 ASR 语音识别，剩余识别结果返回后回调 onFinalResult
      */
     private void stopAsrRecognition() {
+        resetAsrState();
+        if (asrManager != null) {
+            asrManager.stopRecognition();
+        }
+    }
+
+    /**
+     * 取消 ASR 语音识别，丢弃还没返回的识别结果，已写入输入框的文本保持不变
+     */
+    private void cancelAsrRecognition() {
+        if (asrManager != null && asrManager.isRecognizing()) {
+            asrManager.cancelRecognition();
+            resetAsrState();
+        }
+    }
+
+    /**
+     * 恢复麦克风按钮为未录音状态
+     */
+    private void resetAsrState() {
         isAsrRecording = false;
 
         // 停止麦克风图标闪烁动画
         if (asrImageView != null) {
             asrImageView.clearAnimation();
-        }
-
-        // 停止识别
-        if (asrManager != null) {
-            asrManager.stopRecognition(new cn.wildfire.chat.kit.asr.FunAsrManager.RecognitionCallback() {
-                @Override
-                public void onStartRecording() {}
-
-                @Override
-                public void onPartialResult(String text) {}
-
-                @Override
-                public void onFinalResult(String text) {
-                    // 最终结果
-                    if (text != null && !text.isEmpty()) {
-                        int start = editText.getSelectionStart();
-                        String current = editText.getText() != null ? editText.getText().toString() : "";
-                        editText.setText(current + text);
-                        editText.setSelection(editText.getText().length());
-                    }
-                }
-
-                @Override
-                public void onStopRecording() {}
-
-                @Override
-                public void onError(String message) {}
-
-                @Override
-                public void onHotwordDetected(String hotword, String text) {
-                    // 不处理，因为已经在 stopAsrRecognition 之前处理了
-                }
-            });
         }
     }
 
@@ -783,10 +782,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     void sendMessage() {
-        // 如果正在录音，先停止录音
-        if (isAsrRecording) {
-            stopAsrRecognition();
-        }
+        // 如果正在语音识别，取消识别，避免之后返回的识别结果写入已清空的输入框
+        cancelAsrRecognition();
 
         messageEmojiCount = 0;
         Editable content = editText.getText();
