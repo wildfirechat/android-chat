@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.asr;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,8 +22,9 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 /**
- * wf-voice 实时语音识别 WebSocket 客户端
+ * 实时语音识别 WebSocket 客户端
  * <p>
+ * 连接 asr-api 的 /api/stream，由 asr-api 鉴权后转发给 wf-voice；内网测试时也可以直连 wf-voice。
  * 协议详见 wf-voice 项目的 docs/server-api.md：
  * <ol>
  *     <li>连接后发送的第一条文本消息是 clientId；需要边说边出字时，接着发送 partial</li>
@@ -43,9 +45,10 @@ public class AsrWebSocketClient {
     private static final String MESSAGE_PONG = "pong";
     private static final String MESSAGE_TRIAL_PREFIX = "[TRIAL]";
 
-    // 发送 eos 前补发 500ms 静音（16000 采样/秒 × 2 字节/采样 × 0.5 秒），
-    // 让不支持 eos 的旧版本 wf-voice 也能通过 VAD 断句，识别出最后一句
-    private static final int SILENCE_PADDING_BYTES = 16000;
+    // 发送 eos 前补发约 500ms 静音，让不支持 eos 的旧版本 wf-voice 也能通过 VAD 断句，识别出最后一句。
+    // 静音和录音一样按 30ms（960 字节）一条消息发送，单条消息过大时 asr-api 或 wf-voice 会断开连接
+    private static final int SILENCE_FRAME_BYTES = 960;
+    private static final int SILENCE_PADDING_FRAMES = 17;
 
     private static final OkHttpClient OK_HTTP_CLIENT = new OkHttpClient.Builder()
         .connectTimeout(5, TimeUnit.SECONDS)
@@ -95,17 +98,20 @@ public class AsrWebSocketClient {
     }
 
     /**
-     * 连接 wf-voice 服务
-     * @param url           WebSocket 地址
+     * 连接语音识别服务
+     * @param url           WebSocket 地址，asr-api 或 wf-voice
      * @param clientId      客户端 ID，wf-voice 要求每个连接唯一
      * @param partialResult 是否边说边出字
+     * @param authCode      连接 asr-api 时需要的认证码，直连 wf-voice 时传 null
      */
-    public void connect(@NonNull String url, @NonNull String clientId, boolean partialResult) {
+    public void connect(@NonNull String url, @NonNull String clientId, boolean partialResult, @Nullable String authCode) {
         Log.d(TAG, "正在连接语音识别服务: " + url);
-        Request request = new Request.Builder()
-            .url(url)
-            .build();
-        webSocket = OK_HTTP_CLIENT.newWebSocket(request, new WebSocketListener() {
+        Request.Builder builder = new Request.Builder()
+            .url(url);
+        if (!TextUtils.isEmpty(authCode)) {
+            builder.header(AsrAuth.HEADER_AUTH_CODE, authCode);
+        }
+        webSocket = OK_HTTP_CLIENT.newWebSocket(builder.build(), new WebSocketListener() {
             @Override
             public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
                 Log.d(TAG, "WebSocket 连接成功");
@@ -136,7 +142,8 @@ public class AsrWebSocketClient {
             @Override
             public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
                 Log.e(TAG, "WebSocket 连接失败", t);
-                postToMain(() -> callback.onError("连接失败: " + t.getMessage()));
+                String error = response != null && response.code() == 401 ? "语音识别服务鉴权失败" : "连接失败: " + t.getMessage();
+                postToMain(() -> callback.onError(error));
             }
         });
     }
@@ -160,7 +167,10 @@ public class AsrWebSocketClient {
         if (ws == null) {
             return;
         }
-        ws.send(ByteString.of(new byte[SILENCE_PADDING_BYTES]));
+        byte[] silence = new byte[SILENCE_FRAME_BYTES];
+        for (int i = 0; i < SILENCE_PADDING_FRAMES; i++) {
+            ws.send(ByteString.of(silence));
+        }
         ws.send(MESSAGE_EOS);
     }
 

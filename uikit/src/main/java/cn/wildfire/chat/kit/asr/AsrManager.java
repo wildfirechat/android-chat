@@ -18,11 +18,12 @@ import java.util.regex.Pattern;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.audio.PcmAudioRecorder;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback2;
 
 /**
  * 实时语音输入管理器
  * <p>
- * 录音并实时推送到 wf-voice 识别。wf-voice 每识别完一句返回这句的最终结果；
+ * 录音并实时推送到 wf-voice 识别（经过 asr-api 转发，内网测试时也可以直连）。wf-voice 每识别完一句返回这句的最终结果；
  * 开启 {@link Config#ENABLE_ASR_PARTIAL_RESULT} 后，说话过程中还会返回正在说的这句的中间结果。
  * 服务地址见 {@link Config#ASR_STREAM_SERVER_URL}。
  */
@@ -161,9 +162,30 @@ public class AsrManager {
                 }
             }
         });
-        // wf-voice 要求每个连接的 clientId 唯一，并会用作服务端录音文件名
+        // wf-voice 要求每个连接的 clientId 唯一，并会用作服务端录音文件名。连接 asr-api 时由 asr-api 重新生成
         String clientId = ChatManager.Instance().getUserId() + "-" + UUID.randomUUID().toString().replace("-", "");
-        wsClient.connect(url, clientId, Config.ENABLE_ASR_PARTIAL_RESULT);
+        if (!AsrAuth.isAsrApiUrl(url)) {
+            // 直连 wf-voice，不需要鉴权
+            wsClient.connect(url, clientId, Config.ENABLE_ASR_PARTIAL_RESULT, null);
+            return;
+        }
+        AsrWebSocketClient client = wsClient;
+        AsrAuth.getAuthCode(new GeneralCallback2() {
+            @Override
+            public void onSuccess(String authCode) {
+                // 获取认证码期间，识别可能已经停止或取消
+                if (wsClient == client) {
+                    client.connect(url, clientId, Config.ENABLE_ASR_PARTIAL_RESULT, authCode);
+                }
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                if (wsClient == client) {
+                    failRecognition("获取认证码失败: " + errorCode);
+                }
+            }
+        });
     }
 
     /**
