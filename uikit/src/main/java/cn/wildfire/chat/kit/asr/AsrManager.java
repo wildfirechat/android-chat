@@ -12,6 +12,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -31,6 +33,10 @@ public class AsrManager {
     private static final String TAG = "AsrManager";
     private static final int MAX_RECORDING_DURATION_MS = 60 * 1000;  // 最长录音时长：60秒
     private static final int WAIT_EOS_TIMEOUT_MS = 8 * 1000;         // 停止录音后等待剩余识别结果的最长时间：8秒
+    // 停止录音后服务端一直没有推送消息，认为已经识别完。服务端不支持 eos 指令时不会回复 [EOS]，靠它结束识别
+    private static final int WAIT_EOS_IDLE_TIMEOUT_MS = 3 * 1000;
+    // 停止录音后收到过识别结果，之后这么久没有新消息，认为已经识别完
+    private static final int WAIT_EOS_IDLE_AFTER_RESULT_MS = 1500;
 
     // "Over" 热词（不区分大小写，支持中文），识别结果以它结尾时回调 onHotwordDetected
     private static final Pattern HOTWORD_OVER_PATTERN = Pattern.compile("(?i)(over|欧弗|结束)[，,.。\\s]*$");
@@ -57,13 +63,32 @@ public class AsrManager {
     // 正在说的这句的中间结果，收到这句的最终结果后清空
     private String partialText = "";
 
+    // 音频由调用方通过 feedAudioData 提供，而不是自己录音
+    private boolean feedAudio;
+    // 连接识别服务期间调用方提供的音频，连接成功后发送
+    private final List<byte[]> pendingAudio = new ArrayList<>();
+    // 连接成功前调用方已经停止提供音频，发送完缓存的音频后结束识别
+    private boolean pendingStop;
+    // 调用方提供的音频字节数，用于估算等待剩余识别结果的时间
+    private long feedAudioBytes;
+
     private final Runnable maxDurationRunnable = () -> {
         Log.d(TAG, "达到最大录音时长，自动停止");
         stopRecognition();
     };
 
     private final Runnable waitEosTimeoutRunnable = () -> {
-        Log.w(TAG, "等待剩余识别结果超时，结束识别");
+        if (state == State.CONNECTING) {
+            Log.w(TAG, "连接语音识别服务超时");
+            failRecognition("连接语音识别服务超时");
+        } else {
+            Log.w(TAG, "等待剩余识别结果超时，结束识别");
+            finishRecognition();
+        }
+    };
+
+    private final Runnable waitEosIdleRunnable = () -> {
+        Log.w(TAG, "没有收到 [EOS]，按已返回的识别结果结束识别");
         finishRecognition();
     };
 
@@ -114,6 +139,19 @@ public class AsrManager {
      * @param callback 回调接口
      */
     public void startRecognition(@NonNull RecognitionCallback callback) {
+        start(callback, false);
+    }
+
+    /**
+     * 开始语音识别，由调用方通过 {@link #feedAudioData(byte[])} 提供音频，提供完后调用 {@link #stopRecognition()}。
+     * 连接识别服务期间提供的音频会先缓存，连接成功后再发送
+     * @param callback 回调接口
+     */
+    public void startRecognitionWithAudioFeed(@NonNull RecognitionCallback callback) {
+        start(callback, true);
+    }
+
+    private void start(@NonNull RecognitionCallback callback, boolean feedAudio) {
         if (state != State.IDLE) {
             Log.w(TAG, "正在识别中，无需重复开始");
             return;
@@ -125,6 +163,7 @@ public class AsrManager {
         }
 
         this.callback = callback;
+        this.feedAudio = feedAudio;
         state = State.CONNECTING;
         recognizedText = "";
         partialText = "";
@@ -132,17 +171,23 @@ public class AsrManager {
         wsClient = new AsrWebSocketClient(new AsrWebSocketClient.Callback() {
             @Override
             public void onConnected() {
-                startAudioRecording();
+                if (AsrManager.this.feedAudio) {
+                    sendPendingAudio();
+                } else {
+                    startAudioRecording();
+                }
             }
 
             @Override
             public void onPartialResult(@NonNull String text) {
+                delayIdleFinish();
                 partialText = text;
                 AsrManager.this.callback.onPartialResult(getText());
             }
 
             @Override
             public void onResult(@NonNull String text) {
+                delayIdleFinish();
                 handleSentenceResult(text);
             }
 
@@ -189,20 +234,73 @@ public class AsrManager {
     }
 
     /**
-     * 停止录音，剩余识别结果返回后回调 onFinalResult
+     * 停止录音或停止提供音频，剩余识别结果返回后回调 onFinalResult
      */
     public void stopRecognition() {
         if (state == State.CONNECTING) {
-            // 还没开始录音
-            finishRecognition();
+            if (feedAudio && !pendingAudio.isEmpty()) {
+                // 连接成功后发送完缓存的音频再结束，一直连不上时超时
+                pendingStop = true;
+                mainHandler.removeCallbacks(waitEosTimeoutRunnable);
+                mainHandler.postDelayed(waitEosTimeoutRunnable, WAIT_EOS_TIMEOUT_MS);
+            } else {
+                // 还没有音频
+                finishRecognition();
+            }
         } else if (state == State.RECORDING) {
             Log.d(TAG, "停止录音，等待剩余识别结果");
             state = State.FINISHING;
             mainHandler.removeCallbacks(maxDurationRunnable);
-            audioRecorder.stopRecording();
-            audioRecorder = null;
+            if (audioRecorder != null) {
+                audioRecorder.stopRecording();
+                audioRecorder = null;
+            }
             wsClient.sendEos();
-            mainHandler.postDelayed(waitEosTimeoutRunnable, WAIT_EOS_TIMEOUT_MS);
+            // 一次提供了较长的音频时，服务端需要更多时间识别。16kHz、16-bit 的音频每毫秒 32 字节，按音频时长增加等待时间
+            long audioMs = feedAudioBytes / 32;
+            mainHandler.removeCallbacks(waitEosTimeoutRunnable);
+            mainHandler.postDelayed(waitEosTimeoutRunnable, WAIT_EOS_TIMEOUT_MS + audioMs / 2);
+            mainHandler.postDelayed(waitEosIdleRunnable, WAIT_EOS_IDLE_TIMEOUT_MS + audioMs / 10);
+        }
+    }
+
+    /**
+     * 停止录音后又收到识别结果，重新计算没有新消息就结束识别的时间
+     */
+    private void delayIdleFinish() {
+        if (state == State.FINISHING) {
+            mainHandler.removeCallbacks(waitEosIdleRunnable);
+            mainHandler.postDelayed(waitEosIdleRunnable, WAIT_EOS_IDLE_AFTER_RESULT_MS);
+        }
+    }
+
+    /**
+     * 提供音频数据，只在 {@link #startRecognitionWithAudioFeed(RecognitionCallback)} 之后有效，需要在主线程调用
+     * @param pcmData 16kHz、16-bit、单声道 PCM，传入后不能再修改
+     */
+    public void feedAudioData(@NonNull byte[] pcmData) {
+        if (!feedAudio || pendingStop) {
+            return;
+        }
+        if (state == State.CONNECTING) {
+            pendingAudio.add(pcmData);
+        } else if (state == State.RECORDING) {
+            wsClient.sendAudioData(pcmData);
+        } else {
+            return;
+        }
+        feedAudioBytes += pcmData.length;
+    }
+
+    private void sendPendingAudio() {
+        state = State.RECORDING;
+        for (byte[] data : pendingAudio) {
+            wsClient.sendAudioData(data);
+        }
+        pendingAudio.clear();
+        if (pendingStop) {
+            pendingStop = false;
+            stopRecognition();
         }
     }
 
@@ -316,6 +414,7 @@ public class AsrManager {
         callback = null;
         mainHandler.removeCallbacks(maxDurationRunnable);
         mainHandler.removeCallbacks(waitEosTimeoutRunnable);
+        mainHandler.removeCallbacks(waitEosIdleRunnable);
         if (audioRecorder != null) {
             audioRecorder.stopRecording();
             audioRecorder = null;
@@ -326,5 +425,9 @@ public class AsrManager {
         }
         recognizedText = "";
         partialText = "";
+        feedAudio = false;
+        pendingAudio.clear();
+        pendingStop = false;
+        feedAudioBytes = 0;
     }
 }

@@ -130,6 +130,15 @@
     <string name="voice_rec">按住说话</string>
     <string name="voice_cancel">松开取消</string>
     <string name="voice_short">说话时间太短</string>
+    <string name="voice_input_voice">语音</string>
+    <string name="voice_input_release_to_send">松开 发送</string>
+    <string name="voice_input_release_to_cancel">松手 取消</string>
+    <string name="voice_input_slide_to_text">滑到这里 转文字</string>
+    <string name="voice_input_release_to_edit">松手 编辑文字</string>
+    <string name="voice_input_send_voice">发送原语音</string>
+    <string name="voice_input_no_text">未识别到文字</string>
+    <string name="voice_input_recognize_failed">转文字失败</string>
+    <string name="voice_input_count_down">%d 秒后将停止录音</string>
 
     <!-- PTT -->
     <string name="ptt_hold_to_talk">按住 对讲</string>

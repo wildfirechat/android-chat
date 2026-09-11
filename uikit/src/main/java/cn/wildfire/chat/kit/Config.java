@@ -130,11 +130,10 @@ public class Config {
      * 实时语音输入服务地址，配置之后，输入框右侧会显示麦克风按钮。
      * <p>
      * 请配置为 asr-api 的实时语音识别地址，例如 wss://example.com/asr/api/stream。连接时会在 HTTP header authCode 中带上从 IM 服务获取的认证码，
-     * asr-api 校验后转发给 wf-voice。地址路径中包含 /api/ 时认为是 asr-api。
      * <p>
      * 内网测试时也可以直连 wf-voice 的 WebSocket 地址（默认端口 12436），例如 ws://192.168.1.100:12436。wf-voice 本身没有鉴权，也不支持 wss，请勿直接暴露到公网
      */
-    public static String ASR_STREAM_SERVER_URL = "ws://192.168.2.235:12436";
+    public static String ASR_STREAM_SERVER_URL = "wss://app.wildfirechat.net/asr/api/stream";
 
     /**
      * 实时语音输入服务备选地址，双网环境下使用。

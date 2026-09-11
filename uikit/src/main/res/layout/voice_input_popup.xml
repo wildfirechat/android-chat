@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 按住说话的全屏浮层，各控件的位置和尺寸由 AudioRecorderPanel 根据按钮位置计算 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/voiceInputRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false">
+
+    <cn.wildfire.chat.kit.audio.VoiceRecordBottomView
+        android:id="@+id/voiceRecordBottomView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/voiceCountDownTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:gravity="center"
+        android:textColor="#CCFFFFFF"
+        android:textSize="14sp"
+        android:visibility="invisible" />
+
+    <!-- paddingBottom 包含气泡底部 8dp 高的尖角 -->
+    <cn.wildfire.chat.kit.audio.VoiceBubbleLayout
+        android:id="@+id/voiceBubbleLayout"
+        android:layout_width="180dp"
+        android:layout_height="86dp"
+        android:layout_gravity="bottom|start"
+        android:paddingStart="20dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="26dp">
+
+        <EditText
+            android:id="@+id/voiceTextEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:focusable="false"
+            android:gravity="top|start"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:maxLines="6"
+            android:minHeight="30dp"
+            android:padding="0dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#99FFFFFF"
+            android:textCursorDrawable="@drawable/voice_input_cursor"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/voiceHintTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:drawableStart="@drawable/voice_input_ic_warning"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+
+        <cn.wildfire.chat.kit.audio.VoiceWaveView
+            android:id="@+id/voiceWaveView"
+            android:layout_width="82dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|start" />
+
+    </cn.wildfire.chat.kit.audio.VoiceBubbleLayout>
+
+    <LinearLayout
+        android:id="@+id/voiceEditActionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="24dp"
+        android:visibility="invisible">
+
+        <LinearLayout
+            android:id="@+id/voiceCancelLayout"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/voiceCancelImageView"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:background="@drawable/voice_input_circle_button_bg"
+                android:contentDescription="@string/cancel"
+                android:padding="21dp"
+                android:src="@drawable/ic_close"
+                android:tint="#FFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/cancel"
+                android:textColor="#BDBDBD"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/voiceSendVoiceLayout"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/voiceSendVoiceImageView"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:background="@drawable/voice_input_circle_button_bg"
+                android:contentDescription="@string/voice_input_send_voice"
+                android:padding="20dp"
+                android:src="@drawable/voice_input_ic_sound" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:maxLines="1"
+                android:text="@string/voice_input_send_voice"
+                android:textColor="#BDBDBD"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/voiceSendTextButton"
+            android:layout_width="124dp"
+            android:layout_height="74dp"
+            android:background="@drawable/voice_input_send_button_bg"
+            android:gravity="center"
+            android:text="@string/send"
+            android:textColor="@color/voice_input_send_text"
+            android:textSize="19sp" />
+    </LinearLayout>
+
+</FrameLayout>

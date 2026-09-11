@@ -7,12 +7,16 @@ package cn.wildfire.chat.kit.conversation;
 import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -29,6 +33,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -42,6 +48,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -135,6 +144,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private PttPanel pttPanel;
     private AsrManager asrManager;
     private boolean isAsrRecording = false;
+    // 麦克风图标动画：录音时主色调呼吸闪烁，停止录音后保持主色调等待剩余识别结果，识别结束后恢复原来的颜色
+    private ValueAnimator asrIconPulseAnimator;
+    private ValueAnimator asrIconTintAnimator;
+    // 麦克风图标混合主色调的比例，0 为原来的灰色，1 为主色调
+    private float asrIconTint;
     // 语音识别文本在输入框中的范围 [asrTextStart, asrTextEnd)，识别结果会替换这个范围内的文本
     private int asrTextStart;
     private int asrTextEnd;
@@ -207,9 +221,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             pttPanel = new PttPanel(getContext());
         }
 
-        // 配置了实时语音输入服务时，显示 ASR 语音输入按钮（默认启用）
-        boolean asrEnabled = sp.getBoolean("asrEnabled", true);
-        asrImageView.setVisibility(asrEnabled && !TextUtils.isEmpty(Config.getAsrStreamServerUrl()) ? View.VISIBLE : View.GONE);
+        // 配置了实时语音输入服务时，显示 ASR 语音输入按钮，按住说话时也可以滑动到“转文字”（默认启用）
+        boolean asrEnabled = sp.getBoolean("asrEnabled", true) && !TextUtils.isEmpty(Config.getAsrStreamServerUrl());
+        asrImageView.setVisibility(asrEnabled ? View.VISIBLE : View.GONE);
+        audioRecorderPanel.setSpeechToTextEnabled(asrEnabled);
     }
 
     private QuoteInfo quoteInfo;
@@ -261,9 +276,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             asrManager.cancelRecognition();
             asrManager = null;
         }
-        if (asrImageView != null) {
-            asrImageView.clearAnimation();
-        }
+        cancelAsrIconAnimation();
     }
 
     public void init(Fragment fragment, InputAwareLayout rootInputAwareLayout) {
@@ -297,7 +310,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
             @Override
             public void onRecordFail(String reason) {
-                Toast.makeText(activity, reason, Toast.LENGTH_SHORT).show();
+                // 用户主动取消时不提示
+                if (!AudioRecorderPanel.REASON_USER_CANCELED.equals(reason)) {
+                    Toast.makeText(activity, reason, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -306,6 +322,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                     TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_VOICE);
                     messageViewModel.sendMessage(conversation, toUsers(), content);
                 }
+            }
+
+            @Override
+            public void onSendText(String text) {
+                messageViewModel.sendTextMsg(conversation, toUsers(), new TextMessageContent(text));
             }
         });
 
@@ -342,6 +363,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioImageView = findViewById(R.id.audioImageView);
         pttImageView = findViewById(R.id.pttImageView);
         asrImageView = findViewById(R.id.asrImageView);
+        // 按比例把图标原来的颜色和主色调混合，见 setAsrIconTint
+        ImageViewCompat.setImageTintMode(asrImageView, PorterDuff.Mode.SRC_ATOP);
         audioButton = findViewById(R.id.audioButton);
         editText = findViewById(R.id.editText);
         emotionImageView = findViewById(R.id.emotionImageView);
@@ -660,14 +683,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             rootLinearLayout.showSoftkey(editText);
         }
 
-        // 启动麦克风图标闪烁动画
-        if (asrImageView != null) {
-            android.view.animation.Animation animation = android.view.animation.AnimationUtils.loadAnimation(
-                getContext(),
-                R.anim.asr_blink_animation
-            );
-            asrImageView.startAnimation(animation);
-        }
+        // 麦克风图标变成主色调并闪烁
+        startAsrIconAnimation();
 
         // 识别结果写入开始识别时的光标处，有选中的文本时替换选中的文本
         int selectionStart = Math.max(editText.getSelectionStart(), 0);
@@ -735,9 +752,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
      * 停止 ASR 语音识别，剩余识别结果返回后回调 onFinalResult
      */
     private void stopAsrRecognition() {
-        resetAsrState();
-        if (asrManager != null) {
+        if (asrManager != null && asrManager.isRecognizing()) {
+            isAsrRecording = false;
+            // 等待剩余识别结果时停止闪烁、保持主色调，识别结束后在 resetAsrState 中恢复
+            holdAsrIconAnimation();
             asrManager.stopRecognition();
+        } else {
+            resetAsrState();
         }
     }
 
@@ -757,10 +778,80 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void resetAsrState() {
         isAsrRecording = false;
 
-        // 停止麦克风图标闪烁动画
-        if (asrImageView != null) {
-            asrImageView.clearAnimation();
+        // 麦克风图标停止闪烁，渐变回原来的颜色
+        resetAsrIconAnimation();
+    }
+
+    /**
+     * 开始录音：麦克风图标渐变成主色调，然后呼吸闪烁
+     */
+    private void startAsrIconAnimation() {
+        cancelAsrIconAnimation();
+        animateAsrIcon(1, 200);
+        asrIconPulseAnimator = ObjectAnimator.ofFloat(asrImageView, View.ALPHA, 1f, 0.3f);
+        // 颜色渐变完再开始闪烁
+        asrIconPulseAnimator.setStartDelay(200);
+        asrIconPulseAnimator.setDuration(600);
+        // 正弦缓动，明暗交替柔和，不像线性闪烁那样在最亮、最暗处突变
+        asrIconPulseAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        asrIconPulseAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        asrIconPulseAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        asrIconPulseAnimator.start();
+    }
+
+    /**
+     * 停止录音、等待剩余识别结果：麦克风图标停止闪烁，保持主色调
+     */
+    private void holdAsrIconAnimation() {
+        cancelAsrIconAnimation();
+        animateAsrIcon(1, 200);
+    }
+
+    /**
+     * 识别结束：麦克风图标渐变回原来的颜色
+     */
+    private void resetAsrIconAnimation() {
+        cancelAsrIconAnimation();
+        animateAsrIcon(0, 250);
+    }
+
+    private void cancelAsrIconAnimation() {
+        if (asrIconPulseAnimator != null) {
+            asrIconPulseAnimator.cancel();
+            asrIconPulseAnimator = null;
         }
+        if (asrIconTintAnimator != null) {
+            asrIconTintAnimator.cancel();
+            asrIconTintAnimator = null;
+        }
+    }
+
+    /**
+     * 从当前状态把麦克风图标混合主色调的比例渐变到 tint，同时透明度恢复到 1
+     */
+    private void animateAsrIcon(float tint, long duration) {
+        float fromTint = asrIconTint;
+        float fromAlpha = asrImageView.getAlpha();
+        asrIconTintAnimator = ValueAnimator.ofFloat(0, 1);
+        asrIconTintAnimator.setDuration(duration);
+        asrIconTintAnimator.setInterpolator(new DecelerateInterpolator());
+        asrIconTintAnimator.addUpdateListener(animation -> {
+            float fraction = (float) animation.getAnimatedValue();
+            asrImageView.setAlpha(fromAlpha + (1 - fromAlpha) * fraction);
+            setAsrIconTint(fromTint + (tint - fromTint) * fraction);
+        });
+        asrIconTintAnimator.start();
+    }
+
+    private void setAsrIconTint(float tint) {
+        asrIconTint = tint;
+        if (tint <= 0) {
+            ImageViewCompat.setImageTintList(asrImageView, null);
+            return;
+        }
+        // tintMode 为 SRC_ATOP，主色调的透明度就是混合比例，图标形状和抗锯齿边缘不变
+        int color = ContextCompat.getColor(getContext(), R.color.colorPrimary);
+        ImageViewCompat.setImageTintList(asrImageView, ColorStateList.valueOf(ColorUtils.setAlphaComponent(color, Math.round(255 * tint))));
     }
 
     private void openChannelMenu(ChannelMenu menu) {
