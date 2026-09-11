@@ -12,6 +12,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -33,7 +35,8 @@ import okio.ByteString;
  *     <li>发送过 partial 时，说话过程中还会推送正在说的这句的中间结果：[PARTIAL] 识别文本</li>
  *     <li>说话结束时发送 eos，服务端推送完剩余识别结果后回复 [EOS]</li>
  * </ol>
- * 每次识别使用一个新实例。所有回调都在主线程，调用 {@link #disconnect()} 之后不再回调。
+ * 每次识别使用一个新实例。连接成功之前就可以发送音频，音频先缓存，连接成功后跟在 clientId 后面发送。
+ * 所有回调都在主线程，调用 {@link #disconnect()} 之后不再回调。
  */
 public class AsrWebSocketClient {
     private static final String TAG = "AsrWebSocketClient";
@@ -57,15 +60,21 @@ public class AsrWebSocketClient {
         .build();
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    private volatile WebSocket webSocket;
     private Callback callback;
+
+    // 下面的字段在录音线程、OkHttp 线程也会访问，读写时要持有 this 锁
+    private WebSocket webSocket;
+    // 连接成功之前发送的音频，连接成功后发送
+    private final List<ByteString> pendingAudio = new ArrayList<>();
+    private boolean opened;
+    private boolean disconnected;
 
     /**
      * 回调接口（在主线程回调）
      */
     public interface Callback {
         /**
-         * 连接成功，可以开始发送音频
+         * 连接成功，连接成功之前缓存的音频已经发送
          */
         void onConnected();
 
@@ -111,14 +120,10 @@ public class AsrWebSocketClient {
         if (!TextUtils.isEmpty(authCode)) {
             builder.header(AsrAuth.HEADER_AUTH_CODE, authCode);
         }
-        webSocket = OK_HTTP_CLIENT.newWebSocket(builder.build(), new WebSocketListener() {
+        WebSocketListener listener = new WebSocketListener() {
             @Override
             public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
-                Log.d(TAG, "WebSocket 连接成功");
-                webSocket.send(clientId);
-                if (partialResult) {
-                    webSocket.send(MESSAGE_PARTIAL);
-                }
+                onOpened(clientId, partialResult);
                 postToMain(() -> callback.onConnected());
             }
 
@@ -145,44 +150,76 @@ public class AsrWebSocketClient {
                 String error = response != null && response.code() == 401 ? "语音识别服务鉴权失败" : "连接失败: " + t.getMessage();
                 postToMain(() -> callback.onError(error));
             }
-        });
+        };
+        // 在锁内赋值，OkHttp 线程回调 onOpen 时 webSocket 一定已经赋值
+        synchronized (this) {
+            webSocket = OK_HTTP_CLIENT.newWebSocket(builder.build(), listener);
+        }
     }
 
     /**
-     * 发送音频数据，可以在任意线程调用
-     * @param pcmData 16kHz、16-bit、单声道 PCM
+     * 连接成功，先发送 clientId 等指令，再发送连接成功之前缓存的音频
      */
-    public void sendAudioData(@NonNull byte[] pcmData) {
-        WebSocket ws = webSocket;
-        if (ws != null && !ws.send(ByteString.of(pcmData))) {
+    private synchronized void onOpened(@NonNull String clientId, boolean partialResult) {
+        if (disconnected) {
+            return;
+        }
+        webSocket.send(clientId);
+        if (partialResult) {
+            webSocket.send(MESSAGE_PARTIAL);
+        }
+        long pendingBytes = 0;
+        for (ByteString data : pendingAudio) {
+            webSocket.send(data);
+            pendingBytes += data.size();
+        }
+        pendingAudio.clear();
+        opened = true;
+        // 16kHz、16-bit 的音频每毫秒 32 字节
+        Log.d(TAG, "WebSocket 连接成功，发送连接前缓存的音频 " + pendingBytes / 32 + "ms");
+    }
+
+    /**
+     * 发送音频数据，可以在任意线程调用。还没连接成功时先缓存，连接成功后发送
+     * @param pcmData 16kHz、16-bit、单声道 PCM，会复制一份，调用方可以继续复用
+     */
+    public synchronized void sendAudioData(@NonNull byte[] pcmData) {
+        if (disconnected) {
+            return;
+        }
+        // ByteString.of 会复制数据
+        ByteString data = ByteString.of(pcmData);
+        if (!opened) {
+            pendingAudio.add(data);
+        } else if (!webSocket.send(data)) {
             Log.w(TAG, "发送音频数据失败");
         }
     }
 
     /**
-     * 通知服务端说话结束，服务端返回剩余识别结果后回调 {@link Callback#onEos()}
+     * 通知服务端说话结束，服务端返回剩余识别结果后回调 {@link Callback#onEos()}。需要在连接成功后调用
      */
-    public void sendEos() {
-        WebSocket ws = webSocket;
-        if (ws == null) {
+    public synchronized void sendEos() {
+        if (!opened || disconnected) {
             return;
         }
         byte[] silence = new byte[SILENCE_FRAME_BYTES];
         for (int i = 0; i < SILENCE_PADDING_FRAMES; i++) {
-            ws.send(ByteString.of(silence));
+            webSocket.send(ByteString.of(silence));
         }
-        ws.send(MESSAGE_EOS);
+        webSocket.send(MESSAGE_EOS);
     }
 
     /**
      * 断开连接，之后不再回调
      */
-    public void disconnect() {
+    public synchronized void disconnect() {
         callback = null;
-        WebSocket ws = webSocket;
-        webSocket = null;
-        if (ws != null) {
-            ws.close(1000, null);
+        disconnected = true;
+        pendingAudio.clear();
+        if (webSocket != null) {
+            webSocket.close(1000, null);
+            webSocket = null;
         }
     }
 
