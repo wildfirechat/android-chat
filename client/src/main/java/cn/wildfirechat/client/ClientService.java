@@ -15,8 +15,10 @@ import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -51,18 +53,30 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.ashmen.AshmenWrapper;
@@ -154,25 +168,25 @@ import okhttp3.ResponseBody;
  */
 
 public class ClientService extends Service implements SdtLogic.ICallBack,
-    AppLogic.ICallBack,
-    ProtoLogic.IConnectionStatusCallback,
-    ProtoLogic.IConnectToServerCallback,
-    ProtoLogic.ITrafficDataCallback,
-    ProtoLogic.IReceiveMessageCallback,
-    ProtoLogic.IUserInfoUpdateCallback,
-    ProtoLogic.ISettingUpdateCallback,
-    ProtoLogic.IFriendRequestListUpdateCallback,
-    ProtoLogic.IFriendListUpdateCallback,
-    ProtoLogic.IGroupInfoUpdateCallback,
-    ProtoLogic.IConferenceEventCallback,
-    ProtoLogic.IOnlineEventCallback,
-    ProtoLogic.ISecretChatStateCallback,
-    ProtoLogic.ISecretMessageBurnStateCallback,
-    ProtoLogic.IChannelInfoUpdateCallback,
-    ProtoLogic.IDomainInfoUpdateCallback,
-    ProtoLogic.IGroupMembersUpdateCallback,
-    ProtoLogic.IJoinGroupRequestUpdatedCallback,
-    ProtoLogic.ISortAddressCallback {
+        AppLogic.ICallBack,
+        ProtoLogic.IConnectionStatusCallback,
+        ProtoLogic.IConnectToServerCallback,
+        ProtoLogic.ITrafficDataCallback,
+        ProtoLogic.IReceiveMessageCallback,
+        ProtoLogic.IUserInfoUpdateCallback,
+        ProtoLogic.ISettingUpdateCallback,
+        ProtoLogic.IFriendRequestListUpdateCallback,
+        ProtoLogic.IFriendListUpdateCallback,
+        ProtoLogic.IGroupInfoUpdateCallback,
+        ProtoLogic.IConferenceEventCallback,
+        ProtoLogic.IOnlineEventCallback,
+        ProtoLogic.ISecretChatStateCallback,
+        ProtoLogic.ISecretMessageBurnStateCallback,
+        ProtoLogic.IChannelInfoUpdateCallback,
+        ProtoLogic.IDomainInfoUpdateCallback,
+        ProtoLogic.IGroupMembersUpdateCallback,
+        ProtoLogic.IJoinGroupRequestUpdatedCallback,
+        ProtoLogic.ISortAddressCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
     private int mConnectionStatus;
@@ -318,8 +332,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             userId = userName;
             long initialSuccess = initProto(userName, userPwd);
             if (mConnectionStatus != ConnectionStatusConnecting
-                && mConnectionStatus != ConnectionStatusConnected
-                && mConnectionStatus != ConnectionStatusReceiveing) {
+                    && mConnectionStatus != ConnectionStatusConnected
+                    && mConnectionStatus != ConnectionStatusReceiveing) {
                 onConnectionStatusChanged(ConnectionStatusConnecting);
             }
 
@@ -484,7 +498,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         private void useTls(boolean skipVerifyCert, List<String> selfSignedCerts) {
             String[] arr = null;
-            if(selfSignedCerts != null && selfSignedCerts.size() > 0) {
+            if (selfSignedCerts != null && selfSignedCerts.size() > 0) {
                 arr = new String[selfSignedCerts.size()];
                 for (int i = 0; i < selfSignedCerts.size(); i++) {
                     arr[i] = selfSignedCerts.get(i);
@@ -664,9 +678,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     callback.onFailure(-1);
                     return;
                 }
-                if(!ProtoLogic.isSupportBigFilesUpload()) {
-                    if(tcpShortLink || ProtoLogic.isUseKcp()) {
-                        if(tcpShortLink) {
+                if (!ProtoLogic.isSupportBigFilesUpload()) {
+                    if (tcpShortLink || ProtoLogic.isUseKcp()) {
+                        if (tcpShortLink) {
                             Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                         } else {
                             Log.e(TAG, "KCP连接不支持内置对象存储，请把对象存储切换到其他类型");
@@ -682,8 +696,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             } else if (msg.content instanceof MediaMessageContent
-                && !(msg.content instanceof CompositeMessageContent)
-                && TextUtils.isEmpty(remoteUrl)) {
+                    && !(msg.content instanceof CompositeMessageContent)
+                    && TextUtils.isEmpty(remoteUrl)) {
                 Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
                 callback.onFailure(-1);
                 return;
@@ -711,13 +725,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         protoMessage.getContent().setRemoteMediaUrl(result);
                         ProtoLogic.updateMessageContent(protoMessage);
                         try {
-                            if(callback != null) {
+                            if (callback != null) {
                                 callback.onMediaUploaded(result);
                             }
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
-                        if(messageId > 0) {
+                        if (messageId > 0) {
                             ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
                         } else {
                             ProtoLogic.sendMessageEx2(messageId, protoMessage, expireDuration, new SendMessageCallback(callback));
@@ -863,7 +877,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 Log.e(TAG, "getMessages, drop messages " + (protoMessages.length - entry.entries.size()));
             }
 
-            if(conversation.type == Conversation.ConversationType.Group) {
+            if (conversation.type == Conversation.ConversationType.Group) {
                 ProtoJoinGroupRequest[] requests = ProtoLogic.getJoinGroupRequests(conversation.target, null, -1);
                 Log.d(TAG, "requestd");
             }
@@ -959,7 +973,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             });
 
-            if(conversation.type == Conversation.ConversationType.Group) {
+            if (conversation.type == Conversation.ConversationType.Group) {
                 ProtoJoinGroupRequest[] requests = ProtoLogic.getJoinGroupRequests(conversation.target, null, -1);
                 Log.d(TAG, "requestd");
             }
@@ -2066,7 +2080,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<JoinGroupRequest> getJoinGroupRequests(String groupId, String memberId, int status) throws RemoteException {
             ProtoJoinGroupRequest[] requests = ProtoLogic.getJoinGroupRequests(groupId, memberId, status);
             List<JoinGroupRequest> ret = new ArrayList<>();
-            if(requests != null) {
+            if (requests != null) {
                 for (ProtoJoinGroupRequest request : requests) {
                     JoinGroupRequest jo = new JoinGroupRequest();
                     jo.groupId = request.getGroupId();
@@ -2393,9 +2407,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
-            if(!ProtoLogic.isSupportBigFilesUpload()) {
-                if(tcpShortLink || ProtoLogic.isUseKcp()) {
-                    if(tcpShortLink) {
+            if (!ProtoLogic.isSupportBigFilesUpload()) {
+                if (tcpShortLink || ProtoLogic.isUseKcp()) {
+                    if (tcpShortLink) {
                         Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                     } else {
                         Log.e(TAG, "KCP连接不支持内置对象存储，请把对象存储切换到其他类型");
@@ -2499,7 +2513,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         largeMedia = file.length() > 100 * 1024 * 1024;
                     }
                 } else {
-                    if(ProtoLogic.isUseKcp()) {
+                    if (ProtoLogic.isUseKcp()) {
                         Log.e(TAG, "KCP连接不支持内置对象存储，请把对象存储切换到其他类型");
                         callback.onFailure(-1);
                         return;
@@ -4701,6 +4715,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
 
+        //使用websocket，只有2026.9.11之后的服务才可以支持
+        // 配置使用 websocket 和 相关证书，证书要求固定放置在 client/src/main/assets/certs 目录
+//        String certDirName = "certs";
+//        String[] certs = copyCerts(certDirName);
+//        ProtoLogic.setUseWebsocket(true);
+//        // 第一个参数是是否跳过证书验证，第二个参数是证书文件列表
+//        ProtoLogic.useTls(false, certs);
+
         Mars.onCreate(true);
 
         ProtoLogic.setUserInfoUpdateCallback(this);
@@ -5442,14 +5464,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     // progress, error, success
     private void uploadFile(long messageId, String filePath, byte[] data, String uploadUrl, String remoteUrl, String contentType, UploadMediaCallback callback) {
-
-        if (okHttpClient == null) {
-            okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .build();
-        }
-
         MediaType mediaType = MediaType.parse(contentType);
         RequestBody requestBody;
         if (!TextUtils.isEmpty(filePath)) {
@@ -5472,7 +5486,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             builder.removeHeader("User-Agent").addHeader("User-Agent", protoUserAgent);
         }
         Request request = builder.build();
-        Call call = okHttpClient.newCall(request);
+        Call call = getOkHttpClient().newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -5505,13 +5519,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, byte[] data, String contentType, UploadMediaCallback callback) {
-        if (okHttpClient == null) {
-            okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .build();
-        }
-
         MediaType mediaType = MediaType.parse(contentType);
         RequestBody requestBody;
         if (!TextUtils.isEmpty(filePath)) {
@@ -5540,7 +5547,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (!TextUtils.isEmpty(protoUserAgent)) {
             builder.removeHeader("User-Agent").addHeader("User-Agent", protoUserAgent);
         }
-        Call call = okHttpClient.newCall(builder.build());
+        Call call = getOkHttpClient().newCall(builder.build());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -5571,6 +5578,97 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
+    private synchronized OkHttpClient getOkHttpClient() {
+        if (okHttpClient == null) {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS);
+            // 与 ProtoLogic.useTls 使用同一目录的证书
+            X509TrustManager trustManager = buildTrustManager("certs");
+            if (trustManager != null) {
+                try {
+                    SSLContext sslContext = SSLContext.getInstance("TLS");
+                    sslContext.init(null, new TrustManager[]{trustManager}, null);
+                    builder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+                } catch (GeneralSecurityException e) {
+                    Log.e(TAG, "init upload ssl fail", e);
+                }
+            }
+            okHttpClient = builder.build();
+        }
+        return okHttpClient;
+    }
+
+    // 在系统 CA 之外，额外信任 assets/certDirName 下的证书（如自签名证书）；没有证书时返回 null，使用系统默认
+    private X509TrustManager buildTrustManager(String certDirName) {
+        try {
+            AssetManager assetManager = getAssets();
+            String[] certNames = assetManager.list(certDirName);
+            if (certNames == null || certNames.length == 0) {
+                return null;
+            }
+
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            int certCount = 0;
+            for (String certName : certNames) {
+                try (InputStream is = assetManager.open(certDirName + "/" + certName)) {
+                    for (Certificate cert : certificateFactory.generateCertificates(is)) {
+                        keyStore.setCertificateEntry(certName + "-" + certCount++, cert);
+                    }
+                } catch (IOException | CertificateException e) {
+                    Log.e(TAG, "load cert fail: " + certName, e);
+                }
+            }
+            if (certCount == 0) {
+                return null;
+            }
+
+            X509TrustManager systemTrustManager = getX509TrustManager(null);
+            X509TrustManager certTrustManager = getX509TrustManager(keyStore);
+            return new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    systemTrustManager.checkClientTrusted(chain, authType);
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    try {
+                        systemTrustManager.checkServerTrusted(chain, authType);
+                    } catch (CertificateException e) {
+                        certTrustManager.checkServerTrusted(chain, authType);
+                    }
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    X509Certificate[] systemIssuers = systemTrustManager.getAcceptedIssuers();
+                    X509Certificate[] certIssuers = certTrustManager.getAcceptedIssuers();
+                    X509Certificate[] issuers = Arrays.copyOf(systemIssuers, systemIssuers.length + certIssuers.length);
+                    System.arraycopy(certIssuers, 0, issuers, systemIssuers.length, certIssuers.length);
+                    return issuers;
+                }
+            };
+        } catch (IOException | GeneralSecurityException e) {
+            Log.e(TAG, "build trust manager fail", e);
+            return null;
+        }
+    }
+
+    // keyStore 为 null 时返回系统默认的 TrustManager
+    private static X509TrustManager getX509TrustManager(KeyStore keyStore) throws GeneralSecurityException {
+        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        factory.init(keyStore);
+        for (TrustManager trustManager : factory.getTrustManagers()) {
+            if (trustManager instanceof X509TrustManager) {
+                return (X509TrustManager) trustManager;
+            }
+        }
+        throw new GeneralSecurityException("no X509TrustManager");
+    }
+
     private boolean connectedToMainNetwork() {
         if (doubleNetworkStrategy == 1) {
             return true;
@@ -5585,4 +5683,54 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     public boolean isMainProcess() {
         return Binder.getCallingPid() == Process.myPid();
     }
+
+private String[] copyCerts(String certDirName) {
+    Context appContext = getApplicationContext();
+    AssetManager assetManager = appContext.getResources().getAssets();
+    List<String> pathsList = new ArrayList<>();
+
+    try {
+        String[] certs = assetManager.list(certDirName);
+        if (certs == null || certs.length == 0) {
+            return new String[0];
+        }
+
+        File destCertDir = new File(appContext.getFilesDir(), certDirName);
+
+        if (!destCertDir.exists() && !destCertDir.mkdirs()) {
+            Log.e(TAG, "Failed to create directory: " + destCertDir.getAbsolutePath());
+            return new String[0];
+        }
+
+        for (String certName : certs) {
+            File destFile = new File(destCertDir, certName);
+            boolean isCopySuccessful = true;
+
+            if (!destFile.exists()) {
+                String assetPath = certDirName + "/" + certName;
+
+                try (InputStream is = assetManager.open(assetPath);
+                     FileOutputStream os = new FileOutputStream(destFile)) {
+
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = is.read(buffer)) != -1) {
+                        os.write(buffer, 0, bytesRead);
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to copy individual cert: " + certName, e);
+                    isCopySuccessful = false; // 单个文件拷贝失败
+                }
+            }
+
+            if (isCopySuccessful && destFile.exists()) {
+                pathsList.add(destFile.getAbsolutePath());
+            }
+        }
+    } catch (IOException e) {
+        Log.e(TAG, "Error listing or accessing certificate files", e);
+    }
+
+    return pathsList.toArray(new String[0]);
+}
 }
