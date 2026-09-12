@@ -135,6 +135,15 @@
     <string name="voice_rec">Hold to Talk</string>
     <string name="voice_cancel">Release to Cancel</string>
     <string name="voice_short">Message too short</string>
+    <string name="voice_input_voice">Voice</string>
+    <string name="voice_input_release_to_send">Release to Send</string>
+    <string name="voice_input_release_to_cancel">Release to Cancel</string>
+    <string name="voice_input_slide_to_text">Slide here to Text</string>
+    <string name="voice_input_release_to_edit">Release to Edit</string>
+    <string name="voice_input_send_voice">Send Voice</string>
+    <string name="voice_input_no_text">No speech recognized</string>
+    <string name="voice_input_recognize_failed">Speech to text failed</string>
+    <string name="voice_input_count_down">Recording stops in %d s</string>
 
     <!-- PTT -->
     <string name="ptt_hold_to_talk">Hold to Talk</string>

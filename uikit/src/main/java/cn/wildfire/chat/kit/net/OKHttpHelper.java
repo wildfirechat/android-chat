@@ -139,16 +139,24 @@ public class OKHttpHelper {
     }
 
     public static void sse(final String url, Object param, EventSourceListener listener) {
+        sse(url, param, null, listener);
+    }
+
+    public static void sse(final String url, Object param, Map<String, String> headers, EventSourceListener listener) {
         RequestBody body = RequestBody.create(JSON, param == null ? "" : gson.toJson(param));
-        final Request request = new Request.Builder()
+        Request.Builder builder = new Request.Builder()
             .url(url)
             .post(body)
             .header("Content-Type", "application/json")
-            .header("Accept", "*/*")
-            .build();
+            .header("Accept", "*/*");
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                builder.header(entry.getKey(), entry.getValue());
+            }
+        }
 
         EventSources.createFactory(okHttpClient)
-            .newEventSource(request, listener);
+            .newEventSource(builder.build(), listener);
     }
 
     public static <T> void put(final String url, Map<String, String> param, final Callback<T> callback) {

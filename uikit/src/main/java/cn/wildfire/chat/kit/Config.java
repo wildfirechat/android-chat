@@ -116,6 +116,8 @@ public class Config {
      * 语音转文字服务地址。关于语音转文字信息请参考：https://gitee.com/wfchat/asr-api 。
      * <p>
      * 野火提供的测试服务会记录语音文件和转换后的文字，上线会有可能泄密风险。因此请确保务必上线时购买部署自己的语音转文字服务，或者设置为null
+     * <p>
+     * 请求时会在 HTTP header authCode 中带上从 IM 服务获取的认证码，由 asr-api 校验
      */
     public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
 
@@ -123,6 +125,27 @@ public class Config {
      * 语音识别服务备选地址，双网环境下使用。
      */
     public static String ASR_SERVER_BACKUP_URL = null;
+
+    /**
+     * 实时语音输入服务地址，配置之后，输入框右侧会显示麦克风按钮。
+     * <p>
+     * 请配置为 asr-api 的实时语音识别地址，例如 wss://example.com/asr/api/stream。连接时会在 HTTP header authCode 中带上从 IM 服务获取的认证码，
+     * <p>
+     * 内网测试时也可以直连 wf-voice 的 WebSocket 地址（默认端口 12436），例如 ws://192.168.1.100:12436。wf-voice 本身没有鉴权，也不支持 wss，请勿直接暴露到公网
+     */
+    public static String ASR_STREAM_SERVER_URL = "wss://app.wildfirechat.net/asr/api/stream";
+
+    /**
+     * 实时语音输入服务备选地址，双网环境下使用。
+     */
+    public static String ASR_STREAM_SERVER_BACKUP_URL = null;
+
+    /**
+     * 实时语音输入是否边说边出字。开启时说话过程中实时显示正在说的这句话，说完后修正为这句的最终结果；关闭时每说完一句才显示这句话。
+     * <p>
+     * 开启后 wf-voice 会在说话过程中反复识别正在说的这句话，服务端 CPU 占用更高。旧版本 wf-voice 不支持，开启后效果和关闭一样
+     */
+    public static boolean ENABLE_ASR_PARTIAL_RESULT = true;
 
     /**
      * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
@@ -307,6 +330,10 @@ public class Config {
 
     public static String getAsrServerUrl() {
         return selectServer(ASR_SERVER_URL, ASR_SERVER_BACKUP_URL);
+    }
+
+    public static String getAsrStreamServerUrl() {
+        return selectServer(ASR_STREAM_SERVER_URL, ASR_STREAM_SERVER_BACKUP_URL);
     }
 
     public static String getMinutesUrl() {

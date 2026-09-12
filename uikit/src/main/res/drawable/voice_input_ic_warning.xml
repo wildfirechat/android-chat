@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 圆形感叹号，感叹号镂空，透出气泡的颜色 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="22"
+    android:viewportHeight="22">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M11,0A11,11 0,1 1,11 22A11,11 0,1 1,11 0Z
+            M11,4.8C11.83,4.8 12.47,5.5 12.4,6.33L11.9,12.93C11.86,13.4 11.47,13.76 11,13.76C10.53,13.76 10.14,13.4 10.1,12.93L9.6,6.33C9.53,5.5 10.17,4.8 11,4.8Z
+            M11,15.2A1.45,1.45 0,1 1,11 18.1A1.45,1.45 0,1 1,11 15.2Z" />
+</vector>

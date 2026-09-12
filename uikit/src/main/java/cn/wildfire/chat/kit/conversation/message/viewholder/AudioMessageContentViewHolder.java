@@ -30,6 +30,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
+import cn.wildfire.chat.kit.asr.AsrAuth;
 import cn.wildfire.chat.kit.audio.AudioPlayModeUtils;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -43,6 +44,7 @@ import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback2;
 import okhttp3.Response;
 import okhttp3.sse.EventSource;
 
@@ -157,52 +159,67 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
             playStatusIndicator.setVisibility(View.GONE);
         }
 
-        OKHttpHelper.sse(Config.getAsrServerUrl(), object, new SimpleEventSourceListener() {
-
+        // asr-api 需要在 header 中带上认证码
+        AsrAuth.getAuthCode(new GeneralCallback2() {
             @Override
-            public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
-                speechToTextProgressBar.setVisibility(View.GONE);
-                FragmentActivity activity = fragment.getActivity();
-                if (activity == null || activity.isFinishing()) {
-                    eventSource.cancel();
-                    return;
-                }
-                if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
-                    if (TextUtils.isEmpty(data)) {
-                        return;
-                    }
-                    char firstChar = data.charAt(0);
-                    String curText = speechToTextSB.toString();
-                    if (!curText.isEmpty()
-                        && ((firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z'))) {
-                        speechToTextSB.append(" ");
-                        speechToTextSB.append(data);
+            public void onSuccess(String authCode) {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(AsrAuth.HEADER_AUTH_CODE, authCode);
+                OKHttpHelper.sse(Config.getAsrServerUrl(), object, headers, new SimpleEventSourceListener() {
 
-                        char lastChar = curText.charAt(curText.length() - 1);
-                        if (!((lastChar >= 'a' && lastChar <= 'z') || (lastChar >= 'A' && lastChar <= 'Z'))) {
-                            speechToTextSB.append(" ");
+                    @Override
+                    public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
+                        speechToTextProgressBar.setVisibility(View.GONE);
+                        FragmentActivity activity = fragment.getActivity();
+                        if (activity == null || activity.isFinishing()) {
+                            eventSource.cancel();
+                            return;
                         }
-                    } else {
-                        speechToTextSB.append(data);
+                        if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
+                            if (TextUtils.isEmpty(data)) {
+                                return;
+                            }
+                            char firstChar = data.charAt(0);
+                            String curText = speechToTextSB.toString();
+                            if (!curText.isEmpty()
+                                && ((firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z'))) {
+                                speechToTextSB.append(" ");
+                                speechToTextSB.append(data);
+
+                                char lastChar = curText.charAt(curText.length() - 1);
+                                if (!((lastChar >= 'a' && lastChar <= 'z') || (lastChar >= 'A' && lastChar <= 'Z'))) {
+                                    speechToTextSB.append(" ");
+                                }
+                            } else {
+                                speechToTextSB.append(data);
+                            }
+                            String text = speechToTextSB.toString();
+                            speechToTextTextView.setText(text);
+                            message.audioMessageSpeechToText = text;
+                            itemView.post(() -> fragment.scrollToKeepItemVisible(getAdapterPosition()));
+                        }
                     }
-                    String text = speechToTextSB.toString();
-                    speechToTextTextView.setText(text);
-                    message.audioMessageSpeechToText = text;
-                    itemView.post(() -> fragment.scrollToKeepItemVisible(getAdapterPosition()));
-                }
+
+                    @Override
+                    public void onUiFailure(@NonNull EventSource eventSource, @Nullable Throwable t, @Nullable Response response) {
+                        speechToTextLayout.setVisibility(View.GONE);
+                        speechToTextInProgress = false;
+                        speechToTextSB = null;
+                    }
+
+                    @Override
+                    public void onUiClosed(@NonNull EventSource eventSource) {
+                        speechToTextProgressBar.setVisibility(View.GONE);
+                        speechToTextInProgress = false;
+                    }
+                });
             }
 
             @Override
-            public void onUiFailure(@NonNull EventSource eventSource, @Nullable Throwable t, @Nullable Response response) {
+            public void onFail(int errorCode) {
                 speechToTextLayout.setVisibility(View.GONE);
                 speechToTextInProgress = false;
                 speechToTextSB = null;
-            }
-
-            @Override
-            public void onUiClosed(@NonNull EventSource eventSource) {
-                speechToTextProgressBar.setVisibility(View.GONE);
-                speechToTextInProgress = false;
             }
         });
     }
