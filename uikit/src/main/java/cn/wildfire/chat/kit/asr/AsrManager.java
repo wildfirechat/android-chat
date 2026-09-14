@@ -30,11 +30,11 @@ import cn.wildfirechat.remote.GeneralCallback2;
 public class AsrManager {
     private static final String TAG = "AsrManager";
     private static final int MAX_RECORDING_DURATION_MS = 60 * 1000;  // 最长录音时长：60秒
-    private static final int WAIT_EOS_TIMEOUT_MS = 8 * 1000;         // 停止录音后等待剩余识别结果的最长时间：8秒
+    private static final int WAIT_EOS_TIMEOUT_MS = 10 * 1000;         // 停止录音后等待剩余识别结果的最长时间：10秒
     // 停止录音后服务端一直没有推送消息，认为已经识别完。服务端不支持 eos 指令时不会回复 [EOS]，靠它结束识别
-    private static final int WAIT_EOS_IDLE_TIMEOUT_MS = 3 * 1000;
+    private static final int WAIT_EOS_IDLE_TIMEOUT_MS = 15 * 1000;
     // 停止录音后收到过识别结果，之后这么久没有新消息，认为已经识别完
-    private static final int WAIT_EOS_IDLE_AFTER_RESULT_MS = 1500;
+    private static final int WAIT_EOS_IDLE_AFTER_RESULT_MS = 60 * 1000;
 
     // "Over" 热词（不区分大小写，支持中文），识别结果以它结尾时回调 onHotwordDetected
     private static final Pattern HOTWORD_OVER_PATTERN = Pattern.compile("(?i)(over|欧弗|结束)[，,.。\\s]*$");
