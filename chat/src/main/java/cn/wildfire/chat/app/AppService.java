@@ -733,7 +733,7 @@ public class AppService implements AppServiceProvider {
     }
 
     public static void validateConfig(Context context) {
-        String effectiveAppServerAddress = Instance.appServerAddress();
+        String effectiveAppServerAddress = AppService.APP_SERVER_ADDRESS;
         if (TextUtils.isEmpty(Config.IM_SERVER_HOST)
             || Config.IM_SERVER_HOST.startsWith("http")
             || Config.IM_SERVER_HOST.contains(":")
