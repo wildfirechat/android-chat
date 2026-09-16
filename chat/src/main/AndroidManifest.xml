@@ -170,8 +170,6 @@
 
         </activity>
 
-        <activity android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
-
         <activity
             android:name="cn.wildfire.chat.app.setting.ChangePasswordActivity"
             android:label="@string/set_new_password" />
