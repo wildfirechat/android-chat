@@ -130,7 +130,7 @@ public class AppService implements AppServiceProvider {
                     } else if (backupReachable[0]) {
                         callback.onUiSuccess(APP_SERVER_BACKUP_ADDRESS);
                     } else {
-                        callback.onUiSuccess(APP_SERVER_BACKUP_ADDRESS);
+                        callback.onUiSuccess(APP_SERVER_ADDRESS);
                     }
                 }
             }
@@ -1133,7 +1133,7 @@ public class AppService implements AppServiceProvider {
         appServerAddress(new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String s) {
-                String url = appServerAddress() + "/slide_verify/generate";
+                String url = s + "/slide_verify/generate";
                 Map<String, Object> params = new HashMap<>();
 
                 OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
@@ -1192,7 +1192,7 @@ public class AppService implements AppServiceProvider {
         appServerAddress(new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String s) {
-                String url = appServerAddress() + "/slide_verify/verify";
+                String url = s + "/slide_verify/verify";
                 Map<String, Object> params = new HashMap<>();
                 params.put("token", token);
                 params.put("x", x);
