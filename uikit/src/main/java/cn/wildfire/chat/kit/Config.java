@@ -302,9 +302,17 @@ public class Config {
         if (TextUtils.isEmpty(main)) {
             return backup;
         }
+        if(ChatManager.Instance().getBackupAddressStrategy() == 1) {
+            return main;
+        }
+        if(ChatManager.Instance().getBackupAddressStrategy() == 2) {
+            return backup;
+        }
+
         if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
             return ChatManager.Instance().isConnectedToMainNetwork() ? main : backup;
         }
+
         return main;
     }
 
