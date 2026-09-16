@@ -130,7 +130,7 @@ public class AppService implements AppServiceProvider {
                     } else if (backupReachable[0]) {
                         callback.onUiSuccess(APP_SERVER_BACKUP_ADDRESS);
                     } else {
-                        callback.onUiSuccess(APP_SERVER_ADDRESS);
+                        callback.onUiSuccess(APP_SERVER_BACKUP_ADDRESS);
                     }
                 }
             }
