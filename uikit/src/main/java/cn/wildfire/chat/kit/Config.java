@@ -34,7 +34,7 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/ = "wildfirechat.net";
+    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/ = "172.16.10.43";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
@@ -96,14 +96,14 @@ public class Config {
      * <p>
      * 优先使用本地安装的软件打开文件进行预览，如果本地没有能够支持打开该类型的文件时，使用在线预览
      */
-    public static String ONLINE_FILE_PREVIEW_URL = "https://app.wildfirechat.net/preview/onlinePreview?url=";
+    public static String ONLINE_FILE_PREVIEW_URL = null;
 
     /**
      * 工作台页面地址
      * <p>
      * 如果不想显示工作台，置为 null 即可
      */
-    public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
+    public static String WORKSPACE_URL = null;
 
     /**
      * 工作台页面备选地址，双网环境下使用。
@@ -119,7 +119,7 @@ public class Config {
      * <p>
      * 请求时会在 HTTP header authCode 中带上从 IM 服务获取的认证码，由 asr-api 校验
      */
-    public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
+    public static String ASR_SERVER_URL = null;
 
     /**
      * 语音识别服务备选地址，双网环境下使用。
@@ -133,7 +133,7 @@ public class Config {
      * <p>
      * 内网测试时也可以直连 wf-voice 的 WebSocket 地址（默认端口 12436），例如 ws://192.168.1.100:12436。wf-voice 本身没有鉴权，也不支持 wss，请勿直接暴露到公网
      */
-    public static String ASR_STREAM_SERVER_URL = "wss://app.wildfirechat.net/asr/api/stream";
+    public static String ASR_STREAM_SERVER_URL = null;
 
     /**
      * 实时语音输入服务备选地址，双网环境下使用。
@@ -151,7 +151,7 @@ public class Config {
      * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
      * 请注意，不能写应用服务地址
      */
-    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.net";
+    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = null;
 
     /**
      * 组织通讯录服务备选地址，双网环境下使用。
@@ -162,7 +162,7 @@ public class Config {
      * 接龙服务地址，如果需要接龙功能，请部署接龙服务，然后这里填上接龙服务地址；如果不需要接龙功能，请置为 null
      * 示例：http://192.168.1.81:8081
      */
-    public static String COLLECTION_SERVER_ADDRESS = "https://jielong.wildfirechat.net";
+    public static String COLLECTION_SERVER_ADDRESS = null;
 
     /**
      * 接龙服务备选地址，双网环境下使用。
@@ -173,7 +173,7 @@ public class Config {
      * 投票服务地址，如果需要投票功能，请部署投票服务，然后这里填上投票服务地址；如果不需要投票功能，请置为 null
      * 示例：http://192.168.1.81:8082
      */
-    public static String POLL_SERVER_ADDRESS = "https://poll.wildfirechat.net";
+    public static String POLL_SERVER_ADDRESS = null;
 
     /**
      * 投票服务备选地址，双网环境下使用。
@@ -243,7 +243,7 @@ public class Config {
     // AI会议纪要机器人ID
     public static String AI_MINUTES_ROBOT_ID = "robotminutes";
     // 会议纪要页面地址
-    public static String MINUTES_URL = "http://101.42.4.222:8883/index.html";
+    public static String MINUTES_URL = null;
 
     /**
      * 会议纪要页面备选地址，双网环境下使用。

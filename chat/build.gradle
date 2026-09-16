@@ -16,6 +16,12 @@ android {
             storeFile file('../wfc.keystore')
             storePassword 'wildfirechat'
         }
+        release {
+            keyAlias 'release'
+            keyPassword 'wildfirechat'
+            storeFile file('../release.keystore')
+            storePassword 'wildfirechat'
+        }
     }
     compileSdkVersion 34
     ndkVersion '18.1.5063045'
@@ -96,6 +102,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //signingConfig signingConfigs.wfc
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
