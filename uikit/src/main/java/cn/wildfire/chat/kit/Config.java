@@ -6,7 +6,7 @@ package cn.wildfire.chat.kit;
 
 import android.text.TextUtils;
 
-import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
@@ -301,12 +301,18 @@ public class Config {
         if (TextUtils.isEmpty(main)) {
             return backup;
         }
-        try {
-            return ChatManager.Instance().isConnectedToMainNetwork() ? main : backup;
-        } catch (NotInitializedExecption e) {
-            // ClientService 运行在 :marsservice 进程时，默认头像等回调在该进程里执行，该进程没有初始化 ChatManager
+        if(ChatManager.Instance().getBackupAddressStrategy() == 1) {
             return main;
         }
+        if(ChatManager.Instance().getBackupAddressStrategy() == 2) {
+            return backup;
+        }
+
+        if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
+            return ChatManager.Instance().isConnectedToMainNetwork() ? main : backup;
+        }
+
+        return main;
     }
 
     public static String getOrgServerAddress() {

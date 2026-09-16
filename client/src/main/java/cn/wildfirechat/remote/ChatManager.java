@@ -2685,6 +2685,14 @@ public class ChatManager {
     }
 
     /**
+     * 获取网络策略
+     * @return
+     */
+    public int getBackupAddressStrategy() {
+        return backupAddressStrategy;
+    }
+
+    /**
      * 设置服务地址
      *
      * @param imServerHost IM服务地址
