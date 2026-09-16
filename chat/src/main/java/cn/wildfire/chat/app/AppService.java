@@ -76,11 +76,11 @@ public class AppService implements AppServiceProvider {
     // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://[2409:8a00:32c0:1ee8:782d:fBc8:2e1b:4d10]:8888";
     // ipv4
     // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://172.16.10.43:8888";
+    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ ="http://10.43.43.66:8888";
     /**
      * 应用服务备选地址，双网环境下使用。
      */
-    public static String APP_SERVER_BACKUP_ADDRESS = "http://10.43.43.66:8888";
+    public static String APP_SERVER_BACKUP_ADDRESS = "http://172.16.10.43:8888";
 
     private AppService() {
 
@@ -107,9 +107,14 @@ public class AppService implements AppServiceProvider {
             callback.onUiSuccess(APP_SERVER_ADDRESS);
             return;
         }
-        if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
-            callback.onUiSuccess(ChatManager.Instance().isConnectedToMainNetwork() ? APP_SERVER_ADDRESS : APP_SERVER_BACKUP_ADDRESS);
-            return;
+
+        try {
+            if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
+                callback.onUiSuccess(ChatManager.Instance().isConnectedToMainNetwork() ? APP_SERVER_ADDRESS : APP_SERVER_BACKUP_ADDRESS);
+                return;
+            }
+        } catch (RuntimeException e) {
+            // do nothing
         }
 
         final boolean[] mainReachable = {false};
@@ -162,14 +167,14 @@ public class AppService implements AppServiceProvider {
 
     private void probeAppServer(String address, SimpleCallback<Boolean> callback) {
         OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(5, TimeUnit.SECONDS)
-            .writeTimeout(5, TimeUnit.SECONDS)
-            .build();
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .build();
         Request request = new Request.Builder()
-            .url(address)
-            .get()
-            .build();
+                .url(address)
+                .get()
+                .build();
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -647,16 +652,16 @@ public class AppService implements AppServiceProvider {
                         JSONObject itemObj = items.getJSONObject(i);
                         Conversation conversation = new Conversation(Conversation.ConversationType.type(itemObj.getInt("convType")), itemObj.getString("convTarget"), itemObj.getInt("convLine"));
                         FavoriteItem item = new FavoriteItem(itemObj.getInt("id"),
-                            itemObj.optLong("messageUid"),
-                            itemObj.getInt("type"),
-                            itemObj.getLong("timestamp"),
-                            conversation,
-                            itemObj.getString("origin"),
-                            itemObj.getString("sender"),
-                            itemObj.getString("title"),
-                            itemObj.getString("url"),
-                            itemObj.getString("thumbUrl"),
-                            itemObj.getString("data")
+                                itemObj.optLong("messageUid"),
+                                itemObj.getInt("type"),
+                                itemObj.getLong("timestamp"),
+                                conversation,
+                                itemObj.getString("origin"),
+                                itemObj.getString("sender"),
+                                itemObj.getString("title"),
+                                itemObj.getString("url"),
+                                itemObj.getString("thumbUrl"),
+                                itemObj.getString("data")
                         );
 
                         favoriteItems.add(item);
@@ -704,6 +709,7 @@ public class AppService implements AppServiceProvider {
 
     public interface CheckVersionCallback {
         void onUiSuccess(boolean needUpdate, boolean forceUpdate, String latestVersion, String title, String message, String url);
+
         void onUiFailure(int code, String msg);
     }
 
@@ -735,14 +741,14 @@ public class AppService implements AppServiceProvider {
     public static void validateConfig(Context context) {
         String effectiveAppServerAddress = AppService.APP_SERVER_ADDRESS;
         if (TextUtils.isEmpty(Config.IM_SERVER_HOST)
-            || Config.IM_SERVER_HOST.startsWith("http")
-            || Config.IM_SERVER_HOST.contains(":")
-            || TextUtils.isEmpty(effectiveAppServerAddress)
-            || (!effectiveAppServerAddress.startsWith("http") && !effectiveAppServerAddress.startsWith("https"))
-            || Config.IM_SERVER_HOST.equals("127.0.0.1")
-            || effectiveAppServerAddress.contains("127.0.0.1")
-            || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && effectiveAppServerAddress.contains("wildfirechat.net"))
-            || (Config.IM_SERVER_HOST.contains("wildfirechat.net") && !effectiveAppServerAddress.contains("wildfirechat.net"))
+                || Config.IM_SERVER_HOST.startsWith("http")
+                || Config.IM_SERVER_HOST.contains(":")
+                || TextUtils.isEmpty(effectiveAppServerAddress)
+                || (!effectiveAppServerAddress.startsWith("http") && !effectiveAppServerAddress.startsWith("https"))
+                || Config.IM_SERVER_HOST.equals("127.0.0.1")
+                || effectiveAppServerAddress.contains("127.0.0.1")
+                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && effectiveAppServerAddress.contains("wildfirechat.net"))
+                || (Config.IM_SERVER_HOST.contains("wildfirechat.net") && !effectiveAppServerAddress.contains("wildfirechat.net"))
         ) {
             Toast.makeText(context, "配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
             new Handler().postDelayed(() -> {
@@ -1124,38 +1130,48 @@ public class AppService implements AppServiceProvider {
      * @param callback 回调接口
      */
     public void loadSlideVerifyCode(@NonNull SlideVerifyCallback callback) {
-        String url = appServerAddress() + "/slide_verify/generate";
-        Map<String, Object> params = new HashMap<>();
-
-        OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
+        appServerAddress(new SimpleCallback<String>() {
             @Override
-            public void onUiSuccess(Map<String, Object> result) {
-                if (result == null) {
-                    callback.onLoadFailure(-1, "返回数据为空");
-                    return;
-                }
+            public void onUiSuccess(String s) {
+                String url = appServerAddress() + "/slide_verify/generate";
+                Map<String, Object> params = new HashMap<>();
 
-                String token = (String) result.get("token");
-                String backgroundImageStr = (String) result.get("backgroundImage");
-                String sliderImageStr = (String) result.get("sliderImage");
-                Double sliderY = parseDouble(result.get("y"));
+                OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
+                    @Override
+                    public void onUiSuccess(Map<String, Object> result) {
+                        if (result == null) {
+                            callback.onLoadFailure(-1, "返回数据为空");
+                            return;
+                        }
 
-                if (TextUtils.isEmpty(token) || TextUtils.isEmpty(backgroundImageStr) || TextUtils.isEmpty(sliderImageStr) || sliderY == null) {
-                    callback.onLoadFailure(-1, "验证码数据不完整");
-                    return;
-                }
+                        String token = (String) result.get("token");
+                        String backgroundImageStr = (String) result.get("backgroundImage");
+                        String sliderImageStr = (String) result.get("sliderImage");
+                        Double sliderY = parseDouble(result.get("y"));
 
-                try {
-                    SlideVerifyInfo verifyInfo = new SlideVerifyInfo.Builder()
-                        .setToken(token)
-                        .setBackgroundImageFromBase64(backgroundImageStr)
-                        .setSliderImageFromBase64(sliderImageStr)
-                        .setSliderY(sliderY)
-                        .build();
-                    callback.onLoadSuccess(verifyInfo);
-                } catch (IllegalStateException e) {
-                    callback.onLoadFailure(-1, "图片解码失败：" + e.getMessage());
-                }
+                        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(backgroundImageStr) || TextUtils.isEmpty(sliderImageStr) || sliderY == null) {
+                            callback.onLoadFailure(-1, "验证码数据不完整");
+                            return;
+                        }
+
+                        try {
+                            SlideVerifyInfo verifyInfo = new SlideVerifyInfo.Builder()
+                                    .setToken(token)
+                                    .setBackgroundImageFromBase64(backgroundImageStr)
+                                    .setSliderImageFromBase64(sliderImageStr)
+                                    .setSliderY(sliderY)
+                                    .build();
+                            callback.onLoadSuccess(verifyInfo);
+                        } catch (IllegalStateException e) {
+                            callback.onLoadFailure(-1, "图片解码失败：" + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onUiFailure(int code, String msg) {
+                        callback.onLoadFailure(code, msg);
+                    }
+                });
             }
 
             @Override
@@ -1173,15 +1189,25 @@ public class AppService implements AppServiceProvider {
      * @param callback 回调接口
      */
     public void verifySlidePosition(@NonNull String token, int x, @NonNull SlideVerifyCallback callback) {
-        String url = appServerAddress() + "/slide_verify/verify";
-        Map<String, Object> params = new HashMap<>();
-        params.put("token", token);
-        params.put("x", x);
-
-        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+        appServerAddress(new SimpleCallback<String>() {
             @Override
-            public void onUiSuccess(StatusResult result) {
-                callback.onVerifySuccess(token);
+            public void onUiSuccess(String s) {
+                String url = appServerAddress() + "/slide_verify/verify";
+                Map<String, Object> params = new HashMap<>();
+                params.put("token", token);
+                params.put("x", x);
+
+                OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+                    @Override
+                    public void onUiSuccess(StatusResult result) {
+                        callback.onVerifySuccess(token);
+                    }
+
+                    @Override
+                    public void onUiFailure(int code, String msg) {
+                        callback.onVerifyFailure(code, msg);
+                    }
+                });
             }
 
             @Override
@@ -1304,7 +1330,7 @@ public class AppService implements AppServiceProvider {
                     } else if (code == 9) {
                         JSONObject result = json.optJSONObject("result");
                         callback.onScanned(result == null ? null : result.optString("userName"),
-                            result == null ? null : result.optString("portrait"));
+                                result == null ? null : result.optString("portrait"));
                     } else if (code == 18) {
                         callback.onCanceled();
                     } else {
