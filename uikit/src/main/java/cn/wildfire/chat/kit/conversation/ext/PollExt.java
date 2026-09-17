@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation.ext;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,8 +36,9 @@ public class PollExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void openPollHome(View containerView, Conversation conversation) {
-        if (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net")
-                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net"))) {
+        String pollServerAddress = Config.getPollServerAddress();
+        if (!TextUtils.isEmpty(pollServerAddress) && (Config.IM_SERVER_HOST.contains("wildfirechat.net") && pollServerAddress.contains("wildfirechat.net")
+                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !pollServerAddress.contains("wildfirechat.net")))) {
             Intent intent = PollHomeActivity.buildIntent(activity, conversation.target);
             startActivity(intent);
         } else {

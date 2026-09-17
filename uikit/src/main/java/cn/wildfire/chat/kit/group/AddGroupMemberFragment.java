@@ -77,7 +77,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
 
     @Override
     public void initHeaderViewHolders() {
-        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+        if (!TextUtils.isEmpty(Config.getOrgServerAddress())) {
             OrganizationServiceViewModel organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, organizations -> {
                 if (!organizations.isEmpty()) {

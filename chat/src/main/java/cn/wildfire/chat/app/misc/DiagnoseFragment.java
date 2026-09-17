@@ -112,29 +112,37 @@ public class DiagnoseFragment extends Fragment {
     }
 
     private void checkAppServer() {
-        OKHttpHelper.get(AppService.Instance().appServerAddress(), null, new SimpleCallback<String>() {
-            @Override
-            public void onUiSuccess(String s) {
-                if (!isAdded()) {
-                    return;
-                }
-                if ("Ok".equals(s)) {
-                    diagnoseResultSB.append(getString(R.string.diagnose_app_server_ok)).append("\n\n");
+        // 连接失败时，还不知道连的是主网络还是备选网络，双网时主备地址都检测，结果前面带上地址
+        boolean dualNetwork = !TextUtils.isEmpty(AppService.APP_SERVER_BACKUP_ADDRESS);
+        String[] appServers = dualNetwork ?
+            new String[]{AppService.APP_SERVER_ADDRESS, AppService.APP_SERVER_BACKUP_ADDRESS} :
+            new String[]{AppService.APP_SERVER_ADDRESS};
+        for (String appServer : appServers) {
+            String prefix = dualNetwork ? appServer + "\n" : "";
+            OKHttpHelper.get(appServer, null, new SimpleCallback<String>() {
+                @Override
+                public void onUiSuccess(String s) {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    if ("Ok".equals(s)) {
+                        diagnoseResultSB.append(prefix).append(getString(R.string.diagnose_app_server_ok)).append("\n\n");
+                    } else {
+                        diagnoseResultSB.append(prefix).append(getString(R.string.diagnose_app_server_error, s)).append("\n\n");
+                    }
                     updateDiagnoseResult();
-                } else {
-                    diagnoseResultSB.append(getString(R.string.diagnose_app_server_error, s)).append("\n\n");
                 }
-            }
 
-            @Override
-            public void onUiFailure(int code, String msg) {
-                if (!isAdded()) {
-                    return;
+                @Override
+                public void onUiFailure(int code, String msg) {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    diagnoseResultSB.append(prefix).append(getString(R.string.diagnose_app_server_error, code + " " + msg)).append("\n\n");
+                    updateDiagnoseResult();
                 }
-                diagnoseResultSB.append(getString(R.string.diagnose_app_server_error, code + " " + msg)).append("\n\n");
-                updateDiagnoseResult();
-            }
-        });
+            });
+        }
     }
 
     private void checkApiVersion() {

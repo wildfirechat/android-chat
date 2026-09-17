@@ -245,7 +245,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private boolean noUseFts = false;
 
-    private boolean _connectedToMainNetwork;
+    // 还没有连接时，网络未知，和协议栈保持一致，按主网络处理
+    private boolean _connectedToMainNetwork = true;
     private int doubleNetworkStrategy;
 
     private OkHttpClient okHttpClient;

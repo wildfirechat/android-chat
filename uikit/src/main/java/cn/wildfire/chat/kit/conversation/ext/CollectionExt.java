@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation.ext;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,8 +35,9 @@ public class CollectionExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void createCollection(View containerView, Conversation conversation) {
-        if (Config.IM_SERVER_HOST.contains("wildfirechat.net") && Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net")
-                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !Config.POLL_SERVER_ADDRESS.contains("wildfirechat.net"))) {
+        String collectionServerAddress = Config.getCollectionServerAddress();
+        if (!TextUtils.isEmpty(collectionServerAddress) && (Config.IM_SERVER_HOST.contains("wildfirechat.net") && collectionServerAddress.contains("wildfirechat.net")
+                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && !collectionServerAddress.contains("wildfirechat.net")))) {
 
             Intent intent = new Intent(activity, CreateCollectionActivity.class);
             intent.putExtra(CreateCollectionActivity.EXTRA_CONVERSATION, conversation);

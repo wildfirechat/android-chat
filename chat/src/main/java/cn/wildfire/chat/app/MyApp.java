@@ -28,6 +28,7 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.conversation.ConversationRouter;
 import cn.wildfire.chat.kit.conversation.message.viewholder.CollectionMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
 import cn.wildfirechat.chat.BuildConfig;
@@ -116,6 +117,10 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
                 OrganizationService organizationService = OrganizationService.Instance();
                 wfcUIKit.setOrganizationServiceProvider(organizationService);
             }
+
+            // 双网环境下，主备地址对应的是同一个服务，authToken 通用，切换网络后不用重新登录
+            OKHttpHelper.addDualNetworkAddress(AppService.APP_SERVER_ADDRESS, AppService.APP_SERVER_BACKUP_ADDRESS);
+            OKHttpHelper.addDualNetworkAddress(OrganizationService.ORG_SERVER_ADDRESS, OrganizationService.ORG_SERVER_BACKUP_ADDRESS);
 
             ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
             ChatManager.Instance().setUrlRedirectorClazz(WFUrlRedirector.class);

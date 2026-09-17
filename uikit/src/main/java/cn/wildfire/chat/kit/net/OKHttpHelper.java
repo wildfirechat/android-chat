@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import cn.wildfire.chat.kit.net.base.ResultWrapper;
@@ -47,6 +48,42 @@ public class OKHttpHelper {
 
     private static OkHttpClient okHttpClient;
 
+    // 双网环境下，同一个服务主备地址的 host-port，互相指向对方
+    private static final Map<String, String> dualNetworkHostPorts = new ConcurrentHashMap<>();
+
+    private static volatile NetworkErrorListener networkErrorListener;
+
+    public interface NetworkErrorListener {
+        /**
+         * 请求出现网络错误，没有收到响应。在 OkHttp 的线程回调
+         */
+        void onNetworkError(HttpUrl url);
+    }
+
+    public static void setNetworkErrorListener(NetworkErrorListener listener) {
+        networkErrorListener = listener;
+    }
+
+    /**
+     * 双网环境下，登记同一个服务的主备地址。主备地址对应的是同一个服务，authToken 通用，主备地址都保存，切换网络后不用重新登录
+     *
+     * @param address       主网络地址
+     * @param backupAddress 备选网络地址，为空时忽略
+     */
+    public static void addDualNetworkAddress(String address, String backupAddress) {
+        HttpUrl url = TextUtils.isEmpty(address) ? null : HttpUrl.parse(address);
+        HttpUrl backupUrl = TextUtils.isEmpty(backupAddress) ? null : HttpUrl.parse(backupAddress);
+        if (url == null || backupUrl == null) {
+            return;
+        }
+        String hostPort = url.host() + "-" + url.port();
+        String backupHostPort = backupUrl.host() + "-" + backupUrl.port();
+        if (!hostPort.equals(backupHostPort)) {
+            dualNetworkHostPorts.put(hostPort, backupHostPort);
+            dualNetworkHostPorts.put(backupHostPort, hostPort);
+        }
+    }
+
     public static void init(Context context) {
         AppContext = new WeakReference<>(context);
         SharedPreferences sp = context.getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, Context.MODE_PRIVATE);
@@ -69,10 +106,25 @@ public class OKHttpHelper {
                     .addHeader(AUTHORIZATION_HEADER, authToken)
                     .build();
             }
-            Response response = chain.proceed(request);
+            Response response;
+            try {
+                response = chain.proceed(request);
+            } catch (IOException e) {
+                NetworkErrorListener listener = networkErrorListener;
+                if (listener != null) {
+                    listener.onNetworkError(request.url());
+                }
+                throw e;
+            }
             String responseAuthToken = response.header(AUTHORIZATION_HEADER, null);
             if (!TextUtils.isEmpty(responseAuthToken)) {
-                sp.edit().putString(AUTHORIZATION_HEADER + ":" + host + "-" + port, responseAuthToken).apply();
+                String hostPort = host + "-" + port;
+                SharedPreferences.Editor editor = sp.edit().putString(AUTHORIZATION_HEADER + ":" + hostPort, responseAuthToken);
+                String otherHostPort = dualNetworkHostPorts.get(hostPort);
+                if (otherHostPort != null) {
+                    editor.putString(AUTHORIZATION_HEADER + ":" + otherHostPort, responseAuthToken);
+                }
+                editor.apply();
             }
             return response;
         });
