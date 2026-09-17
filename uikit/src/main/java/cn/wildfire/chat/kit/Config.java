@@ -6,7 +6,7 @@ package cn.wildfire.chat.kit;
 
 import android.text.TextUtils;
 
-import cn.wildfirechat.client.ConnectionStatus;
+import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
@@ -287,15 +287,14 @@ public class Config {
 
     /**
      * 根据当前网络状态在主/备地址之间选择。
+     * <p>
+     * 断线重连、同步消息（Receiving）等 IM 非 Connected 状态时，沿用最近一次连接的网络；还没有连接过时，网络未知，和协议栈保持一致，按主网络处理。
      *
      * @param main   主网地址
      * @param backup 备网地址
      * @return 实际应使用的地址
      */
     public static String selectServer(String main, String backup) {
-        if (TextUtils.isEmpty(main) && TextUtils.isEmpty(backup)) {
-            return null;
-        }
         if (TextUtils.isEmpty(backup)) {
             return main;
         }

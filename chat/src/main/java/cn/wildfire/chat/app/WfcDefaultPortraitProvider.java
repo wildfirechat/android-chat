@@ -23,7 +23,8 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 
 public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
-    private final Map<String, Pair<Long,  String>> groupPortraitMap = new HashMap<>();
+    // 缓存的是生成头像的请求参数，不缓存完整地址，双网切换网络后，应用服务地址会变
+    private final Map<String, Pair<Long,  String>> groupPortraitRequestMap = new HashMap<>();
 
     @Override
     public String userDefaultPortrait(UserInfo userInfo) {
@@ -39,9 +40,9 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (groupInfo instanceof NullGroupInfo || !TextUtils.isEmpty(groupInfo.portrait) || userInfos == null || userInfos.isEmpty()) {
             return groupInfo.portrait;
         }
-        Pair<Long, String> pair = groupPortraitMap.get(groupInfo.target);
+        Pair<Long, String> pair = groupPortraitRequestMap.get(groupInfo.target);
         if (pair != null && pair.first == groupInfo.updateDt) {
-            return pair.second;
+            return groupPortraitUrl(pair.second);
         }
 
         boolean pending = false;
@@ -56,7 +57,7 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
                     pending = true;
                 }
                 JSONObject obj = new JSONObject();
-                if (TextUtils.isEmpty(userInfo.portrait) || userInfo.portrait.startsWith(AppService.Instance().appServerAddress())) {
+                if (TextUtils.isEmpty(userInfo.portrait) || AppService.isAppServerUrl(userInfo.portrait)) {
                     obj.put("name", userInfo.displayName);
                 } else {
                     obj.put("avatarUrl", userInfo.portrait);
@@ -70,8 +71,11 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (pending) {
             return null;
         }
-        String portrait = AppService.Instance().appServerAddress() + "/avatar/group?request=" + Uri.encode(request.toString());
-        groupPortraitMap.put(groupInfo.target, new Pair<>(groupInfo.updateDt, portrait));
-        return portrait;
+        groupPortraitRequestMap.put(groupInfo.target, new Pair<>(groupInfo.updateDt, request.toString()));
+        return groupPortraitUrl(request.toString());
+    }
+
+    private String groupPortraitUrl(String request) {
+        return AppService.Instance().appServerAddress() + "/avatar/group?request=" + Uri.encode(request);
     }
 }

@@ -89,7 +89,7 @@ public class PickConversationTargetFragment extends PickUserFragment {
         // 选择一个群
         addHeaderViewHolder(PickGroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
         // 选取组织成员
-        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+        if (!TextUtils.isEmpty(Config.getOrgServerAddress())) {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {

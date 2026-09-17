@@ -180,7 +180,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         }
         addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_domain, null);
 
-        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+        if (!TextUtils.isEmpty(Config.getOrgServerAddress())) {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {

@@ -230,7 +230,7 @@ public class UserInfoFragment extends Fragment implements WfcPage {
         } else {
             messagesOptionItemView.setVisibility(View.GONE);
         }
-        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+        if (!TextUtils.isEmpty(Config.getOrgServerAddress())) {
             loadOrganizationData();
         }
         if (WfcUtils.isExternalTarget(userInfo.uid)) {

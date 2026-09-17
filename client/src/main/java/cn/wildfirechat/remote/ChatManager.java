@@ -9344,17 +9344,19 @@ public class ChatManager {
 
     /**
      * 当前服务是否连接到了主网络
+     * <p>
+     * 未连接时，返回最近一次连接的网络；还没有连接过，或者 IM 服务还没绑定好时，网络未知，按主网络处理，返回 true
      */
     public boolean isConnectedToMainNetwork() {
         if (!checkRemoteService()) {
-            return false;
+            return true;
         }
 
         try {
             return mClient.isConnectedToMainNetwork();
         } catch (RemoteException e) {
             e.printStackTrace();
-            return false;
+            return true;
         }
     }
 

@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfire.chat.app.callback.SlideVerifyCallback;
 import cn.wildfire.chat.app.login.model.LoginResult;
@@ -40,6 +39,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.BooleanCallback;
+import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
@@ -82,17 +82,33 @@ public class AppService implements AppServiceProvider {
      */
     public static String APP_SERVER_BACKUP_ADDRESS = "http://10.43.43.66:8888";
 
-    private AppService() {
+    /**
+     * 登录前等 IM 未连接时，探测到的可用应用服务地址
+     */
+    private volatile String probedAppServerAddress;
+    // 正在进行的探测，探测期间的请求都等这次探测结果
+    private AppServerProbe appServerProbe;
+    private OkHttpClient probeHttpClient;
 
+    private AppService() {
+        // 请求出现网络错误，可能是网络环境变了，清除探测结果，下次请求重新探测
+        OKHttpHelper.setNetworkErrorListener(url -> probedAppServerAddress = null);
     }
 
     public static AppService Instance() {
         return Instance;
     }
 
+    public interface AppServerAddressCallback {
+        /**
+         * 可能在非 UI 线程回调
+         */
+        void onAddress(String address);
+    }
+
     /**
-     * 获取当前应使用的应用服务地址（同步）。
-     * 登录前等 IM 未连接场景请使用 {@link #appServerAddress(SimpleCallback)} 进行探测。
+     * 获取当前应使用的应用服务地址（同步），根据 IM 当前或最近一次连接的网络选择。
+     * 登录前等 IM 未连接场景请使用 {@link #appServerAddress(AppServerAddressCallback)} 进行探测。
      */
     public String appServerAddress() {
         return Config.selectServer(APP_SERVER_ADDRESS, APP_SERVER_BACKUP_ADDRESS);
@@ -100,100 +116,120 @@ public class AppService implements AppServiceProvider {
 
     /**
      * 获取当前应使用的应用服务地址（异步）。
-     * IM 未连接时会并行探测主备地址，5 秒超时，返回首个可达地址。
+     * IM 已连接时，直接用 IM 连接的网络判断；IM 未连接时（登录前），探测可用地址。主备网络是隔离的，一般只有一个地址可达，并行探测主备地址，用首个可达的地址。
+     * 探测结果会缓存，避免每次请求都探测；请求出现网络错误时清除缓存，下次请求重新探测
      */
-    public void appServerAddress(SimpleCallback<String> callback) {
+    public void appServerAddress(AppServerAddressCallback callback) {
         if (TextUtils.isEmpty(APP_SERVER_BACKUP_ADDRESS)) {
-            callback.onUiSuccess(APP_SERVER_ADDRESS);
+            callback.onAddress(APP_SERVER_ADDRESS);
+            return;
+        }
+        int status = ChatManager.Instance().getConnectionStatus();
+        if (status == ConnectionStatus.ConnectionStatusConnected || status == ConnectionStatus.ConnectionStatusReceiveing) {
+            // IM 连接后以 IM 连接的网络为准，清除探测结果，IM 断开后（如退出登录）重新探测
+            probedAppServerAddress = null;
+            callback.onAddress(appServerAddress());
             return;
         }
 
-        try {
-            if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
-                callback.onUiSuccess(ChatManager.Instance().isConnectedToMainNetwork() ? APP_SERVER_ADDRESS : APP_SERVER_BACKUP_ADDRESS);
-                return;
-            }
-        } catch (RuntimeException e) {
-            // do nothing
-        }
-
-        final boolean[] mainReachable = {false};
-        final boolean[] backupReachable = {false};
-        final AtomicInteger completed = new AtomicInteger(0);
-        final Object lock = new Object();
-
-        Runnable checkComplete = () -> {
-            synchronized (lock) {
-                if (completed.incrementAndGet() == 2) {
-                    if (mainReachable[0]) {
-                        callback.onUiSuccess(APP_SERVER_ADDRESS);
-                    } else if (backupReachable[0]) {
-                        callback.onUiSuccess(APP_SERVER_BACKUP_ADDRESS);
-                    } else {
-                        callback.onUiSuccess(APP_SERVER_ADDRESS);
-                    }
+        String address;
+        AppServerProbe probe = null;
+        synchronized (this) {
+            address = probedAppServerAddress;
+            if (address == null) {
+                if (appServerProbe != null) {
+                    appServerProbe.callbacks.add(callback);
+                    return;
                 }
+                probe = new AppServerProbe();
+                probe.callbacks.add(callback);
+                appServerProbe = probe;
             }
-        };
+        }
+        if (probe == null) {
+            callback.onAddress(address);
+            return;
+        }
+        probeAppServer(probe, APP_SERVER_ADDRESS);
+        probeAppServer(probe, APP_SERVER_BACKUP_ADDRESS);
+    }
 
-        probeAppServer(APP_SERVER_ADDRESS, new SimpleCallback<Boolean>() {
+    private static class AppServerProbe {
+        final List<AppServerAddressCallback> callbacks = new ArrayList<>();
+        int pendingCount = 2;
+    }
+
+    private void probeAppServer(AppServerProbe probe, String address) {
+        synchronized (this) {
+            if (probeHttpClient == null) {
+                probeHttpClient = new OkHttpClient.Builder()
+                    .callTimeout(5, TimeUnit.SECONDS)
+                    .build();
+            }
+        }
+        Request request = new Request.Builder()
+            .url(address)
+            .get()
+            .build();
+        probeHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
-            public void onUiSuccess(Boolean reachable) {
-                mainReachable[0] = reachable;
-                checkComplete.run();
+            public void onFailure(Call call, IOException e) {
+                onAppServerProbeResult(probe, address, false);
             }
 
             @Override
-            public void onUiFailure(int code, String msg) {
-                mainReachable[0] = false;
-                checkComplete.run();
-            }
-        });
-
-        probeAppServer(APP_SERVER_BACKUP_ADDRESS, new SimpleCallback<Boolean>() {
-            @Override
-            public void onUiSuccess(Boolean reachable) {
-                backupReachable[0] = reachable;
-                checkComplete.run();
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                backupReachable[0] = false;
-                checkComplete.run();
+            public void onResponse(Call call, Response response) {
+                boolean reachable = false;
+                try {
+                    // 只有应用服务会返回 Ok，避免被网关、代理之类的返回的 200 误判
+                    reachable = response.isSuccessful() && "Ok".equals(response.body().string().trim());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    response.close();
+                }
+                onAppServerProbeResult(probe, address, reachable);
             }
         });
     }
 
-    private void probeAppServer(String address, SimpleCallback<Boolean> callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
-                .build();
-        Request request = new Request.Builder()
-                .url(address)
-                .get()
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (callback != null) {
-                    callback.onUiSuccess(false);
-                }
+    private void onAppServerProbeResult(AppServerProbe probe, String address, boolean reachable) {
+        String result;
+        synchronized (this) {
+            probe.pendingCount--;
+            if (appServerProbe != probe) {
+                // 另一个地址已经探测成功了
+                return;
             }
+            if (reachable) {
+                probedAppServerAddress = address;
+                result = address;
+            } else if (probe.pendingCount == 0) {
+                // 都探测失败时，回退到主地址，让后续请求正常报错，不缓存
+                result = APP_SERVER_ADDRESS;
+            } else {
+                return;
+            }
+            appServerProbe = null;
+        }
+        for (AppServerAddressCallback callback : probe.callbacks) {
+            callback.onAddress(result);
+        }
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    if (callback != null) {
-                        callback.onUiSuccess(response.isSuccessful());
-                    }
-                } finally {
-                    response.close();
-                }
-            }
-        });
+    /**
+     * url 是否是应用服务的地址，双网环境下，主备地址都算
+     */
+    public static boolean isAppServerUrl(String url) {
+        return url.startsWith(APP_SERVER_ADDRESS) || (!TextUtils.isEmpty(APP_SERVER_BACKUP_ADDRESS) && url.startsWith(APP_SERVER_BACKUP_ADDRESS));
+    }
+
+    private <T> void post(String path, Object params, Callback<T> callback) {
+        appServerAddress(address -> OKHttpHelper.post(address + path, params, callback));
+    }
+
+    private <T> void get(String path, Callback<T> callback) {
+        appServerAddress(address -> OKHttpHelper.get(address + path, null, callback));
     }
 
     public interface LoginCallback {
@@ -208,43 +244,29 @@ public class AppService implements AppServiceProvider {
 
     public void passwordLogin(String mobile, String password, String slideVerifyToken, LoginCallback callback) {
 
-        //如果是android pad，需要设置为pad类型 ChatManager.Instance().setPlatform(true);
-        final int platform = ChatManager.Instance().getPlatform().value();
+        Map<String, Object> params = new HashMap<>();
+        params.put("mobile", mobile);
+        params.put("password", password);
 
-        final String clientId;
+        //如果是android pad，需要设置为pad类型 ChatManager.Instance().setPlatform(true);
+        params.put("platform", ChatManager.Instance().getPlatform().value());
+
         try {
-            clientId = ChatManagerHolder.gChatManager.getClientId();
+            params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
         } catch (Exception e) {
             e.printStackTrace();
             callback.onUiFailure(-1, "网络出来问题了。。。");
             return;
         }
 
-        appServerAddress(new SimpleCallback<String>() {
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
+
+        post("/login_pwd", params, new SimpleCallback<LoginResult>() {
             @Override
-            public void onUiSuccess(String address) {
-                String url = address + "/login_pwd";
-                Map<String, Object> params = new HashMap<>();
-                params.put("mobile", mobile);
-                params.put("password", password);
-                params.put("platform", platform);
-                params.put("clientId", clientId);
-
-                if (!TextUtils.isEmpty(slideVerifyToken)) {
-                    params.put("slideVerifyToken", slideVerifyToken);
-                }
-
-                OKHttpHelper.post(url, params, new SimpleCallback<LoginResult>() {
-                    @Override
-                    public void onUiSuccess(LoginResult loginResult) {
-                        callback.onUiSuccess(loginResult);
-                    }
-
-                    @Override
-                    public void onUiFailure(int code, String msg) {
-                        callback.onUiFailure(code, msg);
-                    }
-                });
+            public void onUiSuccess(LoginResult loginResult) {
+                callback.onUiSuccess(loginResult);
             }
 
             @Override
@@ -260,56 +282,43 @@ public class AppService implements AppServiceProvider {
 
     public void smsLogin(String phoneNumber, String authCode, String slideVerifyToken, LoginCallback callback) {
 
-        final String clientId;
+        Map<String, Object> params = new HashMap<>();
+        params.put("mobile", phoneNumber);
+        params.put("code", authCode);
+
+
+        //Platform_iOS = 1,
+        //Platform_Android = 2,
+        //Platform_Windows = 3,
+        //Platform_OSX = 4,
+        //Platform_WEB = 5,
+        //Platform_WX = 6,
+        //Platform_linux = 7,
+        //Platform_iPad = 8,
+        //Platform_APad = 9,
+
+        //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
+        //if（当前设备是android pad)
+        //  params.put("platform", new Integer(9));
+        //else
+        params.put("platform", new Integer(2));
+
         try {
-            clientId = ChatManagerHolder.gChatManager.getClientId();
+            params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
         } catch (Exception e) {
             e.printStackTrace();
             callback.onUiFailure(-1, "获取clientId失败");
             return;
         }
 
-        appServerAddress(new SimpleCallback<String>() {
+        if (!TextUtils.isEmpty(slideVerifyToken)) {
+            params.put("slideVerifyToken", slideVerifyToken);
+        }
+
+        post("/login", params, new SimpleCallback<LoginResult>() {
             @Override
-            public void onUiSuccess(String address) {
-                String url = address + "/login";
-                Map<String, Object> params = new HashMap<>();
-                params.put("mobile", phoneNumber);
-                params.put("code", authCode);
-
-
-                //Platform_iOS = 1,
-                //Platform_Android = 2,
-                //Platform_Windows = 3,
-                //Platform_OSX = 4,
-                //Platform_WEB = 5,
-                //Platform_WX = 6,
-                //Platform_linux = 7,
-                //Platform_iPad = 8,
-                //Platform_APad = 9,
-
-                //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
-                //if（当前设备是android pad)
-                //  params.put("platform", new Integer(9));
-                //else
-                params.put("platform", new Integer(2));
-                params.put("clientId", clientId);
-
-                if (!TextUtils.isEmpty(slideVerifyToken)) {
-                    params.put("slideVerifyToken", slideVerifyToken);
-                }
-
-                OKHttpHelper.post(url, params, new SimpleCallback<LoginResult>() {
-                    @Override
-                    public void onUiSuccess(LoginResult loginResult) {
-                        callback.onUiSuccess(loginResult);
-                    }
-
-                    @Override
-                    public void onUiFailure(int code, String msg) {
-                        callback.onUiFailure(code, msg);
-                    }
-                });
+            public void onUiSuccess(LoginResult loginResult) {
+                callback.onUiSuccess(loginResult);
             }
 
             @Override
@@ -321,7 +330,6 @@ public class AppService implements AppServiceProvider {
 
 
     public void resetPassword(String mobile, String code, String password, SimpleCallback<StatusResult> callback) {
-        String url = appServerAddress() + "/reset_pwd";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(mobile)) {
             params.put("mobile", mobile);
@@ -329,7 +337,7 @@ public class AppService implements AppServiceProvider {
         params.put("resetCode", code);
         params.put("newPassword", password);
 
-        OKHttpHelper.post(url, params, callback);
+        post("/reset_pwd", params, callback);
     }
 
     public void changePassword(String oldPassword, String newPassword, SimpleCallback<StatusResult> callback) {
@@ -337,7 +345,6 @@ public class AppService implements AppServiceProvider {
     }
 
     public void changePassword(String oldPassword, String newPassword, String slideVerifyToken, SimpleCallback<StatusResult> callback) {
-        String url = appServerAddress() + "/change_pwd";
         Map<String, Object> params = new HashMap<>();
         params.put("oldPassword", oldPassword);
         params.put("newPassword", newPassword);
@@ -346,7 +353,7 @@ public class AppService implements AppServiceProvider {
             params.put("slideVerifyToken", slideVerifyToken);
         }
 
-        OKHttpHelper.post(url, params, callback);
+        post("/change_pwd", params, callback);
 
     }
 
@@ -362,7 +369,6 @@ public class AppService implements AppServiceProvider {
 
     public void requestAuthCode(String phoneNumber, String slideVerifyToken, SendCodeCallback callback) {
 
-        String url = appServerAddress() + "/send_code";
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", phoneNumber);
 
@@ -370,7 +376,7 @@ public class AppService implements AppServiceProvider {
             params.put("slideVerifyToken", slideVerifyToken);
         }
 
-        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+        post("/send_code", params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (statusResult.getCode() == 0) {
@@ -394,7 +400,6 @@ public class AppService implements AppServiceProvider {
 
     public void requestResetAuthCode(String phoneNumber, String slideVerifyToken, SendCodeCallback callback) {
 
-        String url = appServerAddress() + "/send_reset_code";
         Map<String, Object> params = new HashMap<>();
         if (!TextUtils.isEmpty(phoneNumber)) {
             params.put("mobile", phoneNumber);
@@ -404,7 +409,7 @@ public class AppService implements AppServiceProvider {
             params.put("slideVerifyToken", slideVerifyToken);
         }
 
-        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+        post("/send_reset_code", params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (statusResult.getCode() == 0) {
@@ -429,9 +434,7 @@ public class AppService implements AppServiceProvider {
     }
 
     public void scanPCLogin(String token, ScanPCCallback callback) {
-        String url = appServerAddress() + "/scan_pc";
-        url += "/" + token;
-        OKHttpHelper.post(url, null, new SimpleCallback<PCSession>() {
+        post("/scan_pc/" + token, null, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
                 if (pcSession.getStatus() == 1) {
@@ -455,13 +458,11 @@ public class AppService implements AppServiceProvider {
     }
 
     public void confirmPCLogin(String token, String userId, PCLoginCallback callback) {
-        String url = appServerAddress() + "/confirm_pc";
-
         Map<String, Object> params = new HashMap<>(3);
         params.put("user_id", userId);
         params.put("token", token);
         params.put("quick_login", 1);
-        OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
+        post("/confirm_pc", params, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
                 if (pcSession.getStatus() == 2) {
@@ -479,11 +480,9 @@ public class AppService implements AppServiceProvider {
     }
 
     public void cancelPCLogin(String token, PCLoginCallback callback) {
-        String url = appServerAddress() + "/cancel_pc";
-
         Map<String, Object> params = new HashMap<>(3);
         params.put("token", token);
-        OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
+        post("/cancel_pc", params, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
                 if (pcSession.getStatus() == 2) {
@@ -504,11 +503,9 @@ public class AppService implements AppServiceProvider {
     @Override
     public void getGroupAnnouncement(String groupId, AppServiceProvider.GetGroupAnnouncementCallback callback) {
         //从SP中获取到历史数据callback回去，然后再从网络刷新
-        String url = appServerAddress() + "/get_group_announcement";
-
         Map<String, Object> params = new HashMap<>(2);
         params.put("groupId", groupId);
-        OKHttpHelper.post(url, params, new SimpleCallback<GroupAnnouncement>() {
+        post("/get_group_announcement", params, new SimpleCallback<GroupAnnouncement>() {
             @Override
             public void onUiSuccess(GroupAnnouncement announcement) {
                 callback.onUiSuccess(announcement);
@@ -524,13 +521,11 @@ public class AppService implements AppServiceProvider {
     @Override
     public void updateGroupAnnouncement(String groupId, String announcement, AppServiceProvider.UpdateGroupAnnouncementCallback callback) {
         //更新到应用服务，再保存到本地SP中
-        String url = appServerAddress() + "/put_group_announcement";
-
         Map<String, Object> params = new HashMap<>(2);
         params.put("groupId", groupId);
         params.put("author", ChatManagerHolder.gChatManager.getUserId());
         params.put("text", announcement);
-        OKHttpHelper.post(url, params, new SimpleCallback<GroupAnnouncement>() {
+        post("/put_group_announcement", params, new SimpleCallback<GroupAnnouncement>() {
             @Override
             public void onUiSuccess(GroupAnnouncement announcement) {
                 callback.onUiSuccess(announcement);
@@ -611,11 +606,9 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void changeName(String newName, SimpleCallback<Void> callback) {
-        String url = appServerAddress() + "/change_name";
-
         Map<String, Object> params = new HashMap<>(2);
         params.put("newName", newName);
-        OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
+        post("/change_name", params, new SimpleCallback<Void>() {
             @Override
             public void onUiSuccess(Void aVoid) {
                 callback.onUiSuccess(null);
@@ -634,11 +627,10 @@ public class AppService implements AppServiceProvider {
             return;
         }
 
-        String url = appServerAddress() + "/fav/list";
         Map<String, Object> params = new HashMap<>();
         params.put("id", startId);
         params.put("count", count);
-        OKHttpHelper.post(url, params, new SimpleCallback<String>() {
+        post("/fav/list", params, new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String s) {
                 try {
@@ -684,7 +676,6 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void addFavoriteItem(FavoriteItem item, SimpleCallback<Void> callback) {
-        String url = appServerAddress() + "/fav/add";
         Map<String, Object> params = new HashMap<>();
         params.put("messageUid", item.getMessageUid());
         params.put("type", item.getFavType());
@@ -698,13 +689,12 @@ public class AppService implements AppServiceProvider {
         params.put("thumbUrl", item.getThumbUrl());
         params.put("data", item.getData());
 
-        OKHttpHelper.post(url, params, callback);
+        post("/fav/add", params, callback);
     }
 
     @Override
     public void removeFavoriteItem(int favId, SimpleCallback<Void> callback) {
-        String url = appServerAddress() + "/fav/del/" + favId;
-        OKHttpHelper.post(url, null, callback);
+        post("/fav/del/" + favId, null, callback);
     }
 
     public interface CheckVersionCallback {
@@ -714,8 +704,7 @@ public class AppService implements AppServiceProvider {
     }
 
     public void checkVersion(String currentVersion, int buildNumber, CheckVersionCallback callback) {
-        String url = appServerAddress() + "/version/check?platform=2&currentVersion=" + currentVersion + "&buildNumber=" + buildNumber;
-        OKHttpHelper.get(url, null, new SimpleCallback<HashMap<String, Object>>() {
+        get("/version/check?platform=2&currentVersion=" + currentVersion + "&buildNumber=" + buildNumber, new SimpleCallback<HashMap<String, Object>>() {
             @Override
             public void onUiSuccess(HashMap<String, Object> result) {
                 boolean needUpdate = Boolean.TRUE.equals(result.get("needUpdate"));
@@ -777,8 +766,7 @@ public class AppService implements AppServiceProvider {
         if (callback == null) {
             return;
         }
-        String url = appServerAddress() + "/conference/get_my_id";
-        OKHttpHelper.post(url, null, new SimpleCallback<String>() {
+        post("/conference/get_my_id", null, new SimpleCallback<String>() {
 
             @Override
             public void onUiSuccess(String response) {
@@ -804,8 +792,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void createConference(ConferenceInfo info, AppServiceProvider.CreateConferenceCallback callback) {
-        String url = appServerAddress() + "/conference/create";
-        OKHttpHelper.post(url, info, new SimpleCallback<String>() {
+        post("/conference/create", info, new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String response) {
                 try {
@@ -835,8 +822,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void getConferenceQuota(ConferenceQuotaCallback callback) {
-        String url = appServerAddress() + "/conference/quota";
-        OKHttpHelper.post(url, null, new SimpleCallback<ConferenceQuota>() {
+        post("/conference/quota", null, new SimpleCallback<ConferenceQuota>() {
             @Override
             public void onUiSuccess(ConferenceQuota conferenceQuota) {
                 callback.onSuccess(conferenceQuota);
@@ -854,13 +840,12 @@ public class AppService implements AppServiceProvider {
         if (callback == null) {
             return;
         }
-        String url = appServerAddress() + "/conference/info";
         Map<String, String> map = new HashMap<>();
         map.put("conferenceId", conferenceId);
         if (!TextUtils.isEmpty(password)) {
             map.put("password", password);
         }
-        OKHttpHelper.post(url, map, new SimpleCallback<ConferenceInfo>() {
+        post("/conference/info", map, new SimpleCallback<ConferenceInfo>() {
 
             @Override
             public void onUiSuccess(ConferenceInfo info) {
@@ -876,8 +861,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void destroyConference(String conferenceId, GeneralCallback callback) {
-        String url = appServerAddress() + "/conference/destroy/" + conferenceId;
-        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+        post("/conference/destroy/" + conferenceId, null, new SimpleCallback<StatusResult>() {
 
             @Override
             public void onUiSuccess(StatusResult statusResult) {
@@ -897,8 +881,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void favConference(String conferenceId, GeneralCallback callback) {
-        String url = appServerAddress() + "/conference/fav/" + conferenceId;
-        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+        post("/conference/fav/" + conferenceId, null, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (callback != null) {
@@ -922,8 +905,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void unfavConference(String conferenceId, GeneralCallback callback) {
-        String url = appServerAddress() + "/conference/unfav/" + conferenceId;
-        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+        post("/conference/unfav/" + conferenceId, null, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (callback != null) {
@@ -946,8 +928,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void isFavConference(String conferenceId, BooleanCallback callback) {
-        String url = appServerAddress() + "/conference/is_fav/" + conferenceId;
-        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+        post("/conference/is_fav/" + conferenceId, null, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (callback != null) {
@@ -972,8 +953,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void getFavConferences(FavConferenceCallback callback) {
-        String url = appServerAddress() + "/conference/fav_conferences";
-        OKHttpHelper.post(url, null, new SimpleCallback<List<ConferenceInfo>>() {
+        post("/conference/fav_conferences", null, new SimpleCallback<List<ConferenceInfo>>() {
             @Override
             public void onUiSuccess(List<ConferenceInfo> favConferences) {
                 if (callback != null) {
@@ -992,8 +972,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void updateConference(ConferenceInfo conferenceInfo, GeneralCallback callback) {
-        String url = appServerAddress() + "/conference/put_info";
-        OKHttpHelper.post(url, conferenceInfo, new SimpleCallback<StatusResult>() {
+        post("/conference/put_info", conferenceInfo, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (callback != null) {
@@ -1012,10 +991,9 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void recordConference(String conferenceId, boolean record, GeneralCallback callback) {
-        String url = appServerAddress() + "/conference/recording/" + conferenceId;
         Map<String, Boolean> params = new HashMap<>();
         params.put("recording", record);
-        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+        post("/conference/recording/" + conferenceId, params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (callback != null) {
@@ -1034,10 +1012,9 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void setConferenceFocusUserId(String conferenceId, String userId, GeneralCallback callback) {
-        String url = appServerAddress() + "/conference/focus/" + conferenceId;
         Map<String, String> params = new HashMap<>();
         params.put("userId", TextUtils.isEmpty(userId) ? "" : userId);
-        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+        post("/conference/focus/" + conferenceId, params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
                 if (callback != null) {
@@ -1090,7 +1067,7 @@ public class AppService implements AppServiceProvider {
             }
             for (Pair<String, String> userInfo : namePortraitPairs) {
                 JSONObject obj = new JSONObject();
-                if (TextUtils.isEmpty(userInfo.second) || userInfo.second.startsWith(appServerAddress())) {
+                if (TextUtils.isEmpty(userInfo.second) || isAppServerUrl(userInfo.second)) {
                     obj.put("name", userInfo.first);
                 } else {
                     obj.put("avatarUrl", userInfo.second);
@@ -1105,11 +1082,9 @@ public class AppService implements AppServiceProvider {
     }
 
     private void getGroupMembersForPortrait(String groupId, GetGroupMemberForPotraitCallback callback) {
-        String url = appServerAddress() + "/group/members_for_portrait";
-
         Map<String, Object> params = new HashMap<>(2);
         params.put("groupId", groupId);
-        OKHttpHelper.post(url, params, new SimpleCallback<List<UserIdNamePortrait>>() {
+        post("/group/members_for_portrait", params, new SimpleCallback<List<UserIdNamePortrait>>() {
             @Override
             public void onUiSuccess(List<UserIdNamePortrait> userIdNamePortraits) {
                 callback.onUiSuccess(userIdNamePortraits);
@@ -1130,19 +1105,15 @@ public class AppService implements AppServiceProvider {
      * @param callback 回调接口
      */
     public void loadSlideVerifyCode(@NonNull SlideVerifyCallback callback) {
-        appServerAddress(new SimpleCallback<String>() {
-            @Override
-            public void onUiSuccess(String s) {
-                String url = s + "/slide_verify/generate";
-                Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
-                OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
-                    @Override
-                    public void onUiSuccess(Map<String, Object> result) {
-                        if (result == null) {
-                            callback.onLoadFailure(-1, "返回数据为空");
-                            return;
-                        }
+        post("/slide_verify/generate", params, new SimpleCallback<Map<String, Object>>() {
+            @Override
+            public void onUiSuccess(Map<String, Object> result) {
+                if (result == null) {
+                    callback.onLoadFailure(-1, "返回数据为空");
+                    return;
+                }
 
                         String token = (String) result.get("token");
                         String backgroundImageStr = (String) result.get("backgroundImage");
@@ -1189,19 +1160,15 @@ public class AppService implements AppServiceProvider {
      * @param callback 回调接口
      */
     public void verifySlidePosition(@NonNull String token, int x, @NonNull SlideVerifyCallback callback) {
-        appServerAddress(new SimpleCallback<String>() {
-            @Override
-            public void onUiSuccess(String s) {
-                String url = s + "/slide_verify/verify";
-                Map<String, Object> params = new HashMap<>();
-                params.put("token", token);
-                params.put("x", x);
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", token);
+        params.put("x", x);
 
-                OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
-                    @Override
-                    public void onUiSuccess(StatusResult result) {
-                        callback.onVerifySuccess(token);
-                    }
+        post("/slide_verify/verify", params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult result) {
+                callback.onVerifySuccess(token);
+            }
 
                     @Override
                     public void onUiFailure(int code, String msg) {
@@ -1250,7 +1217,6 @@ public class AppService implements AppServiceProvider {
      * 与 iOS 端 createPCLoginSession 保持一致（POST /pc_session）。
      */
     public void createPCLoginSession(String userId, @NonNull PCLoginSessionCallback callback) {
-        String url = appServerAddress() + "/pc_session";
         Map<String, Object> params = new HashMap<>(4);
         params.put("flag", 1);
         params.put("device_name", "pad");
@@ -1259,7 +1225,7 @@ public class AppService implements AppServiceProvider {
         if (!TextUtils.isEmpty(userId)) {
             params.put("userId", userId);
         }
-        OKHttpHelper.post(url, params, new SimpleCallback<Map<String, Object>>() {
+        post("/pc_session", params, new SimpleCallback<Map<String, Object>>() {
             @Override
             public void onUiSuccess(Map<String, Object> result) {
                 if (result == null) {
@@ -1306,9 +1272,8 @@ public class AppService implements AppServiceProvider {
      * 与 iOS 端 loginWithPCLoginSession 保持一致。
      */
     public void loginWithPCLoginSession(String token, @NonNull PCLoginPollCallback callback) {
-        String url = appServerAddress() + "/session_login/" + token;
         // 用 String 类型拿原始 JSON：code 9 需要携带 result 里的用户信息，走 ResultWrapper 会丢失
-        OKHttpHelper.post(url, null, new SimpleCallback<String>() {
+        post("/session_login/" + token, null, new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String body) {
                 try {
