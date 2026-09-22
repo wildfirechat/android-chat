@@ -8,6 +8,47 @@ apply plugin: 'com.hihonor.mcs.asplugin'
 // 谷歌推送 google-services.json 文件也得在在application module的根目录，本项目是 chat 目录
 //apply plugin: 'com.google.gms.google-services'
 
+// 自签名证书统一放在 client/src/main/assets/certs 目录，协议栈（ProtoLogic.useTls）直接用那份文件。
+// 下面的任务把这个目录下的证书合并成一份 res/raw 资源，供 res/xml/network_security_config.xml 引用，
+// 让 App 的 Java 网络库（OkHttp、WebView、Glide 等）也信任这些证书。
+// 这样证书只需要在 assets/certs 维护一份，不会出现两份证书不同步的问题。
+def selfSignedCertDir = file("$rootDir/client/src/main/assets/certs")
+def selfSignedCertResDir = layout.buildDirectory.dir("generated/res/selfSignedCerts").get().asFile
+
+def mergeSelfSignedCerts = tasks.register('mergeSelfSignedCerts') {
+    description = '把 client/src/main/assets/certs 下的自签名证书合并成 res/raw/wfc_self_signed_ca'
+    inputs.files(fileTree(selfSignedCertDir)).withPropertyName('selfSignedCerts')
+    outputs.dir(selfSignedCertResDir).withPropertyName('selfSignedCertRes')
+    doLast {
+        def rawDir = new File(selfSignedCertResDir, 'raw')
+        rawDir.mkdirs()
+        def pem = new StringBuilder()
+        if (selfSignedCertDir.isDirectory()) {
+            selfSignedCertDir.listFiles().sort { it.name }.each { certFile ->
+                if (!certFile.isFile()) {
+                    return
+                }
+                def text = certFile.getText('UTF-8')
+                if (text.contains('-----BEGIN CERTIFICATE-----')) {
+                    pem.append(text.trim()).append('\n')
+                } else {
+                    // network security config 只认 PEM，DER 格式的证书请先用 openssl x509 -inform der -out xxx.crt 转换
+                    logger.warn("mergeSelfSignedCerts: 跳过非 PEM 格式的证书 ${certFile.name}")
+                }
+            }
+        }
+        // 没有自签证书时生成空文件，network security config 会忽略它，只信任系统 CA
+        new File(rawDir, 'wfc_self_signed_ca.crt').setText(pem.toString(), 'UTF-8')
+    }
+}
+
+tasks.named('preBuild').configure {
+    dependsOn(mergeSelfSignedCerts)
+}
+tasks.matching { it.name ==~ /merge.*Resources/ }.configureEach {
+    dependsOn(mergeSelfSignedCerts)
+}
+
 android {
     signingConfigs {
         wfc {
@@ -110,6 +151,12 @@ android {
     productFlavors {
     }
     namespace 'cn.wildfirechat.chat'
+    sourceSets {
+        main {
+            // mergeSelfSignedCerts 任务生成的自签名证书资源
+            res.srcDirs += selfSignedCertResDir
+        }
+    }
     lint {
         abortOnError false
     }

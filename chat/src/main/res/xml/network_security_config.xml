@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  TLS 信任配置，作用于整个 App 的 Java 网络库（OkHttp、WebView、Glide 等），不需要逐个 OkHttpClient 去配置。
+
+  1. 自签名证书只在下面 domain-config 里列出的地址上生效，其他地址仍然只信任系统 CA。这样即使自签 CA 的私钥泄露，
+     也只影响自建服务，不会导致整个 App 的 HTTPS 都能被中间人劫持。
+  2. 证书由 chat/build.gradle 的 mergeSelfSignedCerts 任务从 client/src/main/assets/certs 合并生成，
+     换证书只要替换 assets/certs 下的文件即可，不要手工去改生成出来的 res/raw 资源。
+  3. 修改 Config.IM_SERVER_HOST、AppService.APP_SERVER_ADDRESS 等服务地址后，下面的 domain 要同步修改，否则会报
+     CertPathValidatorException: Trust anchor for certification path not found。
+  4. 协议栈（mars）是 native 实现，不走这个配置，它的自签证书由 ClientService 里的 ProtoLogic.useTls 处理，
+     用的是同一份 assets/certs 证书。
+  5. 正式发布时，建议把下面两个 cleartextTrafficPermitted 都改成 false，全部服务走 https。
+-->
+<network-security-config>
+    <!-- 默认只信任系统 CA。cleartextTrafficPermitted 与 AndroidManifest.xml 里的 usesCleartextTraffic 保持一致，
+         配置了 networkSecurityConfig 之后，以这里的值为准 -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- 自建服务（IM 服务、app server、媒体服务、org/poll/收藏等）的地址，用自签证书的都要列在这里 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.2.154</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/wfc_self_signed_ca" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

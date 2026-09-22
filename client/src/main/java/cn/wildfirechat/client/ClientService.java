@@ -58,12 +58,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,11 +66,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.ashmen.AshmenWrapper;
@@ -152,6 +141,7 @@ import cn.wildfirechat.remote.DefaultPortraitProvider;
 import cn.wildfirechat.remote.RecoverReceiver;
 import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.remote.UrlRedirector;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -4718,8 +4708,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         //使用websocket，只有2026.9.11之后的服务才可以支持
         // 配置使用 websocket 和 相关证书，证书要求固定放置在 client/src/main/assets/certs 目录
-//        String certDirName = "certs";
-//        String[] certs = copyCerts(certDirName);
+//        String[] certs = copyCerts(SelfSignedCertUtils.CERT_DIR_NAME);
 //        ProtoLogic.setUseWebsocket(true);
 //        // 第一个参数是是否跳过证书验证，第二个参数是证书文件列表
 //        ProtoLogic.useTls(false, certs);
@@ -5585,89 +5574,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     .readTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS);
             // 与 ProtoLogic.useTls 使用同一目录的证书
-            X509TrustManager trustManager = buildTrustManager("certs");
-            if (trustManager != null) {
-                try {
-                    SSLContext sslContext = SSLContext.getInstance("TLS");
-                    sslContext.init(null, new TrustManager[]{trustManager}, null);
-                    builder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-                } catch (GeneralSecurityException e) {
-                    Log.e(TAG, "init upload ssl fail", e);
-                }
-            }
+            SelfSignedCertUtils.trustSelfSignedCerts(this, builder);
             okHttpClient = builder.build();
         }
         return okHttpClient;
-    }
-
-    // 在系统 CA 之外，额外信任 assets/certDirName 下的证书（如自签名证书）；没有证书时返回 null，使用系统默认
-    private X509TrustManager buildTrustManager(String certDirName) {
-        try {
-            AssetManager assetManager = getAssets();
-            String[] certNames = assetManager.list(certDirName);
-            if (certNames == null || certNames.length == 0) {
-                return null;
-            }
-
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null, null);
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            int certCount = 0;
-            for (String certName : certNames) {
-                try (InputStream is = assetManager.open(certDirName + "/" + certName)) {
-                    for (Certificate cert : certificateFactory.generateCertificates(is)) {
-                        keyStore.setCertificateEntry(certName + "-" + certCount++, cert);
-                    }
-                } catch (IOException | CertificateException e) {
-                    Log.e(TAG, "load cert fail: " + certName, e);
-                }
-            }
-            if (certCount == 0) {
-                return null;
-            }
-
-            X509TrustManager systemTrustManager = getX509TrustManager(null);
-            X509TrustManager certTrustManager = getX509TrustManager(keyStore);
-            return new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                    systemTrustManager.checkClientTrusted(chain, authType);
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                    try {
-                        systemTrustManager.checkServerTrusted(chain, authType);
-                    } catch (CertificateException e) {
-                        certTrustManager.checkServerTrusted(chain, authType);
-                    }
-                }
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    X509Certificate[] systemIssuers = systemTrustManager.getAcceptedIssuers();
-                    X509Certificate[] certIssuers = certTrustManager.getAcceptedIssuers();
-                    X509Certificate[] issuers = Arrays.copyOf(systemIssuers, systemIssuers.length + certIssuers.length);
-                    System.arraycopy(certIssuers, 0, issuers, systemIssuers.length, certIssuers.length);
-                    return issuers;
-                }
-            };
-        } catch (IOException | GeneralSecurityException e) {
-            Log.e(TAG, "build trust manager fail", e);
-            return null;
-        }
-    }
-
-    // keyStore 为 null 时返回系统默认的 TrustManager
-    private static X509TrustManager getX509TrustManager(KeyStore keyStore) throws GeneralSecurityException {
-        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        factory.init(keyStore);
-        for (TrustManager trustManager : factory.getTrustManagers()) {
-            if (trustManager instanceof X509TrustManager) {
-                return (X509TrustManager) trustManager;
-            }
-        }
-        throw new GeneralSecurityException("no X509TrustManager");
     }
 
     private boolean connectedToMainNetwork() {
