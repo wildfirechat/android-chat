@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -127,11 +128,22 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
      * @param imageView
      */
     protected void loadMedia(Bitmap thumbnail, String imagePath, ImageView imageView) {
+        loadMedia(thumbnail, null, imagePath, imageView);
+    }
+
+    /**
+     * 缩略图优先级：消息里的缩略图 -> 远程缩略图 -> 占位图
+     */
+    protected void loadMedia(Bitmap thumbnail, String thumbnailUrl, String imagePath, ImageView imageView) {
         RequestBuilder<Drawable> thumbnailRequest = null;
         if (thumbnail != null) {
             thumbnailRequest = Glide
                 .with(fragment)
                 .load(thumbnail);
+        } else if (!TextUtils.isEmpty(thumbnailUrl)) {
+            thumbnailRequest = Glide
+                .with(fragment)
+                .load(thumbnailUrl);
         } else {
             thumbnailRequest = Glide
                 .with(fragment)

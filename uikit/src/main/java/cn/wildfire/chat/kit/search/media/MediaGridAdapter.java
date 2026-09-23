@@ -1,6 +1,7 @@
 package cn.wildfire.chat.kit.search.media;
 
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.View
 
         holder.videoIndicator.setVisibility(item.isVideo() ? View.VISIBLE : View.GONE);
 
-        loadMedia(item.thumbnail, item.getImagePath(), holder.imageView);
+        loadMedia(item.thumbnail, item.thumbnailUrl, item.getImagePath(), holder.imageView);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -57,12 +58,16 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.View
         });
     }
 
-    private void loadMedia(android.graphics.Bitmap thumbnail, String imagePath, ImageView imageView) {
+    private void loadMedia(android.graphics.Bitmap thumbnail, String thumbnailUrl, String imagePath, ImageView imageView) {
         RequestBuilder<Drawable> thumbnailRequest = null;
         if (thumbnail != null) {
             thumbnailRequest = Glide
                     .with(imageView.getContext())
                     .load(thumbnail);
+        } else if (!TextUtils.isEmpty(thumbnailUrl)) {
+            thumbnailRequest = Glide
+                    .with(imageView.getContext())
+                    .load(thumbnailUrl);
         } else {
             thumbnailRequest = Glide
                     .with(imageView.getContext())

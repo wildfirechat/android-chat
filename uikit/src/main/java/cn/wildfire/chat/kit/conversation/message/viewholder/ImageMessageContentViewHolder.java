@@ -16,6 +16,7 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
+import cn.wildfire.chat.kit.utils.ImageThumbUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
@@ -70,7 +71,8 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             imagePath = DownloadManager.buildSecretChatMediaUrl(message.message);
         }
-        loadMedia(thumbnail, imagePath, imageView);
+        String thumbnailUrl = thumbnail == null ? ImageThumbUtils.getRemoteThumbnailUrl(message.message) : null;
+        loadMedia(thumbnail, thumbnailUrl, imagePath, imageView);
 
     }
 

@@ -485,9 +485,13 @@ public class MMPreviewActivity extends AppCompatActivity implements OnDragToFini
             Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                     .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
                     .into(photoView);
+        } else if (!TextUtils.isEmpty(entry.getThumbnailUrl())) {
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+                    .thumbnail(Glide.with(MMPreviewActivity.this).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy))
+                    .into(photoView);
         } else {
             Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                    .placeholder(R.drawable.image_chat_placeholder)
                     .into(photoView);
         }
 

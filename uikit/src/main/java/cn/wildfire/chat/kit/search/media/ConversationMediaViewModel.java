@@ -121,6 +121,7 @@ public class ConversationMediaViewModel extends ViewModel {
         public String path;
         public String remotePath;
         public android.graphics.Bitmap thumbnail;
+        public String thumbnailUrl;
         public long duration;
         public long timestamp;
         public Conversation conversation;
@@ -137,6 +138,9 @@ public class ConversationMediaViewModel extends ViewModel {
                 this.path = imageContent.localPath;
                 this.remotePath = imageContent.remoteUrl;
                 this.thumbnail = imageContent.getThumbnail();
+                if (this.thumbnail == null) {
+                    this.thumbnailUrl = cn.wildfire.chat.kit.utils.ImageThumbUtils.getRemoteThumbnailUrl(message);
+                }
             } else if (contentType == MessageContentType.ContentType_Video) {
                 cn.wildfirechat.message.VideoMessageContent videoContent =
                         (cn.wildfirechat.message.VideoMessageContent) message.content;

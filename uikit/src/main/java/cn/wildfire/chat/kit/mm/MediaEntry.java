@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.mm;
 import android.graphics.Bitmap;
 
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.utils.ImageThumbUtils;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
@@ -20,7 +21,7 @@ public class MediaEntry {
     private String mediaUrl;
     private String mediaLocalPath;
     private String thumbnailUrl;
-    // TODO 消息里的缩略图会被移除
+    // 消息里的缩略图可能被协议栈移除，此时使用 thumbnailUrl
     private Bitmap thumbnail;
     private Message message;
 
@@ -41,6 +42,9 @@ public class MediaEntry {
         if (content instanceof ImageMessageContent) {
             this.type = TYPE_IMAGE;
             this.thumbnail = ((ImageMessageContent) content).getThumbnail();
+            if (this.thumbnail == null) {
+                this.thumbnailUrl = ImageThumbUtils.getRemoteThumbnailUrl(message);
+            }
         } else if (content instanceof VideoMessageContent) {
             this.type = TYPE_VIDEO;
             this.thumbnail = ((VideoMessageContent) content).getThumbnail();
