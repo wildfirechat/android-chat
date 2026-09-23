@@ -86,6 +86,8 @@ interface IRemoteClient {
     oneway void setProtoUserAgent(in String userAgent);
     int getConnectedNetworkType();
     oneway void addHttpHeader(in String header, in String value);
+    oneway void setHttpPrefixPath(in String prefixPath);
+    oneway void setHttpUploadPrefixPath(in String prefixPath);
     oneway void setLiteMode(in boolean isLiteMode);
     oneway void setLowBPSMode(in boolean isLowBPSMode);
     int getConnectionStatus();

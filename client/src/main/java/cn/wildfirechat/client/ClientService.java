@@ -473,6 +473,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setHttpPrefixPath(String prefixPath) throws RemoteException {
+            ProtoLogic.setHttpPrefixPath(prefixPath);
+        }
+
+        @Override
+        public void setHttpUploadPrefixPath(String prefixPath) throws RemoteException {
+            ProtoLogic.setHttpUploadPrefixPath(prefixPath);
+        }
+
+        @Override
         public void setLiteMode(boolean isLiteMode) throws RemoteException {
             ProtoLogic.setLiteMode(isLiteMode);
         }

@@ -252,6 +252,8 @@ public class ChatManager {
     private int backupAddressPort = 80;
     private String protoUserAgent = null;
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
+    private String protoHttpPrefixPath = null;
+    private String protoHttpUploadPrefixPath = null;
 
     private boolean useSM4 = false;
     private boolean isPad = false;
@@ -2782,6 +2784,44 @@ public class ChatManager {
 
         try {
             mClient.addHttpHeader(header, value);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置协议栈短连接HTTP请求的prefix path
+     *
+     * @param prefixPath 协议栈短连接HTTP请求的prefix path
+     */
+    public void setHttpPrefixPath(String prefixPath) {
+        protoHttpPrefixPath = prefixPath;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setHttpPrefixPath(prefixPath);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置协议栈上传文件的HTTP请求的prefix path
+     *
+     * @param prefixPath 协议栈上传文件的HTTP请求的prefix path
+     */
+    public void setHttpUploadPrefixPath(String prefixPath) {
+        protoHttpUploadPrefixPath = prefixPath;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setHttpUploadPrefixPath(prefixPath);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -11185,6 +11225,12 @@ public class ChatManager {
                                 e.printStackTrace();
                             }
                         }
+                    }
+                    if (!TextUtils.isEmpty(protoHttpPrefixPath)) {
+                        mClient.setHttpPrefixPath(protoHttpPrefixPath);
+                    }
+                    if (!TextUtils.isEmpty(protoHttpUploadPrefixPath)) {
+                        mClient.setHttpUploadPrefixPath(protoHttpUploadPrefixPath);
                     }
                     if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
                         mClient.connect(userId, token);
