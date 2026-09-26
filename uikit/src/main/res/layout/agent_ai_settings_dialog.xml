@@ -89,6 +89,20 @@
                 android:paddingEnd="10dp"
                 android:spinnerMode="dropdown" />
 
+            <!-- Agent 模式（preset）：下拉选择（type=3 preset.options / preset.current；
+                 options 为空（未部署 preset 服务）时禁用，仍显示当前值文本） -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_preset" />
+            <Spinner
+                android:id="@+id/agentAiPresetSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_agent_input_bg"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:spinnerMode="dropdown" />
+
             <!-- 工作目录：当前值（只读）+ 切换按钮（目录候选按需获取：207 op=dirs → 209 应答）+ 手动输入兜底 -->
             <TextView
                 style="@style/agent_ai_label"
@@ -207,6 +221,20 @@
                     android:tag="danger-full-access"
                     android:text="@string/agent_ai_sandbox_danger" />
             </RadioGroup>
+
+            <!-- 工具审批（approval）：下拉选择（type=3 approval.options / approval.current；
+                 options 为空（旧插件未提供该字段）时禁用，仍显示当前值文本） -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_approval" />
+            <Spinner
+                android:id="@+id/agentAiApprovalSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_agent_input_bg"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:spinnerMode="dropdown" />
 
             <!-- 计划模式 -->
             <LinearLayout

@@ -1031,6 +1031,9 @@
     <string name="agent_ai_loading">正在读取会话状态…</string>
     <string name="agent_ai_model">模型</string>
     <string name="agent_ai_effort">推理等级</string>
+    <string name="agent_ai_preset">Agent 模式</string>
+    <string name="agent_ai_approval">工具审批</string>
+    <string name="agent_ai_unset">未设置</string>
     <string name="agent_ai_cwd">工作目录</string>
     <string name="agent_ai_cwd_current">当前：%1$s</string>
     <string name="agent_ai_cwd_switch">切换</string>

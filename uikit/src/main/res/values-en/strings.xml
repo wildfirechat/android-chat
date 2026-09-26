@@ -985,6 +985,9 @@
     <string name="agent_ai_loading">Reading session state…</string>
     <string name="agent_ai_model">Model</string>
     <string name="agent_ai_effort">Reasoning effort</string>
+    <string name="agent_ai_preset">Agent preset</string>
+    <string name="agent_ai_approval">Tool approval</string>
+    <string name="agent_ai_unset">Not set</string>
     <string name="agent_ai_cwd">Working directory</string>
     <string name="agent_ai_cwd_current">Current: %1$s</string>
     <string name="agent_ai_cwd_switch">Switch</string>

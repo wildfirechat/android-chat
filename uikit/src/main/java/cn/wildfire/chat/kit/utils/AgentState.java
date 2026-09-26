@@ -32,7 +32,7 @@ import cn.wildfirechat.remote.UserSettingScope;
  * （usage/turn/context/cacheHitRatePct/speed/metricsAt）写到 type=2 独立通道
  * {@code <convType>-<line>-<target>_2}（回合结束必推，含出错/取消），两者独立推送。
  * AI 面板数据（组合查询结果：model 当前值 / effort / sandbox / plan / cwd /
- * sessionId；目录候选 dirs 已改走 209 按需应答，见 getAgentPanelData 注释）
+ * sessionId / preset / approval；目录候选 dirs 已改走 209 按需应答，见 getAgentPanelData 注释）
  * 写到 type=3 {@code <convType>-<line>-<target>_3}，面板打开/更新后刷新。
  * 群成员都能收到该会话级设置。
  * 标题栏、会话列表、输入面板共用此处的判定/读取/文案与颜色。
@@ -162,7 +162,7 @@ public class AgentState {
      * 读取会话的 AI 面板数据（scope=31 type=3 组合查询结果），未设置/非法/非 Agent 会话时返回 null。
      * <p>
      * 静默通道：面板打开时发 207 Agent_Command（op=query）组合查询，插件聚合面板数据
-     * （model 当前值 / effort / sandbox / plan / cwd / sessionId）
+     * （model 当前值 / effort / sandbox / plan / cwd / sessionId / preset / approval）
      * 写入 type=3（不回复消息）；本端读 type=3 渲染面板，不解析机器人回复文本。
      * 目录候选 {@code dirs} 已从 type=3 移除（v2.3，避免 scope=31 单值超限），
      * 改为面板发 207 op=dirs、插件用 209 Agent_Command_Result 透明消息回传；
@@ -170,8 +170,12 @@ public class AgentState {
      * 返回对象结构：{@code {"model":{"current":"provider/id","options":[{"value":..,"label":..}]},
      * "effort":{"current":"high","options":["low","medium","high"]},
      * "sandbox":{"current":"workspace-write","options":["read-only","workspace-write","danger-full-access"]},
-     * "plan":{"on":true},"cwd":"/abs/path","sessionId":"wildfire-..."}}
-     * （老插件可能仍含 {@code "dirs":["server","vue-pc-chat",...]}）
+     * "plan":{"on":true},"cwd":"/abs/path","sessionId":"wildfire-...",
+     * "preset":{"current":"standard","options":[{"value":"standard","label":"标准模式"}]},
+     * "approval":{"current":"ask","options":[{"value":"ask","label":"询问（需批准的操作弹卡片）"}]}}
+     * （{@code preset.options} 可能为空数组=部署未提供 preset 服务；{@code preset}/{@code approval}
+     * 可能整体缺失=旧插件，客户端容错为禁用控件并仅显示 current；
+     * 老插件可能仍含 {@code "dirs":["server","vue-pc-chat",...]}）
      * </p>
      */
     public static JSONObject getAgentPanelData(Conversation conversation) {

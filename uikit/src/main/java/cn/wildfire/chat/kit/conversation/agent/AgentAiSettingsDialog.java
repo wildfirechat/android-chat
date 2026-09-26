@@ -57,10 +57,12 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * <p>
  * 静默通道：所有交互不落消息流（不显示在界面上）。
  * 打开面板发 207 Agent_Command（op=query）组合查询 → 插件聚合面板数据
- * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId）写入
+ * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId / preset / approval）写入
  * scope=31 type=3（键 convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
- * 模型/推理等级为下拉（model.options / effort.options + current）、沙箱为单选、
+ * 模型/推理等级/Agent 模式（preset）/工具审批（approval）为下拉（options + current）、沙箱为单选、
  * 计划为开关、工作目录为 cwd + 目录选择弹窗。
+ * preset.options / approval.options 为空（未部署 preset 服务 / 旧插件缺字段）时对应下拉禁用
+ * 但保留 current 文本展示；current 不在 options 中时置顶追加展示，不丢当前值。
  * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/model deepseek-official/xxx"）；
  * 插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，变更可见）
  * 并刷新 type=3，本面板监听本端已有的用户设置更新事件（{@link OnSettingUpdateListener}）重读 type=3。
@@ -106,7 +108,7 @@ public class AgentAiSettingsDialog {
         }
     }
 
-    /** 模型候选：value=provider/id（发送用），label=value（name）（展示用） */
+    /** 面板候选项（模型 / Agent 模式 / 工具审批，三者 options 同构）：value=发送用，label=展示用 */
     private static class ModelOption {
         final String value;
         final String label;
@@ -128,6 +130,8 @@ public class AgentAiSettingsDialog {
     private TextView titleView;
     private Spinner modelSpinner;
     private Spinner effortSpinner;
+    private Spinner presetSpinner;
+    private Spinner approvalSpinner;
     private RadioGroup sandboxGroup;
     private TextView cwdCurrentView;
     private TextView cwdListLoadingView;
@@ -142,11 +146,17 @@ public class AgentAiSettingsDialog {
     private Button destroyBtn;
     private TextView applyingView;
 
-    /** type=3 面板数据当前值（模型/推理等级/沙箱/计划/工作目录） */
+    /** type=3 面板数据当前值（模型/推理等级/沙箱/计划/工作目录/Agent 模式/工具审批） */
     private final List<ModelOption> modelOptions = new ArrayList<>();
     private String currentModel = "";
     private final List<String> effortOptions = new ArrayList<>();
     private String currentEffort = "";
+    /** Agent 模式（preset）：候选可能为空数组（未部署 preset 服务）→ 下拉禁用但显示 current */
+    private final List<ModelOption> presetOptions = new ArrayList<>();
+    private String currentPreset = "";
+    /** 工具审批（approval）：旧插件可能整体缺字段 → 下拉禁用但显示 current */
+    private final List<ModelOption> approvalOptions = new ArrayList<>();
+    private String currentApproval = "";
     private String currentSandbox = "";
     private boolean planOn = false;
     private String currentCwd = "";
@@ -169,6 +179,8 @@ public class AgentAiSettingsDialog {
     /** 下拉实际展示项（= 候选 + 当前值不在候选时前置追加），与 Spinner 位置一一对应 */
     private final List<ModelOption> displayModelOptions = new ArrayList<>();
     private final List<String> displayEffortOptions = new ArrayList<>();
+    private final List<ModelOption> displayPresetOptions = new ArrayList<>();
+    private final List<ModelOption> displayApprovalOptions = new ArrayList<>();
 
     /** 程序化重建下拉/单选时的防回环开关 */
     private boolean rendering = false;
@@ -234,6 +246,11 @@ public class AgentAiSettingsDialog {
         titleView = view.findViewById(R.id.agentAiTitle);
         modelSpinner = view.findViewById(R.id.agentAiModelSpinner);
         effortSpinner = view.findViewById(R.id.agentAiEffortSpinner);
+        presetSpinner = view.findViewById(R.id.agentAiPresetSpinner);
+        approvalSpinner = view.findViewById(R.id.agentAiApprovalSpinner);
+        // 面板数据到达前（无候选）先禁用：避免空下拉可点；applyPanelData 渲染时按候选可用性恢复
+        presetSpinner.setEnabled(false);
+        approvalSpinner.setEnabled(false);
         sandboxGroup = view.findViewById(R.id.agentAiSandboxGroup);
         cwdCurrentView = view.findViewById(R.id.agentAiCwdCurrent);
         cwdListLoadingView = view.findViewById(R.id.agentAiCwdListLoading);
@@ -289,6 +306,44 @@ public class AgentAiSettingsDialog {
                 }
                 currentEffort = value;
                 sendCommand("set", "/effort " + value);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        presetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                if (rendering || applying || position < 0 || position >= displayPresetOptions.size()) {
+                    return;
+                }
+                ModelOption option = displayPresetOptions.get(position);
+                if (option == null || option.value.equals(currentPreset)) {
+                    return;
+                }
+                currentPreset = option.value;
+                sendCommand("set", "/preset " + option.value);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        approvalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                if (rendering || applying || position < 0 || position >= displayApprovalOptions.size()) {
+                    return;
+                }
+                ModelOption option = displayApprovalOptions.get(position);
+                if (option == null || option.value.equals(currentApproval)) {
+                    return;
+                }
+                currentApproval = option.value;
+                sendCommand("set", "/approval " + option.value);
             }
 
             @Override
@@ -406,7 +461,8 @@ public class AgentAiSettingsDialog {
 
     /**
      * 把 type=3 面板数据应用到当前值并渲染：
-     * model.options/current、effort.options/current、sandbox.current、plan.on、cwd；
+     * model.options/current、effort.options/current、preset.options/current、
+     * approval.options/current、sandbox.current、plan.on、cwd；
      * {@code dirs} 已由插件移除（改走 209 按需获取），仅当老插件仍携带时直接使用（兼容）。
      */
     private void applyPanelData(JSONObject data) {
@@ -454,6 +510,14 @@ public class AgentAiSettingsDialog {
         if (sandbox != null) {
             currentSandbox = sandbox.optString("current", "");
         }
+        // Agent 模式（preset）：current + options（与 model.options 同构；options 可能为空数组）
+        currentPreset = parseSelectorCurrent(data, "preset");
+        presetOptions.clear();
+        presetOptions.addAll(parseSelectorOptions(data, "preset"));
+        // 工具审批（approval）：current + options（旧插件可能整体缺字段 → 空列表 + 空 current）
+        currentApproval = parseSelectorCurrent(data, "approval");
+        approvalOptions.clear();
+        approvalOptions.addAll(parseSelectorOptions(data, "approval"));
         // 计划：on
         JSONObject plan = data.optJSONObject("plan");
         if (plan != null) {
@@ -487,12 +551,56 @@ public class AgentAiSettingsDialog {
 
         renderModel();
         renderEffort();
+        renderPreset();
+        renderApproval();
         renderSandbox();
         renderPlan();
         renderCwd();
         // type=3 就绪：隐藏加载中提示
         loadingView.setVisibility(View.GONE);
         handler.removeCallbacks(loadingTimeoutRunnable);
+    }
+
+    /**
+     * 读面板数据中 {current, options:[{value,label}]} 字段的 current（preset/approval）。
+     * 字段整体缺失/非对象（旧插件）返回空串：控件显示占位并禁用，不报错、不发请求。
+     */
+    private String parseSelectorCurrent(JSONObject data, String key) {
+        JSONObject selector = data.optJSONObject(key);
+        return selector != null ? selector.optString("current", "") : "";
+    }
+
+    /**
+     * 解析面板数据中 {current, options:[{value,label}]} 字段的候选（preset/approval，
+     * 与 model.options 同构）；字段缺失/options 非数组返回空列表（控件禁用）；
+     * 非法项（非对象 / value 为空）跳过，label 缺省回退 value。
+     */
+    private List<ModelOption> parseSelectorOptions(JSONObject data, String key) {
+        List<ModelOption> result = new ArrayList<>();
+        JSONObject selector = data.optJSONObject(key);
+        if (selector == null) {
+            return result;
+        }
+        JSONArray options = selector.optJSONArray("options");
+        if (options == null) {
+            return result;
+        }
+        for (int i = 0; i < options.length(); i++) {
+            JSONObject option = options.optJSONObject(i);
+            if (option == null) {
+                continue;
+            }
+            String value = option.optString("value");
+            if (TextUtils.isEmpty(value)) {
+                continue;
+            }
+            String label = option.optString("label");
+            if (TextUtils.isEmpty(label)) {
+                label = value;
+            }
+            result.add(new ModelOption(value, label));
+        }
+        return result;
     }
 
     /**
@@ -753,6 +861,66 @@ public class AgentAiSettingsDialog {
         handler.post(() -> rendering = false);
     }
 
+    /**
+     * 重建 Agent 模式下拉：候选来自 type=3 preset.options；
+     * options 为空数组（部署未提供 preset 服务）时禁用控件，仅显示 current（缺省「未设置」）。
+     */
+    private void renderPreset() {
+        displayPresetOptions.clear();
+        renderSelector(presetSpinner, presetOptions, displayPresetOptions, currentPreset);
+    }
+
+    /**
+     * 重建工具审批下拉：候选来自 type=3 approval.options；
+     * 字段整体缺失（旧插件）时禁用控件，仅显示 current（缺省「未设置」）。
+     */
+    private void renderApproval() {
+        displayApprovalOptions.clear();
+        renderSelector(approvalSpinner, approvalOptions, displayApprovalOptions, currentApproval);
+    }
+
+    /**
+     * 重建 {value,label} 候选下拉（Agent 模式 / 工具审批，与 model.options 同构）：
+     * 展示项 = 候选 + 当前值（不在候选中时置顶追加，保证 current 始终可见并被选中）；
+     * 候选为空（未部署 / 旧插件缺字段）时禁用控件，但不隐藏该行（仍显示 current 文本）。
+     * 候选为空且 current 也为空时展示「未设置」占位文本。
+     */
+    private void renderSelector(Spinner spinner, List<ModelOption> candidates, List<ModelOption> display, String current) {
+        rendering = true;
+        display.addAll(candidates);
+        boolean hasCurrent = false;
+        for (ModelOption option : display) {
+            if (option.value.equals(current)) {
+                hasCurrent = true;
+                break;
+            }
+        }
+        if (!hasCurrent) {
+            String label = TextUtils.isEmpty(current) ? dialog.getContext().getString(R.string.agent_ai_unset) : current;
+            display.add(0, new ModelOption(current, label));
+        }
+        List<String> labels = new ArrayList<>();
+        for (ModelOption option : display) {
+            labels.add(option.label);
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(dialog.getContext(),
+            android.R.layout.simple_spinner_item, labels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        int index = 0;
+        for (int i = 0; i < display.size(); i++) {
+            if (display.get(i).value.equals(current)) {
+                index = i;
+                break;
+            }
+        }
+        spinner.setSelection(index);
+        // 候选为空 = 无法切换：禁用控件（apply 冷却结束由 updateEnabledState 统一恢复）
+        spinner.setEnabled(!candidates.isEmpty() && !applying);
+        // 下拉重建的 onItemSelected 回调在布局后异步触发，延后清除防回环开关
+        handler.post(() -> rendering = false);
+    }
+
     /** 沙箱模式固定三项单选，按当前值高亮 */
     private void renderSandbox() {
         rendering = true;
@@ -935,6 +1103,9 @@ public class AgentAiSettingsDialog {
         boolean enabled = !applying;
         modelSpinner.setEnabled(enabled);
         effortSpinner.setEnabled(enabled);
+        // Agent 模式/工具审批：options 为空（未部署 / 旧插件缺字段）时保持禁用（仅展示 current）
+        presetSpinner.setEnabled(enabled && !presetOptions.isEmpty());
+        approvalSpinner.setEnabled(enabled && !approvalOptions.isEmpty());
         setRadioGroupEnabled(sandboxGroup, enabled);
         planSwitch.setEnabled(enabled);
         // 目录列表请求进行中禁用「切换」（避免重复发 207）；手动输入兜底始终可用
