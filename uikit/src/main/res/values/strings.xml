@@ -1051,6 +1051,9 @@
     <string name="agent_ai_sandbox_read_only">只读</string>
     <string name="agent_ai_sandbox_workspace_write">仅写工作区</string>
     <string name="agent_ai_sandbox_danger">完全放开</string>
+    <string name="agent_ai_conv_mode">会话模式</string>
+    <string name="agent_ai_conv_mode_interrupt">打断（后到打断先到）</string>
+    <string name="agent_ai_conv_mode_queue">排队（串行等待）</string>
     <string name="agent_ai_plan">计划模式</string>
     <string name="agent_ai_plan_on">已开启（先审后做）</string>
     <string name="agent_ai_plan_off">已关闭</string>

@@ -57,12 +57,15 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * <p>
  * 静默通道：所有交互不落消息流（不显示在界面上）。
  * 打开面板发 207 Agent_Command（op=query）组合查询 → 插件聚合面板数据
- * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId / preset / approval）写入
+ * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId / preset / approval / mode）写入
  * scope=31 type=3（键 convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
- * 模型/推理等级/Agent 模式（preset）/工具审批（approval）为下拉（options + current）、沙箱为单选、
- * 计划为开关、工作目录为 cwd + 目录选择弹窗。
+ * 模型/推理等级/Agent 模式（preset）/工具审批（approval）/会话模式（mode）为下拉（options + current）、
+ * 沙箱为单选、计划为开关、工作目录为 cwd + 目录选择弹窗。
  * preset.options / approval.options 为空（未部署 preset 服务 / 旧插件缺字段）时对应下拉禁用
  * 但保留 current 文本展示；current 不在 options 中时置顶追加展示，不丢当前值。
+ * 会话模式（mode，interrupt/queue）与二者不同：切换只依赖本地状态，插件缺 mode 字段
+ * （旧插件）时用本地兜底两项，故候选永不为空、控件始终可切换；mode.current 存在时同步本地
+ * 状态并据此回显选中项（修复「切到 queue 后重开面板仍显示 interrupt」）。
  * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/model deepseek-official/xxx"）；
  * 插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，变更可见）
  * 并刷新 type=3，本面板监听本端已有的用户设置更新事件（{@link OnSettingUpdateListener}）重读 type=3。
@@ -108,7 +111,7 @@ public class AgentAiSettingsDialog {
         }
     }
 
-    /** 面板候选项（模型 / Agent 模式 / 工具审批，三者 options 同构）：value=发送用，label=展示用 */
+    /** 面板候选项（模型 / Agent 模式 / 工具审批 / 会话模式，options 同构）：value=发送用，label=展示用 */
     private static class ModelOption {
         final String value;
         final String label;
@@ -132,6 +135,8 @@ public class AgentAiSettingsDialog {
     private Spinner effortSpinner;
     private Spinner presetSpinner;
     private Spinner approvalSpinner;
+    /** 会话模式（mode，interrupt/queue）：与 preset/approval 同为 {value,label} 下拉 */
+    private Spinner modeSpinner;
     private RadioGroup sandboxGroup;
     private TextView cwdCurrentView;
     private TextView cwdListLoadingView;
@@ -146,7 +151,7 @@ public class AgentAiSettingsDialog {
     private Button destroyBtn;
     private TextView applyingView;
 
-    /** type=3 面板数据当前值（模型/推理等级/沙箱/计划/工作目录/Agent 模式/工具审批） */
+    /** type=3 面板数据当前值（模型/推理等级/沙箱/计划/工作目录/Agent 模式/工具审批/会话模式） */
     private final List<ModelOption> modelOptions = new ArrayList<>();
     private String currentModel = "";
     private final List<String> effortOptions = new ArrayList<>();
@@ -157,6 +162,13 @@ public class AgentAiSettingsDialog {
     /** 工具审批（approval）：旧插件可能整体缺字段 → 下拉禁用但显示 current */
     private final List<ModelOption> approvalOptions = new ArrayList<>();
     private String currentApproval = "";
+    /**
+     * 会话模式（mode）：候选来自 type=3 mode.options；插件缺该字段（旧插件）时用本地兜底两项
+     * （见 {@link #localModeOptions()}），故候选永不为空、控件始终可切换。
+     */
+    private final List<ModelOption> modeOptions = new ArrayList<>();
+    /** 会话模式当前值：本地默认 interrupt；type=3 mode.current 存在时同步覆盖（服务端回显） */
+    private String currentMode = "interrupt";
     private String currentSandbox = "";
     private boolean planOn = false;
     private String currentCwd = "";
@@ -181,6 +193,7 @@ public class AgentAiSettingsDialog {
     private final List<String> displayEffortOptions = new ArrayList<>();
     private final List<ModelOption> displayPresetOptions = new ArrayList<>();
     private final List<ModelOption> displayApprovalOptions = new ArrayList<>();
+    private final List<ModelOption> displayModeOptions = new ArrayList<>();
 
     /** 程序化重建下拉/单选时的防回环开关 */
     private boolean rendering = false;
@@ -248,6 +261,7 @@ public class AgentAiSettingsDialog {
         effortSpinner = view.findViewById(R.id.agentAiEffortSpinner);
         presetSpinner = view.findViewById(R.id.agentAiPresetSpinner);
         approvalSpinner = view.findViewById(R.id.agentAiApprovalSpinner);
+        modeSpinner = view.findViewById(R.id.agentAiModeSpinner);
         // 面板数据到达前（无候选）先禁用：避免空下拉可点；applyPanelData 渲染时按候选可用性恢复
         presetSpinner.setEnabled(false);
         approvalSpinner.setEnabled(false);
@@ -351,6 +365,25 @@ public class AgentAiSettingsDialog {
             }
         });
 
+        modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                if (rendering || applying || position < 0 || position >= displayModeOptions.size()) {
+                    return;
+                }
+                ModelOption option = displayModeOptions.get(position);
+                if (option == null || option.value.equals(currentMode)) {
+                    return;
+                }
+                currentMode = option.value;
+                sendCommand("set", "/mode " + option.value);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         sandboxGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (rendering || applying || checkedId == View.NO_ID) {
                 return;
@@ -395,6 +428,11 @@ public class AgentAiSettingsDialog {
         resetBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_reset_confirm, "/reset"));
         // 销毁会话：毁灭性操作，不受操作冷却禁用，始终可点（点击弹强警告，确认后才发送）
         destroyBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_destroy_confirm, "/destroy"));
+
+        // 会话模式：面板数据到达前先用本地兜底两项（interrupt/queue）渲染；
+        // 插件缺 mode 字段（旧插件）时保持兜底，控件始终可切换
+        modeOptions.addAll(localModeOptions());
+        renderMode();
     }
 
     /**
@@ -518,6 +556,20 @@ public class AgentAiSettingsDialog {
         currentApproval = parseSelectorCurrent(data, "approval");
         approvalOptions.clear();
         approvalOptions.addAll(parseSelectorOptions(data, "approval"));
+        // 会话模式（mode）：current 存在时同步本地状态（服务端回显，修复重开面板回默认值）；
+        // options 为空（旧插件缺字段）时保留本地兜底两项
+        JSONObject mode = data.optJSONObject("mode");
+        if (mode != null) {
+            String currentModeValue = mode.optString("current", "");
+            if (!TextUtils.isEmpty(currentModeValue)) {
+                currentMode = currentModeValue;
+            }
+            List<ModelOption> parsedModeOptions = parseSelectorOptions(data, "mode");
+            if (!parsedModeOptions.isEmpty()) {
+                modeOptions.clear();
+                modeOptions.addAll(parsedModeOptions);
+            }
+        }
         // 计划：on
         JSONObject plan = data.optJSONObject("plan");
         if (plan != null) {
@@ -553,6 +605,7 @@ public class AgentAiSettingsDialog {
         renderEffort();
         renderPreset();
         renderApproval();
+        renderMode();
         renderSandbox();
         renderPlan();
         renderCwd();
@@ -880,7 +933,29 @@ public class AgentAiSettingsDialog {
     }
 
     /**
-     * 重建 {value,label} 候选下拉（Agent 模式 / 工具审批，与 model.options 同构）：
+     * 重建会话模式下拉：候选优先取 type=3 mode.options，缺失/为空（旧插件）时用本地兜底两项；
+     * 当前值不在候选中时置顶追加并选中，保证服务端 mode.current 始终可见（回显）。
+     */
+    private void renderMode() {
+        displayModeOptions.clear();
+        renderSelector(modeSpinner, modeOptions, displayModeOptions, currentMode);
+    }
+
+    /**
+     * 会话模式本地兜底候选（interrupt/queue）：插件缺 {@code mode} 字段（旧插件）或面板数据
+     * 尚未到达时使用；插件下发的 mode.options 存在时以服务端为准覆盖。
+     */
+    private List<ModelOption> localModeOptions() {
+        List<ModelOption> defaults = new ArrayList<>();
+        defaults.add(new ModelOption("interrupt",
+            dialog.getContext().getString(R.string.agent_ai_conv_mode_interrupt)));
+        defaults.add(new ModelOption("queue",
+            dialog.getContext().getString(R.string.agent_ai_conv_mode_queue)));
+        return defaults;
+    }
+
+    /**
+     * 重建 {value,label} 候选下拉（Agent 模式 / 工具审批 / 会话模式，与 model.options 同构）：
      * 展示项 = 候选 + 当前值（不在候选中时置顶追加，保证 current 始终可见并被选中）；
      * 候选为空（未部署 / 旧插件缺字段）时禁用控件，但不隐藏该行（仍显示 current 文本）。
      * 候选为空且 current 也为空时展示「未设置」占位文本。
@@ -1106,6 +1181,8 @@ public class AgentAiSettingsDialog {
         // Agent 模式/工具审批：options 为空（未部署 / 旧插件缺字段）时保持禁用（仅展示 current）
         presetSpinner.setEnabled(enabled && !presetOptions.isEmpty());
         approvalSpinner.setEnabled(enabled && !approvalOptions.isEmpty());
+        // 会话模式：候选有本地兜底，始终可切换（仅受操作冷却约束）
+        modeSpinner.setEnabled(enabled);
         setRadioGroupEnabled(sandboxGroup, enabled);
         planSwitch.setEnabled(enabled);
         // 目录列表请求进行中禁用「切换」（避免重复发 207）；手动输入兜底始终可用

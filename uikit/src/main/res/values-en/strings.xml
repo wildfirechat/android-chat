@@ -1005,6 +1005,9 @@
     <string name="agent_ai_sandbox_read_only">Read-only</string>
     <string name="agent_ai_sandbox_workspace_write">Write workspace</string>
     <string name="agent_ai_sandbox_danger">Full access</string>
+    <string name="agent_ai_conv_mode">Session mode</string>
+    <string name="agent_ai_conv_mode_interrupt">Interrupt (a new message preempts the running turn)</string>
+    <string name="agent_ai_conv_mode_queue">Queue (serialize, wait for the running turn)</string>
     <string name="agent_ai_plan">Plan mode</string>
     <string name="agent_ai_plan_on">On (review before acting)</string>
     <string name="agent_ai_plan_off">Off</string>

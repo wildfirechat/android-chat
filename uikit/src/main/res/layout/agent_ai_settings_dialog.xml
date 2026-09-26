@@ -222,6 +222,20 @@
                     android:text="@string/agent_ai_sandbox_danger" />
             </RadioGroup>
 
+            <!-- 会话模式（mode）：下拉选择（type=3 mode.options / mode.current）；
+                 老插件缺 mode 字段时用本地兜底两项 interrupt/queue，始终可切换 -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_conv_mode" />
+            <Spinner
+                android:id="@+id/agentAiModeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_agent_input_bg"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:spinnerMode="dropdown" />
+
             <!-- 工具审批（approval）：下拉选择（type=3 approval.options / approval.current；
                  options 为空（旧插件未提供该字段）时禁用，仍显示当前值文本） -->
             <TextView
