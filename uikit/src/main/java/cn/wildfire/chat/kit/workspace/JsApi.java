@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +27,10 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
+import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
+import cn.wildfire.chat.kit.utils.FileUtils;
+import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -45,6 +49,7 @@ public class JsApi {
     private boolean ready;
 
     private static final int REQUEST_CODE_PICK_CONTACT = 300;
+    private static final int REQUEST_CODE_PICK_GROUP = 301;
 
     public JsApi(Activity context, DWebView webView, String url) {
         this.activity = context;
@@ -184,11 +189,78 @@ public class JsApi {
         this.jsCallbackHandlers.put(REQUEST_CODE_PICK_CONTACT, handler);
     }
 
+    /**
+     * 在线文档页选群。异步回调 JSON 串 [{gid,name,portrait}]。
+     */
+    @JavascriptInterface
+    public void chooseGroup(Object obj, CompletionHandler handler) {
+        if (!preCheck()) {
+            callbackJs(handler, -2);
+            return;
+        }
+        Intent intent = new Intent(activity, GroupListActivity.class);
+        intent.putExtra(GroupListActivity.INTENT_FOR_RESULT, true);
+        startActivityForResult(intent, REQUEST_CODE_PICK_GROUP);
+        this.jsCallbackHandlers.put(REQUEST_CODE_PICK_GROUP, handler);
+    }
+
+    /**
+     * 在线文档页的「下载」：H5 用 callSync 调，交给系统打开地址。
+     */
+    @JavascriptInterface
+    public void downloadFile(Object arg) {
+        String url = null;
+        if (arg instanceof String) {
+            url = (String) arg;
+        } else if (arg instanceof JSONObject) {
+            url = ((JSONObject) arg).optString("url");
+        } else if (arg instanceof java.util.Map) {
+            Object value = ((java.util.Map<?, ?>) arg).get("url");
+            if (value != null) {
+                url = value.toString();
+            }
+        }
+        if (TextUtils.isEmpty(url)) {
+            Log.w(TAG, "downloadFile ignored, no url: " + arg);
+            return;
+        }
+        FileUtils.openUrlBySystem(activity, url);
+    }
+
+    /**
+     * 在线文档页把标题交给客户端标题栏渲染。操作按钮（分享等）暂不实现，返回 code 0 让页面不再重画标题。
+     */
+    @JavascriptInterface
+    public void setPageHeader(Object obj, CompletionHandler handler) {
+        if (obj instanceof JSONObject) {
+            String title = ((JSONObject) obj).optString("title");
+            if (!TextUtils.isEmpty(title)) {
+                if (fragment != null) {
+                    WfcPageCompat.setPageTitle(fragment, title);
+                } else if (activity != null) {
+                    activity.setTitle(title);
+                }
+            }
+        }
+        if (handler != null) {
+            JSONObject resultObj = new JSONObject();
+            try {
+                resultObj.put("code", 0);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            handler.complete(resultObj);
+        }
+    }
+
     public boolean onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         boolean handled = true;
         switch (requestCode) {
             case REQUEST_CODE_PICK_CONTACT:
                 handlePickContactResult(requestCode, resultCode, data);
+                break;
+            case REQUEST_CODE_PICK_GROUP:
+                handlePickGroupResult(requestCode, resultCode, data);
                 break;
             default:
                 handled = false;
@@ -203,6 +275,34 @@ public class JsApi {
             if (data != null) {
                 List<UserInfo> userInfos = data.getParcelableArrayListExtra(PickContactActivity.RESULT_PICKED_USERS);
                 callbackJs(handler, 0, userInfos);
+            } else {
+                callbackJs(handler, -1);
+            }
+        } else {
+            callbackJs(handler, -1);
+        }
+        this.jsCallbackHandlers.remove(requestCode);
+    }
+
+    private void handlePickGroupResult(int requestCode, int resultCode, Intent data) {
+        CompletionHandler handler = this.jsCallbackHandlers.get(requestCode);
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            List<GroupInfo> groupInfos = data.getParcelableArrayListExtra("groupInfos");
+            if (groupInfos != null && !groupInfos.isEmpty()) {
+                try {
+                    JSONArray array = new JSONArray();
+                    for (GroupInfo groupInfo : groupInfos) {
+                        JSONObject object = new JSONObject();
+                        object.put("gid", groupInfo.target);
+                        object.put("name", groupInfo.name);
+                        object.put("portrait", groupInfo.portrait);
+                        array.put(object);
+                    }
+                    callbackJs(handler, 0, array.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callbackJs(handler, -1);
+                }
             } else {
                 callbackJs(handler, -1);
             }
@@ -245,11 +345,9 @@ public class JsApi {
 
     }
 
-    // 开发调试时，可以直接返回 true
+    // 在线文档页只调 getAuthCode、不调 config，因此这里不能要求 ready；
+    // 只校验页面与初始地址同源，防止被任意网页调用。
     private boolean preCheck() {
-        if (!this.ready) {
-            return false;
-        }
         return TextUtils.equals(getHost(this.appUrl), getHost(this.currentUrl));
     }
 

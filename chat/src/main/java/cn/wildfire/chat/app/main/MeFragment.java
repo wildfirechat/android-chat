@@ -27,9 +27,12 @@ import java.util.List;
 
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
+import cn.wildfire.chat.kit.pan.PanDocsActivity;
+import cn.wildfire.chat.kit.pan.PanHomeActivity;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -51,6 +54,10 @@ public class MeFragment extends Fragment {
     OptionItemView settingOptionItem;
 
     OptionItemView fileRecordOptionItem;
+
+    OptionItemView cloudDriveOptionItem;
+
+    OptionItemView onlineDocsOptionItem;
 
     OptionItemView conversationOptionItem;
 
@@ -110,6 +117,8 @@ public class MeFragment extends Fragment {
         view.findViewById(R.id.favOptionItemView).setOnClickListener(v -> fav());
         view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(v -> files());
+        view.findViewById(R.id.cloudDriveOptionItemView).setOnClickListener(v -> cloudDrive());
+        view.findViewById(R.id.onlineDocsOptionItemView).setOnClickListener(v -> onlineDocs());
         view.findViewById(R.id.settingOptionItemView).setOnClickListener(v -> setting());
         view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
         view.findViewById(R.id.conversationOptionItemView).setOnClickListener(v -> conversationSetting());
@@ -124,6 +133,8 @@ public class MeFragment extends Fragment {
         settingOptionItem = view.findViewById(R.id.settingOptionItemView);
         conversationOptionItem = view.findViewById(R.id.conversationOptionItemView);
         fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
+        cloudDriveOptionItem = view.findViewById(R.id.cloudDriveOptionItemView);
+        onlineDocsOptionItem = view.findViewById(R.id.onlineDocsOptionItemView);
     }
 
     private void updateUserInfo(UserInfo userInfo) {
@@ -153,6 +164,10 @@ public class MeFragment extends Fragment {
         } else {
             fileRecordOptionItem.setVisibility(View.GONE);
         }
+        // 网盘/在线文档未配置（Config.PAN_SERVER_ADDRESS 为空）时不渲染入口
+        boolean panEnabled = Config.isPanConfigured();
+        cloudDriveOptionItem.setVisibility(panEnabled ? View.VISIBLE : View.GONE);
+        onlineDocsOptionItem.setVisibility(panEnabled ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -179,6 +194,16 @@ public class MeFragment extends Fragment {
 
     void files() {
         Intent intent = new Intent(getActivity(), FileRecordListActivity.class);
+        WfcPageCompat.startPage(this, intent);
+    }
+
+    void cloudDrive() {
+        Intent intent = new Intent(getActivity(), PanHomeActivity.class);
+        WfcPageCompat.startPage(this, intent);
+    }
+
+    void onlineDocs() {
+        Intent intent = new Intent(getActivity(), PanDocsActivity.class);
         WfcPageCompat.startPage(this, intent);
     }
 

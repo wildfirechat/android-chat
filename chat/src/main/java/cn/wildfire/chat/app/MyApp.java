@@ -92,6 +92,12 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
                 ArchiveServiceProvider.getInstance().setService(ArchiveServiceImpl.getInstance());
             }
 
+            // 初始化网盘 / 在线文档服务（独立 wf-pan-server）
+            if (Config.isPanConfigured()) {
+                cn.wildfire.chat.kit.pan.PanServiceProvider.getInstance()
+                    .setService(cn.wildfire.chat.app.pan.PanServiceImpl.getInstance());
+            }
+
             String id = null;
             String token = null;
             try {

@@ -181,6 +181,19 @@ public class Config {
     public static String POLL_SERVER_BACKUP_ADDRESS = null;
 
     /**
+     * 网盘 / 在线文档服务地址（wf-pan-server 客户端端口）。接口在 {地址}/api/v1 下，
+     * 在线文档 H5 页面在 {地址}/doc/ 下；鉴权用 IM 的 authCode。
+     * 如果不需要网盘功能，请置为 null —— 客户端将不显示网盘与在线文档的入口和菜单。
+     * 示例：https://pan.wildfirechat.net
+     */
+    public static String PAN_SERVER_ADDRESS = "https://pan.wildfirechat.net";
+
+    /**
+     * 网盘服务备选地址，双网环境下使用。
+     */
+    public static String PAN_SERVER_BACKUP_ADDRESS = null;
+
+    /**
      * 归档服务地址，如果需要从历史归档服务器加载消息功能，请部署归档服务，然后这里填上归档服务地址；如果不需要归档功能，请置为 null
      * 示例：http://192.168.1.81:8083
      */
@@ -325,6 +338,18 @@ public class Config {
 
     public static String getPollServerAddress() {
         return selectServer(POLL_SERVER_ADDRESS, POLL_SERVER_BACKUP_ADDRESS);
+    }
+
+    public static String getPanServerAddress() {
+        return selectServer(PAN_SERVER_ADDRESS, PAN_SERVER_BACKUP_ADDRESS);
+    }
+
+    /**
+     * 是否配置了网盘服务：未配置时隐藏网盘与在线文档的全部入口。
+     */
+    public static boolean isPanConfigured() {
+        String address = getPanServerAddress();
+        return address != null && !address.isEmpty();
     }
 
     public static String getArchiveServerAddress() {

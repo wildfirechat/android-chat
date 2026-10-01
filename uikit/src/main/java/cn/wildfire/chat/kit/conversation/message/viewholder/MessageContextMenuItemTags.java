@@ -15,6 +15,10 @@ public interface MessageContextMenuItemTags {
     String TAG_FAV = "fav";
     String TAG_CANCEL_SEND = "cancelSend";
     String TAG_SAVE_FILE = "saveFile";
+    String TAG_OPEN_ONLINE_DOC = "openOnlineDoc";
+    String TAG_SAVE_TO_PAN = "saveToPan";
+    String TAG_SAVE_TO_PAN_AND_OPEN = "saveToPanAndOpen";
+    String TAG_DOWNLOAD = "downloadFile";
     String TAG_SPEECH_TO_TEXT = "speechToText";
     String TAG_CANCEL_SPEECH_TO_TEXT = "cancelSpeechToText";
     String TAG_AUDIO_PLAY_MODE = "audioPlayMode";

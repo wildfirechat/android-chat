@@ -134,6 +134,24 @@
                     app:title="@string/file" />
 
                 <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/cloudDriveOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    android:visibility="gone"
+                    app:show_arrow_indicator="true"
+                    app:start_src="@drawable/ic_pan_drive"
+                    app:title="@string/cloud_drive" />
+
+                <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/onlineDocsOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    android:visibility="gone"
+                    app:show_arrow_indicator="true"
+                    app:start_src="@drawable/ic_pan_docs"
+                    app:title="@string/online_docs" />
+
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/favOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"

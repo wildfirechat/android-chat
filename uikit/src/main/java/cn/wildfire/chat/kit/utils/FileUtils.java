@@ -1019,5 +1019,21 @@ public class FileUtils {
         WfcWebViewActivity.loadUrl(context, fileName, url);
     }
 
+    /**
+     * 用系统应用打开一个 http(s) 链接（在线文档页桥的 downloadFile 用）。
+     */
+    public static void openUrlBySystem(Context context, String url) {
+        if (context == null || TextUtils.isEmpty(url)) {
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(context, R.string.pan_no_app_to_open, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
 

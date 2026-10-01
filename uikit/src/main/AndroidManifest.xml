@@ -373,6 +373,23 @@
             android:name="cn.wildfire.chat.kit.poll.activity.PollDetailActivity"
             android:label="@string/poll_detail" />
 
+        <!-- 网盘 / 在线文档 -->
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanHomeActivity"
+            android:label="@string/cloud_drive" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanFileListActivity"
+            android:label="@string/cloud_drive" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanDocsActivity"
+            android:label="@string/online_docs" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanDestinationPickerActivity"
+            android:label="@string/pan_move_to" />
+        <activity
+            android:name="cn.wildfire.chat.kit.pan.PanShareActivity"
+            android:label="@string/pan_share" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
