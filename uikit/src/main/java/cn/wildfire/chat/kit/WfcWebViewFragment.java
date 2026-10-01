@@ -80,6 +80,11 @@ public class WfcWebViewFragment extends Fragment implements WfcPage {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        // 在线文档编辑器（ONLYOFFICE）打开一次要下十几 MB 静态资源，靠 DOM Storage/IndexedDB/Service Worker 缓存；
+        // 不打开的话每次打开文档都会把 sdkjs、字体重新下一遍。
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         String ua = settings.getUserAgentString();
         settings.setUserAgentString(ua + " " + dsBridgeAgentTag);
         // 用 Fragment 版构造：JsApi 里的选联系人、关闭本页因此能走右栏，见 JsApi 内的说明
