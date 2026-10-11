@@ -6,7 +6,9 @@
      也只影响自建服务，不会导致整个 App 的 HTTPS 都能被中间人劫持。
   2. 证书由 chat/build.gradle 的 mergeSelfSignedCerts 任务从 client/src/main/assets/certs 合并生成，
      换证书只要替换 assets/certs 下的文件即可，不要手工去改生成出来的 res/raw 资源。
-  3. 修改 Config.IM_SERVER_HOST、AppService.APP_SERVER_ADDRESS 等服务地址后，下面的 domain 要同步修改，否则会报
+  3. SDK 和 demo 里的 OkHttp（应用服务、上传下载等）、Glide、WebView 已经通过 SelfSignedCertUtils 信任 assets/certs 的证书，
+     不依赖这里的 domain 列表；这里主要兜底视频在线播放（MediaPlayer）等没法单独配置证书的组件。
+     修改 Config.IM_SERVER_HOST、AppService.APP_SERVER_ADDRESS 等服务地址后，下面的 domain 要同步修改，否则这些组件会报
      CertPathValidatorException: Trust anchor for certification path not found。
   4. 协议栈（mars）是 native 实现，不走这个配置，它的自签证书由 ClientService 里的 ProtoLogic.useTls 处理，
      用的是同一份 assets/certs 证书。

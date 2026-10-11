@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -53,11 +55,19 @@ public class AsrWebSocketClient {
     private static final int SILENCE_FRAME_BYTES = 960;
     private static final int SILENCE_PADDING_FRAMES = 17;
 
-    private static final OkHttpClient OK_HTTP_CLIENT = new OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(0, TimeUnit.MILLISECONDS)
-        .pingInterval(30, TimeUnit.SECONDS)
-        .build();
+    private static OkHttpClient okHttpClient;
+
+    private static synchronized OkHttpClient getOkHttpClient() {
+        if (okHttpClient == null) {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(0, TimeUnit.MILLISECONDS)
+                .pingInterval(30, TimeUnit.SECONDS);
+            SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), builder);
+            okHttpClient = builder.build();
+        }
+        return okHttpClient;
+    }
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private Callback callback;
@@ -153,7 +163,7 @@ public class AsrWebSocketClient {
         };
         // 在锁内赋值，OkHttp 线程回调 onOpen 时 webSocket 一定已经赋值
         synchronized (this) {
-            webSocket = OK_HTTP_CLIENT.newWebSocket(builder.build(), listener);
+            webSocket = getOkHttpClient().newWebSocket(builder.build(), listener);
         }
     }
 

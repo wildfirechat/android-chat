@@ -30,6 +30,7 @@ import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback2;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -58,8 +59,9 @@ public class ArchiveServiceImpl implements ArchiveService {
     private long messageIdCounter;
 
     private ArchiveServiceImpl() {
-        okHttpClient = new OkHttpClient.Builder()
-                .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), builder);
+        okHttpClient = builder.build();
         messageIdCounter = 0;
     }
 

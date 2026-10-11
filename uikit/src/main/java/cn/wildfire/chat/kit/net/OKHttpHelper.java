@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import cn.wildfire.chat.kit.net.base.ResultWrapper;
 import cn.wildfire.chat.kit.net.base.StatusResult;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -128,6 +129,7 @@ public class OKHttpHelper {
             }
             return response;
         });
+        SelfSignedCertUtils.trustSelfSignedCerts(context, builder);
         okHttpClient = builder.build();
     }
 

@@ -53,6 +53,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -76,7 +77,7 @@ public class AppService implements AppServiceProvider {
     // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://[2409:8a00:32c0:1ee8:782d:fBc8:2e1b:4d10]:8888";
     // ipv4
     // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
+    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://192.168.2.154/api/app";
     /**
      * 应用服务备选地址，双网环境下使用。
      */
@@ -162,9 +163,10 @@ public class AppService implements AppServiceProvider {
     private void probeAppServer(AppServerProbe probe, String address) {
         synchronized (this) {
             if (probeHttpClient == null) {
-                probeHttpClient = new OkHttpClient.Builder()
-                    .callTimeout(5, TimeUnit.SECONDS)
-                    .build();
+                OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                    .callTimeout(5, TimeUnit.SECONDS);
+                SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), builder);
+                probeHttpClient = builder.build();
             }
         }
         Request request = new Request.Builder()

@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback2;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -46,8 +47,9 @@ public class CollectionServiceImpl implements CollectionService {
     private OkHttpClient okHttpClient;
 
     private CollectionServiceImpl() {
-        okHttpClient = new OkHttpClient.Builder()
-            .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), builder);
+        okHttpClient = builder.build();
     }
 
     public static synchronized CollectionServiceImpl getInstance() {

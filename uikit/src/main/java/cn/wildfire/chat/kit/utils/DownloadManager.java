@@ -27,6 +27,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallbackBytes;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -39,7 +40,17 @@ import okhttp3.Response;
 
 public class DownloadManager {
 
-    private static final OkHttpClient okHttpClient = new OkHttpClient();
+    private static OkHttpClient okHttpClient;
+
+    // 延迟创建：本类的其他静态方法可能在 ChatManager 初始化之前就被调用
+    private static synchronized OkHttpClient getOkHttpClient() {
+        if (okHttpClient == null) {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), builder);
+            okHttpClient = builder.build();
+        }
+        return okHttpClient;
+    }
 
     public static void download(final String url, final String saveDir, final OnDownloadListener listener) {
         download(url, saveDir, null, listener);
@@ -47,7 +58,7 @@ public class DownloadManager {
 
     public static void download(final String url, final String saveDir, String name, final OnDownloadListener listener) {
         Request request = new Request.Builder().url(url).build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        getOkHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 // 下载失败

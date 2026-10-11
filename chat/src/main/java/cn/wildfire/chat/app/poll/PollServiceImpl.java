@@ -25,6 +25,7 @@ import cn.wildfire.chat.kit.poll.model.PollVoterDetail;
 import cn.wildfire.chat.kit.poll.service.PollService;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback2;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -52,8 +53,9 @@ public class PollServiceImpl implements PollService {
     private OkHttpClient okHttpClient;
 
     private PollServiceImpl() {
-        okHttpClient = new OkHttpClient.Builder()
-            .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), builder);
+        okHttpClient = builder.build();
     }
 
     public static synchronized PollServiceImpl getInstance() {

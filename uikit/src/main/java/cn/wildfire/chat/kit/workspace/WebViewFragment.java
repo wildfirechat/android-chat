@@ -5,11 +5,13 @@
 package cn.wildfire.chat.kit.workspace;
 
 import android.content.Intent;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -20,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.FontScaleUtils;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import wendu.dsbridge.DWebView;
 
 public class WebViewFragment extends Fragment {
@@ -65,6 +68,16 @@ public class WebViewFragment extends Fragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                // 自建服务用的是 assets/certs 里的自签名证书时放行，其他证书错误仍按默认处理（取消加载）
+                if (SelfSignedCertUtils.isTrustedBySelfSignedCerts(view.getContext(), error)) {
+                    handler.proceed();
+                } else {
+                    super.onReceivedSslError(view, handler, error);
+                }
             }
         });
 

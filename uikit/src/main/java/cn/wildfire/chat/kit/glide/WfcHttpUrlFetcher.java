@@ -26,6 +26,7 @@ import java.util.concurrent.CountDownLatch;
 
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallbackBytes;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 
 /**
  * A DataFetcher that retrieves an {@link java.io.InputStream} for a Url.
@@ -246,7 +247,9 @@ public class WfcHttpUrlFetcher implements DataFetcher<InputStream> {
 
         @Override
         public HttpURLConnection build(URL url) throws IOException {
-            return (HttpURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            SelfSignedCertUtils.trustSelfSignedCerts(ChatManager.Instance().getApplicationContext(), connection);
+            return connection;
         }
     }
 

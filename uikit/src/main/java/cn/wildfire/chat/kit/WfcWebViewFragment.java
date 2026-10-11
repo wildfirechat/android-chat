@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -29,6 +31,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.utils.SelfSignedCertUtils;
 import wendu.dsbridge.DWebView;
 
 /**
@@ -110,6 +113,16 @@ public class WfcWebViewFragment extends Fragment implements WfcPage {
                     jsApi.setCurrentUrl(url);
                 }
                 return false;
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                // 自建服务用的是 assets/certs 里的自签名证书时放行，其他证书错误仍按默认处理（取消加载）
+                if (SelfSignedCertUtils.isTrustedBySelfSignedCerts(view.getContext(), error)) {
+                    handler.proceed();
+                } else {
+                    super.onReceivedSslError(view, handler, error);
+                }
             }
         });
         if (!TextUtils.isEmpty(htmlContent)) {
