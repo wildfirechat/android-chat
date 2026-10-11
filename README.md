@@ -64,8 +64,52 @@
 1. 为`app-server`配置`HTTPS`支持，并将`APP_SERVER_ADDRESS`配置为`HTTPS`地址
 2. 如果支持开放平台的话，为开发平台配置`HTTPS`支持，并将`WORKSPACE_URL`配置为`HTTPS`地址
 3. 如果支持组织结构的话，为组织结构服务配置`HTTPS`支持，并将`ORG_SERVER_ADDRESS`配置为`HTTPS`地址
-4. 将`chat/src/main/AndroidManifest.xml`中的`android:usesCleartextTraffic`置为`false`
+4. 将`chat/src/main/AndroidManifest.xml`中的`android:usesCleartextTraffic`置为`false`，并将`chat/src/main/res/xml/network_security_config.xml`中所有的`cleartextTrafficPermitted`置为`false`。配置了`network_security_config.xml`后，Android 7.0 及以上以它为准，`usesCleartextTraffic`不再生效
 5. 更多安全说明，请参考[野火安全吗](https://docs.wildfirechat.cn/blogs/%E9%87%8E%E7%81%AB%E5%AE%89%E5%85%A8%E5%90%97.html)
+
+## 自签证书说明
+自建服务（IM 服务、应用服务、组织通讯录、对象存储等）使用自签名证书时，按以下步骤配置：
+
+1. **放置证书**：将证书放到`client/src/main/assets/certs`目录，可以放多个，文件名不限，如`server.crt`
+   - 放 CA 证书或服务端证书本身均可，只放证书，**不要放私钥**
+   - 必须是 PEM 格式，即以`-----BEGIN CERTIFICATE-----`开头的文本文件。DER 格式的证书请先转换：`openssl x509 -inform der -in server.der -out server.crt`
+   - 这一份证书由协议栈、OkHttp（应用服务、组织通讯录、投票、收藏、归档、上传、下载、语音识别等）、Glide 图片加载、WebView（工作台、链接）共用，不需要再放到其他地方。没有证书时，全部使用系统默认配置
+   - 更换证书时，请使用新的文件名，或者卸载重装。协议栈使用的是首次运行时拷贝到 App 私有目录的证书，同名文件不会重新拷贝
+
+2. **配置 network_security_config.xml**：修改`chat/src/main/res/xml/network_security_config.xml`中的`domain-config`，把使用自签证书的服务地址都列出来：
+   ```xml
+   <domain-config cleartextTrafficPermitted="true">
+       <!-- 改成你自己的服务地址，域名或 IP 均可，不带 http(s):// 和端口，多个地址写多行 -->
+       <domain includeSubdomains="true">example.com</domain>
+       <domain includeSubdomains="false">192.168.1.100</domain>
+       <trust-anchors>
+           <certificates src="system" />
+           <certificates src="@raw/wfc_self_signed_ca" />
+       </trust-anchors>
+   </domain-config>
+   ```
+   - `@raw/wfc_self_signed_ca`由`chat/build.gradle`中的`mergeSelfSignedCerts`任务在编译时根据`assets/certs`自动生成，不需要手工拷贝证书到`res/raw`
+   - OkHttp、Glide、WebView 已经直接使用`assets/certs`中的证书，不依赖这里的地址列表。这里主要是给视频在线播放（`MediaPlayer`）等无法单独配置证书的组件用的
+   - 修改服务地址后，这里要同步修改，否则上述组件会报`Trust anchor for certification path not found`
+
+3. **协议栈**：IM 连接要使用 TLS 时，需要打开`ClientService#initProto`中被注释的代码，仅 2026.9.11 之后的 IM 服务支持：
+   ```java
+   String[] certs = copyCerts(SelfSignedCertUtils.CERT_DIR_NAME);
+   ProtoLogic.setUseWebsocket(true);
+   // 第一个参数是是否跳过证书验证，第二个参数是证书文件列表
+   ProtoLogic.useTls(false, certs);
+   ```
+
+4. **以 SDK 方式集成时**：将证书放到自己 App 的`src/main/assets/certs`目录，自己创建的网络请求通过`SelfSignedCertUtils`信任这些证书：
+   - OkHttp：`SelfSignedCertUtils.trustSelfSignedCerts(context, okHttpClientBuilder)`
+   - HttpURLConnection：`SelfSignedCertUtils.trustSelfSignedCerts(context, connection)`，需要在连接之前调用
+   - WebView：在`WebViewClient#onReceivedSslError`中，`SelfSignedCertUtils.isTrustedBySelfSignedCerts(context, error)`返回`true`时才调用`handler.proceed()`，否则按默认处理
+   - 视频在线播放等组件也需要信任自签证书时，参考 demo 的`network_security_config.xml`和`mergeSelfSignedCerts`任务进行配置
+
+5. **注意事项**
+   - 只要证书链能追溯到`assets/certs`中的证书，OkHttp、Glide、WebView 都会跳过域名校验，以兼容没有写 subjectAltName 的自签证书。系统 CA 签发的证书仍然严格校验域名。请妥善保管自签 CA 的私钥
+   - 推荐签发证书时把服务的域名和 IP 都写进 subjectAltName。`network_security_config.xml`不会放松域名校验，视频在线播放等组件要求证书的域名或 IP 必须匹配
+   - WebView 只能拿到服务端证书本身，所以只支持服务端证书就是`assets/certs`中的证书，或者由其直接签发的情况
 
 ## 敏感权限说明
 1. `android.permission.PROCESS_OUTGOING_CALLS`，音视频通话时，允许普通电话打断音视频通话，默认未申请
