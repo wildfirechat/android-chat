@@ -1040,6 +1040,7 @@
     <string name="agent_ai_session_retry">重试</string>
     <string name="agent_ai_session_no_cwd">未记录工作目录</string>
     <string name="agent_ai_session_current_tag">当前</string>
+    <string name="agent_ai_session_untitled">会话 %1$s</string>
     <string name="agent_ai_session_switched">已切换会话</string>
     <string name="agent_ai_session_switch_failed">切换会话失败</string>
     <string name="agent_ai_model">模型</string>
@@ -1059,10 +1060,10 @@
     <string name="agent_ai_plan_on">已开启（先审后做）</string>
     <string name="agent_ai_plan_off">已关闭</string>
     <string name="agent_ai_compact">压缩上下文</string>
-    <string name="agent_ai_reset">重置会话</string>
+    <string name="agent_ai_reset">新建会话</string>
     <string name="agent_ai_destroy">销毁会话</string>
     <string name="agent_ai_compact_confirm">压缩会话上下文（折叠历史，减少 token 占用），继续？</string>
-    <string name="agent_ai_reset_confirm">重置会话将清空全部上下文（工作目录保留），继续？</string>
+    <string name="agent_ai_reset_confirm">新建会话将开启全新上下文；当前会话保留，可稍后在「会话」里切回。继续？</string>
     <string name="agent_ai_destroy_confirm">销毁会话将解散本群、删除工作区目录及全部会话数据，不可恢复！\n\n请确认是否销毁？</string>
     <string name="agent_ai_applying">指令已发送…</string>
 </resources>

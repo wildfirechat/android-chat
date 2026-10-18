@@ -994,6 +994,7 @@
     <string name="agent_ai_session_retry">Retry</string>
     <string name="agent_ai_session_no_cwd">No working directory</string>
     <string name="agent_ai_session_current_tag">Current</string>
+    <string name="agent_ai_session_untitled">Session %1$s</string>
     <string name="agent_ai_session_switched">Session switched</string>
     <string name="agent_ai_session_switch_failed">Failed to switch session</string>
     <string name="agent_ai_model">Model</string>
@@ -1013,10 +1014,10 @@
     <string name="agent_ai_plan_on">On (review before acting)</string>
     <string name="agent_ai_plan_off">Off</string>
     <string name="agent_ai_compact">Compact context</string>
-    <string name="agent_ai_reset">Reset session</string>
+    <string name="agent_ai_reset">New session</string>
     <string name="agent_ai_destroy">Destroy session</string>
     <string name="agent_ai_compact_confirm">Compact the session context (fold history to reduce token usage). Continue?</string>
-    <string name="agent_ai_reset_confirm">Resetting the session clears all context (working directory is kept). Continue?</string>
+    <string name="agent_ai_reset_confirm">Starting a new session opens a fresh context; the current session is kept and can be switched back from Sessions. Continue?</string>
     <string name="agent_ai_destroy_confirm">Destroying the session will dissolve this group, delete the workspace directory and all session data, and cannot be undone!\n\nAre you sure you want to destroy it?</string>
     <string name="agent_ai_applying">Command sent…</string>
 </resources>

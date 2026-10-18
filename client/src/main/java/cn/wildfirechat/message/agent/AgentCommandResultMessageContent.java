@@ -50,6 +50,8 @@ public class AgentCommandResultMessageContent extends MessageContent {
 
     /** op=sessions 应答里的会话列表项（一个 IM 会话在 DSH 侧的历史 session） */
     public static class AgentSessionItem {
+        /** 会话标题（首条用户消息前 40 字；可能为空） */
+        private String title;
         /** DSH session id（wildfire-&lt;会话哈希&gt;-&lt;目录哈希&gt;[-&lt;epoch&gt;]） */
         private String id;
         /** 该会话绑定的工作目录（绝对路径） */
@@ -77,6 +79,14 @@ public class AgentCommandResultMessageContent extends MessageContent {
             this.eventCount = eventCount;
             this.sizeBytes = sizeBytes;
             this.current = current;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public String getId() {
@@ -231,6 +241,7 @@ public class AgentCommandResultMessageContent extends MessageContent {
                         continue;
                     }
                     JSONObject session = new JSONObject();
+                    session.put("title", item.title != null ? item.title : "");
                     session.put("id", item.id != null ? item.id : "");
                     session.put("cwd", item.cwd != null ? item.cwd : "");
                     session.put("createdAt", item.createdAt);
@@ -304,14 +315,16 @@ public class AgentCommandResultMessageContent extends MessageContent {
                     if (session == null) {
                         continue;
                     }
-                    this.sessions.add(new AgentSessionItem(
+                    AgentSessionItem item = new AgentSessionItem(
                         session.optString("id"),
                         session.optString("cwd"),
                         session.optLong("createdAt"),
                         session.optLong("updatedAt"),
                         session.optLong("eventCount"),
                         session.optLong("sizeBytes"),
-                        session.optBoolean("current")));
+                        session.optBoolean("current"));
+                    item.setTitle(session.optString("title"));
+                    this.sessions.add(item);
                 }
             }
             this.sessionId = json.optString("sessionId");
@@ -347,6 +360,7 @@ public class AgentCommandResultMessageContent extends MessageContent {
         dest.writeByte(this.truncated ? (byte) 1 : (byte) 0);
         dest.writeInt(this.sessions.size());
         for (AgentSessionItem item : this.sessions) {
+            dest.writeString(item.getTitle());
             dest.writeString(item.getId());
             dest.writeString(item.getCwd());
             dest.writeLong(item.getCreatedAt());
@@ -377,14 +391,17 @@ public class AgentCommandResultMessageContent extends MessageContent {
         int size = in.readInt();
         this.sessions = new ArrayList<>(size > 0 ? size : 0);
         for (int i = 0; i < size; i++) {
-            this.sessions.add(new AgentSessionItem(
+            String title = in.readString();
+            AgentSessionItem parcelItem = new AgentSessionItem(
                 in.readString(),
                 in.readString(),
                 in.readLong(),
                 in.readLong(),
                 in.readLong(),
                 in.readLong(),
-                in.readByte() != 0));
+                in.readByte() != 0);
+            parcelItem.setTitle(title);
+            this.sessions.add(parcelItem);
         }
         this.sessionId = in.readString();
         this.ok = in.readByte() != 0;

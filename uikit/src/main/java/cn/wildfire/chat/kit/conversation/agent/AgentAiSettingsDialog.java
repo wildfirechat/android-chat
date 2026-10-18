@@ -11,6 +11,9 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -609,18 +612,43 @@ public class AgentAiSettingsDialog {
             showSessionRetryDialog(R.string.agent_ai_session_empty);
             return;
         }
-        List<String> labels = new ArrayList<>();
-        for (AgentSessionItem item : items) {
-            labels.add(formatSessionLabel(item));
-        }
+        // 两行展示：第一行标题（首条用户消息），第二行最近活跃时间 + 当前标记；不显示路径/裸 id
+        final RecyclerView.Adapter<RecyclerView.ViewHolder> adapter =
+            new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                @Override
+                public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    View view = LayoutInflater.from(parent.getContext())
+                        .inflate(android.R.layout.simple_list_item_2, parent, false);
+                    return new RecyclerView.ViewHolder(view) {
+                    };
+                }
+
+                @Override
+                public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+                    AgentSessionItem item = items.get(position);
+                    TextView titleView = holder.itemView.findViewById(android.R.id.text1);
+                    TextView metaView = holder.itemView.findViewById(android.R.id.text2);
+                    String title = TextUtils.isEmpty(item.getTitle())
+                        ? dialog.getContext().getString(R.string.agent_ai_session_untitled, shortSessionId(item.getId()))
+                        : item.getTitle();
+                    titleView.setText(title);
+                    String time = formatSessionTime(item.getUpdatedAt());
+                    String meta = item.isCurrent()
+                        ? (TextUtils.isEmpty(time) ? dialog.getContext().getString(R.string.agent_ai_session_current_tag)
+                            : time + " · " + dialog.getContext().getString(R.string.agent_ai_session_current_tag))
+                        : time;
+                    metaView.setText(meta);
+                    holder.itemView.setOnClickListener(v -> switchToSession(item));
+                }
+
+                @Override
+                public int getItemCount() {
+                    return items.size();
+                }
+            };
         final MaterialDialog listDialog = new MaterialDialog.Builder(dialog.getContext())
             .title(R.string.agent_ai_session_picker_title)
-            .items(labels)
-            .itemsCallback((d, itemView, position, text) -> {
-                if (position >= 0 && position < items.size()) {
-                    switchToSession(items.get(position));
-                }
-            })
+            .adapter(adapter, new LinearLayoutManager(dialog.getContext()))
             .negativeText(R.string.cancel)
             .cancelable(true)
             .build();
