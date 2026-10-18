@@ -24,6 +24,8 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_
  * （digest 返回空串）。payload.content 为 JSON 字符串，形如：
  * {"op":"query"} 或 {"op":"set","cmd":"/model deepseek-official/xxx","seq":123}；
  * 多机器人会话寻址时带目标机器人：{"op":"query","robotId":"robot_xxx_yyy"}（完整 uid）。
+ * 会话选择：{"op":"sessions","seq":123,"robotId":"robot_xxx"} 请求最近会话列表；
+ * {"op":"switch","seq":124,"robotId":"robot_xxx","sessionId":"wildfire-..."} 切换历史会话。
  * <ul>
  *   <li>op=query：组合查询。插件聚合面板数据（model 当前值+目录 / effort / sandbox /
  *       plan / cwd / sessionId / dirs 根目录子目录）写入 scope=31 type=3
@@ -31,6 +33,8 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_
  *   <li>op=set：更新。cmd 为命令文本（/model /effort /cwd /sandbox /plan /compact
  *       /reset）。插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，
  *       变更可见）并刷新 type=3。</li>
+ *   <li>op=sessions：请求最近会话列表，插件以 209 Agent_Command_Result 应答（seq 回显）。</li>
+ *   <li>op=switch：切换历史会话，sessionId 为目标 session id；插件以 209 应答 ok/error。</li>
  * </ul>
  * robotId 存在（非空）时仅该机器人执行，为空/缺失时按会话默认机器人执行（服务端插件已支持）。
  * seq 为递增序号，用于防重复/幂等（参考 PC 端 AgentCommandMessageContent）。
@@ -39,7 +43,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_
 @ContentTag(type = ContentType_Agent_Command, flag = PersistFlag.Transparent)
 public class AgentCommandMessageContent extends MessageContent {
 
-    /** op：query（组合查询）/ set（更新） */
+    /** op：query（组合查询）/ set（更新）/ sessions（会话列表）/ switch（切换会话） */
     private String op;
     /** set 时的命令文本（如 "/model deepseek-official/xxx"）；query 时为空 */
     private String cmd;
@@ -47,19 +51,26 @@ public class AgentCommandMessageContent extends MessageContent {
     private long seq;
     /** 目标机器人 uid（多机器人会话寻址，完整 uid；空=会话默认机器人） */
     private String robotId;
+    /** op=switch 时的目标 session id（DSH 侧历史会话；空=不指定） */
+    private String sessionId;
 
     public AgentCommandMessageContent() {
     }
 
     public AgentCommandMessageContent(String op, String cmd, long seq) {
-        this(op, cmd, seq, null);
+        this(op, cmd, seq, null, null);
     }
 
     public AgentCommandMessageContent(String op, String cmd, long seq, String robotId) {
+        this(op, cmd, seq, robotId, null);
+    }
+
+    public AgentCommandMessageContent(String op, String cmd, long seq, String robotId, String sessionId) {
         this.op = op;
         this.cmd = cmd;
         this.seq = seq;
         this.robotId = robotId;
+        this.sessionId = sessionId;
     }
 
     public String getOp() {
@@ -78,6 +89,10 @@ public class AgentCommandMessageContent extends MessageContent {
         return robotId;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -88,6 +103,9 @@ public class AgentCommandMessageContent extends MessageContent {
             json.put("seq", seq);
             if (robotId != null && !robotId.isEmpty()) {
                 json.put("robotId", robotId);
+            }
+            if (sessionId != null && !sessionId.isEmpty()) {
+                json.put("sessionId", sessionId);
             }
         } catch (JSONException e) {
             // JSONObject.put(String, Object) 不会抛 JSONException，理论不可达
@@ -107,6 +125,7 @@ public class AgentCommandMessageContent extends MessageContent {
             this.cmd = json.optString("cmd");
             this.seq = json.optLong("seq");
             this.robotId = json.has("robotId") ? json.optString("robotId") : null;
+            this.sessionId = json.has("sessionId") ? json.optString("sessionId") : null;
         } catch (JSONException e) {
             // 非 JSON 内容忽略（保持默认值）
         }
@@ -130,6 +149,7 @@ public class AgentCommandMessageContent extends MessageContent {
         dest.writeString(this.cmd);
         dest.writeLong(this.seq);
         dest.writeString(this.robotId);
+        dest.writeString(this.sessionId);
     }
 
     protected AgentCommandMessageContent(Parcel in) {
@@ -138,6 +158,7 @@ public class AgentCommandMessageContent extends MessageContent {
         this.cmd = in.readString();
         this.seq = in.readLong();
         this.robotId = in.readString();
+        this.sessionId = in.readString();
     }
 
     public static final Creator<AgentCommandMessageContent> CREATOR = new Creator<AgentCommandMessageContent>() {

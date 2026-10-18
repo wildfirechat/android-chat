@@ -147,6 +147,7 @@ import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
 import cn.wildfirechat.message.agent.AgentApprovalMessageContent;
 import cn.wildfirechat.message.agent.AgentApprovalResultMessageContent;
 import cn.wildfirechat.message.agent.AgentCommandMessageContent;
+import cn.wildfirechat.message.agent.AgentCommandResultMessageContent;
 import cn.wildfirechat.message.agent.AgentGoalMessageContent;
 import cn.wildfirechat.message.agent.AgentQuestionMessageContent;
 import cn.wildfirechat.message.agent.AgentTaskProgressMessageContent;
@@ -11422,6 +11423,8 @@ public class ChatManager {
         ChatManager.Instance().registerMessageContent(AgentCommandMessageContent.class);
         // 208 Agent_TaskProgress：任务进度卡片（subagent/workflow 派生任务，首次 sendCard 后续 updateMessage 原地更新）
         ChatManager.Instance().registerMessageContent(AgentTaskProgressMessageContent.class);
+        // 209 Agent_Command_Result：AI 面板指令应答（透明消息，不显示；op=sessions/switch/dirs，seq 回显关联 207）
+        ChatManager.Instance().registerMessageContent(AgentCommandResultMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

@@ -63,6 +63,39 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- 会话：当前 sessionId 末 8 位（type=3 sessionId）+ 选择（207 op=sessions → 209 列表） -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_session" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/agentAiSessionCurrent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:textColor="@color/gray12"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/agentAiSessionChoose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/shape_agent_btn_secondary"
+                    android:minWidth="64dp"
+                    android:text="@string/agent_ai_session_choose"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray0"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
             <!-- 模型：下拉选择（type=3 model.options / model.current） -->
             <TextView
                 style="@style/agent_ai_label"
