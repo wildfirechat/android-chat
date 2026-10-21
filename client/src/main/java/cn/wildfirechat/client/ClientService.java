@@ -241,6 +241,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
+    // 已被 cancelSendingMessage 取消的上传。上传完成和用户取消可能同时发生，
+    // 取消后上传回调不能再继续把消息发出去
+    private final ConcurrentHashMap<Long, Boolean> canceledUploads = new ConcurrentHashMap<>();
 
     private DefaultPortraitProvider defaultPortraitProvider;
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
@@ -637,18 +640,30 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public boolean cancelSendingMessage(long messageId) throws RemoteException {
-            boolean canceled = ProtoLogic.cancelSendingMessage(messageId);
-            if (!canceled) {
-                try {
-                    Call call = uploadingMap.remove(messageId);
-                    if (call != null && !call.isCanceled()) {
+            boolean canceled = false;
+
+            // 内置对象存储的大文件由本服务用 OkHttp 直传，协议栈没有对应的上传任务，
+            // 所以不能只看协议栈的取消结果
+            try {
+                Call call = uploadingMap.remove(messageId);
+                if (call != null) {
+                    // 先记录取消标记：上传可能刚好完成，成功回调里要靠它拦住后续发送
+                    canceledUploads.put(messageId, Boolean.TRUE);
+                    if (!call.isCanceled()) {
                         call.cancel();
-                        canceled = true;
                     }
-                } catch (Exception e) {
-                    // do nothing
+                    ProtoLogic.updateMessageStatus(messageId, MessageStatus.Send_Failure.value());
+                    canceled = true;
                 }
+            } catch (Exception e) {
+                // do nothing
             }
+
+            // 小文件由协议栈自己上传，或者消息已经交给协议栈发送时，需要协议栈来取消
+            if (ProtoLogic.cancelSendingMessage(messageId)) {
+                canceled = true;
+            }
+
             return canceled;
         }
 
@@ -751,6 +766,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                     @Override
                     public void onFail(int errorCode) {
+                        // 上传失败或被取消，数据库里的消息也要从发送中改为发送失败
+                        ProtoLogic.updateMessageStatus(messageId, MessageStatus.Send_Failure.value());
                         try {
                             if (callback != null)
                                 callback.onFailure(errorCode);
@@ -5492,12 +5509,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, "uploadFile fail " + e.getMessage());
                 e.printStackTrace();
+                canceledUploads.remove(messageId);
                 callback.onFail(4);
                 uploadingMap.remove(messageId);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                if (canceledUploads.remove(messageId) != null) {
+                    // 已被 cancelSendingMessage 取消，不能再把消息发出去
+                    callback.onFail(4);
+                    uploadingMap.remove(messageId);
+                    response.close();
+                    return;
+                }
                 if (response.code() != 200) {
                     ResponseBody body = response.body();
                     String respStr = null;
@@ -5552,12 +5577,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                canceledUploads.remove(messageId);
                 callback.onFail(4);
                 uploadingMap.remove(messageId);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                if (canceledUploads.remove(messageId) != null) {
+                    // 已被 cancelSendingMessage 取消，不能再把消息发出去
+                    callback.onFail(4);
+                    uploadingMap.remove(messageId);
+                    response.close();
+                    return;
+                }
                 if (response.code() != 200) {
                     ResponseBody body = response.body();
                     String respStr = null;
