@@ -4739,6 +4739,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 //        ProtoLogic.setUseWebsocket(true);
 //        // 第一个参数是是否跳过证书验证，第二个参数是证书文件列表
 //        ProtoLogic.useTls(false, certs);
+        
+        //ProtoLogic.setClrMsgWhenJoinGrp(false);
 
         Mars.onCreate(true);
 
