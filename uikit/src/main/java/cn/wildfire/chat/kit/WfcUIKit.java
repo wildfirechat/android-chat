@@ -58,6 +58,7 @@ import cn.wildfire.chat.kit.voip.VoipCallService;
 import cn.wildfire.chat.kit.voip.conference.ConferenceManager;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
@@ -332,8 +333,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.incoming_call_ring);
                 ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
             } else {
-                Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.outgoing_call_ring);
-                ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
+                // 单人语音通话默认走听筒，听筒本身声音小，用提高了增益的回铃音；视频、多人通话走扬声器，用原回铃音
+                AVAudioManager avAudioManager = AVEngineKit.Instance().getAVAudioManager();
+                boolean earpiece = avAudioManager != null && avAudioManager.getSelectedAudioDevice() == AVAudioManager.AudioDevice.EARPIECE;
+                int ringRes = earpiece ? R.raw.outgoing_call_ring_earpiece : R.raw.outgoing_call_ring;
+                Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + ringRes);
+                // 回铃音走通话通道（听筒/扬声器跟随通话），来电铃声走 STREAM_RING 外放，见 AsyncPlayer
+                ringPlayer.play(application, uri, true, AudioManager.STREAM_VOICE_CALL);
             }
         }, 200);
     }
