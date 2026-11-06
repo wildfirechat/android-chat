@@ -4735,10 +4735,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         //使用websocket，只有2026.9.11之后的服务才可以支持
         // 配置使用 websocket 和 相关证书，证书要求固定放置在 client/src/main/assets/certs 目录
-//        String[] certs = copyCerts(SelfSignedCertUtils.CERT_DIR_NAME);
-//        ProtoLogic.setUseWebsocket(true);
-//        // 第一个参数是是否跳过证书验证，第二个参数是证书文件列表
-//        ProtoLogic.useTls(false, certs);
+        //本环境（AIPLUS POC）为全WSS单入口模式：仅对外暴露 443，客户端必须走 WSS + TLS
+        String[] certs = copyCerts(SelfSignedCertUtils.CERT_DIR_NAME);
+        ProtoLogic.setUseWebsocket(true);
+        // 第一个参数是是否跳过证书验证，第二个参数是证书文件列表
+        ProtoLogic.useTls(false, certs);
         
         //ProtoLogic.setClrMsgWhenJoinGrp(false);
 
