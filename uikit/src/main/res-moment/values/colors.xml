@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="base_333333">#333333</color>
+    <color name="base_F2F2F2">#f2f2f2</color>
+    <color name="base_F8F8F8">#f8f8f8</color>
+    <color name="base_FFFFFF">#ffffff</color>
+    <color name="base_697A9F">#697A9F</color>
+    <color name="base_F0F0F0">#F0F0F0</color>
+    <color name="base_F5F5F5">#F5F5F5</color>
+    <color name="base_DCDCDC">#DCDCDC</color>
+    <color name="base_B5B5B5">#B5B5B5</color>
+    <color name="base_222230">#222230</color>
+    <color name="base_000000">#000000</color>
+    <color name="base_3FB838">#3FB838</color>
+    <color name="base_E7E7E7">#E7E7E7</color>
+    <color name="action_bar_bg">#B3EBE9E6</color>
+    <color name="title_bar_dark">#040404</color>
+    <color name="private_radio_tint">#D54A47</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="text_gray">#bbc2ca</color>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+
+    <style name="PraiseOrCommentAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/anim_praise_or_comment_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_praise_or_comment_out</item>
+    </style>
+
+</resources>

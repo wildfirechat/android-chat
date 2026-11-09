@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:minHeight="360dp">
+
+    <ImageView xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/friend_wall_pic"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/test_wallpic" />
+
+    <ImageView
+        android:id="@+id/friend_avatar"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignBottom="@id/friend_wall_pic"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="-22dp"
+        android:background="@drawable/rect_f0f0f0_10dp"
+        android:clickable="true"
+        android:padding="1dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/test_avatar" />
+
+    <TextView
+        android:id="@+id/host_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/friend_wall_pic"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toLeftOf="@id/friend_avatar"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="Zack Alice" />
+
+    <RelativeLayout
+        android:id="@+id/unreadFeedMessageCountRelativeLayout"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/friend_avatar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <ImageView
+            android:id="@+id/message_avatar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/test_avatar"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/unreadFeedMessageCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="1条新消息"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow" />
+    </RelativeLayout>
+
+</RelativeLayout>

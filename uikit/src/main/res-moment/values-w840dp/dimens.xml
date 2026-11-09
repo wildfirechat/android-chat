@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 可用宽度 ≥840dp：左右各多留 150dp，正文列约 510dp。 -->
+    <dimen name="moment_feed_item_padding_horizontal">166dp</dimen>
+    <dimen name="moment_feed_item_compact_padding_horizontal">160dp</dimen>
+
+</resources>

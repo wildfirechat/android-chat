@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        朋友圈 feed 条目的左右内边距，兼作宽屏下的"留白"。
+
+        取值随 **窗口可用宽度**（w 限定符）变化，而不是 sw 限定符：
+        朋友圈横竖屏都要看，屏幕最小宽度是个常量，跟不上旋转；而九宫格、正文行长
+        取决于当前实际可用宽度。折叠屏展开、分屏也能因此自动跟上。
+
+        本文件（无限定符）是手机竖屏的取值，与改造前布局里写死的数值逐像素一致，
+        因此手机端无任何变化。宽屏取值见 values-w600dp / -w840dp / -w1080dp / -w1280dp。
+
+        两个尺寸并存是因为三种 feed 条目原本就用了两套内边距：
+        图文条目 16dp，纯文字/链接条目 10dp。此处只做整体外扩，不去统一它们，
+        以免动到手机端现有的排版。
+    -->
+    <dimen name="moment_feed_item_padding_horizontal">16dp</dimen>
+    <dimen name="moment_feed_item_compact_padding_horizontal">10dp</dimen>
+
+</resources>

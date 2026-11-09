@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 可用宽度 ≥600dp（平板竖屏、折叠屏展开）：左右各多留 50dp，正文列约 470dp。 -->
+    <dimen name="moment_feed_item_padding_horizontal">66dp</dimen>
+    <dimen name="moment_feed_item_compact_padding_horizontal">60dp</dimen>
+
+</resources>

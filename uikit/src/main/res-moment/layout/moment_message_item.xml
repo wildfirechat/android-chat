@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@drawable/selector_common_item"
+    android:layout_height="80dp">
+
+    <ImageView
+        android:id="@+id/messageSenderPortraitImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:src="@mipmap/avatar_def" />
+
+    <LinearLayout
+        android:id="@+id/contentLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/messageSenderPortraitImageView"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/messageSenderNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="name"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/messageContentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="message"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/messageTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="8月9日 22：43"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/feedDescImageView"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="10dp"
+        android:src="@color/text_gray" />
+
+    <TextView
+        android:id="@+id/feedDescTextView"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:text="feed内容" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignLeft="@id/contentLinearLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:background="@color/text_gray" />
+
+</RelativeLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_translation"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/img_translating"
+            android:layout_width="12dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/translating"/>
+
+        <View
+            android:id="@+id/view_divide_line"
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:layout_weight="1"
+            android:background="@color/base_DCDCDC"/>
+
+        <TextView
+            android:id="@+id/txt_translation_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dip"
+            android:layout_marginRight="10dp"
+            android:text="翻译中"
+            android:textColor="@color/base_B5B5B5"
+            android:textSize="10sp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_translation_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_view_content_state"
+        android:clickable="true"
+        android:lineSpacingExtra="3dp"
+        android:textColor="@color/base_333333"
+        android:textSize="16sp"/>
+</LinearLayout>

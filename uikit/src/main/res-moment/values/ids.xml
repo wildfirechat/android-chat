@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="title_bar_view" type="id" />
+    <item name="recycler_view_tag" type="id" />
+    <item name="ll_title_bar_left" type="id" />
+    <item name="ic_title_bar_left" type="id" />
+    <item name="tx_title_bar_left" type="id" />
+    <item name="tx_title" type="id" />
+    <item name="ll_title_bar_right" type="id" />
+    <item name="tx_title_bar_right" type="id" />
+    <item name="ic_title_bar_right" type="id" />
+    <item name="statusbar_placeholder" type="id" />
+</resources>

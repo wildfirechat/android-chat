@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cn.wildfire.chat.moment.FeedListActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <cn.wildfire.chat.moment.thirdbar.StatusBarViewPlaceHolder
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <cn.wildfire.chat.moment.third.widgets.TitleBar
+                android:id="@id/title_bar_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title_text=""
+                app:transparentMode="true" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/refreshImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="-32dp"
+            android:src="@drawable/rotate_icon" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/commentLayoutContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+</FrameLayout>

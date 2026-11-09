@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:background="@drawable/selector_view_content_state"
+    android:text="深圳-腾讯大厦"
+    android:id="@+id/txt_location"
+    android:visibility="gone"
+    android:clickable="true"
+    android:textColor="@color/base_697A9F"
+    android:textSize="12sp" />

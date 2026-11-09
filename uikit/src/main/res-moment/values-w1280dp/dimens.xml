@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 可用宽度 ≥1280dp（大屏平板横屏）：左右各多留 350dp，正文列稳定在约 550dp。 -->
+    <dimen name="moment_feed_item_padding_horizontal">366dp</dimen>
+    <dimen name="moment_feed_item_compact_padding_horizontal">360dp</dimen>
+
+</resources>

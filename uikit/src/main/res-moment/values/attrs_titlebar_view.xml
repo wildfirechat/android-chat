@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="TitleBar">
+        <attr name="android:background" />
+        <attr name="icon_left" format="reference" />
+        <attr name="icon_right" format="reference" />
+        <attr name="text_left" format="string" />
+        <attr name="text_right" format="string" />
+        <attr name="mode" format="enum">
+            <enum name="mode_left" value="16" />
+            <enum name="mode_right" value="17" />
+            <enum name="mode_both" value="18" />
+            <enum name="mode_none" value="19" />
+        </attr>
+        <attr name="transparentMode" format="boolean" />
+        <attr name="title_text_color" format="color" />
+        <attr name="title_text_size" format="dimension" />
+        <attr name="title_text" format="string" />
+        <attr name="left_text_color" format="color" />
+        <attr name="right_text_color" format="color" />
+        <attr name="left_text_size" format="dimension" />
+        <attr name="right_text_size" format="dimension" />
+        <attr name="right_btn_padding" format="dimension" />
+        <attr name="dark_mode" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="StatusBarViewPlaceHolder">
+        <attr name="android:background" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@color/base_FFFFFF"
+             android:paddingLeft="@dimen/moment_feed_item_compact_padding_horizontal"
+             android:paddingTop="10dp"
+             android:paddingRight="@dimen/moment_feed_item_compact_padding_horizontal"
+             android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@color/base_F2F2F2"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="54dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_view_content_state"
+            android:clickable="true"
+            android:textColor="#697A9F"
+            android:textSize="16sp"/>
+
+        <include layout="@layout/moment_include_item_recycler_content"/>
+
+        <include layout="@layout/moment_view_translation_layout"/>
+
+        <LinearLayout
+            android:id="@+id/layout_url"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/selector_view_name_state"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/avatar_icon"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="一切的问题都是产品问题！"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <include layout="@layout/moment_include_item_recycler_location"/>
+
+        <include layout="@layout/moment_include_item_recycler_time"/>
+
+        <include layout="@layout/moment_include_item_recycler_praise_and_comment"/>
+
+    </LinearLayout>
+
+</FrameLayout>

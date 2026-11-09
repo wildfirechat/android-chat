@@ -35,8 +35,7 @@ android {
             res.srcDirs += ['src/main/res-av']
 
             // moment start
-            java.srcDirs += ['../../android-momentkit/src/main/java']
-            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
+            res.srcDirs += ['src/main/res-moment']
             // moment end
         }
     }

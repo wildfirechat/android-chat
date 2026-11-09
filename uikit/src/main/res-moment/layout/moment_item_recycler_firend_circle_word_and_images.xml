@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/base_FFFFFF"
+    android:paddingLeft="@dimen/moment_feed_item_padding_horizontal"
+    android:paddingTop="14dp"
+    android:paddingRight="@dimen/moment_feed_item_padding_horizontal"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:background="@drawable/rect_f0f0f0_10dp"
+        android:padding="1dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="54dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/selector_view_content_state"
+            android:clickable="true"
+            android:textColor="@color/blue3"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <include layout="@layout/moment_include_item_recycler_content" />
+
+        <include layout="@layout/moment_view_translation_layout" />
+
+        <cn.wildfire.chat.moment.third.widgets.NineGridView
+            android:id="@+id/nine_grid_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="45dp"
+            android:layout_marginBottom="10dp" />
+
+        <include layout="@layout/moment_include_item_recycler_location" />
+
+        <include layout="@layout/moment_include_item_recycler_time" />
+
+        <include layout="@layout/moment_include_item_recycler_praise_and_comment" />
+
+    </LinearLayout>
+
+</FrameLayout>

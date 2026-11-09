@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <cn.wildfire.chat.moment.thirdbar.StatusBarViewPlaceHolder
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/action_bar_bg" />
+
+    <cn.wildfire.chat.moment.third.widgets.TitleBar xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@id/title_bar_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mode="mode_both"
+        app:right_text_color="@color/base_000000"
+        app:text_right="发表" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/publish_input"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@color/transparent"
+                android:gravity="left|top"
+                android:hint="这一刻的想法..."
+                android:minLines="4"
+                android:paddingTop="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="16dp"
+                android:textColorHint="@color/text_gray"
+                android:textSize="14sp" />
+
+            <cn.wildfire.chat.moment.third.widgets.NineGridView
+                android:id="@+id/preview_image_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="70dp"
+                android:background="@color/base_DCDCDC" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/mentionOptionItemView"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:title="提醒谁看" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="50dp"
+                android:background="@color/base_DCDCDC" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/visibleScopeOptionItemView"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:title="谁不可看" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/base_DCDCDC" />
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>
