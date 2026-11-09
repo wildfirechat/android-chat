@@ -104,7 +104,10 @@ public class Config {
      * <p>
      * 如果不想显示工作台，置为 null 即可
      */
-    public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
+    // 本环境为私有部署，工作台指向自建的开放平台。
+    // 注意：MainActivity.showWorkSpace() 会校验 IM 域名与工作台域名是否同属野火官方环境，
+    // 私有部署时两者都必须是非 wildfirechat 地址，否则工作台会被隐藏。
+    public static String WORKSPACE_URL = "https://aiwork-im.lgdg.cc/open/work.html";
 
     /**
      * 工作台页面备选地址，双网环境下使用。
