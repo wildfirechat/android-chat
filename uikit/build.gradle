@@ -35,8 +35,8 @@ android {
             res.srcDirs += ['src/main/res-av']
 
             // moment start
-//            java.srcDirs += ['../../android-momentkit/src/main/java']
-//            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
+            java.srcDirs += ['../../android-momentkit/src/main/java']
+            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
             // moment end
         }
     }
@@ -107,7 +107,7 @@ dependencies {
 //    compileOnly 'io.kvh:amr:1.1.1'
 
     // moment start
-    // implementation project(':momentclient')
+    implementation project(':momentclient')
     // moment end
 
     // kit wfc end

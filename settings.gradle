@@ -28,7 +28,7 @@ include ':client',
     ':uikit-aar-dep',
     ':emojilibrary',
     ':imagepicker',
-//    ':momentclient',
+    ':momentclient',
     ':pttclient',
 //    ':pttclient',
     ':avenginekit'
