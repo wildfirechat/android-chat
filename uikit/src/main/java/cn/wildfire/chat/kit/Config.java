@@ -97,7 +97,8 @@ public class Config {
      * <p>
      * 优先使用本地安装的软件打开文件进行预览，如果本地没有能够支持打开该类型的文件时，使用在线预览
      */
-    public static String ONLINE_FILE_PREVIEW_URL = "https://app.wildfirechat.net/preview/onlinePreview?url=";
+    // 本环境未部署在线预览服务，置 null 以免把文件地址发到野火官方服务器
+    public static String ONLINE_FILE_PREVIEW_URL = null;
 
     /**
      * 工作台页面地址
@@ -123,7 +124,8 @@ public class Config {
      * <p>
      * 请求时会在 HTTP header authCode 中带上从 IM 服务获取的认证码，由 asr-api 校验
      */
-    public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
+    // 本环境未部署语音转文字服务，置 null 以免把语音文件发到野火官方服务器
+    public static String ASR_SERVER_URL = null;
 
     /**
      * 语音识别服务备选地址，双网环境下使用。
@@ -137,7 +139,8 @@ public class Config {
      * <p>
      * 内网测试时也可以直连 wf-voice 的 WebSocket 地址（默认端口 12436），例如 ws://192.168.1.100:12436。wf-voice 本身没有鉴权，也不支持 wss，请勿直接暴露到公网
      */
-    public static String ASR_STREAM_SERVER_URL = "wss://app.wildfirechat.net/asr/api/stream";
+    // 同上（流式识别）
+    public static String ASR_STREAM_SERVER_URL = null;
 
     /**
      * 实时语音输入服务备选地址，双网环境下使用。
