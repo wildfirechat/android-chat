@@ -238,7 +238,8 @@ public class Config {
 
     // AI机器人ID
     public static String AI_ROBOT = "FireRobot";
-    public static String PSTN_ASSISTANT_ID = "robotdialin";
+    // 未部署 PSTN 回拨网关，置 null 隐藏回拨入口（与 iOS 保持一致）
+    public static String PSTN_ASSISTANT_ID = null;
 
     // 禁止发送的文件类型
     public static String[] DISABLED_SEND_FILE_TYPES = new String[]{"exe", "bat", "apk"};
@@ -250,7 +251,8 @@ public class Config {
     // AI会议纪要机器人ID
     public static String AI_MINUTES_ROBOT_ID = "robotminutes";
     // 会议纪要页面地址
-    public static String MINUTES_URL = "http://101.42.4.222:8883/index.html";
+    // 未部署会议纪要服务（原为野火官方公网地址）
+    public static String MINUTES_URL = null;
 
     /**
      * 会议纪要页面备选地址，双网环境下使用。
