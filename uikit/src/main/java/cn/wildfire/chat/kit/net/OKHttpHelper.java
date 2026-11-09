@@ -85,6 +85,24 @@ public class OKHttpHelper {
         }
     }
 
+    /**
+     * 单域名按路径承载多个服务时（如 https://域名/app 与 https://域名/org），
+     * 仅用 host+port 作为 key 会导致不同服务的 authToken 互相覆盖，
+     * 表现为 IM 登录正常但操作时提示"没有登录"。
+     * 这里把 URL 路径首段（app / org / open ...）一并纳入 key 加以区分。
+     */
+    private static String authTokenKey(HttpUrl url, String hostPort) {
+        String prefix = "";
+        try {
+            java.util.List<String> segments = url.pathSegments();
+            if (segments != null && !segments.isEmpty() && !TextUtils.isEmpty(segments.get(0))) {
+                prefix = segments.get(0);
+            }
+        } catch (Exception ignore) {
+        }
+        return AUTHORIZATION_HEADER + ":" + hostPort + (TextUtils.isEmpty(prefix) ? "" : "-" + prefix);
+    }
+
     public static void init(Context context) {
         AppContext = new WeakReference<>(context);
         SharedPreferences sp = context.getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, Context.MODE_PRIVATE);
@@ -97,8 +115,14 @@ public class OKHttpHelper {
             Request request = chain.request();
             String host = request.url().host();
             int port = request.url().port();
-            String authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host + "-" + port, null);
-            // 兼容保存 authToken 时，未考虑端口
+            String hostPort = host + "-" + port;
+            // 按「服务路径前缀」区分，避免同域名下多个服务互相覆盖 token
+            String authToken = sp.getString(authTokenKey(request.url(), hostPort), null);
+            // 兼容旧版本仅按 host+port（未区分服务）保存的 token
+            if (TextUtils.isEmpty(authToken)) {
+                authToken = sp.getString(AUTHORIZATION_HEADER + ":" + hostPort, null);
+            }
+            // 兼容更早版本未考虑端口保存的 token
             if (TextUtils.isEmpty(authToken)) {
                 authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host, null);
             }
@@ -119,11 +143,11 @@ public class OKHttpHelper {
             }
             String responseAuthToken = response.header(AUTHORIZATION_HEADER, null);
             if (!TextUtils.isEmpty(responseAuthToken)) {
-                String hostPort = host + "-" + port;
-                SharedPreferences.Editor editor = sp.edit().putString(AUTHORIZATION_HEADER + ":" + hostPort, responseAuthToken);
+                SharedPreferences.Editor editor = sp.edit()
+                    .putString(authTokenKey(request.url(), hostPort), responseAuthToken);
                 String otherHostPort = dualNetworkHostPorts.get(hostPort);
                 if (otherHostPort != null) {
-                    editor.putString(AUTHORIZATION_HEADER + ":" + otherHostPort, responseAuthToken);
+                    editor.putString(authTokenKey(request.url(), otherHostPort), responseAuthToken);
                 }
                 editor.apply();
             }
