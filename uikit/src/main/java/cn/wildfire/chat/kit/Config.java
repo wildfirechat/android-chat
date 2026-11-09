@@ -68,10 +68,11 @@ public class Config {
      * <br>
      */
     public static String[][] ICE_SERVERS/*请仔细阅读上面的注释*/ = new String[][]{
-        // 如果是高级版，请删除掉下面的配置项目，保持ICE_SERVERS为空数组就行。
-        // 数组元素定义
+        // 本环境（AIPLUS POC）为单端口化方案：janus 在内网，客户端经 TURN 中继接入
+        // 两台 TURN 分别由入口 Nginx 的 3478 / 3479 端口映射，互为备份
         /*{"turn server uri", "userName", "password"}*/
-        {"turn:turn.wildfirechat.net:3478", "wfchat", "wfchatpwd"}
+        {"turn:aiwork-im.lgdg.cc:3478", "wfchat", "WFpocTurn8Pass"},
+        {"turn:aiwork-im.lgdg.cc:3479", "wfchat", "WFpocTurn8Pass"}
     };
 
     // 文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
