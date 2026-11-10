@@ -168,7 +168,7 @@ public class Config {
      * 接龙服务地址，如果需要接龙功能，请部署接龙服务，然后这里填上接龙服务地址；如果不需要接龙功能，请置为 null
      * 示例：http://192.168.1.81:8081
      */
-    public static String COLLECTION_SERVER_ADDRESS = null;
+    public static String COLLECTION_SERVER_ADDRESS = "https://lt.wildfirechat.net/collection";
 
     /**
      * 接龙服务备选地址，双网环境下使用。
