@@ -34,7 +34,7 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/ = "aiwork-im.lgdg.cc";
+    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出。仓库里面默认的协议栈，直接修改这个地方是无效的！！！*/ = "lt.wildfirechat.net";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
@@ -71,9 +71,8 @@ public class Config {
         // 本环境（AIPLUS POC）为单端口化方案：janus 在内网，客户端经 TURN 中继接入
         // 两台 TURN 分别由入口 Nginx 的 3478 / 3479 端口映射，互为备份
         /*{"turn server uri", "userName", "password"}*/
-        {"turn:aiwork-im.lgdg.cc:3478", "wfchat", "WFpocTurn8Pass"},
-        {"turn:aiwork-im.lgdg.cc:3479", "wfchat", "WFpocTurn8Pass"}
-    };
+        {"turn:lt.wildfirechat.net:3478", "wfchat", "WFpocTurn8Pass"},
+            };
 
     // 文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
     // 如果不需要文件传输助手功能，可以设置为null
@@ -108,7 +107,7 @@ public class Config {
     // 本环境为私有部署，工作台指向自建的开放平台。
     // 注意：MainActivity.showWorkSpace() 会校验 IM 域名与工作台域名是否同属野火官方环境，
     // 私有部署时两者都必须是非 wildfirechat 地址，否则工作台会被隐藏。
-    public static String WORKSPACE_URL = "https://aiwork-im.lgdg.cc/open/work.html";
+    public static String WORKSPACE_URL = null;
 
     /**
      * 工作台页面备选地址，双网环境下使用。
@@ -125,7 +124,7 @@ public class Config {
      * 请求时会在 HTTP header authCode 中带上从 IM 服务获取的认证码，由 asr-api 校验
      */
     // 本环境未部署语音转文字服务，置 null 以免把语音文件发到野火官方服务器
-    public static String ASR_SERVER_URL = "https://aiwork-im.lgdg.cc/asr/api/recognize";
+    public static String ASR_SERVER_URL = null;
 
     /**
      * 语音识别服务备选地址，双网环境下使用。
@@ -140,7 +139,7 @@ public class Config {
      * 内网测试时也可以直连 wf-voice 的 WebSocket 地址（默认端口 12436），例如 ws://192.168.1.100:12436。wf-voice 本身没有鉴权，也不支持 wss，请勿直接暴露到公网
      */
     // 同上（流式识别）
-    public static String ASR_STREAM_SERVER_URL = "wss://aiwork-im.lgdg.cc/asr/api/stream";
+    public static String ASR_STREAM_SERVER_URL = null;
 
     /**
      * 实时语音输入服务备选地址，双网环境下使用。
@@ -158,7 +157,7 @@ public class Config {
      * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
      * 请注意，不能写应用服务地址
      */
-    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://aiwork-im.lgdg.cc/org";
+    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://lt.wildfirechat.net/org";
 
     /**
      * 组织通讯录服务备选地址，双网环境下使用。
@@ -169,7 +168,7 @@ public class Config {
      * 接龙服务地址，如果需要接龙功能，请部署接龙服务，然后这里填上接龙服务地址；如果不需要接龙功能，请置为 null
      * 示例：http://192.168.1.81:8081
      */
-    public static String COLLECTION_SERVER_ADDRESS = "https://aiwork-im.lgdg.cc/collection";
+    public static String COLLECTION_SERVER_ADDRESS = null;
 
     /**
      * 接龙服务备选地址，双网环境下使用。
@@ -180,7 +179,7 @@ public class Config {
      * 投票服务地址，如果需要投票功能，请部署投票服务，然后这里填上投票服务地址；如果不需要投票功能，请置为 null
      * 示例：http://192.168.1.81:8082
      */
-    public static String POLL_SERVER_ADDRESS = "https://aiwork-im.lgdg.cc/poll";
+    public static String POLL_SERVER_ADDRESS = "https://lt.wildfirechat.net/poll";
 
     /**
      * 投票服务备选地址，双网环境下使用。
