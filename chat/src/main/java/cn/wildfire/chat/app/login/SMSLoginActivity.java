@@ -248,9 +248,12 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
 
-                Intent resetPasswordIntent = new Intent(SMSLoginActivity.this, ResetPasswordActivity.class);
-                resetPasswordIntent.putExtra("resetCode", loginResult.getResetCode());
-                startActivity(resetPasswordIntent);
+                // 验证码登录后是否弹出「修改密码」由 Config.ENABLE_RESET_PASSWORD_AFTER_CODE_LOGIN 控制，默认不弹
+                if (Config.ENABLE_RESET_PASSWORD_AFTER_CODE_LOGIN) {
+                    Intent resetPasswordIntent = new Intent(SMSLoginActivity.this, ResetPasswordActivity.class);
+                    resetPasswordIntent.putExtra("resetCode", loginResult.getResetCode());
+                    startActivity(resetPasswordIntent);
+                }
 
                 finish();
             }

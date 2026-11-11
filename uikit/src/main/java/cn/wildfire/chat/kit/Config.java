@@ -272,6 +272,13 @@ public class Config {
     public static boolean ENABLE_SLIDE_VERIFY = true;
 
     /**
+     * 验证码登录成功后，是否弹出「修改密码」界面（app-server 返回 resetCode 时，用于把初始密码改成新密码）。
+     * <p>
+     * 默认关闭：验证码登录后直接进入主界面，不再弹出修改密码。
+     */
+    public static boolean ENABLE_RESET_PASSWORD_AFTER_CODE_LOGIN = false;
+
+    /**
      * 创建群组或添加群成员时，是否允许选择整个组织（部门）。
      * false 时，组织通讯录中只能勾选单个成员，不能勾选整个组织。
      */
