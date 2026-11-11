@@ -387,7 +387,9 @@ public class PadLoginActivity extends WfcBaseNoToolbarActivity {
                     return;
                 }
                 dialog.dismiss();
-                loginSuccess(loginResult);
+                // 验证码登录后是否弹出「修改密码」由 Config.ENABLE_RESET_PASSWORD_AFTER_CODE_LOGIN 控制，默认不弹
+                loginSuccess(loginResult.getUserId(), loginResult.getToken(),
+                    Config.ENABLE_RESET_PASSWORD_AFTER_CODE_LOGIN ? loginResult.getResetCode() : null);
             }
 
             @Override
