@@ -76,82 +76,6 @@
                 android:paddingEnd="10dp"
                 android:spinnerMode="dropdown" />
 
-            <!-- 工作目录：当前值（只读）+ 切换按钮（目录候选来自 type=3 dirs，选择弹窗） -->
-            <TextView
-                style="@style/agent_ai_label"
-                android:text="@string/agent_ai_cwd" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/agentAiCwdCurrent"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="middle"
-                    android:singleLine="true"
-                    android:textColor="@color/gray12"
-                    android:textSize="12sp" />
-
-                <Button
-                    android:id="@+id/agentAiCwdSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/shape_agent_btn_secondary"
-                    android:minWidth="64dp"
-                    android:text="@string/agent_ai_cwd_switch"
-                    android:textAllCaps="false"
-                    android:textColor="@color/gray0"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <!-- 目录候选列表（type=3 dirs）：loading 提示 + 列表容器 + 空/超时提示 -->
-            <TextView
-                android:id="@+id/agentAiCwdListLoading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/agent_ai_cwd_list_loading"
-                android:textColor="@color/gray12"
-                android:textSize="12sp"
-                android:visibility="gone" />
-
-            <LinearLayout
-                android:id="@+id/agentAiCwdList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/shape_agent_input_bg"
-                android:orientation="vertical"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/agentAiCwdListEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/agent_ai_cwd_list_empty"
-                android:textColor="@color/gray12"
-                android:textSize="12sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/agentAiCwdTip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/agent_ai_cwd_tip"
-                android:textColor="@color/gray12"
-                android:textSize="11sp" />
-
             <!-- 沙箱模式 -->
             <TextView
                 style="@style/agent_ai_label"
@@ -214,34 +138,47 @@
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
-            <!-- 压缩上下文 / 销毁（销毁为红色实底，危险操作始终可点，点击弹强警告确认） -->
+            <!-- 上下文占用（scope=31 type=2 context.usedPct）+ 压缩上下文：进度指示在按钮之前 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/agentAiContextUsage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="76dp"
+                    android:text="@string/agent_ai_context_unknown"
+                    android:textColor="@color/gray12"
+                    android:textSize="12sp" />
+
+                <ProgressBar
+                    android:id="@+id/agentAiContextProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_weight="1"
+                    android:max="100"
+                    android:minHeight="6dp"
+                    android:progress="0"
+                    android:progressBackgroundTint="@color/gray13"
+                    android:progressDrawable="@drawable/agent_context_progress"
+                    android:progressTint="@color/colorPrimary" />
 
                 <Button
                     android:id="@+id/agentAiCompact"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="42dp"
-                    android:layout_weight="1"
                     android:background="@drawable/shape_agent_btn_secondary"
+                    android:minWidth="112dp"
                     android:text="@string/agent_ai_compact"
                     android:textAllCaps="false"
                     android:textColor="@color/gray0"
-                    android:textSize="14sp" />
-
-                <Button
-                    android:id="@+id/agentAiDestroy"
-                    android:layout_width="0dp"
-                    android:layout_height="42dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/shape_agent_btn_destroy"
-                    android:text="@string/agent_ai_destroy"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
                     android:textSize="14sp" />
             </LinearLayout>
 

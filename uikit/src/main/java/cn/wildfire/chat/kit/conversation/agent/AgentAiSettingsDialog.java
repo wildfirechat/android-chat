@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -52,17 +52,18 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * <p>
  * 静默通道：所有交互不落消息流（不显示在界面上）。
  * 打开面板发 207 Agent_Command（op=query）组合查询 → 插件聚合面板数据
- * （effort / sandbox / plan / cwd / dirs）写入 scope=31 type=3（键
- * convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
- * 推理等级为下拉、沙箱为单选、计划为开关、工作目录为 cwd + dirs 列表选择弹窗。
+ * （effort / sandbox / plan）写入 scope=31 type=3（键 convType-line-target_3[_robotId]，
+ * 不回复消息）→ 本面板读 type=3 渲染：推理等级为下拉、沙箱为单选、计划为开关。
  * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/effort high"）；
  * 插件执行后写 type=1 状态 lastChange 并刷新 type=3，本面板监听本端已有的用户设置
- * 更新事件（{@link OnSettingUpdateListener}）重读 type=3。
+ * 更新事件（{@link OnSettingUpdateListener}）重读 type=3，同时重读 type=2 计量
+ * 刷新「上下文 xx%」占用进度（context.usedPct，未知显示 --，不轮询）。
  * </p>
  * <p>
- * 移动端精简：不再提供模型切换与会话切换（会话列表/当前 sessionId/207 sessions/switch
- * 均已移除），type=3 中的 model/sessionId 字段安全忽略；保留推理等级、工作目录、
- * 沙箱、计划、压缩上下文、销毁会话等控制。
+ * 移动端精简：不再提供模型切换、会话切换、工作目录切换、新建会话与销毁会话
+ * （cwd/dirs 207 请求、会话列表/当前 sessionId/207 sessions/switch、/reset、/destroy
+ * 均已移除），type=3 中的 model/sessionId/cwd/dirs 字段安全忽略；保留推理等级、
+ * 沙箱、计划、上下文占用进度与压缩上下文等控制。
  * </p>
  */
 public class AgentAiSettingsDialog {
@@ -71,8 +72,6 @@ public class AgentAiSettingsDialog {
     private static final long FLASH_MILLIS = 1500L;
     /** 查询兜底超时：type=3 未及时刷新也先渲染面板 */
     private static final long LOADING_TIMEOUT_MILLIS = 6000L;
-    /** 目录列表（type=3 dirs 为空时补发 query）兜底超时 */
-    private static final long CWD_LIST_TIMEOUT_MILLIS = 8000L;
 
     private final Dialog dialog;
     private final Conversation conversation;
@@ -85,25 +84,19 @@ public class AgentAiSettingsDialog {
     private TextView titleView;
     private Spinner effortSpinner;
     private RadioGroup sandboxGroup;
-    private TextView cwdCurrentView;
-    private TextView cwdListLoadingView;
-    private LinearLayout cwdListContainer;
-    private TextView cwdListEmptyView;
-    private Button cwdSwitchBtn;
     private Switch planSwitch;
     private TextView planText;
+    /** 上下文占用文案（「上下文 65%」/「上下文 --」）与进度条（context.usedPct，0–100） */
+    private TextView contextUsageView;
+    private ProgressBar contextProgress;
     private Button compactBtn;
-    private Button destroyBtn;
     private TextView applyingView;
 
-    /** type=3 面板数据当前值（推理等级/沙箱/计划/工作目录） */
+    /** type=3 面板数据当前值（推理等级/沙箱/计划） */
     private final List<String> effortOptions = new ArrayList<>();
     private String currentEffort = "";
     private String currentSandbox = "";
     private boolean planOn = false;
-    private String currentCwd = "";
-    /** type=3 dirs 根目录子目录候选（工作目录选择式切换） */
-    private final List<String> cwdCandidates = new ArrayList<>();
     /** 下拉实际展示项（= 候选 + 当前值不在候选时前置追加），与 Spinner 位置一一对应 */
     private final List<String> displayEffortOptions = new ArrayList<>();
 
@@ -111,12 +104,10 @@ public class AgentAiSettingsDialog {
     private boolean rendering = false;
     private boolean applying = false;
     private boolean destroyed = false;
-    /** 目录列表是否已打开（未打开时收到 type=3 刷新只更新候选，不展示） */
-    private boolean cwdListOpen = false;
     /** 207 seq 递增序号（防重复/幂等） */
     private long commandSeq = 0;
 
-    /** 设置更新事件：插件执行更新/查询后写 type=3，重读刷新（show 注册、dismiss 移除） */
+    /** 设置更新事件：插件执行更新/查询后写 type=3/type=2，重读刷新（show 注册、dismiss 移除） */
     private final OnSettingUpdateListener settingUpdateListener = this::refreshPanelData;
 
     private final Runnable loadingTimeoutRunnable = () -> {
@@ -128,16 +119,6 @@ public class AgentAiSettingsDialog {
         applying = false;
         updateEnabledState();
         applyingView.setVisibility(View.GONE);
-    };
-    /** 目录列表兜底超时：隐藏 loading，提示超时 */
-    private final Runnable cwdListTimeoutRunnable = () -> {
-        if (destroyed || !cwdListOpen) {
-            return;
-        }
-        cwdListLoadingView.setVisibility(View.GONE);
-        cwdListEmptyView.setText(R.string.agent_ai_cwd_list_timeout);
-        cwdListEmptyView.setVisibility(View.VISIBLE);
-        updateEnabledState();
     };
 
     public AgentAiSettingsDialog(Context context, Conversation conversation, MessageViewModel messageViewModel) {
@@ -172,15 +153,11 @@ public class AgentAiSettingsDialog {
         titleView = view.findViewById(R.id.agentAiTitle);
         effortSpinner = view.findViewById(R.id.agentAiEffortSpinner);
         sandboxGroup = view.findViewById(R.id.agentAiSandboxGroup);
-        cwdCurrentView = view.findViewById(R.id.agentAiCwdCurrent);
-        cwdListLoadingView = view.findViewById(R.id.agentAiCwdListLoading);
-        cwdListContainer = view.findViewById(R.id.agentAiCwdList);
-        cwdListEmptyView = view.findViewById(R.id.agentAiCwdListEmpty);
-        cwdSwitchBtn = view.findViewById(R.id.agentAiCwdSwitch);
         planSwitch = view.findViewById(R.id.agentAiPlanSwitch);
         planText = view.findViewById(R.id.agentAiPlanText);
+        contextUsageView = view.findViewById(R.id.agentAiContextUsage);
+        contextProgress = view.findViewById(R.id.agentAiContextProgress);
         compactBtn = view.findViewById(R.id.agentAiCompact);
-        destroyBtn = view.findViewById(R.id.agentAiDestroy);
         applyingView = view.findViewById(R.id.agentAiApplying);
 
         TextView closeView = view.findViewById(R.id.agentAiClose);
@@ -238,22 +215,14 @@ public class AgentAiSettingsDialog {
             sendCommand("set", "/plan " + (planOn ? "on" : "off"));
         });
 
-        cwdSwitchBtn.setOnClickListener(v -> {
-            if (applying) {
-                return;
-            }
-            openCwdList();
-        });
-
         compactBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_compact_confirm, "/compact"));
-        // 销毁会话：毁灭性操作，不受操作冷却禁用，始终可点（点击弹强警告，确认后才发送）
-        destroyBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_destroy_confirm, "/destroy"));
     }
 
     /**
-     * 重读 scope=31 type=3 面板数据并渲染（设置更新事件驱动；
-     * 插件执行 query 组合查询 / set 更新后写 type=3 触发）。
-     * 多机器人会话按目标机器人 uid 精确读取（{@link AgentState#getAgentPanelDataFor}）。
+     * 重读 scope=31 type=3 面板数据与 type=2 计量并渲染（设置更新事件驱动；
+     * 插件执行 query 组合查询 / set 更新后写 type=3、回合结束推 type=2 触发）。
+     * 多机器人会话按目标机器人 uid 精确读取（{@link AgentState#getAgentPanelDataFor} /
+     * {@link AgentState#getAgentMetricsFor}）。
      */
     private void refreshPanelData() {
         if (destroyed || conversation == null) {
@@ -267,6 +236,7 @@ public class AgentAiSettingsDialog {
         } catch (Exception ignored) {
             // 读取失败保持旧数据，下次设置更新会重读
         }
+        refreshContextUsage();
     }
 
     /** 面板标题：绑定机器人时显示「🤖 机器人名 · AI 会话设置」；未绑定时用布局默认标题。 */
@@ -313,9 +283,8 @@ public class AgentAiSettingsDialog {
     }
 
     /**
-     * 把 type=3 面板数据应用到当前值并渲染：
-     * effort.options/current、sandbox.current、plan.on、cwd、dirs 根目录子目录。
-     * model / sessionId 等移动端已移除的字段直接忽略。
+     * 把 type=3 面板数据应用到当前值并渲染：effort.options/current、sandbox.current、plan.on。
+     * model / sessionId / cwd / dirs 等移动端已移除的字段直接忽略。
      */
     private void applyPanelData(JSONObject data) {
         // 推理等级：current + options（字符串数组）
@@ -343,26 +312,58 @@ public class AgentAiSettingsDialog {
         if (plan != null) {
             planOn = plan.optBoolean("on", false);
         }
-        // 工作目录 + 根目录子目录
-        currentCwd = data.optString("cwd", "");
-        cwdCandidates.clear();
-        JSONArray dirs = data.optJSONArray("dirs");
-        if (dirs != null) {
-            for (int i = 0; i < dirs.length(); i++) {
-                String dir = dirs.optString(i);
-                if (!TextUtils.isEmpty(dir)) {
-                    cwdCandidates.add(dir);
-                }
-            }
-        }
 
         renderEffort();
         renderSandbox();
         renderPlan();
-        renderCwd();
         // type=3 就绪：隐藏加载中提示
         loadingView.setVisibility(View.GONE);
         handler.removeCallbacks(loadingTimeoutRunnable);
+    }
+
+    /**
+     * 读 scope=31 type=2 计量并刷新上下文占用进度（context.usedPct）。
+     * 未知/缺失/非法时显示「上下文 --」+ 空进度条；不轮询，仅面板打开与设置更新事件驱动。
+     */
+    private void refreshContextUsage() {
+        Double usedPct = null;
+        try {
+            JSONObject metrics = AgentState.getAgentMetricsFor(conversation, robotUid);
+            JSONObject context = metrics == null ? null : metrics.optJSONObject("context");
+            if (context != null) {
+                Object value = context.opt("usedPct");
+                if (value instanceof Number) {
+                    usedPct = ((Number) value).doubleValue();
+                }
+            }
+        } catch (Exception ignored) {
+            // 读取失败按未知处理
+        }
+        renderContextUsage(usedPct);
+    }
+
+    /** 渲染上下文占用：文案「上下文 65%」/「上下文 --」，进度 0–100 钳制，未知时进度为 0 */
+    private void renderContextUsage(Double usedPct) {
+        if (contextUsageView == null || contextProgress == null) {
+            return;
+        }
+        if (usedPct == null || usedPct.isNaN() || usedPct.isInfinite()) {
+            contextUsageView.setText(R.string.agent_ai_context_unknown);
+            contextProgress.setProgress(0);
+            return;
+        }
+        double pct = Math.max(0d, Math.min(100d, usedPct));
+        contextProgress.setProgress((int) Math.round(pct));
+        contextUsageView.setText(dialog.getContext().getString(
+            R.string.agent_ai_context_usage, formatPercent(pct) + "%"));
+    }
+
+    /** 百分比数字：整数不带小数，小数保留 1 位（如 65、70.5） */
+    private String formatPercent(double pct) {
+        if (pct == Math.rint(pct)) {
+            return String.valueOf((long) pct);
+        }
+        return String.valueOf(Math.round(pct * 10) / 10.0);
     }
 
     /**
@@ -430,88 +431,6 @@ public class AgentAiSettingsDialog {
         planText.setText(planOn ? R.string.agent_ai_plan_on : R.string.agent_ai_plan_off);
     }
 
-    /** 工作目录：当前值只读展示 */
-    private void renderCwd() {
-        if (TextUtils.isEmpty(currentCwd)) {
-            cwdCurrentView.setText(dialog.getContext().getString(R.string.agent_ai_cwd_current, "未设置"));
-        } else {
-            cwdCurrentView.setText(dialog.getContext().getString(R.string.agent_ai_cwd_current, currentCwd));
-        }
-        cwdCurrentView.setVisibility(View.VISIBLE);
-        // 目录列表打开中：用最新 dirs 重建（type=3 刷新可能带新目录）
-        if (cwdListOpen) {
-            renderCwdList();
-            cwdListLoadingView.setVisibility(View.GONE);
-            handler.removeCallbacks(cwdListTimeoutRunnable);
-            if (cwdCandidates.isEmpty()) {
-                cwdListContainer.setVisibility(View.GONE);
-                cwdListEmptyView.setText(R.string.agent_ai_cwd_list_empty);
-                cwdListEmptyView.setVisibility(View.VISIBLE);
-            } else {
-                cwdListEmptyView.setVisibility(View.GONE);
-                cwdListContainer.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    /** 点“切换”：目录候选来自 type=3 dirs（面板数据已含）；为空时补发 query 刷新 */
-    private void openCwdList() {
-        cwdListOpen = true;
-        if (cwdCandidates.isEmpty()) {
-            cwdListContainer.setVisibility(View.GONE);
-            cwdListEmptyView.setVisibility(View.GONE);
-            cwdListLoadingView.setVisibility(View.VISIBLE);
-            sendCommand("query", null);
-            handler.removeCallbacks(cwdListTimeoutRunnable);
-            handler.postDelayed(cwdListTimeoutRunnable, CWD_LIST_TIMEOUT_MILLIS);
-        } else {
-            cwdListLoadingView.setVisibility(View.GONE);
-            cwdListEmptyView.setVisibility(View.GONE);
-            renderCwdList();
-            cwdListContainer.setVisibility(View.VISIBLE);
-        }
-        updateEnabledState();
-    }
-
-    /** 重建目录候选列表（点某个目录发 207 set /cwd 目录名并关闭列表） */
-    private void renderCwdList() {
-        cwdListContainer.removeAllViews();
-        for (final String dir : cwdCandidates) {
-            TextView item = new TextView(dialog.getContext());
-            item.setText("📂 " + dir);
-            item.setTextSize(14);
-            item.setTextColor(dialog.getContext().getResources().getColor(R.color.gray0));
-            item.setPadding(dp(12), dp(8), dp(12), dp(8));
-            item.setSingleLine(true);
-            item.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-            item.setOnClickListener(v -> switchCwd(dir));
-            cwdListContainer.addView(item);
-        }
-    }
-
-    /** 点某个目录：发 207 set /cwd 目录名，关闭列表；当前值随后由 type=3 刷新 */
-    private void switchCwd(String dir) {
-        if (TextUtils.isEmpty(dir)) {
-            return;
-        }
-        sendCommand("set", "/cwd " + dir);
-        closeCwdList();
-    }
-
-    /** 关闭目录列表（选中后 / 超时前） */
-    private void closeCwdList() {
-        cwdListOpen = false;
-        handler.removeCallbacks(cwdListTimeoutRunnable);
-        cwdListLoadingView.setVisibility(View.GONE);
-        cwdListContainer.setVisibility(View.GONE);
-        cwdListEmptyView.setVisibility(View.GONE);
-        updateEnabledState();
-    }
-
-    private int dp(float value) {
-        return (int) (value * dialog.getContext().getResources().getDisplayMetrics().density + 0.5f);
-    }
-
     private void confirmAndSend(int contentRes, String command) {
         new MaterialDialog.Builder(dialog.getContext())
             .content(contentRes)
@@ -526,9 +445,7 @@ public class AgentAiSettingsDialog {
         effortSpinner.setEnabled(enabled);
         setRadioGroupEnabled(sandboxGroup, enabled);
         planSwitch.setEnabled(enabled);
-        cwdSwitchBtn.setEnabled(enabled);
         compactBtn.setEnabled(enabled);
-        // 销毁按钮不随操作冷却禁用：危险操作始终可点（每次点击都会再弹确认）
     }
 
     private void setRadioGroupEnabled(RadioGroup group, boolean enabled) {
@@ -544,7 +461,6 @@ public class AgentAiSettingsDialog {
     private void destroy() {
         destroyed = true;
         ChatManager.Instance().removeSettingUpdateListener(settingUpdateListener);
-        cwdListOpen = false;
         handler.removeCallbacksAndMessages(null);
     }
 }

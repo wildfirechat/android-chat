@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 上下文占用进度条：浅灰底 + 主色进度（0–100，未知时进度为 0） -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="3dp" />
+            <solid android:color="@color/gray13" />
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="3dp" />
+                <solid android:color="@color/colorPrimary" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>

@@ -32,12 +32,13 @@ import cn.wildfirechat.remote.ChatManager;
  * {@link AgentState#agentConversationKind}）。
  * 多机器人（多 agent）会话：入口先弹出机器人列表（列表项显示机器人名），选中后把目标
  * 机器人 uid 绑定到面板；单机器人/尚无状态推送的会话直接打开默认面板。
- * 面板：推理等级 / 工作目录 / 沙箱模式 / 计划模式 / 压缩上下文 / 销毁会话。
+ * 面板：推理等级 / 沙箱模式 / 计划模式 / 上下文占用进度 / 压缩上下文。
  * 静默通道：打开发 207 Agent_Command（op=query，带目标 robotId）组合查询，
- * 读 scope=31 type=3 面板数据渲染（effort 下拉、沙箱单选、计划开关、cwd + dirs
- * 目录选择）；所有操作发 207 Agent_Command（op=set，cmd=命令文本，如
+ * 读 scope=31 type=3 面板数据渲染（effort 下拉、沙箱单选、计划开关），
+ * 并读 type=2 计量渲染「上下文 xx%」占用进度（context.usedPct，未知显示 --）；
+ * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如
  * "/effort high"，带目标 robotId），不再发送文本命令、不解析回复。
- * 207 为透明消息，不落消息流。
+ * 207 为透明消息，不落消息流。工作目录切换、新建会话、销毁会话已从面板移除。
  * </p>
  *
  * @author WildFireChat

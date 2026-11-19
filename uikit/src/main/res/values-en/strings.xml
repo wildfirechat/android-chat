@@ -999,13 +999,6 @@
     <string name="agent_ai_session_switch_failed">Failed to switch session</string>
     <string name="agent_ai_model">Model</string>
     <string name="agent_ai_effort">Reasoning effort</string>
-    <string name="agent_ai_cwd">Working directory</string>
-    <string name="agent_ai_cwd_current">Current: %1$s</string>
-    <string name="agent_ai_cwd_switch">Switch</string>
-    <string name="agent_ai_cwd_list_loading">Fetching directory list…</string>
-    <string name="agent_ai_cwd_list_empty">No directories found, try again later</string>
-    <string name="agent_ai_cwd_list_timeout">Timed out fetching directory list, try again</string>
-    <string name="agent_ai_cwd_tip">Switching directory starts a new session (context cleared)</string>
     <string name="agent_ai_sandbox">Sandbox mode</string>
     <string name="agent_ai_sandbox_read_only">Read-only</string>
     <string name="agent_ai_sandbox_workspace_write">Write workspace</string>
@@ -1013,11 +1006,9 @@
     <string name="agent_ai_plan">Plan mode</string>
     <string name="agent_ai_plan_on">On (review before acting)</string>
     <string name="agent_ai_plan_off">Off</string>
+    <string name="agent_ai_context_usage">Context %1$s</string>
+    <string name="agent_ai_context_unknown">Context --</string>
     <string name="agent_ai_compact">Compact context</string>
-    <string name="agent_ai_reset">New session</string>
-    <string name="agent_ai_destroy">Destroy session</string>
     <string name="agent_ai_compact_confirm">Compact the session context (fold history to reduce token usage). Continue?</string>
-    <string name="agent_ai_reset_confirm">Starting a new session opens a fresh context; the current session is kept and can be switched back from Sessions. Continue?</string>
-    <string name="agent_ai_destroy_confirm">Destroying the session will dissolve this group, delete the workspace directory and all session data, and cannot be undone!\n\nAre you sure you want to destroy it?</string>
     <string name="agent_ai_applying">Command sent…</string>
 </resources>

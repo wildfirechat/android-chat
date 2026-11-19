@@ -104,6 +104,18 @@ public class AgentState {
      * </p>
      */
     private static String agentSettingValue(Conversation conversation, int type) {
+        return agentSettingValueFor(conversation, type, null);
+    }
+
+    /**
+     * 读 scope=31 中当前会话指定 type 槽位的设置值，robotUid 非空时按完整 uid 精确匹配
+     * （键 {@code <convType>-<line>-<target>_<type>_<robotUid>}，多机器人会话寻址），
+     * 为空时取首个前缀命中项。找不到/出错返回 null。
+     */
+    private static String agentSettingValueFor(Conversation conversation, int type, String robotUid) {
+        if (conversation == null || TextUtils.isEmpty(conversation.target)) {
+            return null;
+        }
         String prefix = agentSettingKeyPrefix(conversation, type);
         try {
             Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
@@ -111,7 +123,15 @@ public class AgentState {
                 return null;
             }
             for (Map.Entry<String, String> entry : settings.entrySet()) {
-                if (entry.getKey() != null && entry.getKey().startsWith(prefix)) {
+                String key = entry.getKey();
+                if (key == null) {
+                    continue;
+                }
+                if (!TextUtils.isEmpty(robotUid)) {
+                    if (key.equals(prefix + robotUid)) {
+                        return entry.getValue();
+                    }
+                } else if (key.startsWith(prefix)) {
                     return entry.getValue();
                 }
             }
@@ -180,14 +200,24 @@ public class AgentState {
      * 独立于运行状态（type=1）：回合结束必推（含出错/取消），带 metricsAt 时间戳，
      * 与状态推送互不依赖。返回对象含 usage/turn/context/cacheHitRatePct/speed/metricsAt 字段。
      * 面板（模型/推理等级/工作目录/沙箱/计划等）的当前值改从 type=3 读，不在此处。
+     * 多机器人会话按 uid 精确读取见 {@link #getAgentMetricsFor}。
      * </p>
      */
     public static JSONObject getAgentMetrics(Conversation conversation) {
+        return getAgentMetricsFor(conversation, null);
+    }
+
+    /**
+     * 读取会话内指定机器人的 type=2 Token 统计；robotUid 非空时按完整 uid 精确匹配键
+     * {@code <convType>-<line>-<target>_2_<robotUid>}（多机器人寻址），为空时取首个前缀命中项。
+     * 未设置/非法/非 Agent 会话时返回 null（结构与 {@link #getAgentMetrics} 一致）。
+     */
+    public static JSONObject getAgentMetricsFor(Conversation conversation, String robotUid) {
         if (!isAgentConversation(conversation)) {
             return null;
         }
         try {
-            String raw = agentSettingValue(conversation, Agent_METRICS_TYPE);
+            String raw = agentSettingValueFor(conversation, Agent_METRICS_TYPE, robotUid);
             if (TextUtils.isEmpty(raw)) {
                 return null;
             }
@@ -581,34 +611,7 @@ public class AgentState {
      * </p>
      */
     public static JSONObject getAgentPanelDataFor(Conversation conversation, String robotUid) {
-        if (conversation == null || TextUtils.isEmpty(conversation.target)) {
-            return null;
-        }
-        String prefix = agentSettingKeyPrefix(conversation, Agent_PANEL_TYPE);
-        try {
-            Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_User_Setting);
-            if (settings == null || settings.isEmpty()) {
-                return null;
-            }
-            for (Map.Entry<String, String> entry : settings.entrySet()) {
-                String key = entry.getKey();
-                if (key == null) {
-                    continue;
-                }
-                if (!TextUtils.isEmpty(robotUid)) {
-                    // 精确匹配：目标机器人 uid 的 type=3 面板数据
-                    if (key.equals(prefix + robotUid)) {
-                        return parseSettingJson(entry.getValue());
-                    }
-                } else if (key.startsWith(prefix)) {
-                    // 默认：首个命中前缀的面板数据（兼容旧单机器人键）
-                    return parseSettingJson(entry.getValue());
-                }
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
+        return parseSettingJson(agentSettingValueFor(conversation, Agent_PANEL_TYPE, robotUid));
     }
 
     /** scope=31 设置值 → JSONObject；空/非法返回 null。 */
