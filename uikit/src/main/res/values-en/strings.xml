@@ -1003,6 +1003,11 @@
     <string name="agent_ai_sandbox_read_only">Read-only</string>
     <string name="agent_ai_sandbox_workspace_write">Write workspace</string>
     <string name="agent_ai_sandbox_danger">Full access</string>
+    <string name="agent_ai_preset">Agent mode</string>
+    <string name="agent_ai_approval">Tool approval</string>
+    <string name="agent_ai_mode">Session mode</string>
+    <string name="agent_ai_mode_interrupt">Interrupt (newest interrupts running)</string>
+    <string name="agent_ai_mode_queue">Queue (serial wait)</string>
     <string name="agent_ai_plan">Plan mode</string>
     <string name="agent_ai_plan_on">On (review before acting)</string>
     <string name="agent_ai_plan_off">Off</string>

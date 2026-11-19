@@ -107,6 +107,32 @@
                     android:text="@string/agent_ai_sandbox_danger" />
             </RadioGroup>
 
+            <!-- Agent 模式（preset）：与推理等级同为下拉；options 为空时禁用但仍显示当前值 -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_preset" />
+            <Spinner
+                android:id="@+id/agentAiPresetSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_agent_input_bg"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:spinnerMode="dropdown" />
+
+            <!-- 工具审批（approval）：同上，options 为空时禁用但仍显示当前值 -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_approval" />
+            <Spinner
+                android:id="@+id/agentAiApprovalSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_agent_input_bg"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:spinnerMode="dropdown" />
+
             <!-- 计划模式 -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -137,6 +163,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
+
+            <!-- 会话模式（mode）：interrupt（后到打断先到，默认）/ queue（排队），选项按 type=3 动态生成 -->
+            <TextView
+                style="@style/agent_ai_label"
+                android:text="@string/agent_ai_mode" />
+            <RadioGroup
+                android:id="@+id/agentAiModeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
             <!-- 上下文占用（scope=31 type=2 context.usedPct）+ 压缩上下文：进度指示在按钮之前 -->
             <LinearLayout
