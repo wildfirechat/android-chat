@@ -74,8 +74,9 @@ import cn.wildfire.chat.kit.group.manage.JoinGroupRequestListActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.utils.AgentRobotService;
 import cn.wildfire.chat.kit.utils.AgentState;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
@@ -170,6 +171,12 @@ public class ConversationFragment extends Fragment implements
     private List<AgentState.RobotState> agentRobotStates = new ArrayList<>();
     private long lastAgentStopClickTime;
     private final OnSettingUpdateListener agentSettingUpdateListener = () -> refreshAgentState();
+    /** 单聊 DSH 机器人 id 异步到达：重新判定/刷新 Agent 状态与标题 */
+    private final AgentRobotService.Callback agentRobotCallback = robotId -> {
+        if (isAdded()) {
+            refreshAgentState();
+        }
+    };
 
     private ConversationMessageAdapter adapter;
     private OngoingCallAdapter ongoingCallAdapter;
@@ -757,6 +764,9 @@ public class ConversationFragment extends Fragment implements
 
         // Agent 会话状态通道（scope=31）走用户设置更新事件，事件驱动，不轮询
         ChatManager.Instance().addSettingUpdateListener(agentSettingUpdateListener);
+        // 单聊 DSH 识别：机器人 id 异步到达后重新判定本会话；普通单聊/群聊不受影响
+        AgentRobotService.Instance().addListener(agentRobotCallback);
+        AgentRobotService.Instance().ensureLoaded(null);
 
         isEnableUserOnlineState = ChatManager.Instance().isEnableUserOnlineState();
         if (isEnableUserOnlineState) {
@@ -1597,6 +1607,7 @@ public class ConversationFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         ChatManager.Instance().removeSettingUpdateListener(agentSettingUpdateListener);
+        AgentRobotService.Instance().removeListener(agentRobotCallback);
         // 与改造前一致：丢弃 toolbar 标题 TextView 的缓存（现在缓存在适配器里）
         wfcBaseActivityHost = null;
     }

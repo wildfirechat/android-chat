@@ -229,6 +229,16 @@ public class Config {
     // 是否开启水印功能
     public static boolean ENABLE_WATER_MARK = false;
 
+    /**
+     * AI Agent 服务地址（ai-agent-server；按部署替换，留空则关闭单聊 DSH 识别）。
+     * <p>
+     * 移动端用当前登录用户的 IM authCode 请求 {@code {AI_AGENT_SERVER}/api/me/robot}，
+     * 查询该用户已开通的 DSH 机器人 id；有机器人时，与机器人单聊的会话会被识别为
+     * DSH 会话并显示 AI 面板入口。留空或置为 null 时不请求、不识别。
+     * </p>
+     */
+    public static String AI_AGENT_SERVER = "https://work.wildfirechat.net";
+
     // AI机器人ID
     public static String AI_ROBOT = "FireRobot";
     public static String PSTN_ASSISTANT_ID = "robotdialin";

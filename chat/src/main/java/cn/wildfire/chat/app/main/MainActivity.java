@@ -76,6 +76,7 @@ import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.AgentRobotService;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
@@ -306,6 +307,8 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
                 WebStorage.getInstance().deleteAllData();
                 CookieManager.getInstance().removeAllCookies(null);
                 CookieManager.getInstance().flush();
+                // 退出/被踢/切换账号：清理单聊 DSH 机器人缓存，避免串号
+                AgentRobotService.Instance().clear();
 
                 if (status == ConnectionStatus.ConnectionStatusLogout) {
                     reLogin(false);
@@ -320,6 +323,8 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
             } else if (status == ConnectionStatus.ConnectionStatusTimeInconsistent) {
                 Toast.makeText(MainActivity.this, "服务器和客户端时间相差太大！！！", Toast.LENGTH_LONG).show();
             } else if (status == ConnectionStatus.ConnectionStatusConnected) {
+                // 登录/连接成功：刷新当前用户的 DSH 机器人 id（用于单聊识别）
+                AgentRobotService.Instance().refresh();
                 if (secretChatMenuItem != null) {
                     boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
                     secretChatMenuItem.setEnabled(isEnableSecretChat);

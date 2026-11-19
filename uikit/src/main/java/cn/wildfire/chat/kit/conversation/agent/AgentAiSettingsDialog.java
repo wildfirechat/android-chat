@@ -11,9 +11,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,32 +20,24 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.WfcSheetDialogCompat;
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.agent.AgentCommandMessageContent;
-import cn.wildfirechat.message.agent.AgentCommandResultMessageContent;
-import cn.wildfirechat.message.agent.AgentCommandResultMessageContent.AgentSessionItem;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetUserInfoCallback;
-import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 
 /**
@@ -58,27 +47,22 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * 多机器人（多 agent）会话：面板先经调用方选好目标机器人（完整 uid 绑定到
  * {@link #robotUid}），标题显示机器人显示名（{@link AgentState#agentRobotName}），
  * type=3 面板数据按 uid 精确读取（{@link AgentState#getAgentPanelDataFor}），
- * 207 指令带目标 robotId（仅该机器人执行）。
+ * 207 指令带目标 robotId（仅该机器人执行）。单聊 DSH 会话的 robotUid 即本人机器人 id。
  * </p>
  * <p>
  * 静默通道：所有交互不落消息流（不显示在界面上）。
  * 打开面板发 207 Agent_Command（op=query）组合查询 → 插件聚合面板数据
- * （model 当前值+目录 / effort / sandbox / plan / cwd / sessionId / dirs）写入
- * scope=31 type=3（键 convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
- * 模型/推理等级为下拉（model.options / effort.options + current）、沙箱为单选、
- * 计划为开关、工作目录为 cwd + dirs 列表选择弹窗。
- * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/model deepseek-official/xxx"）；
- * 插件执行后写 type=1 状态 lastChange（如 "模型 → deepseek-official/deepseek-v4-pro"，变更可见）
- * 并刷新 type=3，本面板监听本端已有的用户设置更新事件（{@link OnSettingUpdateListener}）重读 type=3。
- * 不再发送 /model /effort /sandbox /plan /ls 等文本命令、不再解析机器人回复文本
- * （parseModelReply / parseEffortReply / parseSandboxReply / parsePlanReply / parseLsReply 已移除）。
- * 207 为透明消息（PersistFlag.Transparent，digest 空）：不持久化、不显示。
+ * （effort / sandbox / plan / cwd / dirs）写入 scope=31 type=3（键
+ * convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
+ * 推理等级为下拉、沙箱为单选、计划为开关、工作目录为 cwd + dirs 列表选择弹窗。
+ * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/effort high"）；
+ * 插件执行后写 type=1 状态 lastChange 并刷新 type=3，本面板监听本端已有的用户设置
+ * 更新事件（{@link OnSettingUpdateListener}）重读 type=3。
  * </p>
  * <p>
- * 会话选择：顶部「会话」行显示 type=3 sessionId 末 8 位；点「选择」发 207 op=sessions，
- * 机器人以 209 Agent_Command_Result（透明）回最近会话列表 → MaterialDialog 列出最多 10 条；
- * 点选非当前会话发 207 op=switch（带 sessionId），成功后再发 query 刷新 type=3。
- * 209 按「会话 + seq + robotId」关联 pending 请求，面板 dismiss 时移除监听并清定时器。
+ * 移动端精简：不再提供模型切换与会话切换（会话列表/当前 sessionId/207 sessions/switch
+ * 均已移除），type=3 中的 model/sessionId 字段安全忽略；保留推理等级、工作目录、
+ * 沙箱、计划、压缩上下文、销毁会话等控制。
  * </p>
  */
 public class AgentAiSettingsDialog {
@@ -89,21 +73,6 @@ public class AgentAiSettingsDialog {
     private static final long LOADING_TIMEOUT_MILLIS = 6000L;
     /** 目录列表（type=3 dirs 为空时补发 query）兜底超时 */
     private static final long CWD_LIST_TIMEOUT_MILLIS = 8000L;
-    /** 会话列表（207 op=sessions → 209 应答）超时 */
-    private static final long SESSION_LIST_TIMEOUT_MILLIS = 5000L;
-    /** 会话列表最多展示条数（服务端已按最近活跃倒序） */
-    private static final int SESSION_LIST_MAX = 10;
-
-    /** 模型候选：value=provider/id（发送用），label=value（name）（展示用） */
-    private static class ModelOption {
-        final String value;
-        final String label;
-
-        ModelOption(String value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-    }
 
     private final Dialog dialog;
     private final Conversation conversation;
@@ -114,9 +83,6 @@ public class AgentAiSettingsDialog {
 
     private TextView loadingView;
     private TextView titleView;
-    private TextView sessionCurrentView;
-    private Button sessionChooseBtn;
-    private Spinner modelSpinner;
     private Spinner effortSpinner;
     private RadioGroup sandboxGroup;
     private TextView cwdCurrentView;
@@ -127,32 +93,18 @@ public class AgentAiSettingsDialog {
     private Switch planSwitch;
     private TextView planText;
     private Button compactBtn;
-    private Button resetBtn;
     private Button destroyBtn;
     private TextView applyingView;
 
-    /** type=3 面板数据当前值（模型/推理等级/沙箱/计划/工作目录） */
-    private final List<ModelOption> modelOptions = new ArrayList<>();
-    private String currentModel = "";
+    /** type=3 面板数据当前值（推理等级/沙箱/计划/工作目录） */
     private final List<String> effortOptions = new ArrayList<>();
     private String currentEffort = "";
     private String currentSandbox = "";
     private boolean planOn = false;
     private String currentCwd = "";
-    /** type=3 sessionId（当前 DSH 会话；空=未获取到） */
-    private String currentSessionId = "";
-    /** 会话列表请求 pending seq（0=无）；用于按 seq 关联 209 应答 */
-    private long sessionListSeq = 0;
-    /** 会话切换请求 pending seq（0=无） */
-    private long sessionSwitchSeq = 0;
-    /** 会话选择弹窗是否打开（关闭后丢弃迟到的应答） */
-    private boolean sessionPickerOpen = false;
-    /** 会话选择弹窗（加载中/列表/超时重试共用，dismiss 时清 pending） */
-    private MaterialDialog sessionDialog;
     /** type=3 dirs 根目录子目录候选（工作目录选择式切换） */
     private final List<String> cwdCandidates = new ArrayList<>();
     /** 下拉实际展示项（= 候选 + 当前值不在候选时前置追加），与 Spinner 位置一一对应 */
-    private final List<ModelOption> displayModelOptions = new ArrayList<>();
     private final List<String> displayEffortOptions = new ArrayList<>();
 
     /** 程序化重建下拉/单选时的防回环开关 */
@@ -187,17 +139,6 @@ public class AgentAiSettingsDialog {
         cwdListEmptyView.setVisibility(View.VISIBLE);
         updateEnabledState();
     };
-    /** 会话列表兜底超时：5 秒无 209 应答 → 提示超时并允许重试 */
-    private final Runnable sessionListTimeoutRunnable = () -> {
-        if (destroyed || sessionListSeq == 0 || !sessionPickerOpen) {
-            return;
-        }
-        sessionListSeq = 0;
-        showSessionRetryDialog(R.string.agent_ai_session_timeout);
-    };
-
-    /** 209 Agent_Command_Result 监听：按「会话 + seq + robotId」关联 pending 请求 */
-    private final OnReceiveMessageListener receiveMessageListener = this::onReceiveMessages;
 
     public AgentAiSettingsDialog(Context context, Conversation conversation, MessageViewModel messageViewModel) {
         this(context, conversation, messageViewModel, null);
@@ -218,8 +159,6 @@ public class AgentAiSettingsDialog {
         dialog.show();
         // 监听设置更新事件：插件写 type=3（query 结果 / set 后刷新）触发重读
         ChatManager.Instance().addSettingUpdateListener(settingUpdateListener);
-        // 监听 209 Agent_Command_Result：会话列表/切换应答（透明消息）
-        ChatManager.Instance().addOnReceiveMessageListener(receiveMessageListener);
         // 先读已有 type=3 面板数据（若有）渲染，再发 207 query 组合查询刷新
         refreshPanelData();
         loadingView.setVisibility(View.VISIBLE);
@@ -231,9 +170,6 @@ public class AgentAiSettingsDialog {
     private void bindViews(View view) {
         loadingView = view.findViewById(R.id.agentAiLoading);
         titleView = view.findViewById(R.id.agentAiTitle);
-        sessionCurrentView = view.findViewById(R.id.agentAiSessionCurrent);
-        sessionChooseBtn = view.findViewById(R.id.agentAiSessionChoose);
-        modelSpinner = view.findViewById(R.id.agentAiModelSpinner);
         effortSpinner = view.findViewById(R.id.agentAiEffortSpinner);
         sandboxGroup = view.findViewById(R.id.agentAiSandboxGroup);
         cwdCurrentView = view.findViewById(R.id.agentAiCwdCurrent);
@@ -244,7 +180,6 @@ public class AgentAiSettingsDialog {
         planSwitch = view.findViewById(R.id.agentAiPlanSwitch);
         planText = view.findViewById(R.id.agentAiPlanText);
         compactBtn = view.findViewById(R.id.agentAiCompact);
-        resetBtn = view.findViewById(R.id.agentAiReset);
         destroyBtn = view.findViewById(R.id.agentAiDestroy);
         applyingView = view.findViewById(R.id.agentAiApplying);
 
@@ -257,25 +192,6 @@ public class AgentAiSettingsDialog {
             updateTitle(AgentState.agentRobotName(robotUid));
             refreshRobotTitleAsync();
         }
-
-        modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-                if (rendering || applying || position < 0 || position >= displayModelOptions.size()) {
-                    return;
-                }
-                ModelOption option = displayModelOptions.get(position);
-                if (option == null || option.value.equals(currentModel)) {
-                    return;
-                }
-                currentModel = option.value;
-                sendCommand("set", "/model " + option.value);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
         effortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -329,16 +245,7 @@ public class AgentAiSettingsDialog {
             openCwdList();
         });
 
-        sessionChooseBtn.setOnClickListener(v -> {
-            if (applying) {
-                return;
-            }
-            openSessionPicker();
-        });
-        renderSession();
-
         compactBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_compact_confirm, "/compact"));
-        resetBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_reset_confirm, "/reset"));
         // 销毁会话：毁灭性操作，不受操作冷却禁用，始终可点（点击弹强警告，确认后才发送）
         destroyBtn.setOnClickListener(v -> confirmAndSend(R.string.agent_ai_destroy_confirm, "/destroy"));
     }
@@ -407,34 +314,10 @@ public class AgentAiSettingsDialog {
 
     /**
      * 把 type=3 面板数据应用到当前值并渲染：
-     * model.options/current、effort.options/current、sandbox.current、plan.on、
-     * cwd、dirs 根目录子目录。
+     * effort.options/current、sandbox.current、plan.on、cwd、dirs 根目录子目录。
+     * model / sessionId 等移动端已移除的字段直接忽略。
      */
     private void applyPanelData(JSONObject data) {
-        // 模型：current + options（value=provider/id，label=value（名））
-        JSONObject model = data.optJSONObject("model");
-        if (model != null) {
-            currentModel = model.optString("current", "");
-            modelOptions.clear();
-            JSONArray options = model.optJSONArray("options");
-            if (options != null) {
-                for (int i = 0; i < options.length(); i++) {
-                    JSONObject option = options.optJSONObject(i);
-                    if (option == null) {
-                        continue;
-                    }
-                    String value = option.optString("value");
-                    if (TextUtils.isEmpty(value)) {
-                        continue;
-                    }
-                    String label = option.optString("label");
-                    if (TextUtils.isEmpty(label)) {
-                        label = value;
-                    }
-                    modelOptions.add(new ModelOption(value, label));
-                }
-            }
-        }
         // 推理等级：current + options（字符串数组）
         JSONObject effort = data.optJSONObject("effort");
         if (effort != null) {
@@ -462,11 +345,6 @@ public class AgentAiSettingsDialog {
         }
         // 工作目录 + 根目录子目录
         currentCwd = data.optString("cwd", "");
-        // 当前会话 id（DSH sessionId）：显示末 8 位；缺失/为空保持旧值
-        String sessionId = data.optString("sessionId", "");
-        if (!TextUtils.isEmpty(sessionId)) {
-            currentSessionId = sessionId;
-        }
         cwdCandidates.clear();
         JSONArray dirs = data.optJSONArray("dirs");
         if (dirs != null) {
@@ -478,12 +356,10 @@ public class AgentAiSettingsDialog {
             }
         }
 
-        renderModel();
         renderEffort();
         renderSandbox();
         renderPlan();
         renderCwd();
-        renderSession();
         // type=3 就绪：隐藏加载中提示
         loadingView.setVisibility(View.GONE);
         handler.removeCallbacks(loadingTimeoutRunnable);
@@ -491,24 +367,16 @@ public class AgentAiSettingsDialog {
 
     /**
      * 发送 207 Agent_Command 面板指令（透明消息，不显示在消息流）。
-     * op=query 组合查询（cmd 空）；op=set 更新（cmd=命令文本，如 "/model deepseek-official/xxx"）。
+     * op=query 组合查询（cmd 空）；op=set 更新（cmd=命令文本，如 "/effort high"）。
      * 绑定目标机器人时 207 带 robotId（完整 uid）：多机器人会话仅该机器人执行
      * （服务端插件已支持 robotId 寻址）。
      * set 发送后控件短暂禁用（防连点）。
      */
     private void sendCommand(String op, String cmd) {
-        sendCommand(op, cmd, null, nextSeq());
-    }
-
-    /**
-     * 发送 207 Agent_Command（指定 seq / sessionId）。
-     * op=sessions 请求会话列表；op=switch 带目标 sessionId 切换历史会话。
-     */
-    private void sendCommand(String op, String cmd, String sessionId, long seq) {
         if (destroyed || conversation == null || messageViewModel == null) {
             return;
         }
-        AgentCommandMessageContent content = new AgentCommandMessageContent(op, cmd, seq, robotUid, sessionId);
+        AgentCommandMessageContent content = new AgentCommandMessageContent(op, cmd, nextSeq(), robotUid);
         messageViewModel.sendMessage(conversation, content);
         if ("set".equals(op)) {
             applying = true;
@@ -519,338 +387,9 @@ public class AgentAiSettingsDialog {
         }
     }
 
-    /** 207 seq 自增（同一面板会话内单调递增，用于 209 应答关联/幂等） */
+    /** 207 seq 自增（同一面板会话内单调递增，用于幂等） */
     private long nextSeq() {
         return ++commandSeq;
-    }
-
-    // ===================== 会话选择（207 op=sessions/switch → 209 Agent_Command_Result） =====================
-
-    /** 点「选择」：打开会话列表弹窗并发 207 op=sessions 请求最近会话。 */
-    private void openSessionPicker() {
-        if (destroyed || applying || conversation == null) {
-            return;
-        }
-        requestSessions();
-    }
-
-    /** 请求最近会话列表：seq 自增，5 秒无 209 应答按超时处理（可重试）。 */
-    private void requestSessions() {
-        if (destroyed || conversation == null || messageViewModel == null) {
-            return;
-        }
-        long seq = nextSeq();
-        sessionListSeq = seq;
-        sessionPickerOpen = true;
-        showSessionLoadingDialog();
-        sendCommand("sessions", null, null, seq);
-        handler.removeCallbacks(sessionListTimeoutRunnable);
-        handler.postDelayed(sessionListTimeoutRunnable, SESSION_LIST_TIMEOUT_MILLIS);
-    }
-
-    /** 加载中弹窗：等待 209 应答；用户关闭则丢弃本次请求（seq 清 0）。 */
-    private void showSessionLoadingDialog() {
-        dismissSessionDialog();
-        final MaterialDialog loadingDialog = new MaterialDialog.Builder(dialog.getContext())
-            .title(R.string.agent_ai_session_picker_title)
-            .content(R.string.agent_ai_session_list_loading)
-            .negativeText(R.string.cancel)
-            .cancelable(true)
-            .build();
-        loadingDialog.setOnDismissListener(d -> {
-            if (sessionDialog == loadingDialog) {
-                sessionDialog = null;
-            }
-            sessionPickerOpen = false;
-            if (sessionListSeq != 0) {
-                sessionListSeq = 0;
-                handler.removeCallbacks(sessionListTimeoutRunnable);
-            }
-        });
-        sessionDialog = loadingDialog;
-        loadingDialog.show();
-    }
-
-    /** 超时/空列表/切换失败提示弹窗：可重试（重新发 sessions）或取消。 */
-    private void showSessionRetryDialog(int contentRes) {
-        dismissSessionDialog();
-        if (destroyed) {
-            return;
-        }
-        final MaterialDialog retryDialog = new MaterialDialog.Builder(dialog.getContext())
-            .title(R.string.agent_ai_session_picker_title)
-            .content(contentRes)
-            .positiveText(R.string.agent_ai_session_retry)
-            .negativeText(R.string.cancel)
-            .onPositive((d, which) -> {
-                dismissSessionDialog();
-                requestSessions();
-            })
-            .cancelable(true)
-            .build();
-        retryDialog.setOnDismissListener(d -> {
-            if (sessionDialog == retryDialog) {
-                sessionDialog = null;
-            }
-            sessionPickerOpen = false;
-        });
-        sessionDialog = retryDialog;
-        sessionPickerOpen = true;
-        retryDialog.show();
-    }
-
-    /** 209 op=sessions 应答：MaterialDialog 列出最多 10 条（服务端已倒序）。 */
-    private void showSessionList(List<AgentSessionItem> sessions) {
-        dismissSessionDialog();
-        if (destroyed) {
-            return;
-        }
-        List<AgentSessionItem> all = sessions != null ? sessions : new ArrayList<>();
-        final List<AgentSessionItem> items = all.size() > SESSION_LIST_MAX
-            ? new ArrayList<>(all.subList(0, SESSION_LIST_MAX)) : all;
-        if (items.isEmpty()) {
-            showSessionRetryDialog(R.string.agent_ai_session_empty);
-            return;
-        }
-        // 两行展示：第一行标题（首条用户消息），第二行最近活跃时间 + 当前标记；不显示路径/裸 id
-        final RecyclerView.Adapter<RecyclerView.ViewHolder> adapter =
-            new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-                @Override
-                public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                    View view = LayoutInflater.from(parent.getContext())
-                        .inflate(android.R.layout.simple_list_item_2, parent, false);
-                    return new RecyclerView.ViewHolder(view) {
-                    };
-                }
-
-                @Override
-                public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-                    AgentSessionItem item = items.get(position);
-                    TextView titleView = holder.itemView.findViewById(android.R.id.text1);
-                    TextView metaView = holder.itemView.findViewById(android.R.id.text2);
-                    String title = TextUtils.isEmpty(item.getTitle())
-                        ? dialog.getContext().getString(R.string.agent_ai_session_untitled, shortSessionId(item.getId()))
-                        : item.getTitle();
-                    titleView.setText(title);
-                    String time = formatSessionTime(item.getUpdatedAt());
-                    String meta = item.isCurrent()
-                        ? (TextUtils.isEmpty(time) ? dialog.getContext().getString(R.string.agent_ai_session_current_tag)
-                            : time + " · " + dialog.getContext().getString(R.string.agent_ai_session_current_tag))
-                        : time;
-                    metaView.setText(meta);
-                    holder.itemView.setOnClickListener(v -> switchToSession(item));
-                }
-
-                @Override
-                public int getItemCount() {
-                    return items.size();
-                }
-            };
-        final MaterialDialog listDialog = new MaterialDialog.Builder(dialog.getContext())
-            .title(R.string.agent_ai_session_picker_title)
-            .adapter(adapter, new LinearLayoutManager(dialog.getContext()))
-            .negativeText(R.string.cancel)
-            .cancelable(true)
-            .build();
-        listDialog.setOnDismissListener(d -> {
-            if (sessionDialog == listDialog) {
-                sessionDialog = null;
-            }
-            sessionPickerOpen = false;
-            sessionListSeq = 0;
-            handler.removeCallbacks(sessionListTimeoutRunnable);
-        });
-        sessionDialog = listDialog;
-        sessionPickerOpen = true;
-        listDialog.show();
-    }
-
-    /** 点选历史会话：当前会话直接关闭；否则发 207 op=switch（带 sessionId/seq/robotId）。 */
-    private void switchToSession(AgentSessionItem item) {
-        if (destroyed || item == null || TextUtils.isEmpty(item.getId())) {
-            return;
-        }
-        if (item.isCurrent() || item.getId().equals(currentSessionId)) {
-            dismissSessionDialog();
-            sessionPickerOpen = false;
-            return;
-        }
-        long seq = nextSeq();
-        sessionSwitchSeq = seq;
-        sendCommand("switch", null, item.getId(), seq);
-    }
-
-    /** 关闭会话选择弹窗（不触发其 dismiss 清理逻辑，状态由调用方维护）。 */
-    private void dismissSessionDialog() {
-        MaterialDialog d = sessionDialog;
-        sessionDialog = null;
-        if (d == null) {
-            return;
-        }
-        d.setOnDismissListener(null);
-        if (d.isShowing()) {
-            d.dismiss();
-        }
-    }
-
-    /** 新消息监听（主线程）：只处理本会话的 209 Agent_Command_Result。 */
-    private void onReceiveMessages(List<Message> messages, boolean hasMore) {
-        if (destroyed || messages == null || messages.isEmpty()) {
-            return;
-        }
-        for (Message message : messages) {
-            if (message == null || message.conversation == null || message.content == null) {
-                continue;
-            }
-            if (!(message.content instanceof AgentCommandResultMessageContent)) {
-                continue;
-            }
-            // 会话过滤：多会话并发时只接受本会话的应答
-            if (conversation != null && !conversation.equals(message.conversation)) {
-                continue;
-            }
-            handleCommandResult((AgentCommandResultMessageContent) message.content);
-        }
-    }
-
-    /** 209 应答分发：按 op + seq + robotId 匹配 pending，未匹配/校验失败直接丢弃。 */
-    private void handleCommandResult(AgentCommandResultMessageContent result) {
-        if (destroyed || result == null) {
-            return;
-        }
-        // robotId 校验：请求指定了目标机器人而应答带了不同的 robotId → 丢弃
-        String resultRobotId = result.getRobotId();
-        if (!TextUtils.isEmpty(robotUid) && !TextUtils.isEmpty(resultRobotId)
-            && !robotUid.equals(resultRobotId)) {
-            return;
-        }
-        if ("sessions".equals(result.getOp())) {
-            if (sessionListSeq == 0 || result.getSeq() != sessionListSeq) {
-                return;
-            }
-            sessionListSeq = 0;
-            handler.removeCallbacks(sessionListTimeoutRunnable);
-            String sessionId = result.getSessionId();
-            if (!TextUtils.isEmpty(sessionId)) {
-                currentSessionId = sessionId;
-                renderSession();
-            }
-            showSessionList(result.getSessions());
-            return;
-        }
-        if ("switch".equals(result.getOp())) {
-            if (sessionSwitchSeq == 0 || result.getSeq() != sessionSwitchSeq) {
-                return;
-            }
-            sessionSwitchSeq = 0;
-            if (result.isOk()) {
-                dismissSessionDialog();
-                sessionPickerOpen = false;
-                String sessionId = result.getSessionId();
-                if (!TextUtils.isEmpty(sessionId)) {
-                    currentSessionId = sessionId;
-                    renderSession();
-                }
-                Toast.makeText(dialog.getContext(), R.string.agent_ai_session_switched, Toast.LENGTH_SHORT).show();
-                // 切换后重新 query：插件写 type=3（cwd/sessionId 随会话变化），面板重读刷新
-                refreshPanelData();
-                loadingView.setVisibility(View.VISIBLE);
-                sendCommand("query", null);
-                handler.removeCallbacks(loadingTimeoutRunnable);
-                handler.postDelayed(loadingTimeoutRunnable, LOADING_TIMEOUT_MILLIS);
-            } else {
-                String error = result.getError();
-                int messageRes = TextUtils.isEmpty(error)
-                    ? R.string.agent_ai_session_switch_failed : 0;
-                if (messageRes != 0) {
-                    Toast.makeText(dialog.getContext(), messageRes, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(dialog.getContext(), error, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    /** 会话行：当前 sessionId 末 8 位（空=未获取到）。 */
-    private void renderSession() {
-        if (sessionCurrentView == null) {
-            return;
-        }
-        String display = TextUtils.isEmpty(currentSessionId)
-            ? dialog.getContext().getString(R.string.agent_ai_session_none)
-            : shortSessionId(currentSessionId);
-        sessionCurrentView.setText(dialog.getContext().getString(R.string.agent_ai_session_current, display));
-    }
-
-    /** 会话 id 缩短展示：末 8 位（前缀是会话哈希，展示无意义）。 */
-    private String shortSessionId(String id) {
-        if (TextUtils.isEmpty(id)) {
-            return "";
-        }
-        return id.length() > 8 ? "…" + id.substring(id.length() - 8) : id;
-    }
-
-    /** 时间戳（毫秒）→ "MM-DD HH:mm"；无效返回空串。 */
-    private String formatSessionTime(long millis) {
-        if (millis <= 0) {
-            return "";
-        }
-        try {
-            return new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()).format(new Date(millis));
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    /** 列表项文案：MM-DD HH:mm · 短id · cwd（当前会话标注「当前」）。 */
-    private String formatSessionLabel(AgentSessionItem item) {
-        String time = formatSessionTime(item.getUpdatedAt());
-        String cwd = TextUtils.isEmpty(item.getCwd())
-            ? dialog.getContext().getString(R.string.agent_ai_session_no_cwd) : item.getCwd();
-        StringBuilder label = new StringBuilder();
-        if (!TextUtils.isEmpty(time)) {
-            label.append(time).append(" · ");
-        }
-        label.append(shortSessionId(item.getId())).append(" · ").append(cwd);
-        if (item.isCurrent()) {
-            label.append("（").append(dialog.getContext().getString(R.string.agent_ai_session_current_tag)).append("）");
-        }
-        return label.toString();
-    }
-
-    /** 重建模型下拉：候选来自 type=3 model.options；当前值不在候选里也追加显示并选中 */
-    private void renderModel() {
-        rendering = true;
-        displayModelOptions.clear();
-        displayModelOptions.addAll(modelOptions);
-        boolean hasCurrent = false;
-        for (ModelOption option : displayModelOptions) {
-            if (option.value.equals(currentModel)) {
-                hasCurrent = true;
-                break;
-            }
-        }
-        if (!hasCurrent && !TextUtils.isEmpty(currentModel)) {
-            displayModelOptions.add(0, new ModelOption(currentModel, currentModel));
-        }
-        List<String> labels = new ArrayList<>();
-        for (ModelOption option : displayModelOptions) {
-            labels.add(option.label);
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(dialog.getContext(),
-            android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        modelSpinner.setAdapter(adapter);
-        int index = 0;
-        for (int i = 0; i < displayModelOptions.size(); i++) {
-            if (displayModelOptions.get(i).value.equals(currentModel)) {
-                index = i;
-                break;
-            }
-        }
-        modelSpinner.setSelection(index);
-        // 下拉重建的 onItemSelected 回调在布局后异步触发，延后清除防回环开关
-        handler.post(() -> rendering = false);
     }
 
     /** 重建推理等级下拉：候选来自 type=3 effort.options；当前值不在候选里也追加显示并选中 */
@@ -984,14 +523,11 @@ public class AgentAiSettingsDialog {
 
     private void updateEnabledState() {
         boolean enabled = !applying;
-        modelSpinner.setEnabled(enabled);
         effortSpinner.setEnabled(enabled);
         setRadioGroupEnabled(sandboxGroup, enabled);
         planSwitch.setEnabled(enabled);
         cwdSwitchBtn.setEnabled(enabled);
-        sessionChooseBtn.setEnabled(enabled);
         compactBtn.setEnabled(enabled);
-        resetBtn.setEnabled(enabled);
         // 销毁按钮不随操作冷却禁用：危险操作始终可点（每次点击都会再弹确认）
     }
 
@@ -1008,12 +544,7 @@ public class AgentAiSettingsDialog {
     private void destroy() {
         destroyed = true;
         ChatManager.Instance().removeSettingUpdateListener(settingUpdateListener);
-        ChatManager.Instance().removeOnReceiveMessageListener(receiveMessageListener);
-        // 丢弃未完成的会话列表/切换请求，关闭会话选择弹窗，清全部定时器
-        sessionListSeq = 0;
-        sessionSwitchSeq = 0;
-        sessionPickerOpen = false;
-        dismissSessionDialog();
+        cwdListOpen = false;
         handler.removeCallbacksAndMessages(null);
     }
 }

@@ -63,52 +63,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- 会话：当前 sessionId 末 8 位（type=3 sessionId）+ 选择（207 op=sessions → 209 列表） -->
-            <TextView
-                style="@style/agent_ai_label"
-                android:text="@string/agent_ai_session" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/agentAiSessionCurrent"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="middle"
-                    android:singleLine="true"
-                    android:textColor="@color/gray12"
-                    android:textSize="12sp" />
-
-                <Button
-                    android:id="@+id/agentAiSessionChoose"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/shape_agent_btn_secondary"
-                    android:minWidth="64dp"
-                    android:text="@string/agent_ai_session_choose"
-                    android:textAllCaps="false"
-                    android:textColor="@color/gray0"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <!-- 模型：下拉选择（type=3 model.options / model.current） -->
-            <TextView
-                style="@style/agent_ai_label"
-                android:text="@string/agent_ai_model" />
-            <Spinner
-                android:id="@+id/agentAiModelSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:background="@drawable/shape_agent_input_bg"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:spinnerMode="dropdown" />
-
             <!-- 推理等级：下拉选择（type=3 effort.options / effort.current） -->
             <TextView
                 style="@style/agent_ai_label"
@@ -260,7 +214,7 @@
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
-            <!-- 压缩 / 重置 / 销毁（销毁为红色实底，危险操作始终可点，点击弹强警告确认） -->
+            <!-- 压缩上下文 / 销毁（销毁为红色实底，危险操作始终可点，点击弹强警告确认） -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -276,18 +230,6 @@
                     android:text="@string/agent_ai_compact"
                     android:textAllCaps="false"
                     android:textColor="@color/gray0"
-                    android:textSize="14sp" />
-
-                <Button
-                    android:id="@+id/agentAiReset"
-                    android:layout_width="0dp"
-                    android:layout_height="42dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/shape_agent_btn_stop"
-                    android:text="@string/agent_ai_reset"
-                    android:textAllCaps="false"
-                    android:textColor="@color/red0"
                     android:textSize="14sp" />
 
                 <Button

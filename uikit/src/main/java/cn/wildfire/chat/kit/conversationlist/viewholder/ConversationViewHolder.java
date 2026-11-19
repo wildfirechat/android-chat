@@ -229,7 +229,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Agent 会话：标题后 8dp 状态圆点（running=主色/waiting_user=#f59e0b/idle、done 及其他=#22c55e），
-     * Agent 群标题旁加描边小徽标；仅 Agent 会话显示。非 Agent 会话不查询 scope=31。
+     * Agent 会话标题旁加描边小徽标（AI 群与单聊 DSH 机器人会话都显示）；
+     * 仅 Agent 会话显示。非 Agent 会话不查询 scope=31。
      */
     private void updateAgentIndicator(ConversationInfo conversationInfo) {
         if (agentBadgeTextView == null) {
@@ -258,8 +259,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         } else {
             nameTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         }
-        agentBadgeTextView.setVisibility(
-            conversation.type == Conversation.ConversationType.Group ? View.VISIBLE : View.GONE);
+        // 单聊 DSH 会话同样显示 AI 徽标（isAgentConversation 已限定为本人机器人）
+        agentBadgeTextView.setVisibility(View.VISIBLE);
         agentBadgeTextView.setAlpha(aiOffline ? 0.35f : 1.0f);
     }
 

@@ -43,8 +43,14 @@ import cn.wildfirechat.remote.UserSettingScope;
  * 运行状态与 lastChange（变更可见），统计计量文本走 type=2。
  * </p>
  * <p>
- * Agent/AI 会话判定统一按 {@code conversation.line == 2}（AI 消息使用 line 2：
+ * 群聊 AI 会话判定按 {@code conversation.line == 2}（AI 消息使用 line 2：
  * 普通消息 line 0、朋友圈 line 1），不再依赖 UserInfo.type == 1 或群 extra 标记。
+ * </p>
+ * <p>
+ * 单聊 DSH 会话：会话目标等于当前登录用户已开通的机器人 id
+ * （{@link AgentRobotService#getRobotId()}）时，同样视为 Agent 会话。此时插件以
+ * 机器人视角写 scope=31，key 的 target 是私聊对端（即当前登录用户自己），
+ * 因此 {@link #agentSettingKeyPrefix} 用当前登录用户 id 拼前缀。
  * </p>
  */
 public class AgentState {
@@ -65,10 +71,28 @@ public class AgentState {
      * <p>
      * 服务端写入 scope=31 的键统一为 {@code <convType>-<line>-<target>_<type>_<机器人uid>}
      * （uid 后缀，不再写无后缀旧键），读取时以该前缀匹配会话内的 type 槽位。
+     * 单聊 DSH 会话的 {@code <target>} 用当前登录用户 id（插件以机器人视角写入，
+     * 私聊对端即当前用户自己）；群聊仍用 groupId。
      * </p>
      */
     public static String agentSettingKeyPrefix(Conversation conversation, int type) {
-        return conversation.type.getValue() + "-" + conversation.line + "-" + conversation.target + "_" + type + "_";
+        String target = conversation.target;
+        if (conversation.type == Conversation.ConversationType.Single) {
+            // 单聊 DSH：客户端会话 target=机器人 uid，而插件（机器人视角）写设置时
+            // target=私聊对端（当前登录用户自己），故用当前用户 id 拼前缀。
+            String robotId = AgentRobotService.Instance().getRobotId();
+            if (!TextUtils.isEmpty(robotId) && robotId.equals(target)) {
+                try {
+                    String userId = ChatManager.Instance().getUserId();
+                    if (!TextUtils.isEmpty(userId)) {
+                        target = userId;
+                    }
+                } catch (Exception ignored) {
+                    // 取不到当前用户时回退会话 target
+                }
+            }
+        }
+        return conversation.type.getValue() + "-" + conversation.line + "-" + target + "_" + type + "_";
     }
 
     /**
@@ -98,23 +122,34 @@ public class AgentState {
     }
 
     /**
-     * AI/Agent 会话类型。判定依据统一为：群聊会话且 {@code conversation.line == 2}
-     * （AI 消息统一使用 line 2；单聊是全局控制面板，不判 AI）。
-     * 是 AI 会话时返回 "group"，否则返回 null。
+     * AI/Agent 会话类型：
+     * <ul>
+     *   <li>"group"：群聊会话且 {@code conversation.line == 2}（AI 消息统一使用 line 2）；</li>
+     *   <li>"single"：单聊，且对端是当前用户已开通的 DSH 机器人
+     *       （{@link AgentRobotService#getRobotId()} 非空且等于会话 target）；</li>
+     *   <li>null：普通会话（普通单聊不会被当成 DSH）。</li>
+     * </ul>
      */
     public static String agentConversationKind(Conversation conversation) {
         if (conversation == null || TextUtils.isEmpty(conversation.target)) {
             return null;
         }
-        // AI 会话 = 群聊 + line 2；单聊不判 AI（控制面板）
-        if (conversation.type != Conversation.ConversationType.Group || conversation.line != 2) {
-            return null;
+        // AI 群 = 群聊 + line 2
+        if (conversation.type == Conversation.ConversationType.Group && conversation.line == 2) {
+            return "group";
         }
-        return "group";
+        // 单聊 DSH = 对端是当前登录用户的机器人（robotId 未加载/为空时按普通单聊处理）
+        String robotId = AgentRobotService.Instance().getRobotId();
+        if (conversation.type == Conversation.ConversationType.Single
+            && !TextUtils.isEmpty(robotId) && robotId.equals(conversation.target)) {
+            return "single";
+        }
+        return null;
     }
 
     /**
-     * 是否 AI/Agent 会话（群聊会话 line == 2）。非 AI 会话不查询/不展示 Agent 状态。
+     * 是否 AI/Agent 会话（群聊 line==2，或单聊对端为本人的 DSH 机器人）。
+     * 非 AI 会话不查询/不展示 Agent 状态。
      */
     public static boolean isAgentConversation(Conversation conversation) {
         return agentConversationKind(conversation) != null;
@@ -416,8 +451,9 @@ public class AgentState {
      * <p>
      * 主来源：扫描 scope=31 本地设置表，取键以 {@code <convType>-<line>-<target>_1_}
      * 开头的条目（type=1 状态槽位），后缀即机器人 uid——只有推送过状态的机器人会出现。
-     * 兜底：群聊会话额外按“机器人成员”（memberId 以 robot_/robot- 开头）补齐，
-     * 让尚未推送过状态、但已在群里的机器人也能出现在选择列表。
+     * 兜底：单聊 DSH 补上当前登录用户的机器人 id；群聊会话额外按“机器人成员”
+     * （memberId 以 robot_/robot- 开头）补齐，让尚未推送过状态、但已在群里的机器人
+     * 也能出现在选择列表。
      * </p>
      *
      * @return 排好序的完整 uid 列表；非 AI 会话/空会话返回空列表
@@ -445,8 +481,13 @@ public class AgentState {
         } catch (Exception e) {
             // 设置表读取失败忽略（已有 scope=31 条目的机器人仍可列出）
         }
-        // 兜底：群聊按“机器人成员”补齐
-        if (conversation.type == Conversation.ConversationType.Group) {
+        // 兜底：单聊 DSH 直接补上本人机器人；群聊按“机器人成员”补齐
+        if (conversation.type == Conversation.ConversationType.Single) {
+            String robotId = AgentRobotService.Instance().getRobotId();
+            if (!TextUtils.isEmpty(robotId)) {
+                uids.add(robotId);
+            }
+        } else if (conversation.type == Conversation.ConversationType.Group) {
             try {
                 List<GroupMember> members = ChatManager.Instance().getGroupMembers(conversation.target, false);
                 if (members != null) {

@@ -130,12 +130,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     LinearLayout agentCommandContainerLinearLayout;
     private JSONObject agentState;
     private CharSequence defaultInputHint;
-    // 单聊机器人命令（/create 等私聊专属命令在群内会被插件拒绝；单聊无 AI 面板，命令保留）
+    // 单聊机器人命令（/create 等私聊专属命令在群内会被插件拒绝；单聊 DSH 也有 AI 面板，
+    // 面板已覆盖的 model/effort/plan/compact/cwd/sandbox 不再出现在 '/' 菜单，避免重复）
     private static final String[][] Agent_SINGLE_COMMANDS = {
         {"/help", "命令帮助"}, {"/create", "创建 AI 工作区群"}, {"/workspaces", "列出工作区"},
-        {"/goal", "目标管理"}, {"/jobs", "后台任务"}, {"/model", "切换模型"},
-        {"/effort", "推理等级"}, {"/plan", "计划模式"}, {"/compact", "压缩上下文"},
-        {"/cwd", "切换工作目录"}, {"/ls", "列出目录"}, {"/sandbox", "沙箱模式"}, {"/stop", "停止当前任务"},
+        {"/goal", "目标管理"}, {"/jobs", "后台任务"}, {"/ls", "列出目录"}, {"/stop", "停止当前任务"},
     };
     // Agent 群聊命令（精简：model/effort/cwd/sandbox/plan/compact/reset/ls 已由 AI 面板
     // 通过 207 静默通道覆盖，不再出现在 '/' 菜单；保留 help/stop 与群管理命令，

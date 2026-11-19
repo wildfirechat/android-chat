@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
+import cn.wildfire.chat.kit.utils.AgentRobotService;
 import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.client.ConnectionStatus;
@@ -59,6 +60,17 @@ public class ConversationListFragment extends ProgressFragment {
     private SettingViewModel settingViewModel;
     private StatusNotificationViewModel statusNotificationViewModel;
     private LinearLayoutManager layoutManager;
+    /** 单聊 DSH 机器人 id 异步到达：刷新可见行（AI 徽标/状态圆点） */
+    private final AgentRobotService.Callback agentRobotCallback = robotId -> {
+        if (!isAdded() || adapter == null || layoutManager == null) {
+            return;
+        }
+        int start = layoutManager.findFirstVisibleItemPosition();
+        int end = layoutManager.findLastVisibleItemPosition();
+        if (start >= 0 && end >= start) {
+            adapter.notifyItemRangeChanged(start, end - start + 1);
+        }
+    };
     private OnClickConversationItemListener onClickConversationItemListener;
     // 平板双栏的选中态，手机端不使用
     private Conversation selectedConversation;
@@ -208,6 +220,8 @@ public class ConversationListFragment extends ProgressFragment {
                     break;
             }
         });
+        AgentRobotService.Instance().addListener(agentRobotCallback);
+        AgentRobotService.Instance().ensureLoaded(null);
         settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observe(this, o -> {
             if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusReceiveing) {
@@ -301,6 +315,7 @@ public class ConversationListFragment extends ProgressFragment {
     }
 
     public void onDestroyView() {
+        AgentRobotService.Instance().removeListener(agentRobotCallback);
         if (userOnlineEventListener != null) {
             ChatManager.Instance().removeUserOnlineEventListener(userOnlineEventListener);
             userOnlineEventListener = null;

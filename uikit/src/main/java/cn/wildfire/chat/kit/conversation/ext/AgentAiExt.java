@@ -27,15 +27,17 @@ import cn.wildfirechat.remote.ChatManager;
 /**
  * AI 会话设置扩展
  * <p>
- * 在输入栏 "+" 扩展面板添加「AI 会话设置」入口，仅 Agent/AI 会话（群聊 + line==2）显示。
+ * 在输入栏 "+" 扩展面板添加「AI 会话设置」入口，仅 Agent/AI 会话显示：
+ * 群聊 + line==2，或单聊对端为当前用户已开通的 DSH 机器人（见
+ * {@link AgentState#agentConversationKind}）。
  * 多机器人（多 agent）会话：入口先弹出机器人列表（列表项显示机器人名），选中后把目标
  * 机器人 uid 绑定到面板；单机器人/尚无状态推送的会话直接打开默认面板。
- * 面板：模型 / 推理等级 / 工作目录 / 沙箱模式 / 计划模式。
+ * 面板：推理等级 / 工作目录 / 沙箱模式 / 计划模式 / 压缩上下文 / 销毁会话。
  * 静默通道：打开发 207 Agent_Command（op=query，带目标 robotId）组合查询，
- * 读 scope=31 type=3 面板数据渲染（模型/effort 下拉、沙箱单选、计划开关、cwd + dirs
+ * 读 scope=31 type=3 面板数据渲染（effort 下拉、沙箱单选、计划开关、cwd + dirs
  * 目录选择）；所有操作发 207 Agent_Command（op=set，cmd=命令文本，如
- * "/model deepseek-official/xxx"，带目标 robotId），不再发送 /model /effort /cwd /sandbox
- * /plan /compact /reset 文本命令、不解析回复。207 为透明消息，不落消息流。
+ * "/effort high"，带目标 robotId），不再发送文本命令、不解析回复。
+ * 207 为透明消息，不落消息流。
  * </p>
  *
  * @author WildFireChat
@@ -103,7 +105,7 @@ public class AgentAiExt extends ConversationExt {
     }
 
     /**
-     * 过滤条件：仅 Agent/AI 会话（群聊 + line==2）显示，其余会话不显示。
+     * 过滤条件：仅 Agent/AI 会话（群聊 + line==2，或单聊对端为本人 DSH 机器人）显示。
      *
      * @param conversation 会话
      * @return true=不显示
