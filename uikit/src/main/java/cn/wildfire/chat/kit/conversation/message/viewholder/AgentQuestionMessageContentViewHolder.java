@@ -39,14 +39,14 @@ import cn.wildfirechat.message.agent.AgentQuestionMessageContent;
  * 选项垂直排列、整行可点（≥40dp）；单选点击即答并立即本地置灰；多选勾选 + 底部「提交」；
  * 「自定义回答」点击后聚焦会话主输入框并弹键盘（卡片内不嵌输入框，卡片期间用户直接发的
  * 文本会被服务端当作该卡片的自定义回答）；plan-review 的 detail 不内联展开，走
- * {@link AgentPlanDetailActivity} 全屏计划详情页；锁定态显示 已作答/已过期，
- * answered 时附用户选择（"已作答（选择内容）"）。
+ * {@link AgentPlanDetailActivity} 全屏计划详情页；锁定态显示 已回答/已过期，
+ * answered 时附用户选择（"已回答（选择内容）"）。
  * </p>
  */
 @MessageContentType(AgentQuestionMessageContent.class)
 @EnableContextMenu
 public class AgentQuestionMessageContentViewHolder extends NormalMessageContentViewHolder {
-    // 本地已作答的消息 id：点击后立即置灰，不依赖服务端 updateMessage 推送的实时性。
+    // 本地已回答的消息 id：点击后立即置灰，不依赖服务端 updateMessage 推送的实时性。
     // 重新进入会话时以 content.state 为准（服务端会 updateMessage）。
     private static final Set<Long> locallyAnsweredMessageIds = new HashSet<>();
 
@@ -119,8 +119,8 @@ public class AgentQuestionMessageContentViewHolder extends NormalMessageContentV
         if ("expired".equals(questionContent.getState())) {
             return "已过期";
         }
-        // answered（或本地已作答）：附上服务端 updateMessage 写入的用户选择
-        return "已作答" + mySelectionText();
+        // answered（或本地已回答）：附上服务端 updateMessage 写入的用户选择
+        return "已回答" + mySelectionText();
     }
 
     /**
