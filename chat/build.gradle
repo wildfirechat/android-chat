@@ -59,7 +59,7 @@ android {
         }
     }
     compileSdkVersion 34
-    ndkVersion '18.1.5063045'
+    ndkVersion '30.0.16248370'
     defaultConfig {
         applicationId "cn.wildfirechat.chat.open"
         minSdkVersion 24
