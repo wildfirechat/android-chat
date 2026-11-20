@@ -18,13 +18,17 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Approval_Result;
 
 /**
- * Agent 审批结果消息（用户→机器人），渲染时按摘要文本展示。
+ * Agent 审批结果消息（用户→机器人）。
  * <p>
  * 消息类型: 203。
  * payload.content 为 JSON 字符串：{"aid":"uuid","action":"approve"|"reject"}
  * </p>
+ * <p>
+ * 用 Transparent：只是用户动作回执，不落库、不同步、不在聊天里显示；
+ * 审批完成状态由机器人通过 updateMessage 原地更新 202 审批卡片。
+ * </p>
  */
-@ContentTag(type = ContentType_Agent_Approval_Result, flag = PersistFlag.Persist)
+@ContentTag(type = ContentType_Agent_Approval_Result, flag = PersistFlag.Transparent)
 public class AgentApprovalResultMessageContent extends MessageContent {
     public static final String ACTION_APPROVE = "approve";
     public static final String ACTION_REJECT = "reject";

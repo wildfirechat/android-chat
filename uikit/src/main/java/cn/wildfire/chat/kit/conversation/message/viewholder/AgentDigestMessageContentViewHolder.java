@@ -14,17 +14,15 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
-import cn.wildfirechat.message.agent.AgentApprovalResultMessageContent;
-
 /**
- * Agent 应答类消息（201 回答 / 203 审批结果）的摘要文本 ViewHolder。
+ * Agent 用户回答（201）的摘要文本 ViewHolder。
  * <p>
- * 这两类是用户侧应答消息，按普通文本气泡渲染 content.digest()。
+ * 201 按普通文本气泡渲染 content.digest()；203 审批结果已改为 Transparent，
+ * 不落库、不显示，审批完成只更新原 202 审批卡片。
  * </p>
  */
 @MessageContentType(value = {
-    AgentAnswerMessageContent.class,
-    AgentApprovalResultMessageContent.class
+    AgentAnswerMessageContent.class
 })
 @EnableContextMenu
 public class AgentDigestMessageContentViewHolder extends NormalMessageContentViewHolder {

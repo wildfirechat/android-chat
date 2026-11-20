@@ -50,7 +50,8 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(AgentApprovalMessageContentViewHolder.class, R.layout.conversation_item_agent_approval, R.layout.conversation_item_agent_approval);
         registerMessageViewHolder(AgentGoalMessageContentViewHolder.class, R.layout.conversation_item_agent_goal, R.layout.conversation_item_agent_goal);
         registerMessageViewHolder(AgentTaskProgressMessageContentViewHolder.class, R.layout.conversation_item_agent_task_progress, R.layout.conversation_item_agent_task_progress);
-        // Agent_ANSWER(201) / Agent_APPROVAL_RESULT(203) 是用户侧应答消息，按摘要文本气泡展示
+        // Agent_ANSWER(201) 是用户侧回答，按摘要文本气泡展示；203 审批结果已改为
+        // Transparent，不落库/不显示，审批完成只更新原 202 审批卡片
         registerMessageViewHolder(AgentDigestMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
     }
 
