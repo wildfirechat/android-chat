@@ -15,10 +15,10 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
 /**
- * Agent 用户回答（201）的摘要文本 ViewHolder。
+ * Agent 用户回答（201）的摘要文本 ViewHolder（兼容旧历史消息）。
  * <p>
- * 201 按普通文本气泡渲染 content.digest()；203 审批结果已改为 Transparent，
- * 不落库、不显示，审批完成只更新原 202 审批卡片。
+ * 新的 201 已改为 Transparent：不落库、不显示，提问完成只更新原 200 提问卡片。
+ * 该 ViewHolder 保留用于展示升级前已落库的旧 201 历史消息。
  * </p>
  */
 @MessageContentType(value = {

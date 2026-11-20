@@ -1089,8 +1089,8 @@ public class ConversationFragment extends Fragment implements
             swipeRefreshLayout.setRefreshing(false);
 
             // 多 agent：会话打开/历史加载后把所有仍在生成的流式回合（每个 agent 一条）补到消息列表末尾，
-            // 列表里已存在同一 streamId 的 14/15 时不重复补；补齐后由 adapter.setMessages 内部的
-            // pinLiveAIToBottom 统一把 live 元素钉到最新位置（与 PC 端 _appendCachedStreamingMessages 语义一致）
+            // 列表里已存在同一 streamId 的 14/15 时不重复补；补齐后由 adapter 按 serverTime 统一排序
+            // （当前临时取消 AI 元素钉底，验证纯时间顺序效果）。
             appendCachedStreamingMessages(uiMessages);
 
             adapter.setMessages(uiMessages);
@@ -1114,8 +1114,8 @@ public class ConversationFragment extends Fragment implements
 
     /**
      * 会话打开/历史加载后，把该会话缓存中所有「仍在生成」的流式回合（多 agent 各自一条）补齐到消息列表末尾。
-     * 列表里已存在同一 streamId 的 14/15 时不重复补；补齐后由 adapter.setMessages 内部的
-     * pinLiveAIToBottom 统一把 live 元素钉到最新位置。与 PC 端 store._appendCachedStreamingMessages 语义一致。
+     * 列表里已存在同一 streamId 的 14/15 时不重复补；补齐后由 adapter 按 serverTime 排序
+     * （当前临时取消 AI 元素钉底）。
      *
      * @param uiMessages 当前待显示的消息列表（可修改，来自数据库/归档加载）
      */

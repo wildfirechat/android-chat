@@ -48,7 +48,9 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContent
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.agent.AgentAnswerMessageContent;
 import cn.wildfirechat.message.agent.AgentApprovalMessageContent;
+import cn.wildfirechat.message.agent.AgentApprovalResultMessageContent;
 import cn.wildfirechat.message.agent.AgentGoalMessageContent;
 import cn.wildfirechat.message.agent.AgentQuestionMessageContent;
 import cn.wildfirechat.message.agent.AgentTaskProgressMessageContent;
@@ -142,8 +144,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         } else {
             this.messages = new ArrayList<>();
         }
-        // 整体重设数据时也保证进行中的 AI 交互元素在末尾
-        pinLiveAIToBottom();
+        // 整体重设数据后按时间排序（临时移除 AI 元素钉底，验证纯时间顺序效果）
+        sortMessagesByTime();
     }
 
     public void setReadEntries(Map<String, Long> readEntries) {
@@ -186,11 +188,25 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (message == null) {
             return;
         }
+        // 201 回答 / 203 审批结果是 Transparent 的本地动作回执：发送端本地回显也不要
+        // 进入消息列表，否则会出现额外气泡；卡片状态由机器人 updateMessage 更新。
+        if (message.message.content instanceof AgentAnswerMessageContent
+            || message.message.content instanceof AgentApprovalResultMessageContent) {
+            return;
+        }
         int index = contains(message);
         if (index >= 0) {
             updateMessage(index, message);
             return;
-        } else {
+        }
+        // 服务端更新卡片（200/202）时个别情况下会以“新消息”回调到达；按 qid/aid
+        // 找到原卡片并原地更新，避免聊天里再出现一条问题/审批卡片。
+        int cardIndex = containsAgentCard(message);
+        if (cardIndex >= 0) {
+            updateMessage(cardIndex, message);
+            return;
+        }
+        {
             if (!messages.isEmpty() && messages.get(0).message.serverTime > message.message.serverTime) {
                 Log.d(TAG, "msg timestamp < the first msg's timestamp, maybe update old message content, ignore");
                 return;
@@ -198,8 +214,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         messages.add(message);
         notifyItemInserted(messages.size() - 1);
-        // 收到新消息/自己发送消息追加后，把进行中的 AI 交互元素钉回列表末尾
-        pinLiveAIToBottom();
+        // 收到新消息/自己发送消息追加后，按时间重新排序
+        sortMessagesByTime();
     }
 
     public void addMessagesAtHead(List<UiMessage> newMessages) {
@@ -219,6 +235,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         this.messages.addAll(0, newMessages);
         notifyItemRangeInserted(0, newMessages.size());
+        sortMessagesByTime();
     }
 
     public void addMessagesAtTail(List<UiMessage> newMessages) {
@@ -228,16 +245,16 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         int insertStartPosition = this.messages.size();
         this.messages.addAll(newMessages);
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
-        // 尾部追加（定位模式加载更新消息）后，进行中的 AI 交互元素会被顶到中间，钉回末尾
-        pinLiveAIToBottom();
+        // 尾部追加（定位模式加载更新消息）后，按时间重新排序
+        sortMessagesByTime();
     }
 
     public void updateMessage(int index, UiMessage message) {
         if (index >= 0) {
             messages.set(index, message);
             notifyItemChanged(index);
-            // 消息内容/状态更新后（含流式分片更新、卡片状态流转），保证进行中的 AI 交互元素仍在末尾
-            pinLiveAIToBottom();
+            // 消息内容/状态更新后（含流式分片更新、卡片状态流转），按时间重新排序
+            sortMessagesByTime();
         }
     }
 
@@ -260,10 +277,15 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 }
             }
         }
+        if (index < 0) {
+            // 更新事件未带可匹配的 messageId/messageUid 时，按 200 qid / 202 aid 兜底匹配
+            index = containsAgentCard(message);
+        }
         if (index > -1) {
+            if (index != -1) messages.set(index, message);
             notifyItemChanged(index);
-            // 消息内容/状态更新后（含流式分片更新、卡片状态流转），保证进行中的 AI 交互元素仍在末尾
-            pinLiveAIToBottom();
+            // 消息内容/状态更新后（含流式分片更新、卡片状态流转），按时间重新排序
+            sortMessagesByTime();
         }
     }
 
@@ -422,84 +444,42 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     /**
-     * 进行中的 AI 交互元素（流式生成中、任务进度卡、选择/审批卡等）固定在消息列表末尾（最新位置）。
-     * 交互进行期间用户自己发消息、或其它消息（含最终 type 15 完成消息）插入/替换，都可能把它们顶到列表中间。
-     * 这里在每次列表变更后把所有「进行中的 AI 交互元素」整体移到列表末尾，元素之间及其余消息之间保持相对顺序；
-     * 本来就已在末尾连续一段（顺序一致）则不动。与 HarmonyOS 版 ConversationPage.pinLiveAIToBottom 语义一致。
+     * 按消息时间升序排序（临时行为：先取消「进行中的 AI 元素钉底」，观察纯时间顺序效果）。
+     * <p>
+     * 14 流式生成中、200/202 pending 卡片不再强制移到最新，所有消息统一按
+     * {@link Message#serverTime} 升序；serverTime 缺失（<=0）时保持稳定顺序。
+     * 列表中的 null 是底部加载占位，永远排在最后。
+     * </p>
      */
-    public void pinLiveAIToBottom() {
+    public void sortMessagesByTime() {
         if (messages == null || messages.size() <= 1) {
             return;
         }
-        UiMessage last = messages.get(messages.size() - 1);
-        // 底部是加载占位(null)时不动，加载完成追加后 addMessagesAtTail 会再钉底
-        if (last == null || last.message == null) {
-            return;
-        }
-        // 分成 live（进行中的 AI 交互元素）与 rest 两组，各自保持相对顺序
-        List<UiMessage> live = new ArrayList<>();
-        List<UiMessage> rest = new ArrayList<>();
-        for (UiMessage msg : messages) {
-            if (msg != null && msg.message != null && isLiveAIMessage(msg)) {
-                live.add(msg);
-            } else {
-                rest.add(msg);
-            }
-        }
-        if (live.isEmpty()) {
-            return;
-        }
-        // 尾部连续一段正好是 live 组（顺序一致）则已满足，不动
-        int start = messages.size() - live.size();
-        boolean alreadyPinned = true;
-        for (int i = start; i < messages.size(); i++) {
-            UiMessage msg = messages.get(i);
-            if (msg == null || msg.message == null || !isLiveAIMessage(msg)) {
-                alreadyPinned = false;
-                break;
-            }
-        }
-        if (alreadyPinned) {
-            return;
-        }
-        // 移到末尾：rest 在前、live 在后，各自保持相对顺序
-        if (live.size() == 1) {
-            int idx = messages.indexOf(live.get(0));
-            messages.remove(idx);
-            messages.add(live.get(0));
-            notifyItemMoved(idx, messages.size() - 1);
-        } else {
-            messages.clear();
-            messages.addAll(rest);
-            messages.addAll(live);
+        try {
+            Collections.sort(messages, new Comparator<UiMessage>() {
+                @Override
+                public int compare(UiMessage a, UiMessage b) {
+                    long ta = messageTime(a);
+                    long tb = messageTime(b);
+                    if (ta == tb) {
+                        return 0;
+                    }
+                    return ta < tb ? -1 : 1;
+                }
+            });
             notifyDataSetChanged();
+        } catch (Exception e) {
+            Log.w(TAG, "sortMessagesByTime failed: " + e.getMessage());
         }
     }
 
-    /**
-     * 判断消息是否为「进行中的 AI 交互元素」（与 HarmonyOS 版 ConversationPage.isLiveAIMessage 语义一致）：
-     * <ul>
-     *   <li>流式生成中（类型 14 {@link StreamingTextGeneratingMessageContent}）→ true；</li>
-     *   <li>提问卡片（200 {@link AgentQuestionMessageContent}）state == "pending"（等待用户选择）→ true；</li>
-     *   <li>审批卡片（202 {@link AgentApprovalMessageContent}）state == "pending"（等待用户审批）→ true。</li>
-     * </ul>
-     * （goal 206 / 任务 208 等其余消息按默认排序，不参与钉底）
-     *
-     * @param message 待判断的消息，调用方需保证非 null
-     * @return 该消息是否为进行中的 AI 交互元素
-     */
-    private boolean isLiveAIMessage(UiMessage message) {
-        MessageContent content = message.message.content;
-        if (content instanceof StreamingTextGeneratingMessageContent) {
-            return true;
+    /** 排序时间：serverTime 有效时用它；加载占位(null)放最后。 */
+    private long messageTime(UiMessage uiMessage) {
+        if (uiMessage == null || uiMessage.message == null) {
+            return Long.MAX_VALUE;
         }
-        if (content instanceof AgentQuestionMessageContent) {
-            return TextUtils.equals(((AgentQuestionMessageContent) content).getState(), "pending");
-        }
-        if (content instanceof AgentApprovalMessageContent) {
-            return TextUtils.equals(((AgentApprovalMessageContent) content).getState(), "pending");
-        }
-        return false;
+        long time = uiMessage.message.serverTime;
+        return time > 0 ? time : Long.MAX_VALUE - 1;
     }
 
     private int indexOfMessage(UiMessage message) {
@@ -866,6 +846,38 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void highlightFocusMessage(int position) {
         messages.get(position).isFocus = true;
         notifyItemChanged(position);
+    }
+
+    /** 按 200 qid / 202 aid 找原卡片（服务端更新被误当作新消息时兜底）。 */
+    private int containsAgentCard(UiMessage message) {
+        if (message == null || message.message == null || messages == null) {
+            return -1;
+        }
+        MessageContent incoming = message.message.content;
+        if (incoming instanceof AgentQuestionMessageContent) {
+            String qid = ((AgentQuestionMessageContent) incoming).getQid();
+            if (TextUtils.isEmpty(qid)) return -1;
+            for (int i = 0; i < messages.size(); i++) {
+                UiMessage item = messages.get(i);
+                if (item != null && item.message != null
+                    && item.message.content instanceof AgentQuestionMessageContent
+                    && TextUtils.equals(((AgentQuestionMessageContent) item.message.content).getQid(), qid)) {
+                    return i;
+                }
+            }
+        } else if (incoming instanceof AgentApprovalMessageContent) {
+            String aid = ((AgentApprovalMessageContent) incoming).getAid();
+            if (TextUtils.isEmpty(aid)) return -1;
+            for (int i = 0; i < messages.size(); i++) {
+                UiMessage item = messages.get(i);
+                if (item != null && item.message != null
+                    && item.message.content instanceof AgentApprovalMessageContent
+                    && TextUtils.equals(((AgentApprovalMessageContent) item.message.content).getAid(), aid)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     private int contains(UiMessage message) {

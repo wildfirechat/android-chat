@@ -23,13 +23,17 @@ import cn.wildfirechat.message.core.PersistFlag;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Agent_Answer;
 
 /**
- * Agent 结构化回答消息（用户→机器人），渲染时按摘要文本展示。
+ * Agent 结构化回答消息（用户→机器人）。
  * <p>
  * 消息类型: 201。
  * payload.content 为 JSON 字符串：{"qid":"uuid","answers":[{"id":"q1","selected":["是"],"custom":"可选补充"}]}
  * </p>
+ * <p>
+ * 用 Transparent：只是用户回答的动作回执，不落库、不同步、不在聊天里显示；
+ * 提问完成状态由机器人通过 updateMessage 原地更新 200 提问卡片。
+ * </p>
  */
-@ContentTag(type = ContentType_Agent_Answer, flag = PersistFlag.Persist)
+@ContentTag(type = ContentType_Agent_Answer, flag = PersistFlag.Transparent)
 public class AgentAnswerMessageContent extends MessageContent {
     private String content;
 
