@@ -17,9 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.wildfirechat.model.ClientState;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
 
@@ -173,6 +176,72 @@ public class AgentState {
      */
     public static boolean isAgentConversation(Conversation conversation) {
         return agentConversationKind(conversation) != null;
+    }
+
+    /**
+     * AI 会话的「在线主体」（即 AI 机器人）uid：
+     * <ul>
+     *   <li>AI 群（群聊 line==2）：群主（AI 机器人）{@code groupInfo.owner}；</li>
+     *   <li>单聊 DSH：对端就是本人的 DSH 机器人，即 {@code conversation.target}；</li>
+     *   <li>非 AI 会话/群主信息未缓存：null。</li>
+     * </ul>
+     * 在线状态按用户维度订阅/读取（与单聊用户在线状态一致）。
+     */
+    public static String agentOwnerId(Conversation conversation) {
+        String kind = agentConversationKind(conversation);
+        if (kind == null) {
+            return null;
+        }
+        if ("group".equals(kind)) {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conversation.target, false);
+            return groupInfo == null || TextUtils.isEmpty(groupInfo.owner) ? null : groupInfo.owner;
+        }
+        // single：会话对端就是本人已开通的 DSH 机器人
+        return conversation.target;
+    }
+
+    /**
+     * AI 机器人（{@link #agentOwnerId}）是否在线。
+     * <p>
+     * 判定：{@code clientStates} 中存在 {@code state==0}（在线）且平台为手机/桌面端（1~9）的客户端。
+     * 未启用「用户在线状态」功能、或主体未知（群主信息尚未拉回）时按在线处理——避免把"未知"误判成
+     * 离线导致 AI 会话被置灰；无在线状态记录/clientStates 为空视为离线。
+     * </p>
+     * AI 群与单聊 DSH 会话使用同一套判定（单聊主体即对端机器人）。
+     */
+    public static boolean isAgentOwnerOnline(Conversation conversation) {
+        if (conversation == null) {
+            return true;
+        }
+        if (!ChatManager.Instance().isEnableUserOnlineState()) {
+            return true;
+        }
+        String ownerId = agentOwnerId(conversation);
+        if (TextUtils.isEmpty(ownerId)) {
+            return true;
+        }
+        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(ownerId);
+        if (ownerState == null) {
+            return false;
+        }
+        ClientState[] states = ownerState.getClientStates();
+        if (states == null || states.length == 0) {
+            return false;
+        }
+        for (ClientState cs : states) {
+            if (cs.getPlatform() >= 1 && cs.getPlatform() <= 9 && cs.getState() == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * AI 机器人（{@link #agentOwnerId}）是否离线；非 AI 会话恒为 false。
+     * AI 群与单聊 DSH 会话都会判定（单聊主体即对端机器人）。
+     */
+    public static boolean isAgentOwnerOffline(Conversation conversation) {
+        return isAgentConversation(conversation) && !isAgentOwnerOnline(conversation);
     }
 
     /**

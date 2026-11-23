@@ -86,6 +86,7 @@
 
     <!--Main Navigation-->
     <string name="app_title_chat">野火</string>
+    <string name="app_title_office">办公</string>
     <string name="app_title_contact">通讯录</string>
     <string name="app_title_workspace">工作台</string>
     <string name="app_title_discover">发现</string>

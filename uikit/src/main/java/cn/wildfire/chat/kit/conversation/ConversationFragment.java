@@ -171,9 +171,12 @@ public class ConversationFragment extends Fragment implements
     private List<AgentState.RobotState> agentRobotStates = new ArrayList<>();
     private long lastAgentStopClickTime;
     private final OnSettingUpdateListener agentSettingUpdateListener = () -> refreshAgentState();
-    /** 单聊 DSH 机器人 id 异步到达：重新判定/刷新 Agent 状态与标题 */
+    /** 单聊 DSH 机器人 id 异步到达：重新判定/刷新 Agent 状态与标题，并补订机器人在线状态 */
     private final AgentRobotService.Callback agentRobotCallback = robotId -> {
         if (isAdded()) {
+            // 冷启动时可能先打开会话、后拿到 robotId：此时进入会话的订阅因还判不出 AI 会话而跳过，
+            // 判定翻转后补订机器人在线状态（否则会被误判离线而置灰）
+            watchAiOwnerOnlineState();
             refreshAgentState();
         }
     };
@@ -489,11 +492,16 @@ public class ConversationFragment extends Fragment implements
             if (conversation == null) {
                 return;
             }
-            // 单聊 / AI 群（line==2）：在线状态变化时刷新标题（AI 群为群主在线状态）
+            // 单聊 / AI 群（line==2）：在线状态变化时刷新标题。
+            // AI 会话（AI 群群主 / 单聊 DSH 对端机器人）的在线状态还会影响运行状态横幅与
+            // "AI 会话设置"入口置灰，所以一并刷新 Agent 状态。
             if (conversation.type == Conversation.ConversationType.Single
                 || (conversation.type == Conversation.ConversationType.Group && conversation.line == 2)) {
                 conversationTitle = null;
                 subConversationTitle = null;
+                if (AgentState.isAgentConversation(conversation)) {
+                    refreshAgentState();
+                }
                 setTitle();
             }
         }
@@ -834,6 +842,11 @@ public class ConversationFragment extends Fragment implements
 
         ongoingCalls = null;
 
+        // 单聊 DSH 会话：订阅对端机器人在线状态（AI 群在上面的 Group 分支已订阅）
+        if (conversation.type == Conversation.ConversationType.Single) {
+            watchAiOwnerOnlineState();
+        }
+
         setTitle();
         refreshAgentState();
     }
@@ -883,16 +896,21 @@ public class ConversationFragment extends Fragment implements
     }
 
     /**
-     * AI 群（line==2，群主=AI 机器人）的群主在线状态描述，格式 "AI 在线/离线"。
+     * AI 机器人（在线主体）的在线状态描述，格式 "AI 在线/离线"。
      * <p>
-     * 复用现有用户在线状态（{@link UserOnlineState#desc()}，文案如 "Android 在线"/"忙碌"/
-     * "不久前在线"）；离线/未获取到状态时回退 "AI 离线"。非 AI 群、未启用在线状态或群主未知时返回 null。
+     * AI 群的主体是群主（AI 机器人），单聊 DSH 会话的主体是对端机器人（{@link AgentState#agentOwnerId}）。
+     * 复用现有用户在线状态（{@link UserOnlineState#desc()}，文案如 "Android 在线"/"忙碌"/"不久前在线"）；
+     * 离线/未获取到状态时回退 "AI 离线"。非 AI 会话、未启用在线状态或主体未知时返回 null。
      */
     private String aiOwnerOnlineStateDesc() {
-        if (!isEnableUserOnlineState || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
+        if (!isEnableUserOnlineState) {
             return null;
         }
-        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(groupInfo.owner);
+        String ownerId = AgentState.agentOwnerId(conversation);
+        if (TextUtils.isEmpty(ownerId)) {
+            return null;
+        }
+        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(ownerId);
         String desc = ownerState == null ? "" : ownerState.desc();
         if (TextUtils.isEmpty(desc)) {
             desc = "离线";
@@ -906,28 +924,12 @@ public class ConversationFragment extends Fragment implements
      * 非 AI 群/未启用在线状态/群主未知返回 true（不影响原逻辑）。
      */
     private boolean aiOwnerOnline() {
-        if (!isEnableUserOnlineState || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
-            return true;
-        }
-        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(groupInfo.owner);
-        if (ownerState == null) {
-            return false;
-        }
-        ClientState[] states = ownerState.getClientStates();
-        if (states == null || states.length == 0) {
-            return false;
-        }
-        for (ClientState cs : states) {
-            if (cs.getPlatform() >= 1 && cs.getPlatform() <= 9 && cs.getState() == 0) {
-                return true;
-            }
-        }
-        return false;
+        return AgentState.isAgentOwnerOnline(conversation);
     }
 
-    /** AI 群（line==2）群主（AI 机器人）是否不在线。 */
+    /** AI 机器人（AI 群群主 / 单聊对端 DSH 机器人）是否不在线。 */
     private boolean isAiOwnerOffline() {
-        return !aiOwnerOnline();
+        return AgentState.isAgentOwnerOffline(conversation);
     }
 
     /**
@@ -1018,26 +1020,26 @@ public class ConversationFragment extends Fragment implements
     }
 
     /**
-     * 进入 AI 群（line==2）会话时订阅群主（AI 机器人）在线状态。
+     * 进入 AI 会话时订阅 AI 机器人（在线主体）的在线状态：
+     * AI 群订阅群主（AI 机器人）；单聊 DSH 会话订阅对端机器人（{@link AgentState#agentOwnerId}）。
      * <p>
      * 在线状态按用户维度订阅（{@link Conversation.ConversationType#Single}，与单聊一致）。
      * 群主信息可能异步拉回（此时 {@code groupInfo.owner} 暂为空），等
-     * {@link #groupInfosUpdateLiveDataObserver} 拉到群信息后会自动补订；群主变化时先退订旧群主再订新群主。
+     * {@link #groupInfosUpdateLiveDataObserver} 拉到群信息后会自动补订；主体变化时先退订旧主体再订新主体。
      */
     private void watchAiOwnerOnlineState() {
-        if (!isEnableUserOnlineState || userOnlineStateViewModel == null || conversation == null
-            || conversation.type != Conversation.ConversationType.Group || conversation.line != 2
-            || groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
+        if (!isEnableUserOnlineState || userOnlineStateViewModel == null || conversation == null) {
             return;
         }
-        if (TextUtils.equals(groupInfo.owner, aiOwnerOnlineStateSubscribedUserId)) {
+        String ownerId = AgentState.agentOwnerId(conversation);
+        if (TextUtils.isEmpty(ownerId) || TextUtils.equals(ownerId, aiOwnerOnlineStateSubscribedUserId)) {
             return;
         }
         if (aiOwnerOnlineStateSubscribedUserId != null) {
             userOnlineStateViewModel.unwatchOnlineState(Conversation.ConversationType.Single.getValue(), new String[]{aiOwnerOnlineStateSubscribedUserId});
         }
-        userOnlineStateViewModel.watchUserOnlineState(Conversation.ConversationType.Single.getValue(), new String[]{groupInfo.owner});
-        aiOwnerOnlineStateSubscribedUserId = groupInfo.owner;
+        userOnlineStateViewModel.watchUserOnlineState(Conversation.ConversationType.Single.getValue(), new String[]{ownerId});
+        aiOwnerOnlineStateSubscribedUserId = ownerId;
     }
 
     /**
@@ -1300,8 +1302,13 @@ public class ConversationFragment extends Fragment implements
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversation.target, false);
             conversationTitle = userViewModel.getUserDisplayNameEx(userInfo);
 
-            if (userInfo.type == 0) {
-
+            // AI 单聊（对端为本人 DSH 机器人）：副标题与 AI 群一致，显示
+            // "AI 在线/离线 · 运行态 · lastChange · Token 统计"（离线时只显示 "AI 不在线"）；
+            // 普通单聊/普通机器人单聊沿用原逻辑
+            if (AgentState.isAgentConversation(conversation)) {
+                String aiStatusLine = aiOwnerStatusLine();
+                subConversationTitle = TextUtils.isEmpty(aiStatusLine) ? "Bot" : aiStatusLine;
+            } else if (userInfo.type == 0) {
                 UserOnlineState userOnlineState = ChatManager.Instance().getUserOnlineStateMap().get(userInfo.uid);
                 if (userOnlineState != null) {
                     String onlineDesc = userOnlineState.desc();

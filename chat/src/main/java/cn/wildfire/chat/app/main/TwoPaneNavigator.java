@@ -22,6 +22,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.pane.PaneRegistry;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.pane.PaneStackFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
@@ -81,7 +82,14 @@ public class TwoPaneNavigator {
     private Intent pendingIntent;
     private int pendingIntentTab = -1;
 
-    private ConversationListFragment conversationListFragment;
+    /**
+     * 左栏是会话列表的 tab（下标与左栏 ViewPager 页下标一致）：目前是「消息」和「办公」。
+     * 每个列表各自维护高亮，切 tab 时只高亮当前 tab 自己的列表。
+     */
+    private final List<ConversationListFragment> conversationListFragments = new ArrayList<>();
+    /** 普通会话（「消息」tab）与 AI 会话（「办公」tab）各自对应的页下标，装配时由主界面告知。 */
+    private int normalConversationTab = 0;
+    private int aiConversationTab = 1;
     private Conversation selectedConversation;
     /**
      * 选中的会话压在哪条栈上。五条栈各自独立，会话可能压在一条已经切走的栈上，
@@ -149,9 +157,26 @@ public class TwoPaneNavigator {
         }
     }
 
-    public void setConversationListFragment(ConversationListFragment fragment) {
-        this.conversationListFragment = fragment;
+    /**
+     * 登记某个 tab 左栏的会话列表（「消息」「办公」各一个）。
+     */
+    public void addConversationListFragment(int tab, ConversationListFragment fragment) {
+        if (tab < 0 || fragment == null) {
+            return;
+        }
+        while (conversationListFragments.size() <= tab) {
+            conversationListFragments.add(null);
+        }
+        conversationListFragments.set(tab, fragment);
         syncListSelection();
+    }
+
+    /**
+     * 告知普通会话、AI 会话分别落在哪个 tab：通知/深链打开会话时按会话性质进对应的 tab。
+     */
+    public void setConversationTabs(int normalConversationTab, int aiConversationTab) {
+        this.normalConversationTab = normalConversationTab;
+        this.aiConversationTab = aiConversationTab;
     }
 
     // ==================== tab 切换 ====================
@@ -435,12 +460,24 @@ public class TwoPaneNavigator {
         if (conversationIntent == null) {
             return;
         }
+        int tab = tabForConversation(conversationIntent.getParcelableExtra("conversation"));
         if (!imServiceReady || stackSpecs.isEmpty()) {
             pendingIntent = conversationIntent;
-            pendingIntentTab = 0;
+            pendingIntentTab = tab;
             return;
         }
-        openInTab(0, conversationIntent, true);
+        openInTab(tab, conversationIntent, true);
+    }
+
+    /**
+     * 按会话性质决定落到哪个 tab：AI 会话进「办公」，普通会话进「消息」。
+     * 机器人 id 尚未加载时 {@link AgentState#isAgentConversation} 可能判成普通会话，这里只是兜底，
+     * 用户在列表里手动点开仍然会进对应 tab。
+     */
+    private int tabForConversation(Conversation conversation) {
+        boolean ai = conversation != null && AgentState.isAgentConversation(conversation);
+        int tab = ai ? aiConversationTab : normalConversationTab;
+        return tab >= 0 && tab < stackSpecs.size() ? tab : 0;
     }
 
     // ==================== 返回键与触点 ====================
@@ -472,22 +509,28 @@ public class TwoPaneNavigator {
     // ==================== 左栏选中态与会话删除 ====================
 
     private void syncListSelection() {
-        if (conversationListFragment == null) {
+        if (conversationListFragments.isEmpty()) {
             return;
         }
-        conversationListFragment.setSelectedConversation(conversationOnTopOfMessageTab());
+        Conversation currentConversation = conversationOnTopOfTab(currentTab);
+        for (int tab = 0; tab < conversationListFragments.size(); tab++) {
+            ConversationListFragment fragment = conversationListFragments.get(tab);
+            if (fragment != null) {
+                fragment.setSelectedConversation(tab == currentTab ? currentConversation : null);
+            }
+        }
     }
 
     /**
-     * 消息 tab 的栈顶是不是一个会话页；不是则左栏不该有高亮。
-     * 高亮只跟消息 tab 走：在通讯录那一栏打开的会话，左栏此刻显示的是通讯录，没有可高亮的行。
+     * 指定 tab 的栈顶是不是一个会话页；不是则该 tab 的左栏列表不该有高亮。
+     * 高亮只跟「左栏是会话列表」的 tab 走：在通讯录那一栏打开的会话，左栏此刻显示的是通讯录，没有可高亮的行。
      */
     @Nullable
-    private Conversation conversationOnTopOfMessageTab() {
-        if (currentTab != 0 || stacks.isEmpty()) {
+    private Conversation conversationOnTopOfTab(int tab) {
+        if (tab < 0 || tab >= stacks.size()) {
             return null;
         }
-        PaneStackFragment stack = stacks.get(0);
+        PaneStackFragment stack = stacks.get(tab);
         if (stack == null) {
             return null;
         }

@@ -16,6 +16,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.poll.activity.PollHomeActivity;
 import cn.wildfire.chat.kit.poll.service.PollServiceProvider;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfirechat.model.Conversation;
 
 /**
@@ -75,6 +76,10 @@ public class PollExt extends ConversationExt {
      */
     @Override
     public boolean filter(Conversation conversation) {
+        // AI（DSH）会话不显示：机器人无法参与投票
+        if (AgentState.isAgentConversation(conversation)) {
+            return true;
+        }
         // 不是群聊，不显示
         if (conversation.type != Conversation.ConversationType.Group) {
             return true;

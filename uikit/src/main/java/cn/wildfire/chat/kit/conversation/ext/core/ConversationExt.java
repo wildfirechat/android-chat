@@ -82,6 +82,17 @@ public abstract class ConversationExt {
     }
 
     /**
+     * 扩展被 {@link #disabled(Conversation)} 置灰时，点击要给用户的提示文案。
+     * <p>
+     * 返回 null 表示静默忽略（默认）；返回非空时扩展面板会 toast 该文案，
+     * 避免用户点击置灰项时没有任何反馈（如 AI 不在线时的「AI 会话设置」提示"AI 不在线"）。
+     * </p>
+     */
+    public CharSequence disabledTip(Context context, Conversation conversation) {
+        return null;
+    }
+
+    /**
      * 和会话界面绑定之后调用
      *
      * @param fragment

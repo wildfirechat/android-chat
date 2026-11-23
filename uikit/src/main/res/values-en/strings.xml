@@ -980,6 +980,7 @@
     <!-- Agent AI session settings panel -->
     <string name="agent_ai_settings">AI Session Settings</string>
     <string name="agent_ai_title">🤖 AI Session Settings</string>
+    <string name="agent_ai_offline_tip">AI is offline</string>
     <string name="agent_ai_title_robot">🤖 %1$s · AI Session Settings</string>
     <string name="agent_ai_choose_robot">Choose AI Robot</string>
     <string name="agent_ai_loading">Reading session state…</string>

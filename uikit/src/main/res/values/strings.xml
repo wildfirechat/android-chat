@@ -1026,6 +1026,7 @@
     <!-- Agent AI 会话设置面板 -->
     <string name="agent_ai_settings">AI 会话设置</string>
     <string name="agent_ai_title">🤖 AI 会话设置</string>
+    <string name="agent_ai_offline_tip">AI 不在线</string>
     <string name="agent_ai_title_robot">🤖 %1$s · AI 会话设置</string>
     <string name="agent_ai_choose_robot">选择 AI 机器人</string>
     <string name="agent_ai_loading">正在读取会话状态…</string>

@@ -265,31 +265,12 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * AI 群（line 2）群主（AI 机器人）是否不在线：clientStates 中无 state==0 的在线客户端。
-     * 判定与 AgentAiExt.disabled() / ConversationFragment.aiOwnerOnline() 一致。
+     * AI 机器人是否不在线：AI 群看群主（AI 机器人）、单聊 DSH 会话看对端机器人，
+     * 统一走 {@link AgentState#isAgentOwnerOffline(Conversation)}。
+     * 未启用在线状态功能时不会判离线（避免误置灰）。
      */
     private boolean isAiOffline(Conversation conversation) {
-        if (conversation.type != Conversation.ConversationType.Group || conversation.line != 2) {
-            return false;
-        }
-        GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conversation.target, false);
-        if (groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
-            return false;
-        }
-        UserOnlineState ownerState = ChatManager.Instance().getUserOnlineStateMap().get(groupInfo.owner);
-        if (ownerState == null) {
-            return true;
-        }
-        ClientState[] states = ownerState.getClientStates();
-        if (states == null || states.length == 0) {
-            return true;
-        }
-        for (ClientState cs : states) {
-            if (cs.getPlatform() >= 1 && cs.getPlatform() <= 9 && cs.getState() == 0) {
-                return false;
-            }
-        }
-        return true;
+        return AgentState.isAgentOwnerOffline(conversation);
     }
 
 

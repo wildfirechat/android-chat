@@ -1,10 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  「AI 会话设置」扩展图标。
+  与 iOS 端扩展面板里的 AI 图标保持一致：白色圆角方块底（圆角 10/64）+ 深灰（#585858）
+  的粗体 "AI" 字样居中；不再使用原来的透明机器人图标。
+  说明：Android 扩展项 ImageView 是 60dp 正方形，这里 24dp 的矢量会等比放大，按 64 的
+  viewBox 设计以便和 iOS（64pt 画布）完全同构。
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <!-- AI 机器人（smart_toy）图标，颜色与 ic_ext_poll 等扩展图标一致 -->
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <!-- 白色圆角底（圆角半径 10，与 iOS 一致） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,0H54A10,10 0 0 1 64,10V54A10,10 0 0 1 54,64H10A10,10 0 0 1 0,54V10A10,10 0 0 1 10,0Z" />
+    <!-- 字母 A：左斜笔 + 右斜笔 + 横杠（拼合成粗体 A） -->
     <path
         android:fillColor="#585858"
-        android:pathData="M20,9V7c0,-1.1 -0.9,-2 -2,-2h-3c0,-1.66 -1.34,-3 -3,-3S9,3.34 9,5H6C4.9,5 4,5.9 4,7v2c-1.66,0 -3,1.34 -3,3s1.34,3 3,3v4c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2v-4c1.66,0 3,-1.34 3,-3S21.66,9 20,9zM7.5,11.5C7.5,10.67 8.17,10 9,10s1.5,0.67 1.5,1.5S9.83,13 9,13S7.5,12.33 7.5,11.5zM16,17H8v-2h8V17zM15,13c-0.83,0 -1.5,-0.67 -1.5,-1.5S14.17,10 15,10s1.5,0.67 1.5,1.5S15.83,13 15,13z" />
+        android:pathData="M18.2,43L25.9,20.3H29.7L22.0,43Z" />
+    <path
+        android:fillColor="#585858"
+        android:pathData="M37.2,43L29.5,20.3H25.7L33.4,43Z" />
+    <path
+        android:fillColor="#585858"
+        android:pathData="M23.6,33.4H32.0V36.6H23.6Z" />
+    <!-- 字母 I：粗竖条 -->
+    <path
+        android:fillColor="#585858"
+        android:pathData="M40.6,20.3H45.8V43H40.6Z" />
 </vector>

@@ -77,6 +77,7 @@
 
     <!--Main Navigation-->
     <string name="app_title_chat">Chats</string>
+    <string name="app_title_office">Office</string>
     <string name="app_title_contact">Contacts</string>
     <string name="app_title_workspace">Workspace</string>
     <string name="app_title_discover">Discover</string>

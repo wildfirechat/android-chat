@@ -42,7 +42,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.king.zxing.Intents;
 
 import java.util.ArrayList;
@@ -77,6 +76,7 @@ import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.AgentRobotService;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.WfcDeviceUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
@@ -94,6 +94,7 @@ import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.uikit.menu.PopupMenu;
@@ -110,7 +111,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
      */
     private TwoPaneNavigator twoPaneNavigator;
 
-    BottomNavigationView bottomNavigationView;
+    MainBottomNavigationView bottomNavigationView;
     ViewPager2 contentViewPager;
     TextView startingTextView;
     LinearLayout contentLinearLayout;
@@ -118,14 +119,34 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
     private QBadgeView discoveryBadgeView;
+    private QBadgeView officeUnreadBadgeView;
 
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
     private static final int REQUEST_CODE_PICK_CONTACT = 101;
 
+    /** 未读角标统计用的会话类型（与两个会话列表 tab 一致）。 */
+    private static final List<Conversation.ConversationType> BADGE_CONVERSATION_TYPES = Arrays.asList(
+        Conversation.ConversationType.Single,
+        Conversation.ConversationType.Group,
+        Conversation.ConversationType.Channel,
+        Conversation.ConversationType.SecretChat);
+
     private boolean isInitialized = false;
 
     private ContactListFragment contactListFragment;
+    /** 「消息」tab：普通会话。 */
     private ConversationListFragment conversationListFragment;
+    /** 「办公」tab：AI 会话（line=2 的会话 + 与本人 DSH 机器人的单聊）。 */
+    private ConversationListFragment officeConversationListFragment;
+    /**
+     * ViewPager 页下标 → 底部导航菜单 itemId。页与底部导航项一一对应，
+     * 工作台未开启时两边都少一项，所有下标相关逻辑都走这个列表，避免写死 0~4。
+     */
+    private final List<Integer> tabItemIds = new ArrayList<>();
+    /** 最近一次拉到的完整会话列表（line 0 + line 2），用于计算「消息」「办公」两个 tab 的未读角标。 */
+    private List<ConversationInfo> lastConversationInfos;
+    /** 单聊 DSH 机器人 id 异步到达：机器人单聊归属的 tab 会变，重算角标。 */
+    private final AgentRobotService.Callback agentRobotCallback = robotId -> refreshUnreadBadges();
 
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
@@ -265,8 +286,16 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         if (contactViewModel != null) {
             contactViewModel.reloadFriendRequestStatus();
             conversationListViewModel.reloadConversationUnreadStatus();
+            // 回前台时重新拉一次会话列表，保证「消息」「办公」两个角标是最新的
+            conversationListViewModel.reloadConversationList(true);
         }
         updateMomentBadgeView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        AgentRobotService.Instance().removeListener(agentRobotCallback);
+        super.onDestroy();
     }
 
     @Override
@@ -404,21 +433,19 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         checkVersion();
         initView();
 
-        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0, 2)))
+        // line 0 = 普通会话，line 2 = AI 会话；这里拉全量，按 Agent 判定把未读分到「消息」「办公」两个角标上，
+        // 同时给平板双栏提供「会话被删除后右栏退回欢迎页」的监听。
+        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(BADGE_CONVERSATION_TYPES, Arrays.asList(0, 2)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
-
-            if (unreadCount != null && unreadCount.unread > 0) {
-                showUnreadMessageBadgeView(unreadCount.unread);
-            } else {
-                hideUnreadMessageBadgeView();
+        conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> {
+            lastConversationInfos = conversationInfos;
+            refreshUnreadBadges();
+            if (twoPaneNavigator != null) {
+                // 双栏：会话被删除/退群后，右栏回到欢迎页
+                twoPaneNavigator.onConversationListChanged(conversationInfos);
             }
         });
-        if (twoPaneNavigator != null) {
-            // 双栏：会话被删除/退群后，右栏回到欢迎页
-            conversationListViewModel.conversationListLiveData()
-                .observe(this, conversationInfos -> twoPaneNavigator.onConversationListChanged(conversationInfos));
-        }
+        AgentRobotService.Instance().addListener(agentRobotCallback);
 
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
@@ -432,10 +459,78 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         checkDisplayName();
     }
 
+    /**
+     * 按会话归属重算「消息」「办公」两个 tab 的未读数：
+     * {@link AgentState#isAgentConversation} 为真的会话（line=2 的 AI 群、与本人 DSH 机器人的单聊）
+     * 计入「办公」，其余普通会话计入「消息」。
+     * <p>
+     * 设置了「消息免打扰」的会话不计入任何 tab 的角标：静音语义就是不要打扰用户，
+     * 会话列表里也只是给个红点（不显示具体数字，见 {@code ConversationViewHolder}），
+     * 底部 tab 更不应该被静音会话的未读数点亮。
+     * <p>
+     * 不能直接用 IM 的按 line 统计未读：机器人单聊和普通单聊同属 line 0，只有客户端才知道
+     * 哪个 target 是本人的 DSH 机器人。
+     */
+    private void refreshUnreadBadges() {
+        int normalUnread = 0;
+        int officeUnread = 0;
+        List<ConversationInfo> conversationInfos = lastConversationInfos;
+        if (conversationInfos != null) {
+            for (ConversationInfo info : conversationInfos) {
+                if (info == null || info.conversation == null || info.unreadCount == null) {
+                    continue;
+                }
+                int unread = info.unreadCount.unread;
+                if (unread <= 0 || info.isSilent) {
+                    continue;
+                }
+                if (AgentState.isAgentConversation(info.conversation)) {
+                    officeUnread += unread;
+                } else {
+                    normalUnread += unread;
+                }
+            }
+        }
+        if (normalUnread > 0) {
+            showUnreadMessageBadgeView(normalUnread);
+        } else {
+            hideUnreadMessageBadgeView();
+        }
+        if (officeUnread > 0) {
+            showOfficeUnreadBadgeView(officeUnread);
+        } else {
+            hideOfficeUnreadBadgeView();
+        }
+    }
+
+    /**
+     * 底部导航某个菜单项对应的 item 视图（角标挂载点）。
+     * 菜单是动态的（工作台可能被移除），不能像改造前那样写死 childAt(0/1/2)，统一按 itemId 查下标。
+     */
+    private View bottomNavigationItemView(int itemId) {
+        if (bottomNavigationView == null || bottomNavigationView.getChildCount() == 0) {
+            return null;
+        }
+        View child = bottomNavigationView.getChildAt(0);
+        if (!(child instanceof BottomNavigationMenuView)) {
+            return null;
+        }
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) child;
+        Menu menu = bottomNavigationView.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            if (menu.getItem(i).getItemId() == itemId) {
+                return i < menuView.getChildCount() ? menuView.getChildAt(i) : null;
+            }
+        }
+        return null;
+    }
+
     private void showUnreadMessageBadgeView(int count) {
         if (unreadMessageUnreadBadgeView == null) {
-            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-            View view = bottomNavigationMenuView.getChildAt(0);
+            View view = bottomNavigationItemView(R.id.conversation_list);
+            if (view == null) {
+                return;
+            }
             unreadMessageUnreadBadgeView = new QBadgeView(MainActivity.this);
             unreadMessageUnreadBadgeView.bindTarget(view);
         }
@@ -449,6 +544,25 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         }
     }
 
+    private void showOfficeUnreadBadgeView(int count) {
+        if (officeUnreadBadgeView == null) {
+            View view = bottomNavigationItemView(R.id.office);
+            if (view == null) {
+                return;
+            }
+            officeUnreadBadgeView = new QBadgeView(MainActivity.this);
+            officeUnreadBadgeView.bindTarget(view);
+        }
+        officeUnreadBadgeView.setBadgeNumber(count);
+    }
+
+    private void hideOfficeUnreadBadgeView() {
+        if (officeUnreadBadgeView != null) {
+            officeUnreadBadgeView.hide(true);
+            officeUnreadBadgeView = null;
+        }
+    }
+
     private void updateMomentBadgeView() {
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
             return;
@@ -457,9 +571,10 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         int count = messages == null ? 0 : messages.size();
         if (count > 0) {
             if (discoveryBadgeView == null) {
-                BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-                int index = TextUtils.isEmpty(Config.getWorkspaceUrl()) ? 2 : 3;
-                View view = bottomNavigationMenuView.getChildAt(index);
+                View view = bottomNavigationItemView(R.id.discovery);
+                if (view == null) {
+                    return;
+                }
                 discoveryBadgeView = new QBadgeView(MainActivity.this);
                 discoveryBadgeView.bindTarget(view);
             }
@@ -474,8 +589,10 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
 
     private void showUnreadFriendRequestBadgeView(int count) {
         if (unreadFriendRequestBadgeView == null) {
-            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-            View view = bottomNavigationMenuView.getChildAt(1);
+            View view = bottomNavigationItemView(R.id.contact);
+            if (view == null) {
+                return;
+            }
             unreadFriendRequestBadgeView = new QBadgeView(MainActivity.this);
             unreadFriendRequestBadgeView.bindTarget(view);
         }
@@ -646,8 +763,8 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         startingTextView.setVisibility(View.GONE);
         contentLinearLayout.setVisibility(View.VISIBLE);
 
-        //设置ViewPager的最大缓存页面
-        contentViewPager.setOffscreenPageLimit(4);
+        //设置ViewPager的最大缓存页面（6 个 tab，尽量都保活，避免切 tab 重建列表丢失滚动位置/双栏选中态）
+        contentViewPager.setOffscreenPageLimit(5);
 
         DiscoveryFragment discoveryFragment = null;
         MeFragment meFragment = null;
@@ -657,7 +774,14 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         if (fragments != null) {
             for (Fragment fragment : fragments) {
                 if (fragment instanceof ConversationListFragment) {
-                    conversationListFragment = (ConversationListFragment) fragment;
+                    // 主界面同时存在「消息」「办公」两个会话列表，用 arguments 里的模式区分；
+                    // 配置变化后由 FragmentManager 恢复出来的实例同样带着这个参数。
+                    ConversationListFragment listFragment = (ConversationListFragment) fragment;
+                    if (listFragment.getMode() == ConversationListFragment.MODE_AI) {
+                        officeConversationListFragment = listFragment;
+                    } else {
+                        conversationListFragment = listFragment;
+                    }
                 } else if (fragment instanceof ContactListFragment) {
                     contactListFragment = (ContactListFragment) fragment;
                 } else if (fragment instanceof DiscoveryFragment) {
@@ -671,18 +795,13 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         }
 
         if (conversationListFragment == null) {
-            conversationListFragment = new ConversationListFragment();
+            conversationListFragment = ConversationListFragment.newInstance(ConversationListFragment.MODE_NORMAL);
         }
-        conversationListFragment.setOnClickConversationItemListener(conversationInfo -> {
-            Intent intent = new Intent(this, ConversationActivity.class);
-            intent.putExtra("conversation", conversationInfo.conversation);
-            // 手机端等价于 startActivity(intent)；双栏下由 ConversationRouter 找到本 Activity
-            // 这个 WfcPageNavigator，直接换右栏
-            ConversationRouter.open(this, intent);
-        });
-        if (twoPaneNavigator != null) {
-            twoPaneNavigator.setConversationListFragment(conversationListFragment);
+        conversationListFragment.setOnClickConversationItemListener(this::openConversation);
+        if (officeConversationListFragment == null) {
+            officeConversationListFragment = ConversationListFragment.newInstance(ConversationListFragment.MODE_AI);
         }
+        officeConversationListFragment.setOnClickConversationItemListener(this::openConversation);
         if (contactListFragment == null) {
             contactListFragment = new ContactListFragment();
         }
@@ -693,12 +812,20 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
             meFragment = new MeFragment();
         }
 
+        // 页顺序 = 底部导航项顺序：消息、办公、通讯录、[工作台]、发现、我的。
+        // 工作台未开启时两边的「工作台」项一起少，所有下标都按 tabItemIds 反查，避免写死。
         mFragmentList.clear();
+        tabItemIds.clear();
         mFragmentList.add(conversationListFragment);
+        tabItemIds.add(R.id.conversation_list);
+        mFragmentList.add(officeConversationListFragment);
+        tabItemIds.add(R.id.office);
         mFragmentList.add(contactListFragment);
+        tabItemIds.add(R.id.contact);
         if (twoPaneNavigator != null) {
-            // 四个列表 tab 共用同一个欢迎页（与微信 Pad 一致），不再按 tab 给不同文案：
+            // 会话列表 tab 共用同一个欢迎页（与微信 Pad 一致），不再按 tab 给不同文案：
             // 右栏是同一块区域，切 tab 时文案跟着变反而像是内容变了。
+            twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
             twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
             twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
         }
@@ -706,6 +833,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
             if (twoPaneNavigator != null) {
                 // 工作台没有「列表 → 详情」的层次：左栏放迎宾面板（问候语 + 日期），网页始终占着右栏栈底。
                 mFragmentList.add(new WorkspaceWelcomeFragment());
+                tabItemIds.add(R.id.workspace);
                 Bundle workspaceArgs = new Bundle();
                 workspaceArgs.putString("url", Config.getWorkspaceUrl());
                 twoPaneNavigator.addTabWithRootPage(WebViewFragment.class, workspaceArgs,
@@ -715,13 +843,20 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
                     workspaceFragment = WebViewFragment.loadUrl(Config.getWorkspaceUrl());
                 }
                 mFragmentList.add(workspaceFragment);
+                tabItemIds.add(R.id.workspace);
             }
         }
         mFragmentList.add(discoveryFragment);
+        tabItemIds.add(R.id.discovery);
         mFragmentList.add(meFragment);
+        tabItemIds.add(R.id.me);
         if (twoPaneNavigator != null) {
             twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
             twoPaneNavigator.addTab(getString(R.string.pad_select_an_entry));
+            // 双栏左栏的高亮、通知点开会话落到哪条栈，都要知道「消息」「办公」各是第几个 tab
+            twoPaneNavigator.setConversationTabs(tabIndex(R.id.conversation_list), tabIndex(R.id.office));
+            twoPaneNavigator.addConversationListFragment(tabIndex(R.id.conversation_list), conversationListFragment);
+            twoPaneNavigator.addConversationListFragment(tabIndex(R.id.office), officeConversationListFragment);
             twoPaneNavigator.start(contentViewPager.getCurrentItem());
         }
 
@@ -729,44 +864,51 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
         contentViewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
         this.onPageChangeCallback.onPageSelected(contentViewPager.getCurrentItem());
 
-
         bottomNavigationView.setOnItemReselectedListener(item -> {
-            if (item.getItemId() == R.id.conversation_list) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.conversation_list) {
                 long now = System.currentTimeMillis();
                 if (now - lastSelectConversatonListItemTimestamp < 200) {
                     conversationListFragment.scrollToNextUnreadConversation();
                 }
                 lastSelectConversatonListItemTimestamp = now;
+            } else if (itemId == R.id.office) {
+                officeConversationListFragment.scrollToNextUnreadConversation();
             }
         });
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+            int index = tabIndex(itemId);
+            if (index < 0) {
+                return false;
+            }
+            setCurrentViewPagerItem(index, false);
             if (itemId == R.id.conversation_list) {
-                setCurrentViewPagerItem(0, false);
                 setTitle(R.string.app_title_chat);
                 if (!isDarkTheme()) {
                     setTitleBackgroundResource(R.color.gray5, false);
                 }
+            } else if (itemId == R.id.office) {
+                setTitle(R.string.app_title_office);
+                if (!isDarkTheme()) {
+                    setTitleBackgroundResource(R.color.gray5, false);
+                }
             } else if (itemId == R.id.contact) {
-                setCurrentViewPagerItem(1, false);
                 setTitle(R.string.app_title_contact);
                 if (!isDarkTheme()) {
                     setTitleBackgroundResource(R.color.gray5, false);
                 }
             } else if (itemId == R.id.workspace) {
-                setCurrentViewPagerItem(2, false);
                 setTitle(R.string.app_title_workspace);
                 if (!isDarkTheme()) {
                     setTitleBackgroundResource(R.color.gray5, false);
                 }
             } else if (itemId == R.id.discovery) {
-                setCurrentViewPagerItem(showWorkSpace() ? 3 : 2, false);
                 setTitle(R.string.app_title_discover);
                 if (!isDarkTheme()) {
                     setTitleBackgroundResource(R.color.gray5, false);
                 }
             } else if (itemId == R.id.me) {
-                setCurrentViewPagerItem(showWorkSpace() ? 4 : 3, false);
                 setTitle(R.string.app_title_me);
                 if (!isDarkTheme()) {
                     setTitleBackgroundResource(R.color.white, false);
@@ -774,6 +916,28 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
             }
             return true;
         });
+    }
+
+    /**
+     * ViewPager 页下标 → 底部导航 itemId；不在范围内返回 {@code null}。
+     */
+    private Integer tabIdAt(int position) {
+        return position >= 0 && position < tabItemIds.size() ? tabItemIds.get(position) : null;
+    }
+
+    /**
+     * 底部导航 itemId → ViewPager 页下标；动态菜单里没有这一项时返回 -1。
+     */
+    private int tabIndex(int itemId) {
+        return tabItemIds.indexOf(itemId);
+    }
+
+    private void openConversation(ConversationInfo conversationInfo) {
+        Intent intent = new Intent(this, ConversationActivity.class);
+        intent.putExtra("conversation", conversationInfo.conversation);
+        // 手机端等价于 startActivity(intent)；双栏下由 ConversationRouter 找到本 Activity
+        // 这个 WfcPageNavigator，直接换右栏
+        ConversationRouter.open(this, intent);
     }
 
     private void showMoreActionMenu() {
@@ -1105,31 +1269,13 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
                 // 右栏切到该 tab 自己的那条栈；没进过的 tab 显示欢迎页
                 twoPaneNavigator.setCurrentTab(position);
             }
-            if (!showWorkSpace()) {
-                if (position > 1) {
-                    position++;
-                }
+            // 页顺序与底部导航项顺序一一对应（工作台未开启时两边都少一项），
+            // 选中底部导航项会走到 OnItemSelectedListener 里设置标题/标题栏底色。
+            Integer itemId = tabIdAt(position);
+            if (itemId != null) {
+                bottomNavigationView.setSelectedItemId(itemId);
             }
-            switch (position) {
-                case 0:
-                    bottomNavigationView.setSelectedItemId(R.id.conversation_list);
-                    break;
-                case 1:
-                    bottomNavigationView.setSelectedItemId(R.id.contact);
-                    break;
-                case 2:
-                    bottomNavigationView.setSelectedItemId(R.id.workspace);
-                    break;
-                case 3:
-                    bottomNavigationView.setSelectedItemId(R.id.discovery);
-                    break;
-                case 4:
-                    bottomNavigationView.setSelectedItemId(R.id.me);
-                    break;
-                default:
-                    break;
-            }
-            contactListFragment.showQuickIndexBar(position == 1);
+            contactListFragment.showQuickIndexBar(position == tabIndex(R.id.contact));
         }
 
         @Override
@@ -1138,8 +1284,7 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
                 //滚动过程中隐藏快速导航条
                 contactListFragment.showQuickIndexBar(false);
             } else {
-                int contactIndex = 1;
-                contactListFragment.showQuickIndexBar(contentViewPager.getCurrentItem() == contactIndex);
+                contactListFragment.showQuickIndexBar(contentViewPager.getCurrentItem() == tabIndex(R.id.contact));
             }
         }
     };
@@ -1155,8 +1300,8 @@ public class MainActivity extends WfcBaseActivity implements WfcPageNavigator {
             return;
         }
 
-        int meIndex = showWorkSpace() ? 4 : 3;
-        int discoveryIndex = showWorkSpace() ? 3 : 2;
+        int meIndex = tabIndex(R.id.me);
+        int discoveryIndex = tabIndex(R.id.discovery);
 
         int toolbarColor = ContextCompat.getColor(this, isDarkTheme() ? R.color.colorPrimary : R.color.gray5);
         int mePageColor = Color.WHITE;

@@ -32,7 +32,8 @@ import cn.wildfirechat.remote.ChatManager;
  * {@link AgentState#agentConversationKind}）。
  * 多机器人（多 agent）会话：入口先弹出机器人列表（列表项显示机器人名），选中后把目标
  * 机器人 uid 绑定到面板；单机器人/尚无状态推送的会话直接打开默认面板。
- * 面板：推理等级 / 沙箱模式 / 计划模式 / 上下文占用进度 / 压缩上下文。
+ * 面板：沙箱模式 / Agent 模式（preset）/ 工具审批（approval）/ 计划模式 / 会话模式 /
+ * 上下文占用进度 / 压缩上下文（推理等级、模型已移除）。
  * 静默通道：打开发 207 Agent_Command（op=query，带目标 robotId）组合查询，
  * 读 scope=31 type=3 面板数据渲染（effort 下拉、沙箱单选、计划开关），
  * 并读 type=2 计量渲染「上下文 xx%」占用进度（context.usedPct，未知显示 --）；
@@ -122,30 +123,15 @@ public class AgentAiExt extends ConversationExt {
      */
     @Override
     public boolean disabled(Conversation conversation) {
-        if (!AgentState.isAgentConversation(conversation)) {
-            return false;
-        }
-        ChatManager chatManager = ChatManager.Instance();
-        if (!chatManager.isEnableUserOnlineState()) {
-            return false;
-        }
-        GroupInfo groupInfo = chatManager.getGroupInfo(conversation.target, false);
-        if (groupInfo == null || TextUtils.isEmpty(groupInfo.owner)) {
-            return false;
-        }
-        UserOnlineState ownerState = chatManager.getUserOnlineStateMap().get(groupInfo.owner);
-        if (ownerState == null) {
-            return true;
-        }
-        ClientState[] states = ownerState.getClientStates();
-        if (states == null || states.length == 0) {
-            return true;
-        }
-        for (ClientState cs : states) {
-            if (cs.getPlatform() >= 1 && cs.getPlatform() <= 9 && cs.getState() == 0) {
-                return false;
-            }
-        }
-        return true;
+        //AI 机器人不在线时置灰不可点：AI 群看群主、单聊 DSH 看对端机器人（统一判定）
+        return AgentState.isAgentOwnerOffline(conversation);
+    }
+
+    /**
+     * AI 不在线时点击「AI 会话设置」的提示文案（置灰但点击给出原因，而不是无响应）。
+     */
+    @Override
+    public CharSequence disabledTip(Context context, Conversation conversation) {
+        return context.getString(R.string.agent_ai_offline_tip);
     }
 }

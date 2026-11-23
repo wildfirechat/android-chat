@@ -6,7 +6,9 @@ package cn.wildfire.chat.kit.conversation.ext.core;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.IntRange;
 import androidx.fragment.app.Fragment;
@@ -47,8 +49,13 @@ public class ConversationExtension {
     }
 
     private void onConversationExtClick(ConversationExt ext) {
-        // 置灰禁用的扩展（如 AI 不在线时的 "AI 会话设置"）点击不响应
+        // 置灰禁用的扩展（如 AI 不在线时的 "AI 会话设置"）：若扩展提供了提示文案，
+        // 点击时 toast 告知原因（避免静默无响应），否则仍然不响应
         if (ext.disabled(this.conversation)) {
+            CharSequence tip = ext.disabledTip(context, this.conversation);
+            if (!TextUtils.isEmpty(tip)) {
+                Toast.makeText(context, tip, Toast.LENGTH_SHORT).show();
+            }
             return;
         }
         List<ExtMenuItemWrapper> extMenuItems = new ArrayList<>();
@@ -106,6 +113,30 @@ public class ConversationExtension {
         for (int i = 0; i < exts.size(); i++) {
             exts.get(i).onDestroy();
         }
+    }
+
+    /**
+     * 可见扩展集合是否已变化（例如单聊 DSH 机器人 id 异步到达后，「位置/名片」需要隐藏、
+     * 「AI 会话设置」需要出现）。
+     * <p>
+     * 只比较扩展的类与顺序：{@link ConversationExt#filter(Conversation)} 只决定成员是否入选，
+     * 不会改变成员内部状态，所以集合没变时调用方无需重建面板（避免每次打开「+」都重置分页）。
+     * </p>
+     */
+    public boolean visibleExtsChanged(Conversation conversation) {
+        if (conversation == null) {
+            return false;
+        }
+        List<ConversationExt> latest = ConversationExtManager.getInstance().getConversationExts(conversation);
+        if (exts == null || latest.size() != exts.size()) {
+            return true;
+        }
+        for (int i = 0; i < latest.size(); i++) {
+            if (latest.get(i).getClass() != exts.get(i).getClass()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setupExtViewPager(ViewPagerFixed viewPager) {

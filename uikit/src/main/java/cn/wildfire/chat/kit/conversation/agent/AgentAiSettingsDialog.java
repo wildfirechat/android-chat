@@ -53,10 +53,10 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * <p>
  * 静默通道：所有交互不落消息流（不显示在界面上）。
  * 打开面板发 207 Agent_Command（op=query）组合查询 → 插件聚合面板数据
- * （effort / sandbox / preset / approval / plan / mode）写入 scope=31 type=3
+ * （sandbox / preset / approval / plan / mode）写入 scope=31 type=3
  * （键 convType-line-target_3[_robotId]，不回复消息）→ 本面板读 type=3 渲染：
- * 推理等级、Agent 模式、工具审批为下拉，沙箱、会话模式为单选，计划为开关。
- * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/effort high"）；
+ * Agent 模式、工具审批为下拉，沙箱、会话模式为单选，计划为开关。
+ * 所有操作发 207 Agent_Command（op=set，cmd=命令文本，如 "/sandbox read-only"）；
  * 插件执行后写 type=1 状态 lastChange 并刷新 type=3，本面板监听本端已有的用户设置
  * 更新事件（{@link OnSettingUpdateListener}）重读 type=3，同时重读 type=2 计量
  * 刷新「上下文 xx%」占用进度（context.usedPct，未知显示 --，不轮询）。
@@ -64,8 +64,8 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
  * <p>
  * 移动端精简：不再提供模型切换、会话切换、工作目录切换、新建会话与销毁会话
  * （cwd/dirs 207 请求、会话列表/当前 sessionId/207 sessions/switch、/reset、/destroy
- * 均已移除），type=3 中的 model/sessionId/cwd/dirs 字段安全忽略；保留与 PC 一致
- * 的控制（模型除外）：推理等级、沙箱、Agent 模式（preset）、工具审批（approval）、
+ * 均已移除），type=3 中的 model/sessionId/cwd/dirs/effort 字段安全忽略；保留与 PC 一致
+ * 的控制（模型、推理等级除外）：沙箱、Agent 模式（preset）、工具审批（approval）、
  * 计划、会话模式（mode），以及上下文占用进度与压缩上下文。
  * </p>
  */
@@ -85,7 +85,6 @@ public class AgentAiSettingsDialog {
 
     private TextView loadingView;
     private TextView titleView;
-    private Spinner effortSpinner;
     private RadioGroup sandboxGroup;
     private Spinner presetSpinner;
     private Spinner approvalSpinner;
@@ -98,13 +97,9 @@ public class AgentAiSettingsDialog {
     private Button compactBtn;
     private TextView applyingView;
 
-    /** type=3 面板数据当前值（推理等级/沙箱/Agent 模式/工具审批/计划/会话模式） */
-    private final List<String> effortOptions = new ArrayList<>();
-    private String currentEffort = "";
+    /** type=3 面板数据当前值（沙箱/Agent 模式/工具审批/计划/会话模式） */
     private String currentSandbox = "";
     private boolean planOn = false;
-    /** 下拉实际展示项（= 候选 + 当前值不在候选时前置追加），与 Spinner 位置一一对应 */
-    private final List<String> displayEffortOptions = new ArrayList<>();
 
     /** Agent 模式（preset）：候选 {value,label} 与当前值；options 为空时禁用但仍回显当前值 */
     private final List<PanelOption> presetOptions = new ArrayList<>();
@@ -211,7 +206,6 @@ public class AgentAiSettingsDialog {
     private void bindViews(View view) {
         loadingView = view.findViewById(R.id.agentAiLoading);
         titleView = view.findViewById(R.id.agentAiTitle);
-        effortSpinner = view.findViewById(R.id.agentAiEffortSpinner);
         sandboxGroup = view.findViewById(R.id.agentAiSandboxGroup);
         presetSpinner = view.findViewById(R.id.agentAiPresetSpinner);
         approvalSpinner = view.findViewById(R.id.agentAiApprovalSpinner);
@@ -233,25 +227,6 @@ public class AgentAiSettingsDialog {
             refreshRobotTitleAsync();
         }
 
-        effortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-                if (rendering || applying || position < 0 || position >= displayEffortOptions.size()) {
-                    return;
-                }
-                String value = displayEffortOptions.get(position);
-                if (value == null || value.equals(currentEffort)) {
-                    return;
-                }
-                currentEffort = value;
-                sendCommand("set", "/effort " + value);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
         sandboxGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (rendering || applying || checkedId == View.NO_ID) {
                 return;
@@ -268,7 +243,7 @@ public class AgentAiSettingsDialog {
             sendCommand("set", "/sandbox " + value);
         });
 
-        // Agent 模式（preset）：与推理等级同为下拉，选中即发 /preset <value>
+        // Agent 模式（preset）：下拉，选中即发 /preset <value>
         presetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
@@ -407,26 +382,11 @@ public class AgentAiSettingsDialog {
     }
 
     /**
-     * 把 type=3 面板数据应用到当前值并渲染：effort.options/current、sandbox.current、
+     * 把 type=3 面板数据应用到当前值并渲染：sandbox.current、
      * preset/approval 的 current+options、plan.on、mode.current+options。
-     * model / sessionId / cwd / dirs 等移动端已移除的字段直接忽略。
+     * model / sessionId / cwd / dirs / effort 等移动端已移除的字段直接忽略。
      */
     private void applyPanelData(JSONObject data) {
-        // 推理等级：current + options（字符串数组）
-        JSONObject effort = data.optJSONObject("effort");
-        if (effort != null) {
-            currentEffort = effort.optString("current", "");
-            effortOptions.clear();
-            JSONArray options = effort.optJSONArray("options");
-            if (options != null) {
-                for (int i = 0; i < options.length(); i++) {
-                    String value = options.optString(i);
-                    if (!TextUtils.isEmpty(value) && !effortOptions.contains(value)) {
-                        effortOptions.add(value);
-                    }
-                }
-            }
-        }
         // 沙箱：current
         JSONObject sandbox = data.optJSONObject("sandbox");
         if (sandbox != null) {
@@ -461,7 +421,6 @@ public class AgentAiSettingsDialog {
             }
         }
 
-        renderEffort();
         renderSandbox();
         renderPreset();
         renderApproval();
@@ -520,7 +479,7 @@ public class AgentAiSettingsDialog {
 
     /**
      * 发送 207 Agent_Command 面板指令（透明消息，不显示在消息流）。
-     * op=query 组合查询（cmd 空）；op=set 更新（cmd=命令文本，如 "/effort high"）。
+     * op=query 组合查询（cmd 空）；op=set 更新（cmd=命令文本，如 "/sandbox read-only"）。
      * 绑定目标机器人时 207 带 robotId（完整 uid）：多机器人会话仅该机器人执行
      * （服务端插件已支持 robotId 寻址）。
      * set 发送后控件短暂禁用（防连点）。
@@ -543,23 +502,6 @@ public class AgentAiSettingsDialog {
     /** 207 seq 自增（同一面板会话内单调递增，用于幂等） */
     private long nextSeq() {
         return ++commandSeq;
-    }
-
-    /** 重建推理等级下拉：候选来自 type=3 effort.options；当前值不在候选里也追加显示并选中 */
-    private void renderEffort() {
-        rendering = true;
-        displayEffortOptions.clear();
-        displayEffortOptions.addAll(effortOptions);
-        if (!displayEffortOptions.contains(currentEffort) && !TextUtils.isEmpty(currentEffort)) {
-            displayEffortOptions.add(0, currentEffort);
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(dialog.getContext(),
-            android.R.layout.simple_spinner_item, displayEffortOptions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        effortSpinner.setAdapter(adapter);
-        int index = displayEffortOptions.indexOf(currentEffort);
-        effortSpinner.setSelection(Math.max(0, index));
-        handler.post(() -> rendering = false);
     }
 
     /** 沙箱模式固定三项单选，按当前值高亮 */
@@ -713,7 +655,6 @@ public class AgentAiSettingsDialog {
 
     private void updateEnabledState() {
         boolean enabled = !applying;
-        effortSpinner.setEnabled(enabled);
         setRadioGroupEnabled(sandboxGroup, enabled);
         // Agent 模式/工具审批：options 为空或 current 为空时禁用（仍回显当前值）
         setOptionSpinnerEnabled(presetSpinner, enabled && isOptionSelectable(presetOptions, currentPreset));

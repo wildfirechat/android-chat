@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/gray14">
 
-                <com.google.android.material.bottomnavigation.BottomNavigationView
+                <cn.wildfire.chat.app.main.MainBottomNavigationView
                     android:id="@+id/bottomNavigationView"
                     android:layout_width="@dimen/wfc_bottom_nav_max_width"
                     android:layout_height="wrap_content"

@@ -1153,7 +1153,25 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
+    /**
+     * 打开「+」面板前按最新会话状态重算可见扩展。
+     * <p>
+     * 扩展列表在 {@link #setupConversation} 时只绑定一次；单聊 DSH 的机器人 id 是异步
+     * 查询/缓存的，绑定那一刻可能还没拿到，「位置/名片」就会残留在面板里。每次打开面板前
+     * 比对一次可见扩展集合，真的变了才重建（普通会话集合稳定，不会重置分页位置）。
+     * </p>
+     */
+    private void refreshConversationExtensionIfNeeded() {
+        if (extension == null || conversation == null || messageViewModel == null) {
+            return;
+        }
+        if (extension.visibleExtsChanged(conversation)) {
+            extension.bind(messageViewModel, conversation, targetUser);
+        }
+    }
+
     private void showConversationExtension() {
+        refreshConversationExtensionIfNeeded();
         rootLinearLayout.show(editText, extContainerFrameLayout);
         if (audioButton.isShown()) {
             hideAudioButton();

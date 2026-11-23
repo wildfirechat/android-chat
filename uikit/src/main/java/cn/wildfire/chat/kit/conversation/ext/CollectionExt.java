@@ -16,6 +16,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.collection.CollectionServiceProvider;
 import cn.wildfire.chat.kit.collection.CreateCollectionActivity;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
+import cn.wildfire.chat.kit.utils.AgentState;
 import cn.wildfirechat.model.Conversation;
 
 /**
@@ -75,6 +76,10 @@ public class CollectionExt extends ConversationExt {
      */
     @Override
     public boolean filter(Conversation conversation) {
+        // AI（DSH）会话不显示：机器人无法参与接龙
+        if (AgentState.isAgentConversation(conversation)) {
+            return true;
+        }
         // 不是群聊，不显示
         if (conversation.type != Conversation.ConversationType.Group) {
             return true;
