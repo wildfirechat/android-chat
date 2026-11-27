@@ -16,6 +16,7 @@ import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.EmployeeEx;
@@ -295,6 +296,8 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
             organizationServiceProvider.getRootOrganization(new SimpleCallback<List<Organization>>() {
                 @Override
                 public void onUiSuccess(List<Organization> organizations) {
+                    // 根目录成功后按根公司拉取组织架构机器人（本次启动只请求一次）
+                    OrganizationRobotManager.getInstance().loadCompanyRobots(organizations);
                     rootOrganizationLiveData.setValue(organizations);
                 }
 

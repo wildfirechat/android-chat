@@ -19,12 +19,14 @@ import cn.wildfire.chat.kit.net.Callback;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
 import cn.wildfire.chat.kit.organization.model.PageResponse;
+import cn.wildfire.chat.kit.organization.model.Robot;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
@@ -96,6 +98,8 @@ public class OrganizationService implements OrganizationServiceProvider {
 
     public void reset() {
         this.isServiceAvailable = false;
+        // 退出登录后清掉机器人缓存，下次登录重新拉取
+        OrganizationRobotManager.getInstance().clear();
     }
 
     public void clearOrgServiceAuthInfos() {
@@ -164,6 +168,18 @@ public class OrganizationService implements OrganizationServiceProvider {
                 callback.onUiFailure(code, msg);
             }
         });
+    }
+
+    @Override
+    public void getCompanyRobots(int companyId, SimpleCallback<List<Robot>> callback) {
+        if (!isServiceAvailable) {
+            callback.onUiFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        Map<String, Object> params = new HashMap<>(1);
+        params.put("companyId", companyId);
+        String url = getOrgServerAddress() + "/api/company/robots";
+        OKHttpHelper.post(url, params, callback);
     }
 
     @Override

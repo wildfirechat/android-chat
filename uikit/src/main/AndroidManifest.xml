@@ -338,6 +338,9 @@
             android:name=".organization.OrganizationMemberListActivity"
             android:label="@string/organization_directory" />
         <activity
+            android:name=".organization.RobotListActivity"
+            android:label="@string/org_robot" />
+        <activity
             android:name=".organization.EmployeeInfoActivity"
             android:label="@string/employee_info" />
         <activity

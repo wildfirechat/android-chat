@@ -714,6 +714,8 @@
     <string name="organization_directory">Organization Directory</string>
     <string name="employee_info">Employee Info</string>
     <string name="select_organization_member">Select Organization Member</string>
+    <string name="org_robot">Robot</string>
+    <string name="org_robot_empty">No robots</string>
     <string name="external_domain_list">External Organizations</string>
     <string name="external_domain_details">External Organization Details</string>
 

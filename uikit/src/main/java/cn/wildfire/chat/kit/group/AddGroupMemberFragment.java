@@ -28,6 +28,8 @@ import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.RobotViewHolder;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
@@ -37,6 +39,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
     private GroupInfo groupInfo;
     private ArrayList<String> groupMemberIds = new ArrayList<>();
     private static final int REQUEST_CODE_PICK_ORGANIZATION_MEMBER = 101;
+    private boolean rootOrganizationDelivered;
 
     public static AddGroupMemberFragment newInstance(GroupInfo groupInfo) {
         Bundle args = new Bundle();
@@ -80,7 +83,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
         if (!TextUtils.isEmpty(Config.getOrgServerAddress())) {
             OrganizationServiceViewModel organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, organizations -> {
-                if (!organizations.isEmpty()) {
+                if (organizations != null && !organizations.isEmpty()) {
                     for (Organization org : organizations) {
                         OrganizationValue value = new OrganizationValue();
                         value.setValue(org);
@@ -88,9 +91,12 @@ public class AddGroupMemberFragment extends PickContactFragment {
                         scrollToPosition(0);
                     }
                 }
+                rootOrganizationDelivered = true;
+                // 机器人入口排在组织架构入口之后，有数据才显示
+                addOrganizationRobotHeaderIfNeeded(rootOrganizationDelivered);
             });
             organizationServiceViewModel.myOrganizationLiveData().observe(this, organizations -> {
-                if (!organizations.isEmpty()) {
+                if (organizations != null && !organizations.isEmpty()) {
                     for (Organization org : organizations) {
                         OrganizationValue value = new OrganizationValue();
                         value.setValue(org);
@@ -99,6 +105,9 @@ public class AddGroupMemberFragment extends PickContactFragment {
                     }
                 }
             });
+            // 机器人数据可能在根组织返回之后才更新（首次请求），届时再补入口
+            OrganizationRobotManager.getInstance().robotsLiveData().observe(this, robots ->
+                addOrganizationRobotHeaderIfNeeded(rootOrganizationDelivered));
         }
     }
 
@@ -118,6 +127,9 @@ public class AddGroupMemberFragment extends PickContactFragment {
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putStringArrayListExtra(PickOrganizationMemberActivity.PARAM_UNCHECKABLE_IDS, groupMemberIds);
             WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+        } else if (holder instanceof RobotViewHolder) {
+            // 机器人入口与组织入口并列；已经是群成员的机器人不可再勾选
+            openRobotListForPick(groupMemberIds);
         }
     }
 
@@ -146,6 +158,8 @@ public class AddGroupMemberFragment extends PickContactFragment {
 //                    });
                 }
             }
+        } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PICK_ROBOT) {
+            applyRobotSelection(data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

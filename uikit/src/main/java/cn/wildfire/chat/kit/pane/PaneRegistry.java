@@ -111,6 +111,8 @@ import cn.wildfire.chat.kit.mesh.DomainListFragment;
 import cn.wildfire.chat.kit.organization.EmployeeInfoActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListFragment;
+import cn.wildfire.chat.kit.organization.RobotListActivity;
+import cn.wildfire.chat.kit.organization.RobotListFragment;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberPageFragment;
 import cn.wildfire.chat.kit.pc.PCSessionActivity;
@@ -550,6 +552,9 @@ public final class PaneRegistry {
             fragment.setArguments(args);
             return fragment;
         }, intent -> OrganizationMemberListActivity.class.getName() + ':' + intent.getIntExtra("organizationId", 0));
+
+        // 组织架构机器人列表。与组织入口并列，不是组织树节点；选人时也要能进右栏并回传结果。
+        register(RobotListActivity.class, (context, intent) -> RobotListFragment.fromIntent(intent));
 
         // 会话内的查找：按日期、链接记录、图片与视频、文件
         register(ConversationMessageByDateActivity.class, (context, intent) -> {

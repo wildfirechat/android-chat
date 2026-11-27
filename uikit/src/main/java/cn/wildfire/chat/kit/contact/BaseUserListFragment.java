@@ -21,6 +21,8 @@ import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.RobotViewHolder;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
@@ -36,6 +38,9 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     TextView indexLetterTextView;
 
     protected UserListAdapter userListAdapter;
+
+    /** 「机器人」入口是联系人/选人页最外层的一行，与组织树节点无关，只加一次。 */
+    private boolean organizationRobotHeaderAdded;
 
     private LinearLayoutManager linearLayoutManager;
     private boolean showQuickIndexBar;
@@ -124,6 +129,34 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     protected void addHeaderViewHolder(Class<? extends HeaderViewHolder> clazz, int layoutResId, HeaderValue value) {
         userListAdapter.addHeaderViewHolder(clazz, layoutResId, value);
         // to do notify header changed
+    }
+
+    /**
+     * 在组织架构入口之后维护「机器人」入口：有机器人数据才显示。
+     * <p>
+     * 机器人虽然来自组织通讯录服务，但只是与组织入口并列的一行，不放进组织树内部；
+     * 因此调用方要等组织入口这一批 header 已经加完（{@code organizationEntriesLoaded}）
+     * 再调用，保证它排在组织入口后面。数据被清空时同步移除这一行。
+     *
+     * @return 本次是否真的加上了
+     */
+    protected boolean addOrganizationRobotHeaderIfNeeded(boolean organizationEntriesLoaded) {
+        if (!organizationEntriesLoaded) {
+            return false;
+        }
+        if (OrganizationRobotManager.getInstance().isEmpty()) {
+            if (organizationRobotHeaderAdded) {
+                userListAdapter.removeHeaderViewHolder(RobotViewHolder.class);
+                organizationRobotHeaderAdded = false;
+            }
+            return false;
+        }
+        if (organizationRobotHeaderAdded) {
+            return false;
+        }
+        addHeaderViewHolder(RobotViewHolder.class, R.layout.contact_header_robot, new HeaderValue());
+        organizationRobotHeaderAdded = true;
+        return true;
     }
 
     protected void addFooterViewHolder(Class<? extends FooterViewHolder> clazz, int layoutResId, FooterValue value) {

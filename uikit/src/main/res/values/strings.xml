@@ -726,6 +726,8 @@
     <string name="organization_directory">组织通讯录</string>
     <string name="employee_info">员工信息</string>
     <string name="select_organization_member">选取组织成员</string>
+    <string name="org_robot">机器人</string>
+    <string name="org_robot_empty">暂无机器人</string>
     <string name="external_domain_list">外部单位列表</string>
     <string name="external_domain_details">外部单位详情</string>
 

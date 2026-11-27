@@ -29,7 +29,9 @@ import cn.wildfire.chat.kit.contact.pick.viewholder.PickGroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.RobotViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
@@ -44,6 +46,7 @@ public class PickConversationTargetFragment extends PickUserFragment {
     private OnGroupPickListener groupPickListener;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
+    private boolean rootOrganizationDelivered;
 
     /**
      * @param pickGroupForResult 为true时，点击group item不直接启动群会话；否则直接启动群会话
@@ -93,19 +96,22 @@ public class PickConversationTargetFragment extends PickUserFragment {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {
-                    if (!organizations.isEmpty()) {
+                    if (organizations != null && !organizations.isEmpty()) {
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
                             value.setValue(org);
                             addHeaderViewHolder(OrganizationViewHolder.class, R.layout.contact_header_organization, value);
                         }
                     }
+                    rootOrganizationDelivered = true;
+                    // 机器人入口排在组织架构入口之后，有数据才显示
+                    addOrganizationRobotHeaderIfNeeded(rootOrganizationDelivered);
                 }
             });
             organizationServiceViewModel.myOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {
-                    if (!organizations.isEmpty()) {
+                    if (organizations != null && !organizations.isEmpty()) {
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
                             value.setValue(org);
@@ -115,6 +121,9 @@ public class PickConversationTargetFragment extends PickUserFragment {
 
                 }
             });
+            // 机器人数据可能在根组织返回之后才更新（首次请求），届时再补入口
+            OrganizationRobotManager.getInstance().robotsLiveData().observe(this, robots ->
+                addOrganizationRobotHeaderIfNeeded(rootOrganizationDelivered));
         }
     }
 
@@ -142,6 +151,9 @@ public class PickConversationTargetFragment extends PickUserFragment {
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_EMPLOYEES, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedEmployees());
             intent.putParcelableArrayListExtra(PickOrganizationMemberActivity.PARAM_INITIAL_CHECKED_ORANIZATIONS, (ArrayList<? extends Parcelable>) pickUserViewModel.getCheckedOrganizations());
             WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+        } else if (holder instanceof RobotViewHolder) {
+            // 机器人入口与组织入口并列，只管理机器人勾选，不进入组织树
+            openRobotListForPick(null);
         }
     }
 
@@ -167,6 +179,8 @@ public class PickConversationTargetFragment extends PickUserFragment {
                 handleHintView(false);
                 handleEditText();
             }
+        } else if (requestCode == REQUEST_CODE_PICK_ROBOT) {
+            applyRobotSelection(data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

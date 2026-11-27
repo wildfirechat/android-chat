@@ -225,6 +225,22 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyItemChanged(index);
     }
 
+    /**
+     * 移除某个 header（目前只有「机器人」入口会动态显示/隐藏）。
+     */
+    public void removeHeaderViewHolder(Class<? extends HeaderViewHolder> clazz) {
+        if (headerValues == null) {
+            return;
+        }
+        for (int i = 0; i < headerValues.size(); i++) {
+            if (headerValues.get(i).headerViewHolderClazz == clazz) {
+                headerValues.remove(i);
+                notifyItemRemoved(i);
+                return;
+            }
+        }
+    }
+
     public void addFooterViewHolder(Class<? extends FooterViewHolder> clazz, int layoutResId, FooterValue value) {
         if (footerValues == null) {
             footerValues = new ArrayList<>();

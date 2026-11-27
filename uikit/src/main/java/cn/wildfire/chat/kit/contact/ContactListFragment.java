@@ -37,10 +37,13 @@ import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.RobotViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
+import cn.wildfire.chat.kit.organization.RobotListActivity;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -48,6 +51,7 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -60,6 +64,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
     private static final int REQUEST_CODE_PICK_ORG_MEMBER = 101;
+    private static final int REQUEST_CODE_PICK_ROBOT = 102;
+
+    private boolean rootOrganizationDelivered;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
 
@@ -184,10 +191,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {
-                    if (isRootOrganizationLoaded) {
-                        return;
-                    }
-                    if (!organizations.isEmpty()) {
+                    rootOrganizationDelivered = true;
+                    if (!isRootOrganizationLoaded && organizations != null && !organizations.isEmpty()) {
                         isRootOrganizationLoaded = true;
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
@@ -195,6 +200,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                             addHeaderViewHolder(OrganizationViewHolder.class, R.layout.contact_header_organization, value);
                         }
                     }
+                    // 机器人入口排在组织架构入口之后，有数据才显示
+                    addOrganizationRobotHeaderIfNeeded(rootOrganizationDelivered);
                 }
             });
             organizationServiceViewModel.myOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
@@ -204,16 +211,18 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                         return;
                     }
                     isMyOrganizationLoaded = true;
-                    if (!organizations.isEmpty()) {
+                    if (organizations != null && !organizations.isEmpty()) {
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
                             value.setValue(org);
                             addHeaderViewHolder(DepartViewHolder.class, R.layout.contact_header_department, value);
                         }
                     }
-
                 }
             });
+            // 机器人数据可能在根组织返回之后才更新（首次请求），届时再补入口
+            OrganizationRobotManager.getInstance().robotsLiveData().observe(this, robots ->
+                addOrganizationRobotHeaderIfNeeded(rootOrganizationDelivered));
         }
     }
 
@@ -261,6 +270,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showOrganizationMemberList(((OrganizationViewHolder) holder).getOrganization());
         } else if (holder instanceof DepartViewHolder) {
             showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
+        } else if (holder instanceof RobotViewHolder) {
+            showRobotList();
         } else if (holder instanceof ExternalDomainViewHolder) {
             if (ChatManager.Instance().isEnableMesh()) {
                 WfcPageCompat.startPage(this, new Intent(getContext(), DomainListActivity.class));
@@ -302,6 +313,20 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         }
     }
 
+    /**
+     * 机器人入口与组织入口并列：非选人时进机器人列表看资料，选人时单选一个机器人回传 userId。
+     */
+    private void showRobotList() {
+        Intent intent = new Intent(getActivity(), RobotListActivity.class);
+        if (pick) {
+            intent.putExtra(RobotListActivity.PARAM_PICK, true);
+            intent.putExtra(RobotListActivity.PARAM_MULTI_SELECT, false);
+            WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ROBOT);
+        } else {
+            WfcPageCompat.startPage(this, intent);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null) {
@@ -318,6 +343,11 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             intent.putExtra("employee", employee);
             finishWithResult(intent);
 
+        } else if (requestCode == REQUEST_CODE_PICK_ROBOT) {
+            Intent intent = new Intent();
+            UserInfo robotUserInfo = data.getParcelableExtra(RobotListActivity.RESULT_USER_INFO);
+            intent.putExtra("userInfo", robotUserInfo);
+            finishWithResult(intent);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 组织架构机器人入口图标：彩色圆角底 + 白色机器人，与组织架构图标同一套扁平色块风格 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <!-- 底色 -->
+    <path
+        android:fillColor="#FCC419"
+        android:pathData="M10,0 H30 C35.52,0 40,4.48 40,10 V30 C40,35.52 35.52,40 30,40 H10 C4.48,40 0,35.52 0,30 V10 C0,4.48 4.48,0 10,0 Z" />
+
+    <!-- 天线 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M19.1,8.4 H20.9 V12.6 H19.1 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,7.4 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+
+    <!-- 两侧耳朵 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.1,15.8 H10.8 V23.2 H9.1 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M29.2,15.8 H30.9 V23.2 H29.2 Z" />
+
+    <!-- 头部 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14.5,12 H25.5 C27.71,12 29.5,13.79 29.5,16 V23 C29.5,25.21 27.71,27 25.5,27 H14.5 C12.29,27 10.5,25.21 10.5,23 V16 C10.5,13.79 12.29,12 14.5,12 Z" />
+
+    <!-- 眼睛 -->
+    <path
+        android:fillColor="#FCC419"
+        android:pathData="M16.4,18.3 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+    <path
+        android:fillColor="#FCC419"
+        android:pathData="M23.6,18.3 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+
+    <!-- 嘴巴 -->
+    <path
+        android:fillColor="#FCC419"
+        android:pathData="M16.6,21.5 H23.4 C23.84,21.5 24.2,21.86 24.2,22.3 C24.2,22.74 23.84,23.1 23.4,23.1 H16.6 C16.16,23.1 15.8,22.74 15.8,22.3 C15.8,21.86 16.16,21.5 16.6,21.5 Z" />
+
+    <!-- 脖子 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18.4,27 H21.6 V29 H18.4 Z" />
+</vector>

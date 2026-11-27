@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.contact.pick;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,17 +22,30 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.page.WfcPageCompat;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.organization.OrganizationRobotManager;
+import cn.wildfire.chat.kit.organization.RobotListActivity;
+import cn.wildfire.chat.kit.organization.model.Employee;
+import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfire.chat.kit.organization.model.Robot;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.RecyclerViewScrollToHideKeyboardListener;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 
 public abstract class PickUserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
+    /** 机器人列表的 requestCode，各子类共用，子类在 onActivityResult 里转给 {@link #applyRobotSelection} */
+    protected static final int REQUEST_CODE_PICK_ROBOT = 300;
+
     private SearchAndPickUserFragment searchAndPickUserFragment;
     protected PickUserViewModel pickUserViewModel;
 
@@ -176,6 +190,96 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         if (userInfo.isCheckable()) {
             if (!pickUserViewModel.checkUser(userInfo, !userInfo.isChecked())) {
                 Toast.makeText(getActivity(), R.string.pick_user_limit_exceeded, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // ==================== 组织架构机器人 ====================
+
+    /**
+     * 打开机器人列表做多选。只在选人页最外层调用（机器人入口与组织入口并列，
+     * 进入组织内部后没有机器人）。初始勾选来自 {@link PickUserViewModel} 当前勾选里的机器人。
+     *
+     * @param uncheckableIds 不可勾选的机器人（例如已经是群成员）
+     */
+    protected void openRobotListForPick(@Nullable List<String> uncheckableIds) {
+        if (getActivity() == null) {
+            return;
+        }
+        Set<String> robotIdSet = OrganizationRobotManager.getInstance().getRobotIdSet();
+
+        ArrayList<String> initialCheckedIds = new ArrayList<>();
+        for (UIUserInfo userInfo : pickUserViewModel.getCheckedUsers()) {
+            String userId = userInfo.getUserInfo().uid;
+            if (robotIdSet.contains(userId) && !initialCheckedIds.contains(userId)) {
+                initialCheckedIds.add(userId);
+            }
+        }
+
+        Intent intent = new Intent(getActivity(), RobotListActivity.class);
+        intent.putExtra(RobotListActivity.PARAM_PICK, true);
+        intent.putExtra(RobotListActivity.PARAM_MULTI_SELECT, true);
+        intent.putExtra(RobotListActivity.PARAM_MAX_COUNT, remainingRobotPickCount(robotIdSet));
+        intent.putStringArrayListExtra(RobotListActivity.PARAM_INITIAL_CHECKED_IDS, initialCheckedIds);
+        if (uncheckableIds != null && !uncheckableIds.isEmpty()) {
+            intent.putStringArrayListExtra(RobotListActivity.PARAM_UNCHECKABLE_IDS,
+                new ArrayList<>(uncheckableIds));
+        }
+        WfcPageCompat.startPageForResult(this, intent, REQUEST_CODE_PICK_ROBOT);
+    }
+
+    /**
+     * 机器人列表只管理机器人，最大可选数要把已选的普通联系人、员工、组织占用的名额扣掉。
+     */
+    private int remainingRobotPickCount(Set<String> robotIdSet) {
+        int max = pickUserViewModel.getMaxPickCount();
+        if (max == Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        int used = 0;
+        for (UIUserInfo userInfo : pickUserViewModel.getCheckedUsers()) {
+            if (!robotIdSet.contains(userInfo.getUserInfo().uid)) {
+                used++;
+            }
+        }
+        used += pickUserViewModel.getCheckedEmployees().size();
+        for (Organization organization : pickUserViewModel.getCheckedOrganizations()) {
+            used += Math.max(organization.memberCount, 0);
+        }
+        return Math.max(0, max - used);
+    }
+
+    /**
+     * 机器人列表返回后，用返回的机器人集合替换当前勾选中的机器人部分：
+     * 取消的移除，新选的加入，普通联系人/员工/组织不受影响。
+     */
+    protected void applyRobotSelection(@Nullable Intent data) {
+        if (data == null) {
+            return;
+        }
+        ArrayList<String> checkedIds = data.getStringArrayListExtra(RobotListActivity.RESULT_ROBOT_IDS);
+        Set<String> newCheckedIds = checkedIds == null ? new HashSet<>() : new HashSet<>(checkedIds);
+        Set<String> robotIdSet = OrganizationRobotManager.getInstance().getRobotIdSet();
+
+        List<UIUserInfo> currentChecked = new ArrayList<>(pickUserViewModel.getCheckedUsers());
+        for (UIUserInfo userInfo : currentChecked) {
+            String userId = userInfo.getUserInfo().uid;
+            if (robotIdSet.contains(userId) && !newCheckedIds.contains(userId)) {
+                pickUserViewModel.checkUser(userInfo, false);
+            }
+        }
+
+        ArrayList<Robot> robots = data.getParcelableArrayListExtra(RobotListActivity.RESULT_ROBOTS);
+        if (robots != null) {
+            for (Robot robot : robots) {
+                if (robot == null || robot.robotId == null || !newCheckedIds.contains(robot.robotId)) {
+                    continue;
+                }
+                UIUserInfo userInfo = new UIUserInfo(robot.toUserInfo());
+                if (!pickUserViewModel.checkUser(userInfo, true)) {
+                    Toast.makeText(getActivity(), R.string.pick_user_limit_exceeded, Toast.LENGTH_SHORT).show();
+                    break;
+                }
             }
         }
     }

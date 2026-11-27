@@ -13,6 +13,7 @@ import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
+import cn.wildfire.chat.kit.organization.model.Robot;
 import cn.wildfirechat.remote.GeneralCallback;
 
 public interface OrganizationServiceProvider {
@@ -23,6 +24,11 @@ public interface OrganizationServiceProvider {
     void getRelationship(String employeeId, SimpleCallback<List<OrganizationRelationship>> callback);
 
     void getRootOrganization(SimpleCallback<List<Organization>> callback);
+
+    /**
+     * 获取某公司的组织架构机器人列表，顺序即服务端维护的顺序。
+     */
+    void getCompanyRobots(int companyId, SimpleCallback<List<Robot>> callback);
 
     void getOrganizationEx(int orgId, SimpleCallback<OrganizationEx> callback);
 
